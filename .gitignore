@@ -5,3 +5,5 @@ raw/
 mcp-test/
 .DS_Store
 .mcp.json
+docs/codex-run.log
+docs/codex-last-message.md
