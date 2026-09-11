@@ -1,0 +1,140 @@
+# What we crawl, how, and why. Decisions come from docs/crawl-survey (robots.txt,
+# sitemaps, redirects and blocks were checked by hand before this file was written).
+#
+# tier 1 = first-party (Everstake's own properties, GitHub)
+# tier 2 = press / third-party profiles
+# tier 3 = ASR video transcripts, social bios (low trust, never sole evidence)
+
+sources:
+  - id: seed-list
+    kind: urls
+    tier: 1
+    category: site
+    notes: "Every Everstake-owned URL from the assignment's corpus_sources.csv, fetched as given. The everstake.one entries 301-redirect to everstake.com: the redirect chain is recorded and the URL-level dedup collapses them (visible in /api/dedup)."
+    urls:
+      - https://everstake.com/ai-info
+      - https://everstake.one/ai-info
+      - https://everstake.com/
+      - https://everstake.com/company/about
+      - https://everstake.com/staking
+      - https://everstake.com/products/institutional-staking
+      - https://everstake.com/products/institutional-staking/vaas
+      - https://everstake.com/products/shredstream
+      - https://everstake.com/products/swqos
+      - https://everstake.com/product-terms
+      - https://everstake.com/terms-of-use
+      - https://everstake.com/mcp
+      - https://everstake.com/company/press
+      - https://everstake.com/resources/crypto-reports
+      - https://blockspace.everstake.one/
+      - https://status.everstake.one/
+      - https://docs.everstake.com/
+      - https://eth-docs.everstake.one/
+      - https://everstake.com/resources/blog
+      - https://everstake.one/blog
+      - https://everstake.one/resources/blog
+      - https://everstake.one/blog/david-kinitsky-joins-everstake-as-ceo
+      - https://everstake.one/resources/blog/david-kinitsky-joins-everstake-as-ceo
+      - https://everstake.one/blog/everstake-turns-six-today
+      - https://everstake.one/resources/blog/everstake-turns-six-today
+      - https://everstake.one/blog/happy-7th-birthday-everstake
+      - https://everstake.one/resources/blog/the-year-everstake-stepped-into-full-infrastructure-leadership
+      - https://everstake.com/resources/blog/everstake-is-now-on-everstake-com
+      - https://everstake.one/resources/blog/stake-smarter-claim-more-everstake-via-metamask-portfolio
+      - https://everstake.one/resources/blog/marketing-for-validators-solana-workshop-recap
+      - https://everstake.com/resources/blog/everstake-and-nexus-mutual-are-to-protect-delegators-from-eth-staking-risks
+      - https://everstake.com/llms.txt
+
+  - id: everstake-site
+    kind: sitemap
+    url: https://everstake.com/sitemap.xml
+    tier: 1
+    category: site
+    # blog sitemap is capped by crawl.max_blog_posts (newest by lastmod)
+    notes: "735 URLs across 4 child sitemaps; SSR, canonical present, lastmod present (lastmod = CMS edit, not publish date)"
+
+  - id: everstake-docs
+    kind: llms-txt
+    url: https://docs.everstake.com/llms.txt
+    tier: 1
+    category: docs
+    notes: "Every page is served as Markdown at <path>.md — no HTML parsing needed"
+
+  - id: everstake-blockspace
+    kind: sitemap
+    url: https://blockspace.everstake.com/sitemap-index.xml
+    tier: 1
+    category: site
+    notes: "robots.txt explicitly welcomes AI agents"
+
+  - id: everstake-security
+    kind: urls
+    tier: 1
+    category: site
+    urls:
+      - https://security.everstake.com/
+      - https://security.everstake.com/compliance
+      - https://security.everstake.com/controls
+      - https://security.everstake.com/resources
+      - https://security.everstake.com/updates
+      - https://security.everstake.com/trusted-by
+      - https://security.everstake.com/faq
+      - https://security.everstake.com/subprocessors
+    notes: "robots.txt allows exactly this whitelist, everything else is Disallow"
+
+  - id: everstake-github
+    kind: github-org
+    org: everstake
+    tier: 1
+    category: code
+    extra_files:
+      - https://raw.githubusercontent.com/everstake/mcp/main/tools.yaml
+    notes: "README of every public repo + the MCP server's static tool text (the baseline we are compared against)"
+
+  - id: press-and-third-party
+    kind: urls
+    tier: 2
+    category: press
+    urls:
+      - https://chainwire.org/2025/06/12/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/
+      - https://cryptopotato.com/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/
+      - https://blocktelegraph.io/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/
+      - https://bitcoinethereumnews.com/tech/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/
+      - https://www.bitget.com/news/detail/12560604810283
+      - https://t.signalplus.com/crypto-news/detail/everstake-ceo-david-kinitsky-institutional-staking-expansion
+      - https://www.dlnews.com/external/everstake-brings-ethereum-experts-together-to-explore-post-pectra-and-institutional-adoption/
+      - https://polygon.technology/blog/polygon-pos-validator-spotlight-everstake
+      - https://atomicwallet.io/blog/ama-with-everstake-digest
+      - https://www.stakingrewards.com/provider/everstake
+      - https://www.wikidata.org/wiki/Q132776648
+      - https://smithery.ai/servers/mcp-3ioj/everstake
+      - https://x.com/everstake_pool
+    notes: "Seed list items whose robots.txt permits us. atomicwallet is a soft-404 and is dropped automatically."
+
+  - id: youtube
+    kind: youtube
+    tier: 3
+    category: video
+    videos:
+      - https://www.youtube.com/watch?v=DFSEQ3OGoL8
+      - https://www.youtube.com/watch?v=CDmKMHaTtSQ
+      - https://www.youtube.com/watch?v=Uoe2mqS3KFc
+    channel: https://www.youtube.com/@Everstake/videos
+    notes: "No human captions exist; we take auto-generated en-orig subtitles via yt-dlp (free). Capped by crawl.youtube_channel_videos."
+
+excluded:
+  - domain: everstake.one
+    reason: "Not crawled beyond the seed list: every URL 301-redirects to everstake.com (recorded as evidence), and the legacy domain's robots.txt disallows AI crawlers. Seed entries are fetched once so the redirect-based dedup is demonstrable."
+    seed_only: true
+  - domain: medium.com
+    reason: "403 (Cloudflare challenge) and robots.txt disallows ClaudeBot/GPTBot."
+  - domain: crunchbase.com
+    reason: "403; robots.txt disallows ClaudeBot/anthropic-ai/GPTBot (only answer-time agents are allowed)."
+  - domain: linkedin.com
+    reason: "HTTP serves content but robots.txt disallows ~25 AI user agents. Technically possible ≠ permitted."
+  - domain: investing.com
+    reason: "403 even on /robots.txt → rules unknown → treated as full disallow (RFC 9309)."
+  - domain: blockchainmagazine.com
+    reason: "robots.txt Cloudflare block for AI crawlers + Content-Signal ai-train=no. Also a verbatim copy of chainwire."
+  - domain: stake.everstake.com
+    reason: "Client-rendered dashboard: 82 characters of text. robots.txt copies the .one disallow block."
