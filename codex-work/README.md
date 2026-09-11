@@ -31,6 +31,16 @@ make serve
 
 Open http://localhost:4321. The committed index means crawling and indexing are not required to review the app. Each query uses OpenAI `text-embedding-3-small` for one query vector and Gemini `gemini-2.5-flash-lite` for grounded JSON generation.
 
+Docker uses the same frozen index via a persistent runtime mount:
+
+```bash
+mkdir -p runtime
+cp data/index.sqlite3 runtime/index.sqlite3
+docker build -t everstake-codex .
+docker run --rm -p 4321:4321 --env-file .env \
+  -v "$PWD/runtime:/app/runtime" everstake-codex
+```
+
 Example API call:
 
 ```bash
@@ -65,4 +75,8 @@ make test
 ```
 
 The code deliberately uses small modules and standard-library HTTP/SQLite rather than a framework or opaque RAG library. Authority weights, abstention threshold, chunk size, and source contracts are named functions/constants, so a live requirement change can be made and tested without understanding a framework graph.
+
+## Deployment
+
+The live instance is a single Docker container bound to `127.0.0.1:4321`; Caddy terminates TLS for `everstake-codex.89-167-19-222.sslip.io`. Persistent index and cost events live under `/data/everstake-codex/state/`. The deployed health check is `GET /health`.
 

@@ -1,0 +1,31 @@
+{
+  "currency": "USD",
+  "generated_at": "2026-09-11T20:31:00Z",
+  "final_index": {
+    "model": "text-embedding-3-small",
+    "input_tokens": 776291,
+    "price_per_million_input_tokens": 0.02,
+    "cost": 0.01552582
+  },
+  "final_evaluation_20_queries": {
+    "input_tokens": 118844,
+    "output_tokens": 2183,
+    "total_cost": 0.0127396,
+    "mean_cost_per_query": 0.00063698,
+    "median_cost_per_query": 0.00062887,
+    "minimum_cost_per_query": 0.00032972,
+    "maximum_cost_per_query": 0.00115684
+  },
+  "fifty_x_projection": {
+    "input_tokens": 38814550,
+    "embedding_cost": 0.776291
+  },
+  "all_assignment_api_activity_including_discarded_runs_and_deployed_smoke_tests": {
+    "cost": 0.13266996
+  },
+  "pricing_sources": {
+    "openai": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+    "gemini": "https://ai.google.dev/gemini-api/docs/pricing"
+  }
+}
+
