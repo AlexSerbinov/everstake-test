@@ -25,7 +25,8 @@ rsync -az --delete -e "ssh -i $SSH_KEY" \
   ./ "$HOST:$REMOTE_DIR/"
 
 echo "▶ sync index → $REMOTE_DATA/kb.db  ($(du -h data/kb.db | cut -f1))"
-sqlite3 data/kb.db "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
+node -e "const {DatabaseSync}=require('node:sqlite');const d=new DatabaseSync('data/kb.db');d.exec('PRAGMA wal_checkpoint(TRUNCATE)');d.close()"   # fold the WAL into the main file
+$SSH "docker stop everstake-kb >/dev/null 2>&1 || true; rm -f $REMOTE_DATA/kb.db-wal $REMOTE_DATA/kb.db-shm"   # never copy over a live DB or leave a stale WAL next to the new file
 rsync -rltz --no-owner --no-group -e "ssh -i $SSH_KEY" data/kb.db "$HOST:$REMOTE_DATA/kb.db"   # /data pool refuses chown
 
 echo "▶ build + start container"
