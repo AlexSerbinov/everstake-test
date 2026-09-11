@@ -122,16 +122,41 @@ export async function retrieve(question: string): Promise<Retrieval> {
 
 /** Fact ledger rows that match the question (FTS over key+value+quote), newest first. */
 export function factsFor(question: string, limit = 14): FactRow[] {
-  const q = ftsQuery(question + " " + keyHints(question));
-  if (!q) return [];
   const { where, params } = filterSql();
-  return all<FactRow>(
-    `SELECT f.id, f.key, f.value, f.as_of, f.quote, f.confidence, f.flags, d.id doc_id, d.url, d.title, d.tier, d.published_at, d.ai_directed
-     FROM facts_fts JOIN facts f ON f.id = facts_fts.rowid JOIN documents d ON d.id = f.doc_id
-     WHERE facts_fts MATCH ? AND ${where} AND (f.flags IS NULL OR f.flags NOT LIKE '%malformed%')
-     ORDER BY bm25(facts_fts) LIMIT ?`, q, ...params, limit * 3)
-    .sort((a, b) => (b.as_of ?? "").localeCompare(a.as_of ?? "") || a.tier - b.tier)
-    .slice(0, limit);
+  const hinted = keyHints(question).split(" ").filter(Boolean);
+  const SELECT = `SELECT f.id, f.key, f.value, f.as_of, f.quote, f.confidence, f.flags, d.id doc_id, d.url, d.title, d.tier, d.published_at, d.ai_directed`;
+  let rows: FactRow[];
+  if (hinted.length) {
+    // the question names a ledger key → take that key's whole history, not an FTS sample of it
+    rows = all<FactRow>(`${SELECT} FROM facts f JOIN documents d ON d.id = f.doc_id
+       WHERE f.key IN (${hinted.map(() => "?").join(",")}) AND ${where} AND (f.flags IS NULL OR f.flags NOT LIKE '%malformed%')`, ...hinted, ...params);
+  } else {
+    const q = ftsQuery(question);
+    if (!q) return [];
+    rows = all<FactRow>(`${SELECT} FROM facts_fts JOIN facts f ON f.id = facts_fts.rowid JOIN documents d ON d.id = f.doc_id
+       WHERE facts_fts MATCH ? AND ${where} AND (f.flags IS NULL OR f.flags NOT LIKE '%malformed%')
+       ORDER BY bm25(facts_fts) LIMIT ?`, q, ...params, limit * 8);
+  }
+  rows.sort((a, b) => (b.as_of ?? "").localeCompare(a.as_of ?? "") || a.tier - b.tier);
+  // Value-diverse: the same value repeats on dozens of pages ("130+" × 40). Keep at most two rows per
+  // distinct (key, value) so older values (85+ in 2025, 70+ in 2022–24) survive and the timeline is visible.
+  const perValue = new Map<string, number>();
+  const out: FactRow[] = [];
+  for (const r of rows) {
+    const k = `${r.key}|${valueKey(r.value)}`;
+    const n = perValue.get(k) ?? 0;
+    if (n >= 2) continue;
+    perValue.set(k, n + 1);
+    out.push(r);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+/** "Ethereum, 130+ networks historically onboarded" and "130+" are the same value for diversity purposes. */
+function valueKey(v: string): string {
+  const num = v.match(/\$?\d[\d,.]*\s?[+%]?\s?(?:[MBK]\+?|million|billion)?/i);
+  return (num ? num[0] : v).toLowerCase().replace(/[^a-z0-9+.%$]/g, "");
 }
 
 /** Map natural phrasing to ledger keys so "who runs the company" still hits `ceo`. */

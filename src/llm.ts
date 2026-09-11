@@ -80,18 +80,61 @@ export async function completeJson<T>(opts: CallOpts & { schema: z.ZodType<T> })
   return call(opts, opts.schema) as Promise<LlmResult<T>>;
 }
 
+/** Provider "gemini": Claude model ids in config map to Gemini models (override with GEMINI_ANSWER_MODEL / GEMINI_CHEAP_MODEL). */
+export function resolveModel(model: string): string {
+  if (env.llmProvider !== "gemini") return model;
+  if (model.startsWith("gemini")) return model;
+  return model.startsWith("claude-haiku") ? env.geminiCheapModel : env.geminiAnswerModel;
+}
+
 async function call<T>(opts: CallOpts, schema: z.ZodType<T> | null): Promise<LlmResult<any>> {
   const t0 = Date.now();
+  const model = resolveModel(opts.model);
   try {
-    const r = env.llmProvider === "anthropic" ? await viaAnthropic(opts, schema) : await viaOpenRouter(opts, schema);
+    const r = env.llmProvider === "anthropic" ? await viaAnthropic(opts, schema)
+      : env.llmProvider === "gemini" ? await viaGemini({ ...opts, model }, schema)
+      : await viaOpenRouter(opts, schema);
     const latencyMs = Date.now() - t0;
-    const costUsd = priceUsd(opts.model, r.usage);
-    const callId = logCall({ stage: opts.stage, provider: env.llmProvider, model: opts.model, ...r.usage, costUsd, latencyMs, meta: opts.meta });
-    return { data: r.data, usage: r.usage, costUsd, latencyMs, model: opts.model, provider: env.llmProvider, callId };
+    const costUsd = priceUsd(model, r.usage);
+    const callId = logCall({ stage: opts.stage, provider: env.llmProvider, model, ...r.usage, costUsd, latencyMs, meta: opts.meta });
+    return { data: r.data, usage: r.usage, costUsd, latencyMs, model, provider: env.llmProvider, callId };
   } catch (e: any) {
-    logCall({ stage: opts.stage, provider: env.llmProvider, model: opts.model, latencyMs: Date.now() - t0, ok: false, error: String(e?.message ?? e), meta: opts.meta });
+    logCall({ stage: opts.stage, provider: env.llmProvider, model, latencyMs: Date.now() - t0, ok: false, error: String(e?.message ?? e), meta: opts.meta });
     throw e;
   }
+}
+
+async function viaGemini<T>(opts: CallOpts, schema: z.ZodType<T> | null) {
+  const cheap = opts.model.includes("lite");
+  const body: any = {
+    systemInstruction: { parts: [{ text: opts.system + (schema ? "\n\nRespond with a single JSON object only, matching this JSON Schema:\n" + JSON.stringify(z.toJSONSchema(schema)) : "") }] },
+    contents: [{ role: "user", parts: [{ text: opts.user }] }],
+    generationConfig: {
+      maxOutputTokens: (opts.maxTokens ?? 4000) + (cheap ? 0 : 4000), // thinking tokens count against the cap on 2.5 models
+      temperature: 0.2,
+      ...(schema ? { responseMimeType: "application/json" } : {}),
+      ...(cheap ? { thinkingConfig: { thinkingBudget: 0 } } : {}),   // no thinking for extraction/judging: cheaper, deterministic
+    },
+  };
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${opts.model}:generateContent?key=${env.geminiKey}`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const j: any = await res.json();
+  const cand = j.candidates?.[0];
+  if (!cand || cand.finishReason === "SAFETY") throw new Error(`gemini: no candidate (${cand?.finishReason ?? "empty"})`);
+  const text: string = (cand.content?.parts ?? []).filter((p: any) => !p.thought).map((p: any) => p.text ?? "").join("");
+  const u = j.usageMetadata ?? {};
+  const usage = {
+    input: u.promptTokenCount ?? 0,
+    output: (u.candidatesTokenCount ?? 0) + (u.thoughtsTokenCount ?? 0),
+    cacheRead: u.cachedContentTokenCount ?? 0,
+    cacheWrite: 0,
+  };
+  if (!schema) return { data: text, usage };
+  const parsed = schema.safeParse(JSON.parse(extractJson(text)));
+  if (!parsed.success) throw new Error("structured output failed validation: " + parsed.error.message.slice(0, 300));
+  return { data: parsed.data, usage };
 }
 
 async function viaAnthropic<T>(opts: CallOpts, schema: z.ZodType<T> | null) {
@@ -170,8 +213,17 @@ async function viaOpenRouter<T>(opts: CallOpts, schema: z.ZodType<T> | null) {
   return { data: parsed.data, usage };
 }
 
+/** First balanced JSON object in the text (models sometimes append prose or a second object). */
 function extractJson(s: string) {
   const start = s.indexOf("{");
-  const end = s.lastIndexOf("}");
-  return start >= 0 && end > start ? s.slice(start, end + 1) : s;
+  if (start < 0) return s;
+  let depth = 0, inStr = false, esc = false;
+  for (let i = start; i < s.length; i++) {
+    const c = s[i];
+    if (inStr) { if (esc) esc = false; else if (c === "\\") esc = true; else if (c === '"') inStr = false; continue; }
+    if (c === '"') inStr = true;
+    else if (c === "{") depth++;
+    else if (c === "}") { depth--; if (depth === 0) return s.slice(start, i + 1); }
+  }
+  return s.slice(start);
 }

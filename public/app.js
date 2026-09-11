@@ -21,7 +21,7 @@ $("#tabs").onclick = (e) => {
 };
 if (location.hash.length > 1) $(`#tabs button[data-tab="${location.hash.slice(1)}"]`)?.click();
 
-api("/api/stats").then((s) => { $("#provider").textContent = `${s.models.answer} · ${s.documents.canonical} docs · llm: ${s.provider.llm}`; }).catch(() => {});
+api("/api/stats").then((s) => { $("#provider").textContent = `${s.models.resolved_answer || s.models.answer} · ${s.documents.canonical} docs · llm: ${s.provider.llm}`; }).catch(() => {});
 
 // ---------- ASK ----------
 $("#examples").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; $("#q").value = b.textContent; $("#askForm").requestSubmit(); };

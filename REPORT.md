@@ -91,7 +91,7 @@ Included: **transcription cost is zero** — YouTube already has auto-generated 
 
 TypeScript on Node 22+, SQLite via `node:sqlite` (FTS5 built in, vectors as BLOBs, cosine in-process over 2 138 chunks — a vector database for 2 000 rows would be ceremony), Hono, Claude Opus 5 for answers (adaptive thinking, effort medium) and Haiku 4.5 for extraction/judging, OpenAI `text-embedding-3-small` for vectors. No LangChain/LlamaIndex: the whole pipeline is ~1 800 lines that can be changed live, which is what the defence requires.
 
-**Provider note.** The code uses the official Anthropic SDK (with prompt caching on the system prompt). The submitted run was produced through OpenRouter (same models, OpenAI-style API) because no funded Anthropic key was available on the machine that day — a one-line `.env` switch. Side effect: no cache hits in the measured numbers; with the Anthropic path the per-query input cost would drop by roughly the cached system-prompt share.
+**Provider note.** The code has three interchangeable LLM providers behind one `complete()/completeJson()` function (`src/llm.ts`): the official Anthropic SDK (default, with prompt caching on the system prompt), OpenRouter (same Claude models through an OpenAI-style API), and Gemini (`gemini-2.5-flash` for answers, `gemini-2.5-flash-lite` for extraction/judging). The index (fact ledger) was built with Claude Haiku 4.5 via OpenRouter; the **submitted EVAL.md run used Gemini 2.5 Flash** because the Claude budget on hand ran out mid-evaluation — a one-line `.env` switch, and the first nine questions answered by Claude Opus 5 before the cut-off were all graded `correct` (see `eval/results/`). Gemini is ~6× cheaper per question and noticeably weaker on synthesis (5 of 7 "partially correct" verdicts are synthesis or leadership-history questions where Opus's answers were fuller). The model is a knob in *Settings*; the architecture does not depend on it.
 
 ## 3. Measured cost (§5.6)
 
@@ -102,12 +102,15 @@ All numbers are from the `llm_calls` table (every call logs provider usage); `np
 | Embeddings, 2 138 chunks (`text-embedding-3-small`) | 2 218 174 | $0.044 |
 | Fact extraction, 445 calls (Haiku 4.5) | 1 387 330 in / 150 769 out | $2.141 |
 | **Index build total** | **3 756 273** | **$2.19** |
-| One question (Opus 5), average | ~8 200 in / ~200 out | **$0.041** (see EVAL.md for the per-run figure) |
-| Eval judge (Haiku), per question | ~400 | $0.0006 |
+| One question, Claude Opus 5 (9 measured) | ~8 200 in / ~200 out | **$0.041** |
+| One question, Gemini 2.5 Flash (20 measured, the EVAL.md run) | ~7 200 in / ~600 out incl. thinking | **$0.0063** |
+| Eval judge, per question | ~400 | $0.0006 (Haiku) / $0.0001 (Flash-Lite) |
 
 **×50 corpus (≈22 000 documents):**
-index = $2.19 × 50 = **≈ $109** (linear: every document is embedded and read once by Haiku).
-Per query: **unchanged, ≈ $0.04**, because the model always reads a fixed top-k (10 + 4 chunks + ≤14 fact rows); what grows is retrieval work — BM25 over 107 000 chunks and a brute-force cosine over 107 000 × 1 536 floats (~160 MB) is still tens of milliseconds in-process, but at that size we would move vectors to sqlite-vec or pgvector. 1 000 questions ≈ $40; with Anthropic prompt caching the system-prompt share of input (~1.5k tokens) costs 10× less.
+index = $2.19 × 50 = **≈ $109** (linear: every document is embedded and read once by the extractor; with Gemini Flash-Lite as extractor ≈ $15).
+Per query: **unchanged — $0.04 (Opus 5) or $0.006 (Gemini Flash)** — because the model always reads a fixed top-k (10 + 4 chunks + ≤14 fact rows); what grows is retrieval work: BM25 over 107 000 chunks and a brute-force cosine over 107 000 × 1 536 floats (~160 MB) is still tens of milliseconds in-process, but at that size we would move vectors to sqlite-vec or pgvector. 1 000 questions ≈ $40 (Opus) / ≈ $6 (Flash); with Anthropic prompt caching the system-prompt share of input (~1.5k tokens) costs 10× less.
+
+**Eval headline (EVAL.md, Gemini 2.5 Flash run):** 20 questions, **0 invented facts, 0 wrong**, 5/5 negative cases correctly abstained, 8/15 positive fully correct, 7 partially correct (missing a historical value or a date the reference listed). Strict accuracy 65%, lenient 100%.
 
 ## 4. Baseline: Everstake's MCP server (§5.7)
 
@@ -134,6 +137,7 @@ We measured the live server (`mcp.everstake.com`): 11 tools, 0.1–0.3 s latency
 
 ## 7. A problem in the corpus the assignment did not mention
 
+- **"130+ networks" is not the number of networks Everstake supports.** Everstake's own 2026 pages say "historically supported 130+" while several 2026 posts (April–July) say "30+ / 35+ active networks", and the live MCP `get_chains` returns 27. The headline figure is a lifetime count; the current count is ~30. Every source in the seed CSV, the reference answer we wrote for q02, and Everstake's MCP profile all conflate the two. The system surfaced this by itself in q15 (and was marked "partially correct" by the judge for saying more than the reference).
 - **The company disagrees with itself about who it is.** `terms-of-use` and `ai-info` say the legal entity is *Everstake Validation Services LLC* (Cayman Islands); the footer of every blog post on the same domain says *Everstake, Inc.* Both are first-party, both current.
 - **`robots.txt` on everstake.com is self-contradictory** for AI crawlers (a Cloudflare block disallows ClaudeBot/GPTBot, the site's own block allows them), while `llms.txt` invites LLMs to use `status.everstake.one` and `btc-staking.everstake.one` — domains whose robots.txt disallows them.
 - **The MCP marketing page is stale against its own MCP**: 3.41% / 6.84% APY printed on `/mcp`, 2.93% / 5.63% served by `get_chains` the same day; "130+ networks" in the static profile, 27 in the live list.

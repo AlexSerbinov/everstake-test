@@ -81,9 +81,12 @@ export function resetConfigOverrides() {
 }
 
 export const env = {
-  llmProvider: (process.env.LLM_PROVIDER ?? (process.env.ANTHROPIC_API_KEY ? "anthropic" : "openrouter")) as "anthropic" | "openrouter",
+  llmProvider: (process.env.LLM_PROVIDER ?? (process.env.ANTHROPIC_API_KEY ? "anthropic" : process.env.GEMINI_API_KEY ? "gemini" : "openrouter")) as "anthropic" | "openrouter" | "gemini",
   anthropicKey: process.env.ANTHROPIC_API_KEY ?? "",
   openrouterKey: process.env.OPENROUTER_API_KEY ?? "",
+  geminiKey: process.env.GEMINI_API_KEY ?? "",
+  geminiAnswerModel: process.env.GEMINI_ANSWER_MODEL ?? "gemini-2.5-flash",
+  geminiCheapModel: process.env.GEMINI_CHEAP_MODEL ?? "gemini-2.5-flash-lite",
   embeddingsProvider: (process.env.EMBEDDINGS_PROVIDER ?? (process.env.OPENAI_API_KEY ? "openai" : process.env.VOYAGE_API_KEY ? "voyage" : "none")) as "openai" | "voyage" | "none",
   openaiKey: process.env.OPENAI_API_KEY ?? "",
   voyageKey: process.env.VOYAGE_API_KEY ?? "",

@@ -8,6 +8,7 @@ import { cors } from "hono/cors";
 import path from "node:path";
 import { ROOT, env, getConfig, resetConfigOverrides, setConfigOverrides, sourcesConfig } from "../config.js";
 import { all, one } from "../db.js";
+import { resolveModel } from "../llm.js";
 import { factLedger } from "../index/facts.js";
 import { ask } from "../ask/ask.js";
 import { dedupClusters, instructionsFound, stats } from "../ask/stats.js";
@@ -38,7 +39,7 @@ app.post("/ask", async (c) => {
   return c.json(body.trace === false ? { ...r, trace: undefined } : r);
 });
 
-app.get("/api/stats", (c) => c.json({ ...stats(), provider: { llm: env.llmProvider, embeddings: env.embeddingsProvider }, models: getConfig().models }));
+app.get("/api/stats", (c) => c.json({ ...stats(), provider: { llm: env.llmProvider, embeddings: env.embeddingsProvider }, models: { ...getConfig().models, resolved_answer: resolveModel(getConfig().models.answer), resolved_cheap: resolveModel(getConfig().models.cheap) } }));
 app.get("/api/config", (c) => c.json(getConfig()));
 app.put("/api/config", async (c) => c.json(setConfigOverrides(await c.req.json())));
 app.delete("/api/config", (c) => c.json(resetConfigOverrides()));

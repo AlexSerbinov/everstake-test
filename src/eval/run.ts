@@ -23,12 +23,13 @@ export interface EvalRun { ts: string; model: string; provider: string; rows: Ev
 const Verdict = z.object({ verdict: z.enum(["correct", "partially_correct", "wrong", "hallucinated", "abstained_correctly", "abstained_wrongly"]), reason: z.string() });
 const RESULTS = path.join(ROOT, "eval/results");
 
-export async function runEval(opts: { limit?: number; retryErrors?: boolean } = {}) {
+export async function runEval(opts: { limit?: number; retryErrors?: boolean; only?: string[] } = {}) {
   const cfg = getConfig();
   const allQs: Q[] = YAML.parse(fs.readFileSync(path.join(ROOT, "eval/questions.yaml"), "utf8")).questions;
   // --retry-errors: keep graded rows from the latest run, re-ask only the ones that hit a provider error
-  const previous = opts.retryErrors ? latestEval() : null;
-  const keep = previous ? previous.rows.filter((r) => !["error", "judge_error"].includes(r.human_verdict || r.verdict)) : [];
+  // --only=q01,q15: keep everything from the latest run except the listed ids
+  const previous = opts.retryErrors || opts.only ? latestEval() : null;
+  const keep = previous ? previous.rows.filter((r) => opts.only ? !opts.only.includes(r.id) : !["error", "judge_error"].includes(r.human_verdict || r.verdict)) : [];
   const keptIds = new Set(keep.map((r) => r.id));
   const qs = allQs.filter((q) => !keptIds.has(q.id));
   if (previous) console.log(`retrying ${qs.length} questions, keeping ${keep.length} graded rows from ${previous.ts}`);
