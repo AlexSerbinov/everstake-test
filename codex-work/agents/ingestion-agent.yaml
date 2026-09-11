@@ -1,0 +1,9 @@
+name: corpus-ingestion-agent
+purpose: Expand publisher-declared sources and build an auditable corpus.
+inputs: [seed_csv, robots_txt, publisher_sitemaps]
+tools: [polite_http_fetch, html_extraction, deduplication, instruction_scanner]
+invariants:
+  - Respect robots.txt and the host allowlist.
+  - Rate-limit by host and identify the crawler.
+  - Keep provenance and exclusions; never silently invent metadata.
+

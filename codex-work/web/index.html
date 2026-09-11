@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Everstake Knowledge Assistant</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <header><span class="eyebrow">PUBLIC CORPUS · MEASURED RAG</span><h1>Everstake Knowledge Assistant</h1><p>Answers grounded in a curated, dated public corpus. Every supported answer shows its evidence.</p></header>
+    <form id="query-form">
+      <label for="question">Ask about Everstake</label>
+      <textarea id="question" required minlength="3" placeholder="How has Everstake's positioning shifted over the last two years?"></textarea>
+      <div class="controls"><select id="mode"><option value="auto">Auto-detect mode</option><option value="factual">Factual lookup</option><option value="synthesis">Synthesis</option></select><button>Find grounded answer</button></div>
+    </form>
+    <section id="result" hidden aria-live="polite"><div class="result-head"><span id="status"></span><span id="date"></span></div><div id="answer"></div><h2>Sources</h2><ol id="sources"></ol><details><summary>Why this answer?</summary><p id="reasoning"></p><pre id="usage"></pre></details></section>
+    <section class="examples"><h2>Try an example</h2><button data-q="Who is the CEO of Everstake?">Current CEO</button><button data-q="How has Everstake's positioning shifted over the last two years?">Positioning over time</button><button data-q="What is Everstake's office Wi-Fi password?">Negative case</button></section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
+
