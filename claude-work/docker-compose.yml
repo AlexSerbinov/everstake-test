@@ -1,0 +1,15 @@
+services:
+  kb:
+    build: .
+    container_name: everstake-kb
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4320:4320"
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      PORT: 4320
+    volumes:
+      # data/kb.db is the built index (crawl → dedup → index → facts). Build it locally with
+      # `npm run pipeline`, then mount it here; the container only serves and answers.
+      - ${KB_DATA_DIR:-./data}:/data

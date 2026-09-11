@@ -1,0 +1,82 @@
+# Live-tunable knobs. Everything here can also be changed at runtime via
+# PUT /api/config (in-memory override) — no restart, no redeploy.
+
+models:
+  answer: claude-opus-5        # final answer + synthesis
+  cheap: claude-haiku-4-5      # fact extraction, eval judge
+  effort: medium               # low | medium | high  (thinking effort for the answer model)
+
+retrieval:
+  bm25_top: 40                 # candidates from FTS5
+  vector_top: 40               # candidates from cosine search
+  final_top: 10                # chunks handed to the model
+  date_diverse_extra: 4        # + best chunk per distinct year (for synthesis questions)
+  rrf_k: 60
+
+ranking:
+  recency_half_life_days: 365  # score halves every N days after publication
+  recency_floor: 0.3           # old documents never drop below this multiplier
+  tier_weights:                # source authority
+    1: 1.0                     # first-party: everstake.com, docs, GitHub
+    2: 0.7                     # press, third-party profiles
+    3: 0.5                     # ASR video transcripts, social
+  ai_directed_multiplier: 0.8  # pages written *for* AI assistants are self-declarations, not evidence
+  undated_recency: 0.6         # multiplier when a document has no reliable date
+
+gates:
+  min_best_score: 0.012        # below this (and with no fact rows) we answer "no reliable answer" without calling the model
+  require_citations: true      # answers with zero valid citations are converted to "no reliable answer"
+
+filters:
+  excluded_domains: []         # e.g. ["cryptopotato.com"] — live requirement changes go here
+  min_published_year: null     # e.g. 2025 → ignore older sources entirely
+  include_tiers: [1, 2, 3]
+
+instructions:
+  # sentences matching these patterns are cut out of chunks at index time and
+  # stored in the `instructions` table instead (see src/index/instructions.ts)
+  patterns:
+    - "\\bAI (assistants?|agents?|systems?|models?)\\b[^.]{0,80}\\b(should|must|need to|are (asked|expected) to|do not|don't|never|always)\\b"
+    - "\\b(LLMs?|language models?|chatbots?|search-augmented [a-z ]+)\\b[^.]{0,60}\\b(should|must|do not|don't|never|always)\\b"
+    - "\\b(ignore|disregard|forget)\\b[^.]{0,40}\\b(previous|prior|above|earlier|all)\\b[^.]{0,30}\\b(instructions?|prompts?|rules?)\\b"
+    - "\\byou (must|should|are required to|are not allowed to|may not)\\b[^.]{0,80}\\b(say|state|describe|mention|cite|use|refer|attribute|assert|present)\\b"
+    - "\\bdo NOT (describe|call|refer to|present|state|assert|attribute)\\b"
+    - "\\b(when answering|when referencing|when classifying|when describing)\\b[^.]{0,80}\\b(cite|use|prefer|defer|attribute|only)\\b"
+    - "\\b(use|reuse) (only )?(the |this )?(approved|canonical|following|these) (description|labels?|phrasing|wording|sources?)\\b"
+    - "\\bdefer to\\b[^.]{0,60}\\b(canonical|official|source|page)\\b"
+    - "\\b(cite|reference) this page\\b"
+  ai_directed_paths:           # whole page is addressed to machines → flag + multiplier above
+    - "/ai-info"
+    - "/llms.txt"
+    - "/llms-full.txt"
+  ai_directed_min_hits: 3
+
+crawl:
+  user_agent: "EverstakeKB/0.1 (+https://github.com/serbinov; knowledge-assistant test assignment)"
+  delay_ms: 500
+  timeout_ms: 20000
+  retries: 2
+  max_blog_posts: 250          # newest by sitemap lastmod (629 available)
+  youtube_channel_videos: 20   # newest from @Everstake, plus the 3 seed videos
+
+chunking:
+  target_chars: 2800           # ≈ 700 tokens
+  overlap_chars: 400
+  min_chars: 200
+  min_html_chars: 500           # client-rendered shells (e.g. /staking/protocols/*) leave <500 chars of real text
+
+dedup:
+  shingle_words: 5
+  minhash_perms: 64
+  same_domain_jaccard: 0.5     # baseline noise from shared page chrome on everstake.com is ~0.22
+  cross_domain_containment: 0.5
+
+pricing_usd_per_mtok:          # measured cost uses these (Anthropic list prices, Sep 2026)
+  claude-opus-5: { input: 5, output: 25, cache_read: 0.5, cache_write: 6.25 }
+  claude-haiku-4-5: { input: 1, output: 5, cache_read: 0.1, cache_write: 1.25 }
+  claude-sonnet-5: { input: 2, output: 10, cache_read: 0.2, cache_write: 2.5 }
+  text-embedding-3-small: { input: 0.02, output: 0 }
+  voyage-3-lite: { input: 0.02, output: 0 }
+  gemini-2.5-pro: { input: 1.25, output: 10 }
+  gemini-2.5-flash: { input: 0.30, output: 2.5, cache_read: 0.075 }
+  gemini-2.5-flash-lite: { input: 0.10, output: 0.40, cache_read: 0.025 }
