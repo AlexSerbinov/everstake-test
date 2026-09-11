@@ -83,6 +83,19 @@ def chunks(text: str, size: int = 620, overlap: int = 80) -> list[str]:
     return [" ".join(words[start:start + size]) for start in range(0, len(words), size - overlap) if len(words[start:start + size]) >= 30]
 
 
+def line_signature(line: str) -> str:
+    return re.sub(r"\s+", " ", line).strip().lower()
+
+
+def repeated_boilerplate(docs: list[dict]) -> set[str]:
+    """Find template lines repeated across many pages, counting once per document."""
+    counts: Counter[str] = Counter()
+    for doc in docs:
+        counts.update({line_signature(line) for line in doc["text"].splitlines() if len(line_signature(line)) >= 80})
+    threshold = max(8, math.ceil(len(docs) * 0.08))
+    return {line for line, count in counts.items() if count >= threshold}
+
+
 def pack(vector: list[float]) -> bytes:
     return struct.pack(f"<{len(vector)}f", *vector)
 
@@ -101,6 +114,7 @@ CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT);
 def build(corpus: Path, database: Path) -> dict:
     docs = [json.loads(line) for line in corpus.read_text().splitlines() if line.strip()]
     groups, dedup_stats = duplicate_groups(docs)
+    boilerplate = repeated_boilerplate(docs)
     if database.exists():
         database.unlink()
     database.parent.mkdir(parents=True, exist_ok=True)
@@ -108,6 +122,7 @@ def build(corpus: Path, database: Path) -> dict:
     connection.executescript(SCHEMA)
     all_chunks: list[tuple[int, int, str]] = []
     injection_docs = 0
+    boilerplate_lines_removed = 0
     # Within a duplicate group, current canonical-domain, tier-1, recently modified documents win.
     winners: dict[int, int] = {}
     for group in set(groups):
@@ -118,7 +133,9 @@ def build(corpus: Path, database: Path) -> dict:
             docs[i].get("modified_at") or docs[i].get("published_at") or "",
         ))
     for idx, doc in enumerate(docs):
-        sanitized = sanitize_untrusted_text(doc["text"])
+        filtered_lines = [line for line in doc["text"].splitlines() if line_signature(line) not in boilerplate]
+        boilerplate_lines_removed += len(doc["text"].splitlines()) - len(filtered_lines)
+        sanitized = sanitize_untrusted_text("\n".join(filtered_lines))
         if sanitized.removed_passages:
             injection_docs += 1
         cursor = connection.execute(
@@ -144,6 +161,7 @@ def build(corpus: Path, database: Path) -> dict:
     stats = {
         "built_at": datetime.now(timezone.utc).isoformat(), "documents": len(docs), "chunks": len(all_chunks),
         **dedup_stats, "documents_with_instruction_like_text": injection_docs,
+        "boilerplate_signatures": len(boilerplate), "boilerplate_lines_removed": boilerplate_lines_removed,
         "embedding_model": "text-embedding-3-small", "embedding_dimensions": 512,
         "index_input_tokens": embedding_tokens, "index_cost_usd": round(embedding_cost, 8),
     }

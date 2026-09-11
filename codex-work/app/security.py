@@ -15,6 +15,9 @@ INSTRUCTION_PATTERNS = [
         r"do not (answer|mention|reveal|say|follow)",
         r"when (an? )?(ai|assistant|model) (reads?|answers?|sees?)",
         r"respond (only|with|exactly)",
+        r"(ai|language model) assistants? (should|must|do not)",
+        r"guidelines? for (ai|language model) assistants?",
+        r"what should (an? )?(ai|assistant|model) say",
     )
 ]
 
@@ -29,10 +32,15 @@ def sanitize_untrusted_text(text: str) -> SanitizedText:
     """Remove instruction-like paragraphs before indexing; retain an audit sample."""
     kept: list[str] = []
     removed: list[str] = []
-    for paragraph in re.split(r"\n\s*\n", text):
-        if any(pattern.search(paragraph) for pattern in INSTRUCTION_PATTERNS):
-            removed.append(paragraph[:500])
-        else:
-            kept.append(paragraph)
-    return SanitizedText("\n\n".join(kept), removed)
-
+    # Screen sentence-sized units: a canonical fact and an instruction can share
+    # one HTML block, and quarantining that whole block would destroy good evidence.
+    for line in text.splitlines():
+        safe_sentences: list[str] = []
+        for sentence in re.split(r"(?<=[.!?])\s+", line):
+            if any(pattern.search(sentence) for pattern in INSTRUCTION_PATTERNS):
+                removed.append(sentence[:500])
+            else:
+                safe_sentences.append(sentence)
+        if safe_sentences:
+            kept.append(" ".join(safe_sentences))
+    return SanitizedText("\n".join(kept), removed)

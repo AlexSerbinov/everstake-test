@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-09-11T20:15:38.712772+00:00",
+  "documents": 280,
+  "visited": 289,
+  "excluded": [
+    {
+      "url": "https://security.everstake.com/",
+      "reason": "robots_or_fetch_failure"
+    },
+    {
+      "url": "https://stake.everstake.com/dashboard/stake/ethereum",
+      "reason": "insufficient_text",
+      "characters": 0
+    },
+    {
+      "url": "https://eth-docs.everstake.one/",
+      "reason": "insufficient_text",
+      "characters": 77
+    },
+    {
+      "url": "https://medium.com/everstake/tagged/validator",
+      "reason": "robots_or_fetch_failure"
+    },
+    {
+      "url": "https://smithery.ai/server/mcp-3ioj/everstake",
+      "reason": "insufficient_text",
+      "characters": 57
+    },
+    {
+      "url": "https://x.com/everstake_pool",
+      "reason": "host_not_allowlisted"
+    },
+    {
+      "url": "https://www.linkedin.com/company/everstakeofficial",
+      "reason": "host_not_allowlisted"
+    },
+    {
+      "url": "https://www.crunchbase.com/organization/everstake",
+      "reason": "host_not_allowlisted"
+    },
+    {
+      "url": "https://www.investing.com/news/cryptocurrency-news/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion-4093833",
+      "reason": "robots_or_fetch_failure"
+    }
+  ]
+}

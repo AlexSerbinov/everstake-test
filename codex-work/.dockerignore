@@ -1,0 +1,9 @@
+.env
+.git
+.venv
+__pycache__
+data/corpus.jsonl
+data/index.sqlite3
+data/eval-results.json
+data/run-costs.jsonl
+

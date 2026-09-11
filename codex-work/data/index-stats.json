@@ -1,0 +1,16 @@
+{
+  "built_at": "2026-09-11T20:21:43.637792+00:00",
+  "documents": 280,
+  "chunks": 1075,
+  "exact_pairs": 10,
+  "near_duplicate_pairs": 2,
+  "unique_groups": 270,
+  "duplicate_documents": 10,
+  "documents_with_instruction_like_text": 3,
+  "boilerplate_signatures": 16,
+  "boilerplate_lines_removed": 1232,
+  "embedding_model": "text-embedding-3-small",
+  "embedding_dimensions": 512,
+  "index_input_tokens": 776291,
+  "index_cost_usd": 0.01552582
+}
