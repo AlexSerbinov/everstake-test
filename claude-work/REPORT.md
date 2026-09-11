@@ -91,7 +91,7 @@ Included: **transcription cost is zero** — YouTube already has auto-generated 
 
 TypeScript on Node 22+, SQLite via `node:sqlite` (FTS5 built in, vectors as BLOBs, cosine in-process over 2 138 chunks — a vector database for 2 000 rows would be ceremony), Hono, Claude Opus 5 for answers (adaptive thinking, effort medium) and Haiku 4.5 for extraction/judging, OpenAI `text-embedding-3-small` for vectors. No LangChain/LlamaIndex: the whole pipeline is ~1 800 lines that can be changed live, which is what the defence requires.
 
-**Provider note.** The code has three interchangeable LLM providers behind one `complete()/completeJson()` function (`src/llm.ts`): the official Anthropic SDK (default, with prompt caching on the system prompt), OpenRouter (same Claude models through an OpenAI-style API), and Gemini (`gemini-2.5-flash` for answers, `gemini-2.5-flash-lite` for extraction/judging). The index (fact ledger) was built with Claude Haiku 4.5 via OpenRouter; the **submitted EVAL.md run used Gemini 2.5 Flash** because the Claude budget on hand ran out mid-evaluation — a one-line `.env` switch, and the first nine questions answered by Claude Opus 5 before the cut-off were all graded `correct` (see `eval/results/`). Gemini is ~6× cheaper per question and noticeably weaker on synthesis (5 of 7 "partially correct" verdicts are synthesis or leadership-history questions where Opus's answers were fuller). The model is a knob in *Settings*; the architecture does not depend on it.
+**Provider note.** The code has three interchangeable LLM providers behind one `complete()/completeJson()` function (`src/llm.ts`): the official Anthropic SDK (default, with prompt caching on the system prompt), OpenRouter (same Claude models through an OpenAI-style API), and Gemini (`gemini-3.8-flash` for answers, `gemini-2.5-flash-lite` for extraction/judging). The index (fact ledger) was built with Claude Haiku 4.5 via OpenRouter; the **submitted EVAL.md run used Gemini 3.8 Flash** because the Claude budget on hand ran out mid-evaluation — a one-line `.env` switch; the first nine questions answered by Claude Opus 5 before the cut-off were all graded `correct`, and a full run on Gemini 2.5 Flash (strict 65%) is kept in `eval/results/` for comparison. Gemini 3.8 Flash is ~4× cheaper per question than Opus 5 and weaker on synthesis (4 of 5 "partially correct" verdicts are synthesis or extra-detail cases; one product-timeline question was abstained on although the corpus has the pages). The model is a knob in *Settings*; the architecture does not depend on it.
 
 ## 3. Measured cost (§5.6)
 
@@ -103,14 +103,15 @@ All numbers are from the `llm_calls` table (every call logs provider usage); `np
 | Fact extraction, 445 calls (Haiku 4.5) | 1 387 330 in / 150 769 out | $2.141 |
 | **Index build total** | **3 756 273** | **$2.19** |
 | One question, Claude Opus 5 (9 measured) | ~8 200 in / ~200 out | **$0.041** |
-| One question, Gemini 2.5 Flash (20 measured, the EVAL.md run) | ~7 200 in / ~600 out incl. thinking | **$0.0063** |
+| One question, Gemini 3.8 Flash (20 measured, the EVAL.md run; intro price $0.75/$3.75 per MTok) | ~8 700 in (≈4 000 cache hits) / ~1 800 out incl. thinking | **$0.011** |
+| One question, Gemini 2.5 Flash (20 measured, earlier run) | ~7 200 in / ~600 out incl. thinking | $0.0063 |
 | Eval judge, per question | ~400 | $0.0006 (Haiku) / $0.0001 (Flash-Lite) |
 
 **×50 corpus (≈22 000 documents):**
 index = $2.19 × 50 = **≈ $109** (linear: every document is embedded and read once by the extractor; with Gemini Flash-Lite as extractor ≈ $15).
-Per query: **unchanged — $0.04 (Opus 5) or $0.006 (Gemini Flash)** — because the model always reads a fixed top-k (10 + 4 chunks + ≤14 fact rows); what grows is retrieval work: BM25 over 107 000 chunks and a brute-force cosine over 107 000 × 1 536 floats (~160 MB) is still tens of milliseconds in-process, but at that size we would move vectors to sqlite-vec or pgvector. 1 000 questions ≈ $40 (Opus) / ≈ $6 (Flash); with Anthropic prompt caching the system-prompt share of input (~1.5k tokens) costs 10× less.
+Per query: **unchanged — $0.04 (Opus 5) or $0.011 (Gemini 3.8 Flash)** — because the model always reads a fixed top-k (10 + 4 chunks + ≤14 fact rows); what grows is retrieval work: BM25 over 107 000 chunks and a brute-force cosine over 107 000 × 1 536 floats (~160 MB) is still tens of milliseconds in-process, but at that size we would move vectors to sqlite-vec or pgvector. 1 000 questions ≈ $40 (Opus) / ≈ $11 (3.8 Flash); with Anthropic prompt caching the system-prompt share of input (~1.5k tokens) costs 10× less.
 
-**Eval headline (EVAL.md, Gemini 2.5 Flash run):** 20 questions, **0 invented facts, 0 wrong**, 5/5 negative cases correctly abstained, 8/15 positive fully correct, 7 partially correct (missing a historical value or a date the reference listed). Strict accuracy 65%, lenient 100%.
+**Eval headline (EVAL.md, Gemini 3.8 Flash run):** 20 questions, **0 invented facts, 0 wrong**, 5/5 negative cases correctly abstained, 9/15 positive fully correct, 5 partially correct (extra or missing detail vs the reference), 1 wrongly abstained (products launched since 2025). Strict accuracy 70%, lenient 95%.
 
 ## 4. Baseline: Everstake's MCP server (§5.7)
 

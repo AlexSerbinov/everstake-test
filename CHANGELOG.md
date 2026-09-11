@@ -25,6 +25,8 @@ Timeline of the work, real clock (Europe/Madrid, 2026-09-11). The assignment ask
 
 - **22:00–22:32** — Codex (GPT-5.6) finished its independent attempt in `codex-work/`: Python, 280 documents, 1 075 chunks, Gemini Flash-Lite for answers, deployed at `https://everstake-codex.89-167-19-222.sslip.io`. Own EVAL/REPORT/SUMMARY, 4 commits. Blind-checked afterwards: CEO question correct, negative case abstains, the networks-over-time question drifts to Cosmos IBC chain counts (no timeline).
 
+- **22:45** — Answer model switched to `gemini-3.8-flash` (intro pricing $0.75 / $3.75 per MTok). Full eval re-run: 0 hallucinations, 0 wrong, 5/5 negatives, strict 70% / lenient 95%, $0.011 per question. The networks-over-time question now returns the full trajectory (70+ → 85+ → 130+ historical / 30+ active).
+
 ## Open
 
 - PROCESS.md (Part B) — written by the candidate, not the agent.

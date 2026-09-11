@@ -95,7 +95,7 @@ export async function ask(question: string): Promise<AskResult> {
       error: String(e?.message ?? e).slice(0, 300),
       answer: `The answer model could not be reached (${String(e?.message ?? e).slice(0, 120)}). This is an infrastructure error, not a statement about the corpus.` }, t0, { error: true });
   }
-  base.trace.model = cfg.models.answer; base.trace.usage = out.usage; base.trace.cost_usd = out.costUsd;
+  base.trace.model = out.model; base.trace.usage = out.usage; base.trace.cost_usd = out.costUsd; // out.model = the model actually called (provider-resolved)
 
   // --- gate 2: citations must point at sources we actually provided ---------------
   const valid = new Set(sources.map((s) => s.n));
