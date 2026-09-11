@@ -50,7 +50,7 @@ function render(r) {
   $("#sources").innerHTML = r.sources.map((s) => `
     <div class="source" id="src-${s.n}">
       <div><span class="n">[${s.n}]</span> <span class="t">${esc(s.title || s.url)}</span></div>
-      <div class="m">${tierBadge(s.tier)} <span>${esc(s.domain || domain(s.url))}</span> <span>${s.published_at ? "published " + s.published_at : "undated"}</span> <span>${s.kind === "fact" ? "fact ledger" : "chunk"}</span></div>
+      <div class="m">${tierBadge(s.tier)} <span>${esc(s.domain || domain(s.url))}</span> <span>${s.published_at ? "published " + s.published_at : s.date_kind === "live" ? "live page · fetched " + s.effective_date : "undated"}</span> <span>${s.kind === "fact" ? "fact ledger" : "chunk"}</span></div>
       <div class="quote">${esc(s.quote)}</div>
       <div><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a></div>
     </div>`).join("");
@@ -68,7 +68,7 @@ function render(r) {
     <tr class="${selIds.has(c.chunk_id) ? (selIds.get(c.chunk_id) === "date-diverse" ? "dd" : "selected") : ""}">
       <td class="num">${i + 1}</td>
       <td><a href="#" data-doc="${c.doc_id}" class="doclink">${esc((c.title || c.url).slice(0, 70))}</a><div class="muted" style="font-size:11px">${esc(domain(c.url))}${c.ai_directed ? " · AI-directed page" : ""}</div></td>
-      <td class="num">${c.published_at || "—"}</td><td>${tierBadge(c.tier)}</td>
+      <td class="num">${c.effective_date ? c.effective_date + (c.date_kind === "live" ? '<div class="muted">live page</div>' : "") : "—"}</td><td>${tierBadge(c.tier)}</td>
       <td class="num">${c.bm25_rank ?? "—"}</td><td class="num">${c.vec_rank ?? "—"}${c.cosine != null ? `<div class="muted">${c.cosine}</div>` : ""}</td>
       <td class="num">${c.rrf}</td><td class="num">${c.recency}</td><td class="num">${c.authority}</td>
       <td class="num"><span class="bar" style="width:${Math.round(60 * c.score / max)}px"></span>${c.score}</td>
@@ -83,15 +83,24 @@ async function loadFacts() {
   const rows = await api("/api/facts");
   const keys = [...new Set(rows.map((r) => r.key))].sort();
   $("#factKey").innerHTML = keys.map((k) => `<option ${k === "networks_supported" ? "selected" : ""}>${k}</option>`).join("");
+  const dateLabel = (s) => ({ text: "date in text", document: "doc date", "live-page": "live page, fetched" })[s] || "doc date";
   const draw = () => {
     const k = $("#factKey").value;
     const list = rows.filter((r) => r.key === k);
-    $("#factTimeline").innerHTML = list.map((f) => `
+    // group identical values that repeat across many pages (e.g. "130+" on 40 pages) → one row per value+year
+    const groups = [];
+    for (const f of list) {
+      const gk = `${f.value.toLowerCase()}|${(f.as_of || "").slice(0, 4)}`;
+      let g = groups.find((x) => x.k === gk);
+      if (!g) { g = { k: gk, first: f, items: [] }; groups.push(g); }
+      g.items.push(f);
+    }
+    $("#factTimeline").innerHTML = groups.map(({ first: f, items }) => `
       <div class="tl t${f.tier}">
-        <div class="d">${f.as_of || "undated"}<div class="muted" style="font-size:11px">${f.as_of_source === "text" ? "date in text" : "doc date"}</div></div>
-        <div><div class="v">${esc(f.value)} ${tierBadge(f.tier)} ${f.ai_directed ? '<span class="pill muted">AI-directed page</span>' : ""} ${f.flags ? `<span class="pill" style="color:var(--bad)">${esc(f.flags)}</span>` : ""}</div>
+        <div class="d">${f.as_of || "undated"}<div class="muted" style="font-size:11px">${dateLabel(f.as_of_source)}</div></div>
+        <div><div class="v">${esc(f.value)} ${tierBadge(f.tier)} ${items.length > 1 ? `<span class="pill muted">${items.length} sources</span>` : ""} ${f.ai_directed ? '<span class="pill muted">AI-directed page</span>' : ""} ${f.flags ? `<span class="pill" style="color:var(--bad)">${esc(f.flags)}</span>` : ""}</div>
           <div class="q">“${esc(f.quote)}”</div>
-          <div class="s"><a href="${esc(f.url)}" target="_blank">${esc(f.title || f.url)}</a> · <a href="#" class="doclink" data-doc="${f.doc_id}">doc ${f.doc_id}</a></div></div>
+          <div class="s">${items.slice(0, 4).map((i) => `<a href="${esc(i.url)}" target="_blank">${esc((i.title || i.url).slice(0, 60))}</a> · <a href="#" class="doclink" data-doc="${i.doc_id}">doc ${i.doc_id}</a>`).join("<br>")}${items.length > 4 ? `<br><span class="muted">+${items.length - 4} more</span>` : ""}</div></div>
       </div>`).join("") || '<p class="muted">no rows</p>';
     $$(".doclink", $("#factTimeline")).forEach((a) => a.onclick = (e) => { e.preventDefault(); openDoc(a.dataset.doc); });
   };

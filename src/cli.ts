@@ -34,7 +34,7 @@ async function main() {
         const fs = await import("node:fs"); const path = await import("node:path"); const { ROOT } = await import("./config.js");
         fs.writeFileSync(path.join(ROOT, "EVAL.md"), renderEvalMd(run)); console.log("EVAL.md re-rendered", run.metrics); return;
       }
-      await runEval({ limit: flags.limit ? Number(flags.limit) : undefined }); return;
+      await runEval({ limit: flags.limit ? Number(flags.limit) : undefined, retryErrors: flags["retry-errors"] === "true" }); return;
     }
     case "cost": { const { costReport } = await import("./eval/cost.js"); console.log(costReport()); return; }
     case "stats": { const { stats } = await import("./ask/stats.js"); console.log(JSON.stringify(stats(), null, 2)); return; }
@@ -47,7 +47,7 @@ async function main() {
       return;
     }
     default:
-      console.log("commands: crawl [--force] [--only=<source>] [--report] | dedup | index [--force] | facts [--force] [--limit=N] | ask \"q\" [--trace] | eval [--limit=N] | cost | stats | pipeline");
+      console.log("commands: crawl [--force] [--only=<source>] [--report] | dedup | index [--force] | facts [--force] [--limit=N] | ask \"q\" [--trace] | eval [--limit=N] [--retry-errors] [--render] | cost | stats | pipeline");
   }
 }
 

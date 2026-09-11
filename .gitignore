@@ -7,3 +7,4 @@ data/*.db-*
 data/youtube/
 eval/results/*.json
 !eval/results/.gitkeep
+data/*.log

@@ -23,16 +23,23 @@ export interface EvalRun { ts: string; model: string; provider: string; rows: Ev
 const Verdict = z.object({ verdict: z.enum(["correct", "partially_correct", "wrong", "hallucinated", "abstained_correctly", "abstained_wrongly"]), reason: z.string() });
 const RESULTS = path.join(ROOT, "eval/results");
 
-export async function runEval(opts: { limit?: number } = {}) {
+export async function runEval(opts: { limit?: number; retryErrors?: boolean } = {}) {
   const cfg = getConfig();
-  const qs: Q[] = YAML.parse(fs.readFileSync(path.join(ROOT, "eval/questions.yaml"), "utf8")).questions;
-  const rows: EvalRow[] = [];
+  const allQs: Q[] = YAML.parse(fs.readFileSync(path.join(ROOT, "eval/questions.yaml"), "utf8")).questions;
+  // --retry-errors: keep graded rows from the latest run, re-ask only the ones that hit a provider error
+  const previous = opts.retryErrors ? latestEval() : null;
+  const keep = previous ? previous.rows.filter((r) => !["error", "judge_error"].includes(r.human_verdict || r.verdict)) : [];
+  const keptIds = new Set(keep.map((r) => r.id));
+  const qs = allQs.filter((q) => !keptIds.has(q.id));
+  if (previous) console.log(`retrying ${qs.length} questions, keeping ${keep.length} graded rows from ${previous.ts}`);
+  const rows: EvalRow[] = [...keep];
   const judgeSystem = loadPrompt("judge");
   for (const q of qs.slice(0, opts.limit ?? qs.length)) {
     process.stdout.write(`${q.id} ${q.question.slice(0, 60)}… `);
     const r: AskResult = await ask(q.question);
     let verdict = "", reason = "", judgeCost = 0;
-    try {
+    if (r.gate === "model_error") { verdict = "error"; reason = r.error ?? "provider error"; }
+    else try {
       const j = await completeJson({
         stage: "judge", model: cfg.models.cheap, system: judgeSystem, schema: Verdict, maxTokens: 400,
         user: `Question: ${q.question}\nReference answer: ${q.reference}\nexpect_no_answer: ${!!q.expect_no_answer}\n\nSystem status: ${r.status}\nSystem answer: ${r.answer}`,
@@ -40,9 +47,11 @@ export async function runEval(opts: { limit?: number } = {}) {
       });
       verdict = j.data.verdict; reason = j.data.reason; judgeCost = j.costUsd;
     } catch (e: any) { verdict = "judge_error"; reason = String(e?.message ?? e).slice(0, 200); }
-    // deterministic overrides the judge cannot get wrong
-    if (q.expect_no_answer && r.status === "no_reliable_answer") { verdict = "abstained_correctly"; }
-    if (!q.expect_no_answer && r.status === "no_reliable_answer") { verdict = "abstained_wrongly"; }
+    // deterministic overrides the judge cannot get wrong (never for provider errors)
+    if (r.gate !== "model_error") {
+      if (q.expect_no_answer && r.status === "no_reliable_answer") { verdict = "abstained_correctly"; }
+      if (!q.expect_no_answer && r.status === "no_reliable_answer") { verdict = "abstained_wrongly"; }
+    }
     rows.push({
       id: q.id, type: q.type, trap: q.trap, question: q.question, reference: q.reference, expect_no_answer: !!q.expect_no_answer,
       system_status: r.status, system_answer: r.answer, as_of: r.as_of, gate: r.gate, sources: r.sources.map((s) => s.url),
@@ -50,6 +59,7 @@ export async function runEval(opts: { limit?: number } = {}) {
     });
     console.log(`→ ${r.status} / ${verdict}`);
   }
+  rows.sort((a, b) => allQs.findIndex((q) => q.id === a.id) - allQs.findIndex((q) => q.id === b.id));
   const run: EvalRun = { ts: new Date().toISOString(), model: cfg.models.answer, provider: process.env.LLM_PROVIDER ?? "", rows, metrics: metrics(rows), cost_summary: costReport(true) };
   fs.mkdirSync(RESULTS, { recursive: true });
   const file = path.join(RESULTS, run.ts.replace(/[:.]/g, "-") + ".json");
@@ -67,19 +77,22 @@ export function metrics(rows: EvalRow[]) {
   const correct = count((s) => s === "correct");
   const partial = count((s) => s === "partially_correct");
   const abstainedOk = count((s) => s === "abstained_correctly");
+  const errors = count((s) => s === "error" || s === "judge_error");
+  const graded = Math.max(rows.length - errors, 1);
   return {
     total: rows.length,
     positive_questions: positives.length,
     negative_questions: negatives.length,
+    provider_errors: errors,               // not graded: the model could not be reached
     successful: correct + abstainedOk,
     partially_correct: partial,
-    failed: rows.length - correct - abstainedOk - partial,
+    failed: rows.length - errors - correct - abstainedOk - partial,
     wrong: count((s) => s === "wrong"),
     hallucinated: count((s) => s === "hallucinated"),
     abstained_correctly: abstainedOk,
     abstained_wrongly: count((s) => s === "abstained_wrongly"),
-    accuracy_strict: Number(((correct + abstainedOk) / rows.length).toFixed(3)),
-    accuracy_lenient: Number(((correct + partial + abstainedOk) / rows.length).toFixed(3)),
+    accuracy_strict: Number(((correct + abstainedOk) / graded).toFixed(3)),
+    accuracy_lenient: Number(((correct + partial + abstainedOk) / graded).toFixed(3)),
     avg_cost_per_question_usd: Number((rows.reduce((a, r) => a + r.cost_usd, 0) / rows.length).toFixed(5)),
     avg_latency_ms: Math.round(rows.reduce((a, r) => a + r.latency_ms, 0) / rows.length),
   };
@@ -103,7 +116,7 @@ export function renderEvalMd(run: EvalRun): string {
     `## Metrics`,
     ``,
     `| Metric | Value |`, `|---|---|`,
-    `| Questions | ${m.total} (${m.positive_questions} positive, ${m.negative_questions} negative) |`,
+    `| Questions | ${m.total} (${m.positive_questions} positive, ${m.negative_questions} negative)${m.provider_errors ? ` — ${m.provider_errors} not graded (provider error)` : ""} |`,
     `| **Accuracy (strict)** | **${(m.accuracy_strict * 100).toFixed(0)}%** — correct + correctly abstained |`,
     `| Accuracy (lenient) | ${(m.accuracy_lenient * 100).toFixed(0)}% — also counts partially correct |`,
     `| Successful answers | ${m.successful} |`,

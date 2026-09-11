@@ -29,7 +29,8 @@ export interface AskResult {
   as_of: string | null;
   confidence: number;
   sources: Source[];
-  gate: "none" | "gate1_no_evidence" | "gate2_no_valid_citations" | "model_abstained";
+  gate: "none" | "gate1_no_evidence" | "gate2_no_valid_citations" | "model_abstained" | "model_error";
+  error?: string;
   trace: {
     fts_query: string; vector_used: boolean;
     candidates: Candidate[]; selected: Candidate[]; facts: FactRow[];
@@ -89,8 +90,10 @@ export async function ask(question: string): Promise<AskResult> {
   try {
     out = await completeJson({ stage: "answer", model: cfg.models.answer, effort: cfg.models.effort, system: loadPrompt("answer"), user, schema: AnswerSchema, maxTokens: 2500, cacheSystem: true, meta: { question } });
   } catch (e: any) {
-    return finish({ ...base, status: "no_reliable_answer", mode: null, confidence: 0, as_of: null, sources: [], gate: "gate1_no_evidence",
-      answer: `The answer model failed: ${String(e?.message ?? e).slice(0, 200)}` }, t0, { error: true });
+    // provider failure is NOT an abstention — it is reported as its own gate so eval and UI never mistake it for "I don't know"
+    return finish({ ...base, status: "no_reliable_answer", mode: null, confidence: 0, as_of: null, sources: [], gate: "model_error",
+      error: String(e?.message ?? e).slice(0, 300),
+      answer: `The answer model could not be reached (${String(e?.message ?? e).slice(0, 120)}). This is an infrastructure error, not a statement about the corpus.` }, t0, { error: true });
   }
   base.trace.model = cfg.models.answer; base.trace.usage = out.usage; base.trace.cost_usd = out.costUsd;
 

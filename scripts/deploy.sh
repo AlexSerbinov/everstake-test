@@ -26,7 +26,7 @@ rsync -az --delete -e "ssh -i $SSH_KEY" \
 
 echo "▶ sync index → $REMOTE_DATA/kb.db  ($(du -h data/kb.db | cut -f1))"
 sqlite3 data/kb.db "PRAGMA wal_checkpoint(TRUNCATE);" 2>/dev/null || true
-rsync -az -e "ssh -i $SSH_KEY" data/kb.db "$HOST:$REMOTE_DATA/kb.db"
+rsync -rltz --no-owner --no-group -e "ssh -i $SSH_KEY" data/kb.db "$HOST:$REMOTE_DATA/kb.db"   # /data pool refuses chown
 
 echo "▶ build + start container"
 $SSH "cd $REMOTE_DIR && KB_DATA_DIR=$REMOTE_DATA docker compose up -d --build --remove-orphans 2>&1 | tail -3"
