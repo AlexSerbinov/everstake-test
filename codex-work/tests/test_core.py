@@ -1,6 +1,6 @@
 import unittest
 
-from app.crawler import canonicalize
+from app.crawler import canonicalize, extract_html
 from app.indexer import chunks, duplicate_groups
 from app.security import sanitize_untrusted_text
 
@@ -11,6 +11,15 @@ class CrawlerTests(unittest.TestCase):
             canonicalize("HTTPS://EVERSTAKE.COM/blog/?utm_source=x&a=1#top"),
             "https://everstake.com/blog?a=1",
         )
+
+    def test_structured_dates_are_read_before_scripts_are_removed(self):
+        html = b'''<html><head><script type="application/ld+json">
+        {"datePublished":"2026-06-15T10:55:02","dateModified":"2026-06-16T00:00:00Z"}
+        </script></head><body><main>''' + b"Useful public facts. " * 20 + b"</main></body></html>"
+        _, text, published, modified, _ = extract_html(html)
+        self.assertEqual(published, "2026-06-15T10:55:02")
+        self.assertEqual(modified, "2026-06-16T00:00:00Z")
+        self.assertNotIn("datePublished", text)
 
 
 class SecurityTests(unittest.TestCase):

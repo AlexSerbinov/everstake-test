@@ -126,12 +126,14 @@ def date_from_page(soup: BeautifulSoup) -> tuple[str | None, str | None]:
 
 def extract_html(body: bytes) -> tuple[str, str, str | None, str | None, list[str]]:
     soup = BeautifulSoup(body, "html.parser")
+    # Structured dates live in scripts, so read them before removing scripts from
+    # the untrusted body text.
+    published, modified = date_from_page(soup)
     for node in soup(["script", "style", "noscript", "svg", "nav", "footer"]):
         node.decompose()
     title = soup.title.get_text(" ", strip=True) if soup.title else "Untitled"
     main = soup.find("main") or soup.find("article") or soup.body or soup
     text = re.sub(r"\n{3,}", "\n\n", main.get_text("\n", strip=True))
-    published, modified = date_from_page(soup)
     links = [urllib.parse.urljoin("https://invalid/", str(a.get("href"))) for a in soup.find_all("a", href=True)]
     return title[:300], text, published, modified, links
 
