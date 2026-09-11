@@ -23,6 +23,8 @@ Timeline of the work, real clock (Europe/Madrid, 2026-09-11). The assignment ask
 - **22:20** — Assignment checklist (`docs/CHECKLIST.md`), design brief for a UI pass (`docs/design-brief.md`).
 - **22:30** — GitHub repository created; a second, independent implementation by a different model (GPT-5.6 via Codex) started in `codex-work/` for comparison, with the same inputs and no design hints.
 
+- **22:00–22:32** — Codex (GPT-5.6) finished its independent attempt in `codex-work/`: Python, 280 documents, 1 075 chunks, Gemini Flash-Lite for answers, deployed at `https://everstake-codex.89-167-19-222.sslip.io`. Own EVAL/REPORT/SUMMARY, 4 commits. Blind-checked afterwards: CEO question correct, negative case abstains, the networks-over-time question drifts to Cosmos IBC chain counts (no timeline).
+
 ## Open
 
 - PROCESS.md (Part B) — written by the candidate, not the agent.
