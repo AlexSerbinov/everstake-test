@@ -1,0 +1,60 @@
+url,category,tier,language,note
+https://everstake.com/ai-info,canonical,1,en,"Canonical machine-readable company facts. Dated 2026-07-01. Ground-truth anchor."
+https://everstake.one/ai-info,canonical,1,en,"Same page on legacy domain - duplicate"
+https://everstake.com/,site,1,en,Homepage
+https://everstake.com/company/about,site,1,en,"Company metrics, founding, certifications"
+https://everstake.com/staking,site,1,en,Supported networks / retail staking
+https://everstake.com/products/institutional-staking,site,1,en,Institutional staking
+https://everstake.com/products/institutional-staking/vaas,site,1,en,Validator-as-a-Service
+https://everstake.com/products/shredstream,site,1,en,ShredStream
+https://everstake.com/products/swqos,site,1,en,SWQoS
+https://everstake.com/product-terms,site,1,en,Pricing pointer - deliberately says no rates
+https://everstake.com/terms-of-use,site,1,en,Legal entity details
+https://everstake.com/mcp,site,1,en,MCP product page
+https://everstake.com/company/press,site,1,en,Press
+https://everstake.com/resources/crypto-reports,site,1,en,Research reports
+https://blockspace.everstake.one/,site,1,en,Solana Blockspace / MEV
+https://security.everstake.com/,site,1,en,Trust centre / certifications
+https://status.everstake.one/,site,1,en,"Status page - still on .one domain"
+https://stake.everstake.com/dashboard/stake/ethereum/,site,1,en,Staking dashboard
+https://docs.everstake.com/,docs,1,en,Developer docs
+https://eth-docs.everstake.one/,docs,1,en,Ethereum B2B API docs - legacy domain
+https://everstake.com/resources/blog,blog,1,en,Blog index (current URL scheme)
+https://everstake.one/blog,blog,1,en,Blog index (legacy scheme - duplicates)
+https://everstake.one/resources/blog,blog,1,en,Blog index (legacy domain new scheme)
+https://everstake.one/blog/david-kinitsky-joins-everstake-as-ceo,blog,1,en,"TRAP: stale leadership fact"
+https://everstake.one/resources/blog/david-kinitsky-joins-everstake-as-ceo,blog,1,en,"TRAP: same article second URL"
+https://everstake.one/blog/everstake-turns-six-today,blog,1,en,"2024 metrics - stale"
+https://everstake.one/resources/blog/everstake-turns-six-today,blog,1,en,Duplicate of above
+https://everstake.one/blog/happy-7th-birthday-everstake,blog,1,en,"2025 metrics - stale"
+https://everstake.one/resources/blog/the-year-everstake-stepped-into-full-infrastructure-leadership,blog,1,en,2025 year in review
+https://everstake.com/resources/blog/everstake-is-now-on-everstake-com,blog,1,en,"Domain migration announcement - key to dedup"
+https://everstake.one/resources/blog/stake-smarter-claim-more-everstake-via-metamask-portfolio,blog,1,en,MetaMask Portfolio
+https://everstake.one/resources/blog/marketing-for-validators-solana-workshop-recap,blog,1,en,2022 workshop recap
+https://everstake.com/resources/blog/everstake-and-nexus-mutual-are-to-protect-delegators-from-eth-staking-risks,blog,1,en,"2022 boilerplate: 70+ chains, 625k users"
+https://medium.com/everstake,blog,2,mixed,"Legacy Medium blog - RU/UA posts, stale boilerplate"
+https://medium.com/everstake/tagged/validator,blog,2,mixed,Medium tag index
+https://github.com/everstake,code,1,en,GitHub org
+https://github.com/everstake/mcp,code,1,en,"Everstake MCP server - the baseline to beat"
+https://github.com/everstake/staking-sdk-js,code,1,en,Wallet SDK JS
+https://github.com/everstake/staking-sdk-android,code,1,en,Wallet SDK Android
+https://smithery.ai/server/mcp-3ioj/everstake,third-party,2,en,MCP server usage stats
+https://x.com/everstake_pool,social,2,en,Official X
+https://www.linkedin.com/company/everstakeofficial,social,2,en,Official LinkedIn
+https://www.crunchbase.com/organization/everstake,third-party,2,en,Crunchbase
+https://www.stakingrewards.com/provider/everstake,third-party,2,en,StakingRewards profile
+https://www.wikidata.org/wiki/Q132776648,third-party,2,en,Wikidata entity
+https://chainwire.org/2025/06/12/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/,press,2,en,"TRAP: syndication cluster origin"
+https://cryptopotato.com/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/,press,2,en,TRAP: syndicated copy
+https://www.investing.com/news/cryptocurrency-news/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion-4093833,press,2,en,TRAP: syndicated copy
+https://blocktelegraph.io/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/,press,2,en,TRAP: syndicated copy
+https://blockchainmagazine.com/press-release/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/,press,2,en,TRAP: syndicated copy
+https://bitcoinethereumnews.com/tech/david-kinitsky-joins-everstake-as-ceo-to-drive-institutional-growth-investment-and-global-expansion/,press,2,en,TRAP: syndicated copy
+https://www.bitget.com/news/detail/12560604810283,press,2,en,"TRAP: syndicated, machine-translated"
+https://t.signalplus.com/crypto-news/detail/everstake-ceo-david-kinitsky-institutional-staking-expansion,press,2,en,"TRAP: AI-summarised, contains a corrupted number"
+https://www.dlnews.com/external/everstake-brings-ethereum-experts-together-to-explore-post-pectra-and-institutional-adoption/,press,2,en,"2025 AMA writeup + 2025 boilerplate metrics"
+https://polygon.technology/blog/polygon-pos-validator-spotlight-everstake,third-party,2,en,"Validator spotlight - origin-story detail"
+https://atomicwallet.io/blog/ama-with-everstake-digest,third-party,2,en,"Old AMA transcript - very stale chain list"
+https://www.youtube.com/watch?v=DFSEQ3OGoL8,video,2,en,Consensus 2024 founder interview
+https://www.youtube.com/watch?v=CDmKMHaTtSQ,video,2,en,2021 founder interview
+https://www.youtube.com/watch?v=Uoe2mqS3KFc,video,2,en,Third-party validator comparison video
