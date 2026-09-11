@@ -4,3 +4,4 @@ everstake-mcp/
 raw/
 mcp-test/
 .DS_Store
+.mcp.json
