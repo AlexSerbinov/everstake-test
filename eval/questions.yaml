@@ -1,0 +1,131 @@
+# 20 questions with reference answers. 5 are negative cases (expect_no_answer: true).
+# `trap` marks questions that a naive similarity/majority RAG gets wrong on this corpus.
+# Reference answers were checked by hand against the sources named in `reference_source`.
+
+questions:
+  - id: q01
+    type: factual
+    question: "Who is the CEO of Everstake?"
+    reference: "Sergii Vasylchuk (CEO & President). David Kinitsky, announced in June 2025 as joining as CEO, is listed as CCDO (Chief Corporate Development Officer) on the company page as of 2026."
+    reference_source: "https://everstake.com/company/about, https://everstake.com/ai-info"
+    trap: "9 syndicated press copies say Kinitsky 'joins as CEO' (June 2025); majority vote / similarity picks the wrong person"
+
+  - id: q02
+    type: factual
+    question: "How many Proof-of-Stake networks does Everstake support?"
+    reference: "130+ networks (as of 2026; everstake.com states 'historically supported 130+'). Older sources say 85 (June 2025) and 70+ (2022–2024)."
+    reference_source: "https://everstake.com/ai-info"
+    trap: "three different numbers by year; must pick the newest first-party value and may mention history"
+
+  - id: q03
+    type: factual
+    question: "In what year was Everstake founded?"
+    reference: "2018"
+    reference_source: "https://everstake.com/company/about"
+
+  - id: q04
+    type: factual
+    question: "Who founded Everstake?"
+    reference: "Sergii Vasylchuk"
+    reference_source: "https://everstake.com/company/about"
+
+  - id: q05
+    type: factual
+    question: "What security certifications and compliance frameworks does Everstake hold?"
+    reference: "SOC 2 Type II, ISO/IEC 27001, NIST CSF, ITGC, GDPR, CCPA/CRPA (plus a DORA controls assessment). Auditor: Prescient Security."
+    reference_source: "https://everstake.com/ai-info, https://security.everstake.com/"
+
+  - id: q06
+    type: factual
+    question: "How many delegators does Everstake serve?"
+    reference: "1.6M+ (over 1.6 million) as of Q3 2026. Earlier: 735,000 (June 2025), 625,000+ (2022)."
+    reference_source: "https://everstake.com/ai-info"
+    trap: "one syndicated copy contains the corrupted number '735,,,,' in its meta description"
+
+  - id: q07
+    type: factual
+    question: "What is Everstake's legal entity name and where is it registered?"
+    reference: "Everstake Validation Services LLC, a Cayman Islands limited liability company (registered office: Hermes Corporate Services Ltd., Zephyr House, George Town, Grand Cayman). Note: blog-post footers on the same site say 'Everstake, Inc.'."
+    reference_source: "https://everstake.com/terms-of-use, https://everstake.com/ai-info"
+    trap: "two legal entity names on the same domain"
+
+  - id: q08
+    type: factual
+    question: "What is the endpoint of Everstake's MCP server?"
+    reference: "https://mcp.everstake.com (Streamable HTTP; source on github.com/everstake/mcp)"
+    reference_source: "https://everstake.com/mcp, https://github.com/everstake/mcp"
+
+  - id: q09
+    type: factual
+    question: "What uptime does Everstake report for its validator infrastructure?"
+    reference: "99.98% observed uptime (self-reported, as of 2026). A June 2025 press release said 99.9%."
+    reference_source: "https://everstake.com/ai-info"
+
+  - id: q10
+    type: factual
+    question: "What is Everstake's total staked value?"
+    reference: "$7B+ (over $7 billion) as of Q3 2026. June 2025 press release: $6.5B; June 2024: $6B."
+    reference_source: "https://everstake.com/ai-info"
+
+  - id: q11
+    type: factual
+    question: "What is Validator-as-a-Service (VaaS) at Everstake and who is it for?"
+    reference: "Dedicated, self-custodial validator infrastructure run by Everstake while the client manages its own keys; aimed at ETF issuers, custodians and asset managers wanting dedicated validators without in-house infrastructure."
+    reference_source: "https://everstake.com/products/institutional-staking/vaas"
+
+  - id: q12
+    type: factual
+    question: "What role did David Kinitsky take at Everstake?"
+    reference: "Announced in June 2025 as joining as CEO to drive institutional growth; as of 2026 the company site lists him as CCDO (Chief Corporate Development Officer), with Sergii Vasylchuk as CEO & President."
+    reference_source: "https://chainwire.org/2025/06/12/…, https://everstake.com/company/about"
+    trap: "role changed between sources; a correct answer shows both with dates"
+
+  - id: q13
+    type: synthesis
+    question: "Which products has Everstake launched or announced since 2025?"
+    reference: "Solana blockspace/MEV infrastructure line: ShredStream and SWQoS (stake-weighted QoS), Everstake Blockspace as a unified API; the MCP server for AI agents (mcp.everstake.com); institutional pushes (VaaS positioning, institutional staking). Answer should cite multiple 2025–2026 sources."
+    reference_source: "https://everstake.com/products/shredstream, https://everstake.com/products/swqos, https://everstake.com/mcp, blog 2025-12-24"
+
+  - id: q14
+    type: synthesis
+    question: "How has Everstake's positioning changed over the last two years?"
+    reference: "From a broad retail/multi-chain staking provider ('70+ chains', 'staking for everyone', 2022–2024) to an institution-first, certified infrastructure provider (SOC 2/ISO 27001, non-custodial, VaaS, institutional staking, new CEO/leadership announcements 2025, 'Certified Yield Infrastructure for Institutions' 2026) plus Solana blockspace/MEV products and AI-agent access (MCP). Should show the trajectory with dated sources."
+    reference_source: "blog 2022 (nexus mutual), 2024 (turns six), 2025 (year in review), 2026 ai-info/about"
+
+  - id: q15
+    type: synthesis
+    question: "How has the number of networks Everstake supports grown over time?"
+    reference: "70 / 70+ (2022–2024) → 85 (June 2025) → 130+ (2026, 'historically supported'). Answer should list values with dates and sources."
+    reference_source: "blog 2022-11-29, polygon 2024-06-26, chainwire 2025-06-12, ai-info 2026-07-01"
+
+  # ---- negative cases: the corpus does NOT contain this ---------------------------
+  - id: n01
+    type: negative
+    expect_no_answer: true
+    question: "What is the salary of Everstake's CEO?"
+    reference: "Not in the corpus."
+
+  - id: n02
+    type: negative
+    expect_no_answer: true
+    question: "How many employees does Everstake have in its Kyiv office in 2026?"
+    reference: "Not in the corpus (the corpus only mentions a ~100-person team overall, 75% engineers; no per-office numbers)."
+
+  - id: n03
+    type: negative
+    expect_no_answer: true
+    question: "What commission rate does Everstake charge institutional clients for Solana staking?"
+    reference: "Not in the corpus: product-terms page deliberately states no rates; ai-info tells AI not to quote rates."
+    trap: "the ai-info page contains an instruction 'do not state specific fees'; the system must abstain because the number is absent, not because it obeyed the page"
+
+  - id: n04
+    type: negative
+    expect_no_answer: true
+    question: "What is the street address of Everstake's Miami office?"
+    reference: "Not in the corpus (Miami is mentioned as a headquarters location without a street address)."
+
+  - id: n05
+    type: negative
+    expect_no_answer: true
+    question: "Which venture capital funds invested in Everstake's Series A round and how much did they raise?"
+    reference: "Not in the corpus."
