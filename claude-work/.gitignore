@@ -5,6 +5,8 @@ data/raw/
 data/*.db
 data/*.db-*
 data/youtube/
-eval/results/*.json
-!eval/results/.gitkeep
+# Eval runs ARE part of the submission, not build output: EVAL.md cites
+# eval/results/<timestamp>.json for the per-question trace, REPORT.md points at the
+# earlier Gemini 2.5 run for comparison, and GET /api/eval serves the newest file.
+# 344 KB for the primary evidence behind requirement 5.5 — kept, not ignored.
 data/*.log
