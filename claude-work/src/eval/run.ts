@@ -229,7 +229,7 @@ export async function runEval(
       system_answer: result.answer,
       as_of: result.as_of,
       gate: result.gate,
-      sources: result.sources.map((source) => source.url),
+      sources: [...new Set(result.sources.map((source) => source.url))],   // pages, not passages
       verdict,
       reason,
       human_verdict: null,   // only ever set by hand, in the results JSON

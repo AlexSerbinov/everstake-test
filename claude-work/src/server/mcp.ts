@@ -54,8 +54,16 @@ server.registerTool(
     const headline = result.status === "answered"
       ? result.answer
       : `No reliable answer: ${result.answer}`;
-    const sourceList = result.sources
-      .map((source) => `[${source.n}] ${source.title} — ${source.url}${source.published_at ? ` (${source.published_at})` : ""}`)
+    // One line per cited page: `[1, 3]` when several passages of it were cited, so a
+    // page quoted three times does not read as three corroborating sources.
+    const pages = new Map<string, { ns: number[]; source: (typeof result.sources)[number] }>();
+    for (const source of result.sources) {
+      const page = pages.get(source.url) ?? { ns: [], source };
+      page.ns.push(source.n);
+      pages.set(source.url, page);
+    }
+    const sourceList = [...pages.values()]
+      .map(({ ns, source }) => `[${ns.join(", ")}] ${source.title} — ${source.url}${source.published_at ? ` (${source.published_at})` : ""}`)
       .join("\n");
     const text = [
       headline,

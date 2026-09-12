@@ -617,7 +617,7 @@ function answeredCardHtml(result) {
 
   return `<article class="answer-card"><div class="strip"></div><div class="answer-body">
     <div class="answer-meta">${meta}</div>
-    <div class="answer-text">${linkifyCitationMarkers(result.answer)}</div>
+    <div class="answer-text">${renderAnswerBody(result.answer)}</div>
   </div></article>`;
 }
 
@@ -673,17 +673,164 @@ function renderError(message) {
   </div></article>`;
 }
 
+/*
+ * Markdown rendering for the answer body.
+ * ---------------------------------------
+ * The model writes Markdown ("**Non-custodial staking:** ...", numbered lists, the odd
+ * table). Rendering it as plain text put literal asterisks in front of the reader, so the
+ * answer is converted to HTML here and then handed to `linkifyCitationMarkers`.
+ *
+ * The answer text is UNTRUSTED — written by a language model over crawled third-party
+ * pages, which is the path a prompt-injection payload takes. The order is therefore fixed
+ * and must not be rearranged: escape the whole string FIRST, then add markup. After
+ * `escapeHtml()` the input cannot introduce a tag, and every tag below is one this file
+ * wrote itself.
+ *
+ * The subset is deliberately small — what the model actually emits, nothing more:
+ *   **bold**, *italic*, `code`, # headings, - bullets, 1. numbers, ``` fences, | tables |
+ *
+ * Deliberately NOT supported, with reasons:
+ *   [text](url)  — a URL from model output could be `javascript:`, and the syntax collides
+ *                  with the "[3]" citation markers. Sources are rendered separately in
+ *                  `renderSources`, from server-supplied fields.
+ *   _italic_     — snake_case identifiers (fact_history, as_of) appear in answers and
+ *                  would turn half a sentence italic.
+ *   raw HTML     — escaped, always.
+ */
+
+/* One pass over the already-escaped text. Backticks come first in the alternation so
+   `**not bold**` inside a code span stays literal. */
+const INLINE_MARKUP = /`([^`]+)`|\*\*([^*]+)\*\*|\*([^*\n]+)\*/g;
+
+const renderInlineMarkup = (escapedText) =>
+  escapedText.replace(INLINE_MARKUP, (_match, code, bold, italic) => {
+    if (code !== undefined) return `<code>${code}</code>`;
+    if (bold !== undefined) return `<strong>${bold}</strong>`;
+    return `<em>${italic}</em>`;
+  });
+
+const ORDERED_ITEM = /^\s*(\d+)[.)]\s+(.*)$/;
+const BULLET_ITEM = /^\s*[-*+]\s+(.*)$/;
+const MARKDOWN_HEADING = /^(#{1,6})\s+(.*)$/;
+const TABLE_DIVIDER = /^\s*\|?[\s:|-]+\|[\s:|-]*$/;
+
+/** Split "| a | b |" into its cells, tolerating the optional outer pipes. */
+const tableCells = (line) =>
+  line.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map((cell) => cell.trim());
+
+/** A pipe table needs a header row and the |---|---| divider directly under it. */
+const isPipeTable = (lines) =>
+  lines.length >= 2 && lines[0].includes("|") && TABLE_DIVIDER.test(lines[1]);
+
+function pipeTableHtml(lines) {
+  const header = tableCells(lines[0]).map((cell) => `<th>${renderInlineMarkup(cell)}</th>`).join("");
+  const body = lines.slice(2)
+    .map((line) => `<tr>${tableCells(line).map((cell) => `<td>${renderInlineMarkup(cell)}</td>`).join("")}</tr>`)
+    .join("");
+  return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+/* Headings are capped at h3/h4: the answer lives inside a card, so a real h1 would
+   outrank the page's own title. */
+function markdownHeadingHtml(line) {
+  const [, hashes, content] = line.match(MARKDOWN_HEADING);
+  const level = hashes.length <= 2 ? 3 : 4;
+  return `<h${level}>${renderInlineMarkup(content)}</h${level}>`;
+}
+
+function markdownListHtml(lines, ordered) {
+  const items = lines
+    .map((line) => (ordered ? line.match(ORDERED_ITEM)[2] : line.match(BULLET_ITEM)[1]))
+    .map((item) => `<li>${renderInlineMarkup(item)}</li>`)
+    .join("");
+  if (!ordered) return `<ul>${items}</ul>`;
+  /* `start` keeps a list that opens at "3." numbered from 3 rather than silently from 1. */
+  const start = Number(lines[0].match(ORDERED_ITEM)[1]);
+  return `<ol${start !== 1 ? ` start="${start}"` : ""}>${items}</ol>`;
+}
+
+const markdownLineKind = (line) => {
+  if (ORDERED_ITEM.test(line)) return "ordered";
+  if (BULLET_ITEM.test(line)) return "bullet";
+  if (MARKDOWN_HEADING.test(line)) return "heading";
+  return "text";
+};
+
+/*
+ * One block = the lines between two blank lines. It is NOT always one thing: the model
+ * habitually writes a lead-in and its list with no blank line between them —
+ *
+ *   Main areas of the business:
+ *   1. **Non-custodial staking:** ...
+ *
+ * — so the block is split into runs of same-kind lines and each run rendered on its own.
+ * Requiring the whole block to be a list is what left "1." sitting in a paragraph.
+ */
+function markdownBlockHtml(lines) {
+  if (isPipeTable(lines)) return pipeTableHtml(lines);
+  const html = [];
+  let run = [];
+  let kind = null;
+  const flushRun = () => {
+    if (!run.length) return;
+    if (kind === "ordered") html.push(markdownListHtml(run, true));
+    else if (kind === "bullet") html.push(markdownListHtml(run, false));
+    else if (kind === "heading") html.push(run.map(markdownHeadingHtml).join(""));
+    /* A single newline inside a paragraph is a line break, the way the model means it. */
+    else html.push(`<p>${run.map(renderInlineMarkup).join("<br>")}</p>`);
+    run = [];
+  };
+  for (const line of lines) {
+    const kindOfLine = markdownLineKind(line);
+    if (kindOfLine !== kind) {
+      flushRun();
+      kind = kindOfLine;
+    }
+    run.push(line);
+  }
+  flushRun();
+  return html.join("");
+}
+
+/**
+ * Markdown → HTML for one answer. Safe for innerHTML because the input was escaped
+ * before any tag was added.
+ */
+function renderMarkdown(rawText) {
+  const escaped = escapeHtml(rawText).replace(/\r\n?/g, "\n");
+  const html = [];
+  /* Fenced code blocks are pulled out whole first, so their contents are never parsed
+     as lists or headings. */
+  for (const [index, section] of escaped.split(/^```.*$/m).entries()) {
+    if (index % 2 === 1) {
+      html.push(`<pre><code>${section.replace(/^\n|\n$/g, "")}</code></pre>`);
+      continue;
+    }
+    for (const paragraph of section.split(/\n{2,}/)) {
+      const lines = paragraph.split("\n").filter((line) => line.trim());
+      if (lines.length) html.push(markdownBlockHtml(lines));
+    }
+  }
+  return html.join("");
+}
+
+/** The answer body as the card shows it: Markdown first, then the citation chips. */
+const renderAnswerBody = (answerText) => linkifyCitationMarkers(renderMarkdown(answerText));
+
 /**
  * Turn the "[3]" and "[3, 7]" markers the model writes into clickable chips that
  * scroll to the matching source card.
  *
  * The regex matches a bracketed list of digits with optional spaces —
  * "[3]", "[3,7]", "[3, 7, 13]" — and nothing else, so "[sic]" or an ordinary
- * bracket in a quote is left alone. Escaping happens BEFORE the replace: the
- * markers are the only markup this function is allowed to introduce.
+ * bracket in a quote is left alone.
+ *
+ * Takes HTML that has ALREADY been escaped (`renderMarkdown` does it), and adds the
+ * only other markup allowed in an answer body. Nothing this function or renderMarkdown
+ * emits contains a bracketed number, so the replace cannot land inside a tag.
  */
-const linkifyCitationMarkers = (answerText) =>
-  escapeHtml(answerText).replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (_marker, list) =>
+const linkifyCitationMarkers = (escapedHtml) =>
+  escapedHtml.replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (_marker, list) =>
     list.split(/\s*,\s*/)
       .map((number) => `<span class="cite" data-n="${number}">${number}</span>`)
       .join(""));
@@ -691,33 +838,64 @@ const linkifyCitationMarkers = (answerText) =>
 /** Cards fade in one after another rather than all at once; 35 ms reads as a sweep. */
 const SOURCE_CARD_STAGGER_MS = 35;
 
+/**
+ * `result.sources` is one entry per cited *passage* — `[1]`, `[3]` and `[4]` may all be
+ * chunks of the same page, because that is the granularity gate 2 and gate 3 check at.
+ * Shown as-is that reads as three sources corroborating each other when it is one page
+ * quoted three times, so the cards are per page: one card, every `[n]` chip that points
+ * at it, every quoted passage under it.
+ */
+function groupSourcesByPage(sources) {
+  const pages = new Map();
+  for (const source of sources) {
+    // A live fetch and a corpus snapshot of the same URL are two observations at two
+    // dates, so `kind` is part of the key and they stay two cards.
+    const key = `${source.kind}|${source.url}`;
+    if (!pages.has(key)) pages.set(key, { ...source, passages: [] });
+    pages.get(key).passages.push(source);
+  }
+  return [...pages.values()];
+}
+
 function renderSources(sources) {
   $("#sideHead").hidden = false;
-  $("#srcCount").textContent = sources.length ? `${sources.length} cited` : "none";
+  const pages = groupSourcesByPage(sources);
+  $("#srcCount").textContent = !sources.length
+    ? "none"
+    : pages.length === sources.length
+      ? `${sources.length} cited`
+      : `${pages.length} pages · ${sources.length} passages cited`;
 
   if (!sources.length) {
     $("#sources").innerHTML =
       `<div class="side-empty">Nothing was cited — no source cleared the evidence bar.</div>`;
     return;
   }
-  $("#sources").innerHTML = sources.map(sourceCardHtml).join("");
+  $("#sources").innerHTML = pages.map(sourceCardHtml).join("");
 }
 
 /**
- * One source card. The id `src-<n>` is the anchor the citation chips scroll to, so
- * it has to match the `[n]` the model wrote, not the array position.
+ * One source card per page. `data-ns` lists every `[n]` the card answers for, so a
+ * citation chip can find its card by number rather than by array position; the id
+ * `src-<n>` of the first passage is kept for anything that still links by anchor.
  */
-function sourceCardHtml(source, position) {
+function sourceCardHtml(page, position) {
+  const ns = page.passages.map((passage) => passage.n);
+  const chips = ns.map((n) => `<span class="n">[${n}]</span>`).join("");
+  const quotes = page.passages.map((passage) =>
+    `<div class="quote">${ns.length > 1 ? `<span class="qn">[${passage.n}]</span> ` : ""}${escapeHtml(passage.quote)}</div>`,
+  ).join("");
   return `
-    <article class="source t${source.tier}" id="src-${source.n}" style="animation-delay:${position * SOURCE_CARD_STAGGER_MS}ms">
-      <div class="st"><span class="n">[${source.n}]</span><span class="ttl">${escapeHtml(source.title || source.url)}</span></div>
+    <article class="source t${page.tier}" id="src-${ns[0]}" data-ns="${ns.join(" ")}" style="animation-delay:${position * SOURCE_CARD_STAGGER_MS}ms">
+      <div class="st"><span class="ns">${chips}</span><span class="ttl">${escapeHtml(page.title || page.url)}</span></div>
       <div class="m">
-        ${tierBadgeHtml(source.tier)}<span>${escapeHtml(source.domain || domainFromUrl(source.url))}</span>
-        <span>${sourceDateHtml(source)}</span>
-        ${source.kind === "fact" ? "<span>fact ledger</span>" : ""}
+        ${tierBadgeHtml(page.tier)}<span>${escapeHtml(page.domain || domainFromUrl(page.url))}</span>
+        <span>${sourceDateHtml(page)}</span>
+        ${page.kind === "fact" ? "<span>fact ledger</span>" : ""}
+        ${ns.length > 1 ? `<span>${ns.length} passages</span>` : ""}
       </div>
-      <div class="quote">${escapeHtml(source.quote)}</div>
-      <a class="lnk" href="${escapeHtml(source.url)}" target="_blank" rel="noopener">${escapeHtml(source.url)}</a>
+      ${quotes}
+      <a class="lnk" href="${escapeHtml(page.url)}" target="_blank" rel="noopener">${escapeHtml(page.url)}</a>
     </article>`;
 }
 
@@ -738,7 +916,7 @@ function sourceDateHtml(source) {
 function wireCitationClicks() {
   $$(".cite", $("#answerSlot")).forEach((chip) => {
     chip.onclick = () => {
-      const card = $("#src-" + chip.dataset.n);
+      const card = $(`.source[data-ns~="${chip.dataset.n}"]`);
       /* A citation can point at a number with no card when the answer came from
          the fallback endpoint with a truncated source list; do nothing rather
          than clear the highlight the user already has. */

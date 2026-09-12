@@ -264,8 +264,40 @@ main { padding: 0 max(20px, 3vw) 90px; }
 
 .answer-text {
   font-family: var(--serif); font-size: 20px; line-height: 1.52; letter-spacing: -.004em;
-  white-space: pre-wrap; color: var(--ink);
+  color: var(--ink);
 }
+/* Rendered markdown inside the answer body. `white-space` stays normal: the block
+   elements below carry the spacing that pre-wrap used to fake. */
+.answer-text > :first-child { margin-top: 0; }
+.answer-text > :last-child { margin-bottom: 0; }
+.answer-text p { margin: 0 0 .8em; }
+.answer-text h3, .answer-text h4 {
+  font-family: var(--serif); letter-spacing: -.012em; line-height: 1.25; margin: 1.35em 0 .45em;
+}
+.answer-text h3 { font-size: .88em; }
+.answer-text h4 { font-size: .78em; }
+.answer-text strong { font-weight: 650; }
+.answer-text em { font-style: italic; }
+.answer-text ol, .answer-text ul { margin: 0 0 .8em; padding-left: 1.15em; }
+.answer-text li { margin-bottom: .35em; }
+.answer-text li::marker { color: var(--accent); font-size: .8em; }
+.answer-text code {
+  font-family: var(--mono); font-size: .68em; background: var(--accent-wash);
+  border: 1px solid var(--line); border-radius: 5px; padding: .1em .35em; vertical-align: .08em;
+}
+.answer-text pre {
+  margin: 0 0 .8em; padding: 13px 15px; overflow-x: auto;
+  background: var(--accent-wash); border: 1px solid var(--line); border-radius: 11px;
+}
+.answer-text pre code { border: 0; background: none; padding: 0; font-size: .62em; vertical-align: 0; }
+.answer-text table {
+  width: 100%; margin: 0 0 .8em; border-collapse: collapse;
+  font-family: var(--sans, inherit); font-size: .68em; letter-spacing: 0;
+}
+.answer-text th, .answer-text td {
+  padding: 8px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top;
+}
+.answer-text th { background: var(--accent-wash); font-weight: 650; }
 .cite {
   display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 500;
   color: var(--accent); background: var(--accent-wash);
@@ -308,7 +340,9 @@ main { padding: 0 max(20px, 3vw) 90px; }
 .source.t1 { --tc: var(--t1); } .source.t2 { --tc: var(--t2); } .source.t3 { --tc: var(--t3); }
 .source.hl { box-shadow: 0 0 0 2px var(--accent); }
 .source .st { display: flex; gap: 8px; align-items: baseline; }
+.source .ns { display: flex; gap: 3px; flex-wrap: wrap; flex: none; }
 .source .n { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--accent); flex: none; }
+.source .quote .qn { font-family: var(--mono); font-size: 11px; font-style: normal; font-weight: 700; color: var(--accent); }
 .source .ttl { font-weight: 600; line-height: 1.35; }
 .source .m { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; font-family: var(--mono); font-size: 11px; color: var(--dim); }
 .source .quote {
