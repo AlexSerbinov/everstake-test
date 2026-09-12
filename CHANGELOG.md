@@ -2,7 +2,7 @@
 
 Timeline of the work, real clock (Europe/Madrid). The assignment asks for "how you got there", not only the result, so this file is kept alongside the git history — and the git timestamps are real, not rewritten.
 
-**Effort:** two working sessions inside the five-day window the assignment allows — 2026-09-11 evening (~19:20–22:45) and 2026-09-11/12 night (~23:30–04:00), plus a later readability pass. Roughly 7–8 hours of hands-on time.
+**Effort:** measured from prompt and dictation timestamps, not from session length — see [`docs/TIME.md`](docs/TIME.md): **3.3 h hands-on as of 2026-09-12 18:04**, plus the agents' unattended runs listed there. (Until 2026-09-12 this line said "roughly 7–8 hours"; that was the wall-clock span of two sessions including the hours when only agents were running.)
 
 Repository map: [`README.md`](README.md) · documentation index: [`docs/README.md`](docs/README.md).
 
