@@ -22,10 +22,12 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from pathlib import Path
 from typing import Callable
 
 from .api_clients import create_agent_response
+from .accounting import RunRecorder, active_step_cost, record_code_step
 from .audit import append_answer
 from .config import DB_PATH, ROOT, load_dotenv
 from .security import question_injection_reason
@@ -138,6 +140,24 @@ def run_agent(question: str, mode: str = "auto", database: Path = DB_PATH,
     `append_answer` first. That is the invariant that makes the audit chain complete:
     "the system declined on this date" is as much a claim worth verifying as an answer.
     """
+    recorder = RunRecorder("question", "single_question", {"question": question, "mode": mode}).activate()
+    try:
+        result = _run_agent(question, mode, database, emit)
+    except Exception:
+        recorder.finish(status="failed")
+        raise
+    recorder.record["metadata"].update({
+        "resolved_mode": result.get("mode"),
+        "answer_sufficient": bool(result.get("sufficient")),
+    })
+    receipt = recorder.finish(items={"questions": 1})
+    result["cost_receipt"] = receipt
+    _emit_event(emit, "answer", result)
+    return result
+
+
+def _run_agent(question: str, mode: str, database: Path, emit: Emit | None) -> dict:
+    """Inner answer flow; the public wrapper guarantees one complete cost receipt."""
     load_dotenv()
     resolved_mode = _resolve_mode(mode, question)
     _emit_event(emit, "thinking", {
@@ -156,7 +176,7 @@ def run_agent(question: str, mode: str = "auto", database: Path = DB_PATH,
     instructions = (ROOT / "prompts/agent-system.txt").read_text()
     inputs: list[dict] = [{
         "role": "user",
-        "content": [{"type": "input_text", "text": f"MODE: {resolved_mode}\nQUESTION: {question}"}],
+        "parts": [{"text": f"MODE: {resolved_mode}\nQUESTION: {question}"}],
     }]
 
     submitted, usage = _run_evidence_turns(instructions, inputs, specs, context, emit)
@@ -182,7 +202,6 @@ def _refuse_injected_question(question: str, injection: str, mode: str,
         [],
         [{"guard": "question_injection", "result": injection}],
     )
-    _emit_event(emit, "answer", result)
     return result
 
 
@@ -191,8 +210,8 @@ def _run_evidence_turns(instructions: str, inputs: list[dict], specs: list[dict]
     """Run the bounded tool loop and return (submission or None, per-turn usage).
 
     `inputs` is appended to in place: each turn the model sees its own previous output
-    plus the tool result, which is how the Responses API carries conversation state when
-    `store` is off (see api_clients.py).
+    plus the tool result. The raw model content is preserved so Gemini 3 function-call
+    thought signatures survive the next stateless request (see api_clients.py).
     """
     usage: list[dict] = []
     for _turn in range(MAX_EVIDENCE_TURNS):
@@ -203,25 +222,32 @@ def _run_evidence_turns(instructions: str, inputs: list[dict], specs: list[dict]
             # The model answered in prose instead of calling a tool. Stop here; the
             # reserved final turn will force a schema-bound submission.
             break
-        # `parallel_tool_calls` is off in api_clients.py, so there is at most one call
-        # per turn; taking [0] makes that assumption explicit rather than implicit.
-        call = calls[0]
-        name = call.get("name", "")
-        arguments = _parse_tool_arguments(call)
-        if name == "submit_answer":
-            return arguments, usage
+        submissions = [call for call in calls if call.get("name") == "submit_answer"]
+        if submissions:
+            return _parse_tool_arguments(submissions[0]), usage
 
-        _emit_event(emit, "tool_call", {"tool": name, "arguments": arguments})
-        tool_result = _execute_tool_call(context, name, arguments)
-        _emit_event(emit, "tool_result", {"tool": name, **context.trace[-1]["result"]})
+        function_responses = []
+        terminal = False
+        for call in calls:
+            name = call.get("name", "")
+            arguments = _parse_tool_arguments(call)
+            _emit_event(emit, "tool_call", {"tool": name, "arguments": arguments})
+            tool_result = _execute_tool_call(context, name, arguments)
+            _emit_event(emit, "tool_result", {"tool": name, **context.trace[-1]["result"]})
+            function_response = {
+                "name": name,
+                "response": {"output": tool_result},
+            }
+            if call.get("call_id"):
+                function_response["id"] = call["call_id"]
+            function_responses.append({"functionResponse": function_response})
+            terminal = terminal or _is_terminal_live_evidence(name, arguments, tool_result)
 
-        inputs.extend(response.get("output", []))
-        inputs.append({
-            "type": "function_call_output",
-            "call_id": call["call_id"],
-            "output": json.dumps(tool_result, ensure_ascii=False),
-        })
-        if _is_terminal_live_evidence(name, arguments, tool_result):
+        # Gemini 3 requires the model content to be replayed byte-for-byte so every
+        # thoughtSignature stays attached to its original functionCall part.
+        inputs.append(response["_content"])
+        inputs.append({"role": "user", "parts": function_responses})
+        if terminal:
             break
     return None, usage
 
@@ -246,6 +272,8 @@ def _execute_tool_call(context: ToolContext, name: str, arguments: dict) -> dict
     a file path or a URL, and everything returned here is echoed into the signed audit
     record. A failed tool must degrade the answer to an abstention, never crash the request.
     """
+    wall_start, cpu_start = time.perf_counter(), time.process_time()
+    cost_before = active_step_cost()
     try:
         return context.execute(name, arguments)
     except Exception as error:
@@ -255,6 +283,23 @@ def _execute_tool_call(context: ToolContext, name: str, arguments: dict) -> dict
         # the `tool_result` event below would read the previous tool's summary.
         context.trace.append({"tool": name, "arguments": arguments, "result": tool_result})
         return tool_result
+    finally:
+        record_code_step(
+            _plain_tool_name(name),
+            (time.perf_counter() - wall_start) * 1000,
+            (time.process_time() - cpu_start) * 1000,
+            {"tool": name, "nested_provider_cost_usd": round(active_step_cost() - cost_before, 10)},
+        )
+
+
+def _plain_tool_name(name: str) -> str:
+    return {
+        "corpus_search": "Searching and ranking the corpus",
+        "fact_number_lookup": "Reading the fact ledger",
+        "document_read": "Reading a source document",
+        "live_fetch": "Fetching a live Everstake page",
+        "everstake_mcp": "Reading live Everstake data",
+    }.get(name, f"Running {name}")
 
 
 def _is_terminal_live_evidence(name: str, arguments: dict, tool_result: dict) -> bool:
@@ -328,7 +373,6 @@ def _finalise(submitted: dict | None, context: ToolContext, mode: str, question:
     # documents what the answer rests on, not what was browsed.
     cited = [context.evidence[ref].audit_dict() for ref in result["citations"]]
     result["audit"] = append_answer(question, result, cited, context.trace)
-    _emit_event(emit, "answer", result)
     return result
 
 

@@ -1,0 +1,40 @@
+{
+  "generated_from": "data/accounting.jsonl",
+  "price_table_copied_at": "2026-09-12",
+  "prices": {
+    "text-embedding-3-small": {
+      "provider": "OpenAI",
+      "input_per_million": 0.02,
+      "cached_input_per_million": 0.02,
+      "output_per_million": 0.0
+    },
+    "gemini-3.8-flash": {
+      "provider": "Google",
+      "input_per_million": 0.75,
+      "cached_input_per_million": 0.75,
+      "output_per_million": 3.75,
+      "note": "Introductory price through 2026-12-31"
+    },
+    "gemini-3.5-flash-lite": {
+      "provider": "Google",
+      "input_per_million": 0.3,
+      "cached_input_per_million": 0.3,
+      "output_per_million": 2.5
+    }
+  },
+  "headline": {
+    "index_cost_usd": 0,
+    "index_wall_ms": 0,
+    "mean_question_cost_usd": 0,
+    "measured_questions": 0
+  },
+  "stages": [],
+  "representative_question": null,
+  "assumptions": [
+    "Provider list prices copied 2026-09-12; later prices may differ.",
+    "Provider usage fields are measured; no tokenizer estimates are used.",
+    "×50 time is serial multiplication, not a parallel-throughput forecast.",
+    "CPU and RSS depend on the recorded machine and cannot be transferred to other hardware.",
+    "Historical runs without resource telemetry are excluded from current stage timing."
+  ]
+}

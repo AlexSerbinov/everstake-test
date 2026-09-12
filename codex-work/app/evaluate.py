@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 
+from .accounting import RunRecorder
 from .config import ROOT
 from .retrieval import answer
 
@@ -85,7 +86,13 @@ def run() -> dict:
     full run takes minutes of API calls and a silent terminal looks like a hang.
     """
     cases = json.loads((ROOT / "eval/questions.json").read_text())
-    rows = [_run_case(case) for case in cases]
+    recorder = RunRecorder("eval", "quality_eval", {"suite": "eval/questions.json"}).activate()
+    try:
+        rows = [_run_case(case) for case in cases]
+    except Exception:
+        recorder.finish(status="failed", items={"questions": len(cases)})
+        raise
+    recorder.finish(items={"questions": len(cases)})
     payload = _summarise(rows)
     output = ROOT / "data/eval-results.json"
     output.write_text(json.dumps(payload, indent=2, ensure_ascii=False))
@@ -105,7 +112,15 @@ def _run_case(case: dict) -> dict:
     print(f"[{case['id']:02d}/{TOTAL_CASES}] {case['question']}", flush=True)
     # "auto" so mode selection is part of what is being evaluated, rather than the
     # evaluator quietly handing the system the right mode for each question.
-    result = answer(case["question"], "auto")
+    recorder = RunRecorder("question", "legacy_eval_question", {
+        "question": case["question"], "eval_case": case["id"],
+    }).activate()
+    try:
+        result = answer(case["question"], "auto")
+    except Exception:
+        recorder.finish(status="failed", items={"questions": 1})
+        raise
+    recorder.finish(items={"questions": 1})
     label, invented = verdict(case, result)
     return {
         "id": case["id"],

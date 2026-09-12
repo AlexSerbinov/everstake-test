@@ -35,6 +35,7 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .accounting import RunRecorder
 from .api_clients import embed
 from .config import load_dotenv
 from .security import sanitize_untrusted_text
@@ -357,7 +358,7 @@ VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 _INSERT_CHUNK_SQL = "INSERT INTO chunks(document_id,position,text,embedding) VALUES(?,?,?,?)"
 
 
-def build(corpus: Path, database: Path) -> dict:
+def build(corpus: Path, database: Path, record_accounting: bool = False) -> dict:
     """Build the whole SQLite index from the corpus, from scratch, every time.
 
     Rebuild-not-update is deliberate: dedup groups and boilerplate thresholds are
@@ -370,7 +371,12 @@ def build(corpus: Path, database: Path) -> dict:
     row-by-row in the `metadata` table so a deployed index can describe itself.
     """
     docs = [json.loads(line) for line in corpus.read_text().splitlines() if line.strip()]
+    dedup_run = _stage_recorder("dedup", record_accounting, "code")
     groups, dedup_stats = duplicate_groups(docs)
+    if dedup_run:
+        dedup_run.finish(items={"documents": len(docs), "unique_groups": dedup_stats["unique_groups"]})
+
+    chunk_run = _stage_recorder("chunk_index", record_accounting, "code")
     boilerplate = repeated_boilerplate(docs)
 
     connection = _fresh_database(database)
@@ -378,7 +384,21 @@ def build(corpus: Path, database: Path) -> dict:
     pending_chunks, cleaning_stats = _insert_documents(
         connection, docs, groups, canonical_index, boilerplate
     )
+    if chunk_run:
+        chunk_run.finish(items={"documents": len(docs), "chunks": len(pending_chunks)})
+
+    fact_run = _stage_recorder("fact_extraction", record_accounting, "code")
+    literal_fact_chunks = sum(bool(re.search(r"(?:\$|\b\d[\d,.]*\s*(?:%|billion|million|bps|apy|apr)?)",
+                                             text, re.I)) for _doc, _position, text in pending_chunks)
+    if fact_run:
+        fact_run.finish(items={"chunks_scanned": len(pending_chunks),
+                               "literal_fact_chunks": literal_fact_chunks})
+
+    embedding_run = _stage_recorder("embeddings", record_accounting, "model")
     embedding_tokens, embedding_cost = _embed_and_insert_chunks(connection, pending_chunks)
+    if embedding_run:
+        embedding_run.finish(items={"chunks": len(pending_chunks), "requests": math.ceil(
+            len(pending_chunks) / EMBEDDING_BATCH_SIZE)})
     # External-content FTS5 does not populate itself from the INSERTs above; without
     # this the lexical half of hybrid retrieval silently returns nothing.
     connection.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
@@ -392,6 +412,7 @@ def build(corpus: Path, database: Path) -> dict:
         "documents_with_instruction_like_text": cleaning_stats["injection_documents"],
         "boilerplate_signatures": len(boilerplate),
         "boilerplate_lines_removed": cleaning_stats["boilerplate_lines_removed"],
+        "literal_fact_chunks": literal_fact_chunks,
         "embedding_model": EMBEDDING_MODEL,
         "embedding_dimensions": EMBEDDING_DIMENSIONS,
         "index_input_tokens": embedding_tokens,
@@ -405,6 +426,13 @@ def build(corpus: Path, database: Path) -> dict:
     connection.close()
     database.with_name("index-stats.json").write_text(json.dumps(stats, indent=2))
     return stats
+
+
+def _stage_recorder(name: str, enabled: bool, code_or_model: str) -> RunRecorder | None:
+    """Start one CLI-only stage recorder without polluting unit-test fixtures."""
+    if not enabled:
+        return None
+    return RunRecorder("stage", name, {"code_or_model": code_or_model}).activate()
 
 
 def _fresh_database(database: Path) -> sqlite3.Connection:
@@ -527,7 +555,7 @@ def main() -> None:
     args = parser.parse_args()
     # Needed before build(): embed() reads OPENAI_API_KEY from the environment.
     load_dotenv()
-    print(json.dumps(build(args.corpus, args.database), indent=2))
+    print(json.dumps(build(args.corpus, args.database, record_accounting=True), indent=2))
 
 
 if __name__ == "__main__":

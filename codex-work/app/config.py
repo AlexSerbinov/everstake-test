@@ -33,6 +33,32 @@ CORPUS_PATH: Path = Path(os.getenv("EVERSTAKE_CORPUS", DATA_DIR / "corpus.jsonl"
 # what backs the cost figures in REPORT.md and the $5 assignment budget check.
 COST_LOG: Path = Path(os.getenv("EVERSTAKE_COST_LOG", DATA_DIR / "run-costs.jsonl"))
 
+# Unified resource-and-provider accounting. Unlike COST_LOG (the historical paid-call
+# ledger), this contains complete stage and question runs: wall/CPU/RSS, work units,
+# bytes, provider usage and the per-question receipt shown in the UI.
+ACCOUNTING_LOG: Path = Path(os.getenv("EVERSTAKE_ACCOUNTING_LOG", DATA_DIR / "accounting.jsonl"))
+COST_REPORT_PATH: Path = Path(os.getenv("EVERSTAKE_COST_REPORT", DATA_DIR / "cost-report.json"))
+
+# Prices copied on this date. A run stores the applicable row with its usage so later
+# price changes cannot rewrite history. `cached_input` intentionally equals ordinary
+# input: the supplied Gemini prices do not declare a separate cache rate.
+PRICE_TABLE_COPIED_AT = "2026-09-12"
+PRICE_TABLE: dict[str, dict[str, object]] = {
+    "text-embedding-3-small": {
+        "provider": "OpenAI", "input_per_million": 0.02,
+        "cached_input_per_million": 0.02, "output_per_million": 0.0,
+    },
+    "gemini-3.8-flash": {
+        "provider": "Google", "input_per_million": 0.75,
+        "cached_input_per_million": 0.75, "output_per_million": 3.75,
+        "note": "Introductory price through 2026-12-31",
+    },
+    "gemini-3.5-flash-lite": {
+        "provider": "Google", "input_per_million": 0.30,
+        "cached_input_per_million": 0.30, "output_per_million": 2.50,
+    },
+}
+
 # Audit chain and its signing key live next to the database, not next to the source,
 # because on the deployed host only the data volume is persistent and writable.
 AUDIT_LOG: Path = Path(os.getenv("EVERSTAKE_AUDIT_LOG", DB_PATH.parent / "answer-audit.jsonl"))

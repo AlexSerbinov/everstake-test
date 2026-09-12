@@ -22,6 +22,7 @@ import json
 import time
 from datetime import datetime, timezone
 
+from .accounting import RunRecorder
 from .agent import ABSTENTION, _validate_submission, run_agent
 from .audit import get_record
 from .config import ROOT
@@ -225,7 +226,15 @@ def _trace_used_expected_tool(tool_trace: list[dict], expected_tool: str) -> boo
 def run() -> dict:
     """Run every adversarial case, write the results, and regenerate EVAL.md."""
     cases = json.loads((ROOT / "eval/adversarial.json").read_text())
-    rows = [_run_case(case) for case in cases]
+    recorder = RunRecorder("eval", "adversarial_eval", {
+        "suite": "eval/adversarial.json",
+    }).activate()
+    try:
+        rows = [_run_case(case) for case in cases]
+    except Exception:
+        recorder.finish(status="failed", items={"questions": len(cases)})
+        raise
+    recorder.finish(items={"questions": len(cases)})
     payload = {
         "run_at": datetime.now(timezone.utc).isoformat(),
         "questions": len(rows),

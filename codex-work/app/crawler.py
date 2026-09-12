@@ -40,6 +40,8 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
 
+from .accounting import RunRecorder
+
 # Identifies the crawler to site operators and gives them something to block. A
 # truthful UA is part of the politeness contract; it is also the token robots.txt
 # rules are matched against in `PoliteFetcher`.
@@ -154,6 +156,7 @@ class PoliteFetcher:
         # One parsed robots.txt per origin, kept for the life of the crawl so a
         # 280-page run costs at most a handful of robots requests.
         self.robots: dict[str, urllib.robotparser.RobotFileParser] = {}
+        self.bytes_downloaded = 0
 
     def _robots(self, url: str) -> urllib.robotparser.RobotFileParser:
         """Return the cached robots policy for this URL's origin, fetching it once.
@@ -173,7 +176,9 @@ class PoliteFetcher:
         try:
             request = urllib.request.Request(policy.url, headers={"User-Agent": USER_AGENT})
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                policy.parse(response.read().decode("utf-8", "replace").splitlines())
+                body = response.read()
+                self.bytes_downloaded += len(body)
+                policy.parse(body.decode("utf-8", "replace").splitlines())
         except Exception:
             # Fail closed when robots policy cannot be established. A timeout or a 500
             # tells us nothing about the operator's wishes, and guessing "allowed"
@@ -205,6 +210,7 @@ class PoliteFetcher:
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
                 body = response.read(MAX_RESPONSE_BYTES)
+                self.bytes_downloaded += len(body)
                 self.last_request[host] = time.monotonic()
                 return response.status, response.headers.get("Content-Type", ""), body, response.url
         except (urllib.error.URLError, TimeoutError, ValueError):
@@ -447,6 +453,7 @@ def crawl(seed_path: Path, output: Path, limit: int = DEFAULT_DOCUMENT_LIMIT) ->
         "documents": len(documents),
         "visited": len(visited),
         "excluded": exclusions,
+        "bytes_downloaded": fetcher.bytes_downloaded,
     }
     output.with_name("crawl-audit.json").write_text(json.dumps(audit, indent=2))
     return audit
@@ -573,7 +580,17 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=DEFAULT_DOCUMENT_LIMIT)
     args = parser.parse_args()
-    print(json.dumps(crawl(args.seeds, args.output, args.limit), indent=2))
+    recorder = RunRecorder("stage", "crawl", {"code_or_model": "code"}).activate()
+    try:
+        audit = crawl(args.seeds, args.output, args.limit)
+    except Exception:
+        recorder.finish(status="failed")
+        raise
+    recorder.finish(
+        items={"documents": audit["documents"], "visited_urls": audit["visited"]},
+        bytes_downloaded=audit["bytes_downloaded"],
+    )
+    print(json.dumps(audit, indent=2))
 
 
 if __name__ == "__main__":

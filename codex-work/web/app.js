@@ -25,6 +25,7 @@ const form = select('#query-form');
 const questionInput = select('#question');
 const resultPanel = select('#result');
 const pipelinePanel = select('#pipeline');
+let costLoaded = false;
 
 // Sequence number shown in each pipeline row's badge. Reset at the start of every run.
 let completedSteps = 0;
@@ -38,6 +39,22 @@ select('#theme').onclick = () => {
   document.documentElement.dataset.theme = next;
   localStorage.setItem('theme', next);
 };
+
+document.querySelectorAll('[data-view]').forEach(button => {
+  button.onclick = () => showView(button.dataset.view);
+});
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(view => { view.hidden = view.id !== `${name}-view`; });
+  document.querySelectorAll('[data-view]').forEach(button => {
+    button.classList.toggle('active', button.dataset.view === name);
+  });
+  history.replaceState(null, '', `#${name}`);
+  if (name === 'cost' && !costLoaded) loadCostView();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+showView(location.hash === '#cost' ? 'cost' : 'ask');
 
 // Example-question chips. requestSubmit() rather than submit() so the form's own
 // onsubmit handler still runs — submit() would bypass it and reload the page.
@@ -93,10 +110,126 @@ function renderAnswer(data) {
   select('#date').textContent = data.as_of ? `Evidence as of ${data.as_of}` : '';
   select('#answer').textContent = data.answer;
   select('#reasoning').textContent = data.reasoning;
-  select('#usage').textContent = JSON.stringify(data.usage, null, 2);
+  renderCostReceipt(data.cost_receipt);
   renderSources(data.sources);
   renderAuditReceipt(data.audit);
   resetSubmitButton('Run evidence agent');
+}
+
+/** Render a plain-language, expandable receipt whose total comes from server accounting. */
+function renderCostReceipt(receipt) {
+  const steps = select('#receipt-steps');
+  steps.innerHTML = '';
+  if (!receipt) {
+    select('#cost-receipt').hidden = true;
+    return;
+  }
+  select('#cost-receipt').hidden = false;
+  select('#receipt-summary').textContent = `${money(receipt.cost_usd)} · ${duration(receipt.wall_ms)}`;
+  receipt.steps.forEach((step, index) => {
+    const row = document.createElement('div');
+    row.className = 'receipt-step';
+    const number = document.createElement('span');
+    number.className = 'receipt-number';
+    number.textContent = index + 1;
+    const copy = document.createElement('div');
+    const title = document.createElement('strong');
+    title.textContent = step.name;
+    const detail = document.createElement('small');
+    detail.textContent = step.model
+      ? `${step.model} · ${numberFormat(step.tokens.input)} in (${numberFormat(step.tokens.cached_input)} cached) · ${numberFormat(step.tokens.output)} out`
+      : 'Code · free';
+    copy.append(title, detail);
+    const amount = document.createElement('div');
+    amount.className = 'receipt-amount';
+    amount.innerHTML = `<strong>${money(step.cost_usd)}</strong><small>${duration(step.wall_ms)}</small>`;
+    row.append(number, copy, amount);
+    steps.append(row);
+  });
+  select('#receipt-total').textContent = `Total · ${numberFormat(receipt.tokens.input)} tokens in · ${numberFormat(receipt.tokens.output)} out · ${money(receipt.cost_usd)} · ${duration(receipt.wall_ms)}`;
+}
+
+async function loadCostView() {
+  try {
+    const response = await fetch('/api/costs');
+    if (!response.ok) throw new Error(`Cost report failed (${response.status})`);
+    renderCostView(await response.json());
+    costLoaded = true;
+  } catch (error) {
+    select('#cost-headline').textContent = 'Measured cost data is temporarily unavailable.';
+  }
+}
+
+function renderCostView(report) {
+  const headline = report.headline;
+  select('#cost-headline').textContent = `Building the whole index cost ${money(headline.index_cost_usd)}. One measured question averages ${money(headline.mean_question_cost_usd)}.`;
+  select('#index-cost').textContent = money(headline.index_cost_usd);
+  select('#index-time').textContent = `${duration(headline.index_wall_ms)} measured wall time`;
+  select('#question-cost').textContent = money(headline.mean_question_cost_usd);
+  select('#question-count').textContent = `mean of ${headline.measured_questions} full-agent questions`;
+  renderStackedBar('money', report.stages, stage => stage.cost_usd);
+  renderStackedBar('time', report.stages, stage => stage.wall_ms || 0);
+  renderStages(report.stages);
+  select('#cost-method').textContent = `Provider usage fields supply tokens; the process clock supplies wall/CPU time and peak RSS. Prices copied ${report.price_table_copied_at}.`;
+}
+
+function renderStackedBar(prefix, stages, valueOf) {
+  const bar = select(`#${prefix}-bar`);
+  const legend = select(`#${prefix}-legend`);
+  bar.innerHTML = '';
+  legend.innerHTML = '';
+  const values = stages.map(valueOf);
+  const total = values.reduce((sum, value) => sum + value, 0);
+  stages.forEach((stage, index) => {
+    const share = total ? values[index] / total : 0;
+    if (share > 0) {
+      const segment = document.createElement('span');
+      segment.className = `tone-${index % 7} share-${Math.max(1, Math.round(share * 20))}`;
+      segment.title = `${stage.label}: ${(share * 100).toFixed(1)}%`;
+      bar.append(segment);
+    }
+    const item = document.createElement('span');
+    item.innerHTML = `<i class="tone-${index % 7}"></i>${stage.label} <b>${(share * 100).toFixed(0)}%</b>`;
+    legend.append(item);
+  });
+}
+
+function renderStages(stages) {
+  const list = select('#stage-list');
+  list.innerHTML = '';
+  stages.forEach(stage => {
+    const details = document.createElement('details');
+    details.className = 'stage-row';
+    const summary = document.createElement('summary');
+    const usage = stage.models.length
+      ? `${numberFormat(stage.tokens.input)} in · ${numberFormat(stage.tokens.output)} out`
+      : `${numberFormat(stage.units.count)} ${stage.units.label}`;
+    summary.innerHTML = `<span><strong>${stage.label}</strong><small>${stage.code_or_model}${stage.models.length ? ` · ${stage.models.join(', ')}` : ''}</small></span><span>${usage}</span><span>${money(stage.cost_usd)}</span><span>${duration(stage.wall_ms)}</span>`;
+    const runs = document.createElement('div');
+    runs.className = 'stage-runs';
+    stage.runs.slice().reverse().forEach(run => {
+      const row = document.createElement('div');
+      row.textContent = `${new Date(run.started_at).toLocaleString()} · ${run.machine} · CPU ${duration(run.cpu_ms)} · peak ${run.peak_rss_mb} MB · ${money(run.cost_usd)}`;
+      runs.append(row);
+    });
+    details.append(summary, runs);
+    list.append(details);
+  });
+}
+
+function money(value) {
+  return `$${Number(value || 0).toFixed(Number(value) < 0.01 ? 6 : 2)}`;
+}
+
+function duration(milliseconds) {
+  const value = Number(milliseconds || 0);
+  if (value >= 60000) return `${(value / 60000).toFixed(1)} min`;
+  if (value >= 1000) return `${(value / 1000).toFixed(2)} s`;
+  return `${value.toFixed(0)} ms`;
+}
+
+function numberFormat(value) {
+  return Number(value || 0).toLocaleString('en-US');
 }
 
 /** List each cited source with its provenance, date and content hash. */
@@ -189,6 +322,7 @@ function startRun() {
   pipelinePanel.innerHTML = '';
   select('#answer-card').hidden = true;
   select('#audit').hidden = true;
+  select('#cost-receipt').hidden = true;
   select('#status').className = 'working';
   select('#status').innerHTML = '<i></i> Agent running';
   select('#date').textContent = '';

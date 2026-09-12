@@ -9,6 +9,7 @@ audit log for verification.
 Routes (all part of the public contract — README.md documents them and the UI calls them):
   GET  /health                  liveness plus "is the index actually present"
   GET  /api/stats               the frozen index's build statistics
+  GET  /api/costs               generated measured cost/resource report
   GET  /api/audit/public-key    the Ed25519 verification key, for offline checking
   GET  /api/audit/<id>          one audit record with a verdict on the chain up to it
   GET  /<path>                  static files from web/
@@ -32,7 +33,7 @@ import mimetypes
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from .config import DB_PATH, PORT, ROOT
+from .config import COST_REPORT_PATH, DB_PATH, PORT, ROOT
 from .agent import run_agent
 from .audit import get_record, public_key_b64
 
@@ -104,6 +105,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/api/stats":
             self._serve_index_stats()
+            return
+        if self.path == "/api/costs":
+            self._json(200, json.loads(COST_REPORT_PATH.read_text()))
             return
         if self.path == "/api/audit/public-key":
             self._serve_audit_public_key()

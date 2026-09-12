@@ -1,4 +1,4 @@
-.PHONY: crawl index serve eval adversarial test refresh
+.PHONY: crawl index serve eval adversarial test refresh cost
 
 crawl:
 	python3 -m app.crawler --seeds ../docs/corpus_sources.csv --output data/corpus.jsonl
@@ -20,3 +20,6 @@ test:
 
 refresh:
 	python3 -m app.refresh --apply
+
+cost:
+	python3 -m app.render_cost
