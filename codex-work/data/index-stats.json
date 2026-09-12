@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-09-11T20:21:43.637792+00:00",
+  "built_at": "2026-09-12T14:45:53.559034+00:00",
   "documents": 280,
   "chunks": 1075,
   "exact_pairs": 10,
@@ -9,8 +9,9 @@
   "documents_with_instruction_like_text": 3,
   "boilerplate_signatures": 16,
   "boilerplate_lines_removed": 1232,
+  "literal_fact_chunks": 1050,
   "embedding_model": "text-embedding-3-small",
   "embedding_dimensions": 512,
-  "index_input_tokens": 776291,
-  "index_cost_usd": 0.01552582
+  "index_input_tokens": 776784,
+  "index_cost_usd": 0.01553568
 }

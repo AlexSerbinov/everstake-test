@@ -1,9 +1,9 @@
 [Unit]
-Description=Weekly change-detecting Everstake corpus refresh
+Description=Hourly policy-driven Everstake corpus refresh
 
 [Timer]
-OnCalendar=Sun *-*-* 03:17:00 UTC
-RandomizedDelaySec=1800
+OnCalendar=hourly
+RandomizedDelaySec=300
 Persistent=true
 
 [Install]

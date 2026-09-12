@@ -11,7 +11,8 @@ A tool-using, public-knowledge agent for Everstake. It chooses between a dated c
 - `prompts/agent-system.txt`: production selection, stop, citation, freshness, and abstention policy.
 - `app/tools.py`: corpus, exact-value, document, live-fetch, and MCP adapters.
 - `app/audit.py`: content hashes, append-only hash chain, Ed25519 signatures, and verification.
-- `app/refresh.py`: change-detecting scheduled first-party refresh and snapshot preservation.
+- `app/refresh.py`: policy scheduler, HTTP/GitHub change detection, change log, and snapshot preservation.
+- `app/freshness.py`, `data/freshness-policy.json`: per-source policy, presets, and measured monthly calculator.
 - `app/accounting.py`, `app/render_cost.py`: measured stage/question receipts and generated cost report.
 - `app/server.py`, `web/`: JSON API, live SSE pipeline, responsive Ask and Cost views.
 - `app/crawler.py`, `app/indexer.py`, `app/retrieval.py`: original auditable ingestion and hybrid retrieval base.
@@ -75,7 +76,9 @@ make cost           # regenerate COST.md and Cost-view JSON from measured runs
 make test           # deterministic unit suite
 ```
 
-The deployed weekly timer is defined in `deploy/everstake-refresh.{service,timer}`. Dynamic APY/APR, uptime, and reward questions do not wait for that timer: the agent queries `https://mcp.everstake.com` at answer time. Only read-only MCP tools are exposed.
+The hourly scheduler in `deploy/everstake-refresh.{service,timer}` executes the configured due intervals; it does not blindly refresh every source hourly. The Balanced policy checks live pages/blog/docs daily, reports/events weekly, GitHub every six hours, and video/third-party sources weekly. HTTP checks stop in order at sitemap `lastmod`, conditional GET/ETag, then extracted-content SHA-256. GitHub checks the organisation repo list's `pushed_at` and requests commits only since the prior check. Dynamic APY/APR, uptime, and rewards still come from the read-only MCP at question time.
+
+Open `#freshness` in the UI for Economy, Balanced, Real-time, and custom controls. It recalculates monthly dollars, model tokens, machine minutes, per-source bars, and worst-case staleness immediately from measured ledger units. `GET /api/freshness` returns the same inputs plus the latest refresh/change log.
 
 ## Guarantees and limits
 

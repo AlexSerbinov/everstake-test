@@ -1,0 +1,12 @@
+{
+  "preset": "balanced",
+  "sources": {
+    "live_pages": {"interval": "daily", "depth": "full"},
+    "blog": {"interval": "daily", "depth": "reextract"},
+    "docs": {"interval": "daily", "depth": "reextract"},
+    "reports_events": {"interval": "weekly", "depth": "reextract"},
+    "github": {"interval": "six_hours", "depth": "reextract"},
+    "video": {"interval": "weekly", "depth": "cheap"},
+    "third_party": {"interval": "weekly", "depth": "cheap"}
+  }
+}

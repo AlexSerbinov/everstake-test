@@ -39,6 +39,18 @@ COST_LOG: Path = Path(os.getenv("EVERSTAKE_COST_LOG", DATA_DIR / "run-costs.json
 ACCOUNTING_LOG: Path = Path(os.getenv("EVERSTAKE_ACCOUNTING_LOG", DATA_DIR / "accounting.jsonl"))
 COST_REPORT_PATH: Path = Path(os.getenv("EVERSTAKE_COST_REPORT", DATA_DIR / "cost-report.json"))
 
+# Operator-owned freshness policy and runtime state. The policy is shipped with the
+# application; state and the append-only change log live beside the mutable corpus.
+FRESHNESS_POLICY_PATH: Path = Path(
+    os.getenv("EVERSTAKE_FRESHNESS_POLICY", DATA_DIR / "freshness-policy.json")
+)
+FRESHNESS_STATE_PATH: Path = Path(
+    os.getenv("EVERSTAKE_FRESHNESS_STATE", DB_PATH.parent / "freshness-state.json")
+)
+FRESHNESS_LOG_PATH: Path = Path(
+    os.getenv("EVERSTAKE_FRESHNESS_LOG", DB_PATH.parent / "freshness-changes.jsonl")
+)
+
 # Prices copied on this date. A run stores the applicable row with its usage so later
 # price changes cannot rewrite history. `cached_input` intentionally equals ordinary
 # input: the supplied Gemini prices do not declare a separate cache rate.

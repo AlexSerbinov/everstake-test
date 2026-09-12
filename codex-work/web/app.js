@@ -26,6 +26,8 @@ const questionInput = select('#question');
 const resultPanel = select('#result');
 const pipelinePanel = select('#pipeline');
 let costLoaded = false;
+let freshnessLoaded = false;
+let freshnessData = null;
 
 // Sequence number shown in each pipeline row's badge. Reset at the start of every run.
 let completedSteps = 0;
@@ -51,10 +53,173 @@ function showView(name) {
   });
   history.replaceState(null, '', `#${name}`);
   if (name === 'cost' && !costLoaded) loadCostView();
+  if (name === 'freshness' && !freshnessLoaded) loadFreshnessView();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-showView(location.hash === '#cost' ? 'cost' : 'ask');
+showView(['cost', 'freshness'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'ask');
+
+async function loadFreshnessView() {
+  try {
+    const response = await fetch('/api/freshness');
+    if (!response.ok) throw new Error(`Freshness report failed (${response.status})`);
+    freshnessData = await response.json();
+    renderFreshnessStatus(freshnessData.status);
+    applyFreshnessPolicy(freshnessData.calculator.selected.sources,
+      freshnessData.calculator.selected.preset);
+    const units = freshnessData.calculator.units;
+    select('#fresh-assumptions').textContent = `Measured on ${units.machine}; prices copied ${units.price_date}. Fetch, extraction and embedding units come from the ledger. Per-row change rates are explicit planning inputs, not prices.`;
+    freshnessLoaded = true;
+  } catch (error) {
+    select('#last-refreshed').textContent = 'Freshness data unavailable';
+  }
+}
+
+function renderFreshnessStatus(status) {
+  select('#last-refreshed').textContent = status.last_refreshed
+    ? new Date(status.last_refreshed).toLocaleString() : 'No completed run yet';
+  select('#change-summary').textContent = status.recent_changes.length
+    ? `${status.recent_changes.length} recent changes` : 'No content changes detected';
+  const log = select('#change-log');
+  log.innerHTML = '';
+  if (!status.runs.length) {
+    const empty = document.createElement('p');
+    empty.textContent = 'The first scheduled run will appear here.';
+    log.append(empty);
+    return;
+  }
+  status.runs.forEach(run => {
+    const row = document.createElement('div');
+    const heading = document.createElement('strong');
+    const detail = document.createElement('span');
+    heading.textContent = `${new Date(run.finished_at).toLocaleString()} · ${run.changed} changed`;
+    detail.textContent = run.changes.length
+      ? run.changes.slice(0, 3).map(change => change.title || change.url).join(' · ')
+      : `${run.checked} pages checked; no content hash changed`;
+    row.append(heading, detail);
+    log.append(row);
+  });
+}
+
+document.querySelectorAll('[data-preset]').forEach(button => {
+  button.onclick = () => {
+    if (!freshnessData || button.dataset.preset === 'custom') return;
+    applyFreshnessPolicy(freshnessData.calculator.presets[button.dataset.preset], button.dataset.preset);
+  };
+});
+
+function applyFreshnessPolicy(policy, preset = 'custom') {
+  document.querySelectorAll('[data-preset]').forEach(button => {
+    button.classList.toggle('active', button.dataset.preset === preset);
+  });
+  const rows = select('#fresh-rows');
+  rows.innerHTML = '';
+  Object.entries(policy).forEach(([name, choice]) => {
+    const row = document.createElement('div');
+    row.className = 'fresh-row';
+    const copy = document.createElement('div');
+    copy.innerHTML = `<strong>${freshnessData.calculator.source_labels[name]}</strong><small>${freshnessData.calculator.profile.counts[name]} sources · ${(freshnessData.calculator.change_rates[name] * 100).toFixed(0)}% change/run</small>`;
+    row.append(copy,
+      makeFreshSelect('interval', name, freshnessData.calculator.options.intervals, choice.interval),
+      makeFreshSelect('depth', name, freshnessData.calculator.options.depths, choice.depth));
+    rows.append(row);
+  });
+  updateFreshnessCalculation();
+}
+
+function makeFreshSelect(kind, name, options, selected) {
+  const control = document.createElement('select');
+  control.dataset.freshKind = kind;
+  control.dataset.source = name;
+  Object.entries(options).forEach(([value, label]) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    option.selected = value === selected;
+    control.append(option);
+  });
+  control.onchange = () => {
+    document.querySelectorAll('[data-preset]').forEach(button => {
+      button.classList.toggle('active', button.dataset.preset === 'custom');
+    });
+    updateFreshnessCalculation();
+  };
+  return control;
+}
+
+function currentFreshnessPolicy() {
+  const sources = {};
+  document.querySelectorAll('[data-fresh-kind="interval"]').forEach(control => {
+    sources[control.dataset.source] = { interval: control.value };
+  });
+  document.querySelectorAll('[data-fresh-kind="depth"]').forEach(control => {
+    sources[control.dataset.source].depth = control.value;
+  });
+  return sources;
+}
+
+function calculateFreshness(policy, data) {
+  const intervalHours = { hourly: 1, six_hours: 6, daily: 24, weekly: 168, monthly: 720, never: null };
+  const totals = { cost: 0, tokens: 0, minutes: 0, worst: 0, never: false, rows: [] };
+  Object.entries(policy).forEach(([name, choice]) => {
+    const interval = intervalHours[choice.interval];
+    const count = data.profile.counts[name];
+    const runs = interval === null ? 0 : 720 / interval;
+    const rate = data.change_rates[name];
+    const changed = runs * count * rate;
+    const rebuilds = interval === null || !count ? 0 : runs * (1 - Math.pow(1 - rate, count));
+    let chunks = 0;
+    if (choice.depth === 'reextract') chunks = changed * data.profile.chunks_per_doc;
+    if (choice.depth === 'full') chunks = rebuilds * data.profile.total_chunks;
+    const extract = choice.depth === 'cheap' ? 0 : changed;
+    const cost = extract * data.units.extract_cost_usd + chunks * data.units.embedding_cost_usd;
+    const tokens = extract * data.units.extract_tokens + chunks * data.units.embedding_tokens;
+    const milliseconds = runs * (data.units.run_overhead_ms + count * data.units.fetch_wall_ms)
+      + extract * data.units.extract_wall_ms + chunks * data.units.embedding_wall_ms;
+    totals.cost += cost;
+    totals.tokens += tokens;
+    totals.minutes += milliseconds / 60000;
+    totals.never ||= interval === null;
+    if (interval !== null) totals.worst = Math.max(totals.worst, interval);
+    totals.rows.push({ name, cost, interval });
+  });
+  return totals;
+}
+
+function updateFreshnessCalculation() {
+  const result = calculateFreshness(currentFreshnessPolicy(), freshnessData.calculator);
+  select('#fresh-cost').textContent = money(result.cost);
+  select('#fresh-tokens').textContent = numberFormat(Math.round(result.tokens));
+  select('#fresh-time').textContent = `${result.minutes.toFixed(1)} min`;
+  select('#fresh-stale').textContent = result.never ? 'Never checked' : staleness(result.worst);
+  const chart = select('#fresh-chart');
+  chart.innerHTML = '';
+  const maximum = Math.max(...result.rows.map(row => row.cost), 0.000001);
+  result.rows.forEach((row, index) => {
+    const item = document.createElement('div');
+    item.innerHTML = `<span>${freshnessData.calculator.source_labels[row.name]}</span><i><b class="tone-${index % 7}" style="width:${Math.max(1, row.cost / maximum * 100)}%"></b></i><strong>${money(row.cost)}</strong>`;
+    chart.append(item);
+  });
+  const blog = result.rows.find(row => row.name === 'blog');
+  select('#fresh-sentence').textContent = `Checking the blog ${intervalSentence(blog.interval)} costs about ${money(blog.cost)}/month and finds a new post within ${staleness(blog.interval)}. The full policy uses measured units and explicit change-rate assumptions.`;
+}
+
+function intervalSentence(hours) {
+  if (hours === null) return 'never';
+  if (hours === 1) return 'hourly';
+  if (hours === 24) return 'daily';
+  if (hours === 168) return 'weekly';
+  if (hours === 720) return 'monthly';
+  return `every ${hours} hours`;
+}
+
+function staleness(hours) {
+  if (hours === null) return 'never';
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'}`;
+  if (hours < 168) return `${hours / 24} day${hours === 24 ? '' : 's'}`;
+  if (hours < 720) return `${hours / 168} week${hours === 168 ? '' : 's'}`;
+  return '1 month';
+}
 
 // Example-question chips. requestSubmit() rather than submit() so the form's own
 // onsubmit handler still runs — submit() would bypass it and reload the page.
@@ -98,6 +263,150 @@ function markActiveStepsDone() {
   });
 }
 
+/*
+ * Markdown rendering for the answer body.
+ * ---------------------------------------
+ * The model writes Markdown ("**Non-custodial staking:** ...", numbered lists, the odd
+ * table). Rendering it as plain text put literal asterisks in front of the reviewer, so
+ * the answer is converted to HTML here.
+ *
+ * The answer text is UNTRUSTED. It is written by a language model over crawled third-party
+ * pages, which is exactly the path a prompt-injection payload takes. So the order is fixed
+ * and must not be rearranged: escape the whole string FIRST, then add markup. After
+ * escapeHtml() there is no way for the input to introduce a tag, and every tag below is
+ * one this function wrote itself.
+ *
+ * The subset is deliberately small — what the model actually emits, nothing more:
+ *   **bold**, *italic*, `code`, # headings, - bullets, 1. numbers, ``` fences, | tables |
+ *
+ * Deliberately NOT supported, with reasons:
+ *   [text](url)  — a URL from model output could be `javascript:`, and it would collide
+ *                  with the "[3]" citation markers. Sources are rendered separately, from
+ *                  server-supplied fields, where they can be trusted.
+ *   _italic_     — snake_case identifiers (corpus_search, as_of) appear in answers and
+ *                  would turn half a sentence italic.
+ *   raw HTML     — escaped, always.
+ */
+
+const HTML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
+const escapeHtml = value => String(value ?? '').replace(/[&<>"]/g, character => HTML_ESCAPES[character]);
+
+// One pass over the already-escaped text. Backticks come first in the alternation so that
+// `**not bold**` inside a code span stays literal.
+const INLINE_MARKUP = /`([^`]+)`|\*\*([^*]+)\*\*|\*([^*\n]+)\*/g;
+
+function renderInline(escapedText) {
+  return escapedText.replace(INLINE_MARKUP, (match, code, bold, italic) => {
+    if (code !== undefined) return `<code>${code}</code>`;
+    if (bold !== undefined) return `<strong>${bold}</strong>`;
+    return `<em>${italic}</em>`;
+  });
+}
+
+const ORDERED_ITEM = /^\s*(\d+)[.)]\s+(.*)$/;
+const BULLET_ITEM = /^\s*[-*+]\s+(.*)$/;
+const HEADING = /^(#{1,6})\s+(.*)$/;
+const TABLE_DIVIDER = /^\s*\|?[\s:|-]+\|[\s:|-]*$/;
+
+/** Split "| a | b |" into its cells, tolerating the optional outer pipes. */
+const tableCells = line =>
+  line.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(cell => cell.trim());
+
+/** A pipe table needs a header row and the |---|---| divider directly under it. */
+const isTable = lines => lines.length >= 2 && lines[0].includes('|') && TABLE_DIVIDER.test(lines[1]);
+
+function renderTable(lines) {
+  const header = tableCells(lines[0]).map(cell => `<th>${renderInline(cell)}</th>`).join('');
+  const body = lines.slice(2)
+    .map(line => `<tr>${tableCells(line).map(cell => `<td>${renderInline(cell)}</td>`).join('')}</tr>`)
+    .join('');
+  return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+/** Headings are capped at h3/h4: the answer lives inside a card, so a real h1 would
+ *  outrank the page's own title. */
+function renderHeading(line) {
+  const [, hashes, content] = line.match(HEADING);
+  const level = hashes.length <= 2 ? 3 : 4;
+  return `<h${level}>${renderInline(content)}</h${level}>`;
+}
+
+function renderList(lines, ordered) {
+  const items = lines
+    .map(line => (ordered ? line.match(ORDERED_ITEM)[2] : line.match(BULLET_ITEM)[1]))
+    .map(item => `<li>${renderInline(item)}</li>`)
+    .join('');
+  // `start` keeps a list that opens at "3." numbered from 3 rather than silently from 1.
+  const start = ordered ? Number(lines[0].match(ORDERED_ITEM)[1]) : 1;
+  if (!ordered) return `<ul>${items}</ul>`;
+  return `<ol${start !== 1 ? ` start="${start}"` : ''}>${items}</ol>`;
+}
+
+const lineKind = line => {
+  if (ORDERED_ITEM.test(line)) return 'ordered';
+  if (BULLET_ITEM.test(line)) return 'bullet';
+  if (HEADING.test(line)) return 'heading';
+  return 'text';
+};
+
+/*
+ * One block = the lines between two blank lines. It is NOT always one thing: the model
+ * habitually writes a lead-in and its list with no blank line between them —
+ *
+ *   Main areas of the business:
+ *   1. **Non-custodial staking:** ...
+ *
+ * — so the block is split into runs of same-kind lines and each run rendered on its own.
+ * Requiring the whole block to be a list is what left "1." sitting in a paragraph.
+ */
+function renderBlock(lines) {
+  if (isTable(lines)) return renderTable(lines);
+  const html = [];
+  let run = [];
+  let kind = null;
+  const flushRun = () => {
+    if (!run.length) return;
+    if (kind === 'ordered') html.push(renderList(run, true));
+    else if (kind === 'bullet') html.push(renderList(run, false));
+    else if (kind === 'heading') html.push(run.map(renderHeading).join(''));
+    // A single newline inside a paragraph is a line break, the way the model means it.
+    else html.push(`<p>${run.map(renderInline).join('<br>')}</p>`);
+    run = [];
+  };
+  for (const line of lines) {
+    const kindOfLine = lineKind(line);
+    if (kindOfLine !== kind) {
+      flushRun();
+      kind = kindOfLine;
+    }
+    run.push(line);
+  }
+  flushRun();
+  return html.join('');
+}
+
+/**
+ * Markdown → HTML for one answer. Returns a string for innerHTML; safe because the input
+ * was escaped before any tag was added.
+ */
+function renderMarkdown(rawText) {
+  const escaped = escapeHtml(rawText).replace(/\r\n?/g, '\n');
+  const html = [];
+  // Fenced code blocks are pulled out first, whole, so their contents are never parsed
+  // as lists or headings.
+  for (const [index, section] of escaped.split(/^```.*$/m).entries()) {
+    if (index % 2 === 1) {
+      html.push(`<pre><code>${section.replace(/^\n|\n$/g, '')}</code></pre>`);
+      continue;
+    }
+    for (const paragraph of section.split(/\n{2,}/)) {
+      const lines = paragraph.split('\n').filter(line => line.trim());
+      if (lines.length) html.push(renderBlock(lines));
+    }
+  }
+  return html.join('');
+}
+
 /** Render the final answer, its sources and its audit receipt. */
 function renderAnswer(data) {
   markActiveStepsDone();
@@ -108,7 +417,9 @@ function renderAnswer(data) {
   select('#status').className = data.sufficient ? 'supported' : 'abstained';
   select('#status').innerHTML = `<i></i> ${data.sufficient ? 'Verified answer' : 'Evidence insufficient'}`;
   select('#date').textContent = data.as_of ? `Evidence as of ${data.as_of}` : '';
-  select('#answer').textContent = data.answer;
+  // innerHTML, not textContent: the model writes Markdown and renderMarkdown escapes
+  // the text before it adds a single tag. See the block comment above.
+  select('#answer').innerHTML = renderMarkdown(data.answer);
   select('#reasoning').textContent = data.reasoning;
   renderCostReceipt(data.cost_receipt);
   renderSources(data.sources);
@@ -232,10 +543,16 @@ function numberFormat(value) {
   return Number(value || 0).toLocaleString('en-US');
 }
 
-/** List each cited source with its provenance, date and content hash. */
+/**
+ * List each cited page with its provenance, date and the hash of every cited passage.
+ * The server already folds chunk-level citations under their page (`_source_records`
+ * in app/agent.py), so one page cited three times is one row saying "3 passages", not
+ * three identical rows pretending to be three sources.
+ */
 function renderSources(sources) {
   const list = select('#sources');
   list.innerHTML = '';
+  let passageCount = 0;
   sources.forEach(source => {
     const item = document.createElement('li');
     const link = document.createElement('a');
@@ -246,14 +563,22 @@ function renderSources(sources) {
     // third-party-editable URLs from the corpus.
     link.rel = 'noopener';
     link.textContent = source.title;
-    // First 10 hex characters of the SHA-256: enough for a human to compare against the
-    // audit record at a glance, and the full hash is in the receipt for real checking.
+    // Older receipts (before passages were grouped) carry one hash at the top level.
+    const passages = source.passages || [{ ref: source.ref, content_sha256: source.content_sha256 }];
+    passageCount += passages.length;
+    // First 10 hex characters of each SHA-256: enough for a human to compare against the
+    // audit record at a glance, and the full hashes are in the receipt for real checking.
+    const hashes = passages.map(passage => `${passage.ref} ${passage.content_sha256.slice(0, 10)}`).join(' · ');
     const provenance = source.provenance.replaceAll('_', ' ');
-    meta.textContent = `${provenance} · ${source.date} · ${source.content_sha256.slice(0, 10)}`;
+    const count = passages.length > 1 ? ` · ${passages.length} passages` : '';
+    meta.textContent = `${provenance} · ${source.date}${count} · ${hashes}`;
     item.append(link, meta);
     list.append(item);
   });
-  select('#source-count').textContent = `${sources.length} source${sources.length === 1 ? '' : 's'}`;
+  const pages = `${sources.length} source${sources.length === 1 ? '' : 's'}`;
+  select('#source-count').textContent = passageCount > sources.length
+    ? `${pages} · ${passageCount} passages`
+    : pages;
 }
 
 /** Link the answer to its signed audit record, when one was issued. */

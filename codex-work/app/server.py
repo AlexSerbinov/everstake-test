@@ -10,6 +10,7 @@ Routes (all part of the public contract — README.md documents them and the UI 
   GET  /health                  liveness plus "is the index actually present"
   GET  /api/stats               the frozen index's build statistics
   GET  /api/costs               generated measured cost/resource report
+  GET  /api/freshness           active policy, measured calculator, refresh/change log
   GET  /api/audit/public-key    the Ed25519 verification key, for offline checking
   GET  /api/audit/<id>          one audit record with a verdict on the chain up to it
   GET  /<path>                  static files from web/
@@ -36,6 +37,8 @@ from pathlib import Path
 from .config import COST_REPORT_PATH, DB_PATH, PORT, ROOT
 from .agent import run_agent
 from .audit import get_record, public_key_b64
+from .freshness import calculator_payload
+from .refresh import freshness_status
 
 WEB = ROOT / "web"
 
@@ -108,6 +111,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/api/costs":
             self._json(200, json.loads(COST_REPORT_PATH.read_text()))
+            return
+        if self.path == "/api/freshness":
+            self._json(200, {"calculator": calculator_payload(), "status": freshness_status()})
             return
         if self.path == "/api/audit/public-key":
             self._serve_audit_public_key()

@@ -6,20 +6,21 @@ The original cited RAG interface is now a bounded Gemini 3 evidence agent. `gemi
 
 `POST /api/query/stream` exposes live planning, exact tool arguments, hashed result summaries, verification, and answer events. The interface now adds a dedicated Cost view with headline spend, stage money/time bars, expandable measured runs, and an expandable per-answer receipt. Both themes and mobile/error/abstention states remain intact.
 
-Freshness is hybrid. Live APY/APR, uptime, status, and reward estimates use `https://mcp.everstake.com` at question time. A weekly systemd timer change-checks known first-party pages; changed content preserves the previous hash-addressed snapshot and swaps in a rebuilt index atomically. `live_fetch` covers a specific stale canonical page under exact-host, robots, redirect, type, and size checks.
+Freshness is now visible and configurable by source type. An hourly scheduler executes seven independent interval/depth policies; web checks short-circuit through sitemap `lastmod`, HTTP validators, and content hash, while GitHub compares the organisation repo list's `pushed_at` and fetches commits since the prior check. The UI shows the refresh/change log and a live Economy/Balanced/Real-time/custom calculator backed by measured ledger units.
 
 Every answer and abstention is appended to a SHA-256 chain and signed with Ed25519. The record contains the exact cited bytes, content hashes, question, answer, as-of date, and tool trace. The public audit endpoint verified the deployed Solana answer with two exact MCP payloads; the private key persists mode `0600` outside the image.
 
 ## Measured result
 
-- Deterministic suite: **296/296 tests passed**.
+- Deterministic suite: **304/304 tests passed**.
 - Fresh measured build: **280 documents**, **1,072 chunks**, **775,151 embedding tokens**, **$0.01550302**, **4.71 min wall time**; the served frozen index remains 1,075 chunks.
 - Quality rerun: **19/20**, zero invented facts, **$0.09753750**; the sole miss was an unchanged lexical ShredStream assertion.
 - Final adversarial set: **20/20**; four real agent cases cost **$0.02038270**, averaged **3.02 s**, and averaged **$0.00509568/question**.
-- Current-task API spend including deployed smoke: **$0.30510199**; complete known assignment activity: **$0.56476151**, below the combined ~$2 ceiling.
+- Known current-task API spend including the refresh: **$0.32063767**; complete known assignment activity: **$0.58029719**, below the combined ~$2 ceiling.
 - `COST.md` records provider usage plus measured wall/CPU/RSS/bytes for every stage and shows row-by-row ×50 arithmetic.
 - Public smoke: HTTP 200, Gemini CEO answer **$0.00419260 / 3.19 s**, expandable four-step receipt, signed audit `verified: true`, container **0 restarts**.
-- Weekly refresh timer is enabled; its dry run checked a live source, found **0 changes**, and spent **$0** on indexing.
+- A real refresh checked 20 web documents and 69 GitHub repositories, found and applied **2 live-page changes**, and re-indexed 776,784 tokens for **$0.01553568** in 69.27 seconds.
+- Balanced projects **$0.20/month**, **9.87M tokens**, **220.8 machine minutes**, and at most **7 days stale** under the disclosed change-rate assumptions.
 
 ## Deployment
 
