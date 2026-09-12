@@ -1,0 +1,202 @@
+[
+  {
+    "name": "eosmon",
+    "description": null,
+    "language": "Shell",
+    "stars": 2,
+    "created_at": "2019-10-29T08:40:10Z",
+    "pushed_at": "2023-11-16T19:44:35Z",
+    "default_branch": "master",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/eosmon"
+  },
+  {
+    "name": "proxymon",
+    "description": null,
+    "language": "Shell",
+    "stars": 0,
+    "created_at": "2019-11-19T09:28:34Z",
+    "pushed_at": "2019-11-20T08:33:28Z",
+    "default_branch": "master",
+    "topics": [
+      "eosio",
+      "telegram-bot"
+    ],
+    "homepage": "https://t.me/colinproxybot",
+    "html_url": "https://github.com/everstake/proxymon"
+  },
+  {
+    "name": "goz-relayer-helper",
+    "description": null,
+    "language": "Shell",
+    "stars": 0,
+    "created_at": "2020-06-04T07:13:09Z",
+    "pushed_at": "2023-11-16T20:31:19Z",
+    "default_branch": "master",
+    "topics": [
+      "blockchain",
+      "cosmos"
+    ],
+    "homepage": "https://medium.com/everstake/everstake-took-part-in-the-game-of-zones-and-earned-a-nomination-for-the-liveness-reward-553a8c2408e6",
+    "html_url": "https://github.com/everstake/goz-relayer-helper"
+  },
+  {
+    "name": "gpg",
+    "description": "How to encrypt security reports for Everstake using GPG",
+    "language": null,
+    "stars": 0,
+    "created_at": "2022-06-17T12:11:25Z",
+    "pushed_at": "2024-01-19T12:21:01Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": "https://everstake.one/security/report-vulnerability",
+    "html_url": "https://github.com/everstake/gpg"
+  },
+  {
+    "name": "oasis-documentation",
+    "description": null,
+    "language": null,
+    "stars": 1,
+    "created_at": "2022-08-22T11:45:37Z",
+    "pushed_at": "2022-11-10T18:25:37Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/oasis-documentation"
+  },
+  {
+    "name": "wallet-sdk",
+    "description": null,
+    "language": "TypeScript",
+    "stars": 5,
+    "created_at": "2022-11-28T12:51:53Z",
+    "pushed_at": "2026-09-09T16:00:50Z",
+    "default_branch": "main",
+    "topics": [
+      "blockchain",
+      "sdk"
+    ],
+    "homepage": "https://wallet-sdk.everstake.one",
+    "html_url": "https://github.com/everstake/wallet-sdk"
+  },
+  {
+    "name": ".github",
+    "description": null,
+    "language": null,
+    "stars": 0,
+    "created_at": "2023-02-21T16:42:05Z",
+    "pushed_at": "2026-09-04T19:34:42Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/.github"
+  },
+  {
+    "name": "multiversx",
+    "description": "Public repository for multiversx explorer data import",
+    "language": null,
+    "stars": 0,
+    "created_at": "2023-04-12T13:03:24Z",
+    "pushed_at": "2023-11-23T13:22:58Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/multiversx"
+  },
+  {
+    "name": "chkrootkit",
+    "description": "fork of https://www.chkrootkit.org",
+    "language": "Shell",
+    "stars": 0,
+    "created_at": "2023-12-05T10:16:40Z",
+    "pushed_at": "2026-09-04T19:35:28Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": "",
+    "html_url": "https://github.com/everstake/chkrootkit"
+  },
+  {
+    "name": "bip39",
+    "description": "CLI for generation and verification of mnemonics in BIP39 standard with hash in Argon2id",
+    "language": "Go",
+    "stars": 24,
+    "created_at": "2023-12-14T13:33:30Z",
+    "pushed_at": "2026-09-04T19:35:23Z",
+    "default_branch": "main",
+    "topics": [
+      "argon2",
+      "argon2id",
+      "bip39",
+      "bitcoin",
+      "blockchain",
+      "cryptography",
+      "ethereum",
+      "go",
+      "golang",
+      "mnemonic"
+    ],
+    "homepage": "",
+    "html_url": "https://github.com/everstake/bip39"
+  },
+  {
+    "name": "eigenlayer",
+    "description": null,
+    "language": null,
+    "stars": 0,
+    "created_at": "2024-05-09T10:03:42Z",
+    "pushed_at": "2026-07-02T14:11:21Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/eigenlayer"
+  },
+  {
+    "name": "i",
+    "description": null,
+    "language": null,
+    "stars": 0,
+    "created_at": "2025-03-18T16:35:44Z",
+    "pushed_at": "2025-03-18T16:36:11Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/i"
+  },
+  {
+    "name": "everstake-swqos-docs",
+    "description": null,
+    "language": "Rust",
+    "stars": 3,
+    "created_at": "2025-10-09T08:52:39Z",
+    "pushed_at": "2026-07-27T14:31:51Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/everstake-swqos-docs"
+  },
+  {
+    "name": "eth2-batch-deposit-contract",
+    "description": null,
+    "language": "Solidity",
+    "stars": 0,
+    "created_at": "2025-10-31T15:15:27Z",
+    "pushed_at": "2026-05-08T19:11:45Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/eth2-batch-deposit-contract"
+  },
+  {
+    "name": "mcp",
+    "description": null,
+    "language": "Go",
+    "stars": 1,
+    "created_at": "2026-04-20T08:17:28Z",
+    "pushed_at": "2026-08-25T15:07:16Z",
+    "default_branch": "main",
+    "topics": [],
+    "homepage": null,
+    "html_url": "https://github.com/everstake/mcp"
+  }
+]

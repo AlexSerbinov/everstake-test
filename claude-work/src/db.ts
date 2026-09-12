@@ -8,6 +8,8 @@
 //   facts    → `facts` (+ `facts_fts`)
 //   ask      → `live_cache` (pages the agent fetched during a question) and `questions_log`
 //   any call → `llm_calls`, the ledger every cost figure in REPORT.md §3 is computed from
+//   any stage → `stage_runs`, one row per stage execution with its wall time, CPU, peak RSS,
+//              items processed and bytes downloaded — the resource half of COST.md
 //
 // Why `node:sqlite` and no ORM: the schema is ~8 tables and the queries are hand-written SQL
 // with FTS5 and a BLOB scan — an ORM would hide exactly the parts a reviewer needs to read,
@@ -74,6 +76,24 @@ function migrate(database: DatabaseSync) {
   createChunkTables(database);
   createFactTables(database);
   createOperationalTables(database);
+  addColumnIfMissing(database, "llm_calls", "run_id", "TEXT");
+}
+
+/**
+ * The one migration this file supports beyond "create if missing": adding a column to a table
+ * that already exists in a shipped `data/kb.db`.
+ *
+ * `CREATE TABLE IF NOT EXISTS` cannot add a column to an existing table, and SQLite has no
+ * `ADD COLUMN IF NOT EXISTS`, so the column list is read back from `PRAGMA table_info` first.
+ * Only ever call this with a nullable column and no default — an existing row cannot be given a
+ * value that was never measured, and pretending otherwise is exactly the invention this project
+ * is trying not to commit (see `run_id` on `llm_calls`: NULL means "logged before stage runs
+ * existed", and the cost report says so out loud rather than guessing which run it belonged to).
+ */
+function addColumnIfMissing(database: DatabaseSync, table: string, column: string, declaration: string) {
+  const columns = database.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+  if (columns.some((existing) => existing.name === column)) return;
+  database.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${declaration}`);
 }
 
 /**
@@ -265,6 +285,37 @@ function createOperationalTables(database: DatabaseSync) {
     latency_ms INTEGER,
     response  TEXT                        -- json
   );
+
+  -- One row per execution of a pipeline stage (crawl, dedup, index, facts, eval, one question).
+  -- Written by withStageMetrics() in src/metrics.ts, which is the ONLY writer: the whole point
+  -- is that resources are recorded by the wrapper rather than by each stage remembering to.
+  --
+  -- run_id is the join key back to llm_calls.run_id, so a stage's money and its time come
+  -- from two tables that agree by construction. Rows written before this table existed have
+  -- llm_calls.run_id = NULL; the cost report attributes those by stage tag and labels them as
+  -- having no recovered time/CPU rather than inventing one.
+  --
+  -- Every resource column is nullable because a stage that crashed mid-run has a start and an
+  -- error and nothing else, and a zero would read as "measured, and it was free".
+  CREATE TABLE IF NOT EXISTS stage_runs (
+    id             INTEGER PRIMARY KEY,
+    run_id         TEXT NOT NULL UNIQUE,   -- e.g. 'facts-mfk2j1-9c1d4a77'
+    stage          TEXT NOT NULL,          -- crawl | dedup | index | facts | eval | adversarial | question | pipeline
+    started_at     TEXT NOT NULL,
+    ended_at       TEXT,
+    wall_ms        INTEGER,
+    cpu_user_ms    INTEGER,                -- process.cpuUsage() delta over the run, user time
+    cpu_system_ms  INTEGER,                -- ditto, kernel time
+    peak_rss_bytes INTEGER,                -- sampled process RSS: whole process, not this stage alone
+    items          INTEGER,                -- how many units the stage processed
+    item_unit      TEXT,                   -- 'documents' | 'chunks' | 'questions' | ...
+    bytes_in       INTEGER,                -- bytes downloaded during the run (crawl)
+    ok             INTEGER NOT NULL DEFAULT 1,
+    error          TEXT,
+    host           TEXT,                   -- which machine measured this (dev laptop vs the VPS)
+    meta           TEXT                    -- json: flags the stage ran with, question text, …
+  );
+  CREATE INDEX IF NOT EXISTS idx_stage_runs_stage ON stage_runs(stage, started_at);
   `);
 }
 

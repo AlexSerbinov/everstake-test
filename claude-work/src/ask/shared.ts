@@ -10,6 +10,8 @@
 
 import { z } from "zod";
 import { nowIso, run } from "../db.js";
+import { currentRunId } from "../metrics.js";
+import { buildReceipt, type Receipt } from "./receipt.js";
 import type { Candidate, FactRow } from "./retrieve.js";
 
 /**
@@ -102,6 +104,8 @@ export interface AskResult {
     usage: any;
     cost_usd: number;
     latency_ms: number;
+    /** Step-by-step money and time for this one question; see ./receipt.ts. Set by `logQuestion`. */
+    receipt?: Receipt;
     instructions_in_context: number;
     config: { ranking: any; retrieval: any; filters: any; gates: any };
   };
@@ -464,9 +468,18 @@ export function applyAnswerGates(params: {
   };
 }
 
-/** Stamps latency, writes the row `questions_log` (and therefore the eval and the UI) reads, returns the result. */
+/**
+ * Stamps latency and the cost receipt, writes the row `questions_log` (and therefore the eval
+ * and the UI) reads, returns the result.
+ *
+ * The receipt is built here rather than in either answer path because this is the single point
+ * both of them pass through, so neither can ship an answer without one. It is derived from the
+ * `llm_calls` rows this question's stage run wrote plus `res.steps`, which is why it has to
+ * happen after the last model call and before the result leaves the process.
+ */
 export function logQuestion(res: AskResult, t0: number, opts: { error?: boolean } = {}): AskResult {
   res.trace.latency_ms = Date.now() - t0;
+  res.trace.receipt = buildReceipt(currentRunId(), res.steps ?? [], res.trace.latency_ms);
   run("INSERT INTO questions_log (ts, question, status, mode, cost_usd, latency_ms, response) VALUES (?,?,?,?,?,?,?)",
     nowIso(), res.question, opts.error ? "error" : res.status, res.mode, res.trace.cost_usd, res.trace.latency_ms,
     // `evidence_numbers` and the full candidate list are dropped from the stored copy only:

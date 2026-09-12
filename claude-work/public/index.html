@@ -31,6 +31,7 @@
         <button data-view="corpus"><span class="mi">▤</span><span><b>Corpus</b><i>what was crawled, deduped, dropped</i></span></button>
         <button data-view="instructions"><span class="mi">⚑</span><span><b>AI instructions</b><i>sentences stripped from the index</i></span></button>
         <button data-view="eval"><span class="mi">✓</span><span><b>Eval</b><i>20 questions, verdicts, measured cost</i></span></button>
+        <button data-view="cost"><span class="mi">$</span><span><b>Cost</b><i>what every stage cost, measured</i></span></button>
         <button data-view="settings"><span class="mi">⚙</span><span><b>Settings</b><i>live ranking knobs, no restart</i></span></button>
       </div>
     </div>
@@ -133,7 +134,44 @@
   <div id="evalTiles" class="tiles"></div>
   <div class="tablewrap"><table id="evalTable"><thead><tr><th>#</th><th>question</th><th>reference</th><th>system answer</th><th>verdict</th></tr></thead><tbody></tbody></table></div>
   <h3 class="h">Measured cost</h3>
-  <pre id="costBox" class="pre"></pre>
+  <div id="evalCostLine" class="cost-crosslink"></div>
+</section>
+
+<!-- ══ COST ═══════════════════════════════════════════════════════════════ -->
+<section id="view-cost" class="view">
+  <!-- Everything in here is painted by loadCost() in app.js from GET /api/cost, which is the
+       same object `npm run cost` renders COST.md from. The markup below is only the frame. -->
+  <div class="cost-hero">
+    <p class="eyebrow">measured, not estimated</p>
+    <h2 id="costHeadline" class="cost-headline">Reading the ledger…</h2>
+    <p id="costWhere" class="cost-where"></p>
+    <div id="costTiles" class="tiles"></div>
+    <p id="costMachine" class="dim cost-machine"></p>
+  </div>
+
+  <h3 class="h">Where the money and the time go</h3>
+  <div id="costBars" class="cost-bars"></div>
+
+  <h3 class="h">Per stage <span class="dim">— click a row to see its individual runs</span></h3>
+  <div class="tablewrap">
+    <table id="costStages">
+      <thead><tr>
+        <th>stage</th><th>what runs</th><th>model</th><th>units</th><th>tokens in</th><th>out</th>
+        <th>cost</th><th>wall</th><th>cpu</th><th>peak ram</th><th>$ / unit</th><th>×50</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div id="costStageNotes" class="cost-notes"></div>
+
+  <h3 class="h">One real question, step by step</h3>
+  <div id="costReceipt"></div>
+
+  <h3 class="h">What is measured, what is assumed</h3>
+  <div id="costHonesty" class="cols"></div>
+
+  <h3 class="h">Price table the costs were computed from</h3>
+  <div id="costPrices"></div>
 </section>
 
 <!-- ══ SETTINGS ═══════════════════════════════════════════════════════════ -->

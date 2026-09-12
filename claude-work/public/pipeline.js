@@ -248,6 +248,8 @@ export class PipelinePanel {
     this.toolCalls = 0;
     this.startedAt = performance.now();
     this.finalSummary = null;
+    this.receipt = null;        // the cost receipt, set by complete() from the final event
+    this.receiptOpen = false;   // whether the itemised table under the summary is showing
     this.element = null;
     this.timerHandle = setInterval(() => this.paintTimers(), TIMER_REPAINT_INTERVAL_MS);
     this.render();
@@ -447,6 +449,10 @@ export class PipelinePanel {
     if (result?.trace?.model) parts.push(result.trace.model);
 
     this.finalSummary = parts.join("  ·  ");
+    /* The receipt survives the panel collapsing: the step list is a live view that
+       has done its job, but "what did that cost" is what a reader wants AFTER the
+       answer is on screen, so it stays reachable behind one click. */
+    this.receipt = result?.trace?.receipt ?? null;
     this.collapsed = true;
     clearInterval(this.timerHandle);
     this.timerHandle = null;
@@ -456,7 +462,43 @@ export class PipelinePanel {
   render() {
     this.mountOnce();
     this.element.classList.toggle("collapsed", this.collapsed);
-    this.element.innerHTML = this.renderHeadHtml() + this.renderBodyHtml();
+    this.element.innerHTML = this.renderHeadHtml() + this.renderBodyHtml() + this.renderReceiptHtml();
+  }
+
+  /**
+   * The receipt line under the pipeline summary, and the itemised table behind it.
+   *
+   * Rendered outside `.pipe-body` on purpose: the body is hidden when the panel
+   * collapses, and the receipt must stay visible once the answer has arrived.
+   *
+   * The table markup is `window.__receiptRowsHtml`, defined in app.js, so the
+   * receipt under an answer and the one in the Cost view are literally the same
+   * rendering. The fallback keeps this module standalone (mock mode, and the unit
+   * tests, which import it without app.js).
+   */
+  renderReceiptHtml() {
+    const receipt = this.receipt;
+    if (!receipt?.rows?.length) return "";
+    const total = receipt.total;
+    /* Spaces between thousands, not commas, matching every other figure in the app and in
+       COST.md: the same number must not be spelled two ways on one screen. */
+    const digits = (n) => n.toLocaleString("en-US").replace(/,/g, " ");
+    const cached = total.cache_read ? ` (${digits(total.cache_read)} cached)` : "";
+    const lead = `${receipt.rows.length} steps · ${digits(total.tokens_in)} tokens in${cached}`
+      + ` · ${digits(total.tokens_out)} out · ${formatUsd(total.usd)} · ${formatDuration(total.wall_ms)}`;
+
+    const table = typeof window !== "undefined" && window.__receiptRowsHtml
+      ? window.__receiptRowsHtml(receipt)
+      : "";
+
+    return `<div class="pipe-receipt${this.receiptOpen ? " open" : ""}">
+      <button class="rc-toggle" type="button">
+        <span class="rc-lead">receipt</span>
+        <span>${escapeHtml(lead)}</span>
+        <span class="rc-more">${this.receiptOpen ? "hide ▴" : "itemise ▾"}</span>
+      </button>
+      ${this.receiptOpen ? `<div class="receipt">${table}</div>` : ""}
+    </div>`;
   }
 
   /**
@@ -471,9 +513,11 @@ export class PipelinePanel {
     this.element.className = "pipe";
     this.mount.appendChild(this.element);
     this.element.addEventListener("click", (event) => {
-      const target = event.target.closest(".pipe-toggle, .expand");
+      const target = event.target.closest(".pipe-toggle, .expand, .rc-toggle");
       if (!target) return;
-      if (target.classList.contains("pipe-toggle")) {
+      if (target.classList.contains("rc-toggle")) {
+        this.receiptOpen = !this.receiptOpen;
+      } else if (target.classList.contains("pipe-toggle")) {
         this.collapsed = !this.collapsed;
       } else {
         const key = target.dataset.k;

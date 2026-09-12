@@ -32,6 +32,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import { ROOT, env, getConfig } from "./config.js";
 import { nowIso, run } from "./db.js";
+import { currentRunId } from "./metrics.js";
 
 /** Which pipeline step a call belongs to. It is the grouping key of the cost report, and the
  *  reason `npm run cost` can say "indexing cost this much, answering costs this much per
@@ -134,12 +135,16 @@ export function logCall(call: {
   costUsd?: number; latencyMs?: number; ok?: boolean; error?: string; meta?: unknown;
 }): number {
   const inserted = run(
-    `INSERT INTO llm_calls (ts, stage, provider, model, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, cost_usd, latency_ms, ok, error, meta)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    `INSERT INTO llm_calls (ts, stage, provider, model, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, cost_usd, latency_ms, ok, error, meta, run_id)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     nowIso(), call.stage, call.provider, call.model, call.input ?? 0, call.output ?? 0, call.cacheRead ?? 0, call.cacheWrite ?? 0,
     // `ok === false` rather than `!call.ok`: an omitted flag means success, which is the
     // common case and must not be recorded as an error.
     call.costUsd ?? 0, call.latencyMs ?? null, call.ok === false ? 0 : 1, call.error ?? null, call.meta ? JSON.stringify(call.meta) : null,
+    // Which stage run paid for this call. NULL when the call happened outside any wrapped stage
+    // (a bare script, or a row written before stage_runs existed) — the cost report treats a
+    // NULL as "attributable by stage tag only, with no time or CPU recovered".
+    currentRunId(),
   );
   return Number(inserted.lastInsertRowid);
 }

@@ -122,6 +122,7 @@ const VIEW_LOADERS = {
   corpus: loadCorpus,
   instructions: loadInstructions,
   eval: loadEval,
+  cost: loadCost,
   settings: loadSettings,
 };
 
@@ -1133,7 +1134,18 @@ async function loadEval() {
     renderEvalTiles(run.metrics);
     renderEvalTable(run.rows);
   }
-  $("#costBox").textContent = JSON.stringify(cost, null, 2);
+  /* One line and a way through, rather than the raw JSON dump that used to live here: the
+     Cost view renders the same object properly, and two renderings of one endpoint invite
+     the reader to wonder which is authoritative. */
+  /* The same `headline` object the Cost view uses, so the two pages cannot quote different
+     figures for the same thing — which they did until this stopped reading `index.cost_usd`,
+     an all-time total that counts every superseded embedding run. */
+  $("#evalCostLine").innerHTML =
+    `<span>Every question above is in the ledger. Building the index cost <b>${formatMoney(cost.headline?.build_cost_usd)}</b>; `
+    + `one question averages <b>${formatMoney(cost.headline?.per_question_usd)}</b>; `
+    + `everything ever spent on this project, evaluation included, is <b>${formatMoney(cost.total_spent_usd)}</b>.</span>`
+    + `<button class="btn-ghost sm" data-view="cost" type="button">Open the Cost view →</button>`;
+  $("#evalCostLine button").onclick = () => showView("cost");
 }
 
 function renderEvalTiles(metrics) {
@@ -1161,6 +1173,328 @@ function renderEvalTable(rows) {
         <td>${escapeHtml(row.system_answer)}${row.as_of ? `<div class="subtle">as of ${row.as_of}</div>` : ""}</td>
         <td class="${verdictClass(verdict)}">${escapeHtml(verdict)}${row.human_verdict ? " (human)" : ""}<div class="subtle" style="font-weight:400">${escapeHtml(row.reason)}</div></td></tr>`;
   }).join("");
+}
+
+/* ---------------------------------------------------------------------------
+   Cost view
+   ---------------------------------------------------------------------------
+
+   The money-and-resources view. Everything here comes from GET /api/cost, which
+   is the same object `npm run cost` renders COST.md from — so the page and the
+   committed file cannot disagree, and neither can invent a number.
+
+   The design rule for this view specifically: a figure that was never measured
+   must look different from a figure that was measured as zero. Hence "—" for
+   the first and "$0" / "free" for the second, everywhere below.
+   --------------------------------------------------------------------------- */
+
+/* One colour per stage, drawn from the palette the rest of the app already uses
+   (three tier hues, the accent, and two semantic colours) rather than a new
+   chart palette — the bars have to look like part of this product. */
+const STAGE_COLORS = {
+  crawl: "var(--t1)",
+  dedup: "var(--t2)",
+  index: "var(--t3)",
+  facts: "var(--accent)",
+  eval: "var(--idk)",
+  question: "var(--ok)",
+};
+
+/* A segment thinner than this is invisible and unhoverable, so a stage that cost
+   a rounding error still gets a sliver rather than disappearing from the bar. */
+const MIN_BAR_SEGMENT_PERCENT = 0.6;
+
+/* Which stages make up "building the index". `eval` and `question` are running
+   costs, not build costs, and folding them in would inflate the headline. */
+const BUILD_STAGES = ["crawl", "dedup", "index", "facts"];
+
+/**
+ * Money on the Cost view. Distinct from `formatUsd` in pipeline.js in one way that matters:
+ * a measured zero prints as the word "free", never as "$0.00000", so a stage that calls no
+ * model reads as free rather than as a suspiciously precise nothing. A missing figure is "—".
+ */
+function formatMoney(usd) {
+  if (usd == null) return "—";
+  if (usd === 0) return "free";
+  if (usd < 0.000001) return "<$0.000001";
+  if (usd < 0.001) return `$${usd.toFixed(6)}`;
+  if (usd < 1) return `$${usd.toFixed(4)}`;
+  return `$${usd.toFixed(2)}`;
+}
+
+/** Bytes → "41.2 MB". Display only. */
+function formatBytes(bytes) {
+  if (bytes == null) return "—";
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) { value /= 1024; unit++; }
+  return `${value.toFixed(value < 10 && unit > 0 ? 1 : 0)} ${units[unit]}`;
+}
+
+/**
+ * Durations on this view run from a 3 ms SQLite read to a 40-minute crawl, which
+ * is why it does not reuse `formatDuration` from pipeline.js: that one tops out
+ * at seconds, and "2361.4 s" is not a number anybody reads.
+ */
+function formatDurationLong(ms) {
+  if (ms == null) return "—";
+  if (ms < 1000) return `${Math.round(ms)} ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)} s`;
+  const minutes = Math.floor(ms / 60_000);
+  const seconds = Math.round((ms % 60_000) / 1000);
+  if (minutes < 60) return `${minutes}m ${seconds}s`;
+  return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+}
+
+/** Thin spaces between thousands: 2 220 380 reads faster than 2220380 in a table. */
+const groupDigits = (n) => (n == null ? "—" : Number(n).toLocaleString("en-US").replace(/,/g, " "));
+
+/** The whole view. One fetch, then six renderers over the same object. */
+async function loadCost() {
+  const report = await fetchJson("/api/cost");
+  renderCostHero(report);
+  renderCostBars(report.pipeline || []);
+  renderCostStages(report.pipeline || []);
+  renderCostReceipt(report.receipt_example);
+  renderCostHonesty(report);
+  renderCostPrices(report.prices);
+}
+
+/**
+ * The ten-second version: one sentence, one "where it goes" line, six tiles.
+ *
+ * The headline is composed here rather than served pre-written, because it has to
+ * read as a sentence in the UI's own voice — but every number in it is the same
+ * field COST.md uses, so the two say the same thing in different words.
+ */
+function renderCostHero(report) {
+  /* `report.headline` is computed server-side, from the same figures COST.md quotes, so the
+     page and the file cannot headline different numbers. In particular `per_question_usd` is
+     the measured cost on the CURRENTLY configured model, not the all-time average across
+     every model this project has experimented with — those differ by 4× here. */
+  const headline = report.headline || {};
+  const stages = report.pipeline || [];
+  const build = stages.filter((stage) => BUILD_STAGES.includes(stage.id));
+  const perQuestion = headline.per_question_usd ?? report.per_query?.avg_cost_usd ?? 0;
+
+  $("#costHeadline").innerHTML =
+    `Building the whole index cost <b>${formatMoney(headline.build_cost_usd)}</b>.`
+    + `<br>One question costs about <b>${formatMoney(perQuestion)}</b>.`;
+
+  const costLeader = [...build].sort((a, b) => b.cost_usd - a.cost_usd)[0];
+  const timeLeader = [...build].sort((a, b) => (b.wall_ms || 0) - (a.wall_ms || 0))[0];
+  const share = (part, whole) => (whole ? Math.round(100 * part / whole) : 0);
+  $("#costWhere").innerHTML = costLeader
+    ? `<b>${share(costLeader.cost_usd, headline.build_cost_usd)}%</b> of the build cost is `
+      + `${escapeHtml(costLeader.plain.replace(/\.$/, "").toLowerCase())}, and `
+      + `<b>${share(timeLeader?.wall_ms || 0, headline.build_wall_ms)}%</b> of the build time is `
+      + `${escapeHtml((timeLeader?.label || "").toLowerCase())} — polite, one page at a time.`
+    : "";
+
+  const tiles = [
+    ["index build, one-off", formatMoney(headline.build_cost_usd)],
+    ["build wall time", headline.build_wall_ms ? formatDurationLong(headline.build_wall_ms) : "—"],
+    [`one question · ${escapeHtml(headline.per_question_basis || "")}`, formatMoney(perQuestion)],
+    ["1 000 questions", formatMoney(perQuestion * 1000)],
+    ["×50 corpus, index build", formatMoney(build.reduce((total, stage) => total + stage.x50.cost_usd, 0))],
+    ["spent on the project so far, experiments included", formatMoney(report.total_spent_usd)],
+  ];
+  $("#costTiles").innerHTML = tiles
+    .map(([label, value]) => `<div class="tile"><div class="v">${escapeHtml(value)}</div><div class="l">${label}</div></div>`)
+    .join("");
+
+  $("#costMachine").textContent =
+    `Timings measured on ${report.machine?.current || "an unrecorded machine"}. ${report.machine?.note || ""}`;
+}
+
+/**
+ * Two stacked bars: money by stage, and wall time by stage. Side by side, because
+ * the entire point of the pair is that they have different shapes — the money is
+ * almost all fact extraction, the time is almost all crawling.
+ */
+function renderCostBars(stages) {
+  const money = stages.filter((stage) => stage.cost_usd > 0);
+  const time = stages.filter((stage) => stage.wall_ms > 0);
+  $("#costBars").innerHTML =
+    stackedBarHtml("Money · one run of each stage", money, (stage) => stage.cost_usd, formatMoney)
+    + stackedBarHtml("Wall time · one run of each stage", time, (stage) => stage.wall_ms, formatDurationLong);
+}
+
+function stackedBarHtml(title, stages, value, format) {
+  const total = stages.reduce((sum, stage) => sum + value(stage), 0);
+  if (!total) {
+    return `<div class="cost-bar"><div class="cb-head"><span>${title}</span><span class="dim mono">not measured yet</span></div>
+      <div class="cb-track empty-track"></div></div>`;
+  }
+  const segments = stages.map((stage) => {
+    const percent = Math.max(MIN_BAR_SEGMENT_PERCENT, 100 * value(stage) / total);
+    return `<i style="width:${percent}%;background:${STAGE_COLORS[stage.id] || "var(--line-hard)"}"
+              title="${escapeHtml(stage.label)} · ${escapeHtml(format(value(stage)))} · ${Math.round(100 * value(stage) / total)}%"></i>`;
+  }).join("");
+
+  /* Only the segments worth naming get a legend entry; below 3% the label would
+     be longer than the thing it labels. */
+  const legend = stages
+    .filter((stage) => 100 * value(stage) / total >= 3)
+    .map((stage) => `<span class="cb-key"><i style="background:${STAGE_COLORS[stage.id] || "var(--line-hard)"}"></i>`
+      + `${escapeHtml(stage.label)} <b>${escapeHtml(format(value(stage)))}</b> `
+      + `<span class="dim">${Math.round(100 * value(stage) / total)}%</span></span>`)
+    .join("");
+
+  return `<div class="cost-bar">
+    <div class="cb-head"><span>${title}</span><span class="mono dim">${escapeHtml(format(total))} total</span></div>
+    <div class="cb-track">${segments}</div>
+    <div class="cb-legend">${legend}</div>
+  </div>`;
+}
+
+/** The stage table. Each row expands into the individual runs behind its averages. */
+function renderCostStages(stages) {
+  $("#costStages tbody").innerHTML = stages.map(costStageRowHtml).join("");
+  $("#costStageNotes").innerHTML = stages
+    .map((stage) => `<p><b style="color:${STAGE_COLORS[stage.id]}">${escapeHtml(stage.label)}</b> — ${escapeHtml(stage.plain)}`
+      + (stage.unattributed_cost_usd > 0
+        ? ` <span class="dim">${formatMoney(stage.unattributed_cost_usd)} of this (${stage.unattributed_calls} calls) was logged before per-stage measurement existed: the money is exact, the time and memory behind it are not recoverable and are left blank.</span>`
+        : "")
+      + `</p>`)
+    .join("");
+
+  /* Delegated from the tbody: the rows are replaced wholesale on every render, so
+     a handler bound per row would be thrown away with them. */
+  $("#costStages tbody").onclick = (event) => {
+    const row = event.target.closest("tr.cost-stage");
+    if (!row) return;
+    const detail = row.nextElementSibling;
+    if (!detail?.classList.contains("cost-runs")) return;
+    detail.hidden = !detail.hidden;
+    row.classList.toggle("open", !detail.hidden);
+  };
+}
+
+function costStageRowHtml(stage) {
+  const units = stage.items == null
+    ? "—"
+    : `${groupDigits(stage.items)} <span class="dim">${escapeHtml(stage.item_unit || "")}</span>`;
+  const cached = stage.cache_read
+    ? `<div class="subtle">${groupDigits(stage.cache_read)} cached</div>` : "";
+
+  return `<tr class="cost-stage" data-stage="${stage.id}">
+      <td><span class="cost-dot" style="background:${STAGE_COLORS[stage.id]}"></span><b>${escapeHtml(stage.label)}</b>
+        <div class="subtle">${stage.runs
+        ? `${stage.runs} run${stage.runs === 1 ? "" : "s"} recorded · ${escapeHtml(stage.basis)} · click to expand`
+        : "no measured run — money from the ledger tag alone"}</div></td>
+      <td><span class="pill quiet">${escapeHtml(stage.what_runs)}</span></td>
+      <td class="subtle">${stage.models.length ? stage.models.map((model) => `<code>${escapeHtml(model)}</code>`).join(" ") : "—"}</td>
+      <td class="num">${units}</td>
+      <td class="num">${stage.tokens_in ? groupDigits(stage.tokens_in) : "—"}${cached}</td>
+      <td class="num">${stage.tokens_out ? groupDigits(stage.tokens_out) : "—"}</td>
+      <td class="num"><b>${formatMoney(stage.cost_usd)}</b></td>
+      <td class="num">${formatDurationLong(stage.wall_ms)}</td>
+      <td class="num">${formatDurationLong(stage.cpu_ms)}</td>
+      <td class="num">${formatBytes(stage.peak_rss_bytes)}</td>
+      <td class="num">${formatMoney(stage.cost_per_unit_usd)}</td>
+      <td class="num">${stage.x50.scales === "constant" ? '<span class="dim">unchanged</span>' : `<b>${formatMoney(stage.x50.cost_usd)}</b>`}
+        <div class="subtle">${escapeHtml(stage.x50.scales)}</div></td>
+    </tr>
+    <tr class="cost-runs" hidden><td colspan="12">${stageRunsHtml(stage)}</td></tr>`;
+}
+
+/** The expanded panel: the ×50 arithmetic in words, then every individual run. */
+function stageRunsHtml(stage) {
+  const arithmetic = `<div class="cost-formula"><span class="k">×50</span>${escapeHtml(stage.x50.formula)}</div>`;
+  if (!stage.runs_detail.length) {
+    return arithmetic + `<div class="dim" style="padding:10px 0;font-size:13px">No measured runs yet — this stage's money comes from ledger rows written before per-stage measurement existed, so it has no time or memory figures.</div>`;
+  }
+  return arithmetic + `<table class="inner"><thead><tr>
+      <th>started</th><th>wall</th><th>cpu</th><th>peak ram</th><th>units</th><th>downloaded</th><th>cost</th><th>run id</th>
+    </tr></thead><tbody>${stage.runs_detail.map((run) => `<tr>
+      <td class="num">${escapeHtml(run.started_at.slice(0, 19).replace("T", " "))}${run.ok ? "" : ' <span style="color:var(--err)">failed</span>'}</td>
+      <td class="num">${formatDurationLong(run.wall_ms)}</td>
+      <td class="num">${formatDurationLong(run.cpu_ms)}</td>
+      <td class="num">${formatBytes(run.peak_rss_bytes)}</td>
+      <td class="num">${run.items == null ? "—" : `${groupDigits(run.items)} ${escapeHtml(run.item_unit || "")}`}</td>
+      <td class="num">${run.bytes_in ? formatBytes(run.bytes_in) : "—"}</td>
+      <td class="num">${formatMoney(run.cost_usd)}</td>
+      <td class="subtle mono">${escapeHtml(run.run_id)}</td>
+    </tr>`).join("")}</tbody></table>`;
+}
+
+/** The worked example: one question that really happened, priced line by line. */
+function renderCostReceipt(receipt) {
+  if (!receipt?.rows?.length) {
+    $("#costReceipt").innerHTML =
+      '<div class="empty">No question has been answered under measurement yet. Ask one, then reload this view.</div>';
+    return;
+  }
+  $("#costReceipt").innerHTML = `<div class="receipt">
+    <div class="rc-head">
+      <span class="rc-q">“${escapeHtml(receipt.question)}”</span>
+      <span class="dim mono">${escapeHtml((receipt.asked_at || "").slice(0, 19).replace("T", " "))} · ${escapeHtml(receipt.status || "")}</span>
+    </div>
+    ${receiptRowsHtml(receipt)}
+  </div>`;
+}
+
+/**
+ * The receipt body, shared by this view and the one under every answer, so a
+ * question's receipt looks the same wherever it is read.
+ * Exported through `window` rather than a module import because pipeline.js is
+ * loaded as a sibling module and importing app.js from it would be circular.
+ */
+function receiptRowsHtml(receipt) {
+  const total = receipt.total;
+  const rows = receipt.rows.map((row) => `<div class="rc-row ${row.kind}${row.nested ? " nested" : ""}">
+      <span class="rc-n">${row.n}</span>
+      <span class="rc-what"><b>${escapeHtml(row.label)}</b><span class="rc-detail">${escapeHtml(row.detail)}</span></span>
+      <span class="rc-tok">${row.tokens_in || row.tokens_out
+        ? `${groupDigits(row.tokens_in)} in${row.cache_read ? ` <span class="dim">(${groupDigits(row.cache_read)} cached)</span>` : ""} · ${groupDigits(row.tokens_out)} out`
+        : '<span class="dim">no tokens</span>'}</span>
+      <span class="rc-usd">${row.usd ? formatMoney(row.usd) : '<span class="dim">free</span>'}</span>
+      <span class="rc-ms">${formatDurationLong(row.ms)}${row.nested ? "*" : ""}</span>
+    </div>`).join("");
+
+  return rows + `<div class="rc-row rc-total">
+      <span class="rc-n">Σ</span>
+      <span class="rc-what"><b>Total</b><span class="rc-detail">${total.model_calls} model call${total.model_calls === 1 ? "" : "s"}, ${total.tool_calls} tool call${total.tool_calls === 1 ? "" : "s"}</span></span>
+      <span class="rc-tok">${groupDigits(total.tokens_in)} in${total.cache_read ? ` <span class="dim">(${groupDigits(total.cache_read)} cached)</span>` : ""} · ${groupDigits(total.tokens_out)} out</span>
+      <span class="rc-usd"><b>${formatMoney(total.usd)}</b></span>
+      <span class="rc-ms"><b>${formatDurationLong(total.wall_ms)}</b></span>
+    </div>
+    <p class="rc-foot">* runs inside the step above it, so its time is already counted there.
+      The steps account for ${formatDurationLong(total.accounted_ms)} of the ${formatDurationLong(total.wall_ms)};
+      the other ${formatDurationLong(total.unaccounted_ms)} is orchestration — database writes, JSON, the gates.
+      The total is the sum of the ledger rows this question wrote, re-read from the database, not a counter the agent kept.</p>`;
+}
+
+/* pipeline.js renders the per-answer receipt with the same markup; this is the
+   simplest way to share it without making the two modules import each other. */
+window.__receiptRowsHtml = receiptRowsHtml;
+
+/**
+ * Two lists, side by side. The contrast is the point, so they are never merged.
+ *
+ * The strings arrive as prose with `backticks` around identifiers, because the same strings go
+ * into COST.md where that is Markdown. Escaping first and then promoting the backticked spans
+ * keeps the page safe from the text while still rendering the code bits as code.
+ */
+function renderCostHonesty(report) {
+  const honesty = report.honesty || { measured: [], assumed: [] };
+  const withCode = (text) => escapeHtml(text).replace(/`([^`]+)`/g, "<code>$1</code>");
+  const list = (title, items, className) =>
+    `<div class="honesty ${className}"><h4>${title}</h4><ul>${items.map((item) => `<li>${withCode(item)}</li>`).join("")}</ul></div>`;
+  $("#costHonesty").innerHTML =
+    list("Measured", honesty.measured, "is-measured") + list("Assumed", honesty.assumed, "is-assumed");
+}
+
+function renderCostPrices(prices) {
+  if (!prices) return;
+  const rows = Object.entries(prices.table).map(([model, price]) =>
+    `<tr><td><code>${escapeHtml(model)}</code></td><td class="num">${price.input}</td><td class="num">${price.output}</td>
+      <td class="num">${price.cache_read ?? "—"}</td><td class="num">${price.cache_write ?? "—"}</td></tr>`).join("");
+  $("#costPrices").innerHTML =
+    `<p class="dim" style="font-size:13px;margin-bottom:10px">${escapeHtml(prices.source)}. Copied ${escapeHtml(prices.copied_on)}.</p>`
+    + `<div class="tablewrap"><table><thead><tr><th>model</th><th>input</th><th>output</th><th>cache read</th><th>cache write</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
 /* ---------------------------------------------------------------------------

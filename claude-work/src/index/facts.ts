@@ -109,6 +109,10 @@ export async function extractFacts(opts: { force?: boolean; limit?: number; urlL
 
   const removed = cleanFacts();
   console.log(`\nfacts done: ${total} facts extracted, ${removed} removed by hygiene rules, $${cost.toFixed(4)}`);
+  // Returned so the CLI can attach the counts to this run's `stage_runs` row. The cost is also
+  // returned, but only as a cross-check: the figure COST.md publishes comes from `llm_calls`,
+  // never from this accumulator, so the two can be compared instead of one trusting the other.
+  return { documents: todo.length, facts: total, removed, cost_usd: Number(cost.toFixed(5)) };
 }
 
 /**

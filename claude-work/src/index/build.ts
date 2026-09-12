@@ -80,7 +80,7 @@ export function chunkText(text: string): string[] {
  * document that already has chunks is skipped, so this can be run after each crawl — and
  * `force` re-does everything, which is what a chunking or pattern change requires.
  */
-export async function buildIndex(opts: { force?: boolean }) {
+export async function buildIndex(opts: { force?: boolean }): Promise<IndexBuildStats> {
   const cfg = getConfig();
   const docs = all<{ id: number; url: string; final_url: string; text: string; chunks: number }>(
     `SELECT d.id, d.url, d.final_url, d.text, (SELECT COUNT(*) FROM chunks c WHERE c.doc_id = d.id) chunks
@@ -99,10 +99,23 @@ export async function buildIndex(opts: { force?: boolean }) {
   }
   console.log(`chunked ${docsDone} documents → ${made} chunks; ${stripped} AI-directed sentences moved to instructions table`);
 
-  if (!embeddingsEnabled()) { console.log("embeddings: provider=none → BM25-only retrieval"); return; }
+  const stats: IndexBuildStats = { documents: docsDone, chunks: made, instructions: stripped, embedded: 0 };
+  if (!embeddingsEnabled()) { console.log("embeddings: provider=none → BM25-only retrieval"); return stats; }
   // Without --force, pick up anything still unembedded from earlier interrupted runs too.
   const todo = opts.force ? pending : all<{ id: number; text: string }>("SELECT id, text FROM chunks WHERE embedding IS NULL");
   await embedChunks(todo);
+  stats.embedded = todo.length;
+  return stats;
+}
+
+/** What one index build did. Returned so the caller (the CLI) can record it against the stage
+ *  run without re-querying — the numbers the console prints and the numbers COST.md shows are
+ *  then the same numbers, not two counts of the same thing. */
+export interface IndexBuildStats {
+  documents: number;
+  chunks: number;
+  instructions: number;
+  embedded: number;
 }
 
 /**

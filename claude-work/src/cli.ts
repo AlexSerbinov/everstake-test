@@ -16,6 +16,7 @@
 //    (plus `adversarial`, which fails CI deliberately).
 
 import { crawl, crawlReport } from "./crawl/crawler.js";
+import { withStageMetrics } from "./metrics.js";
 
 const USAGE = "commands: crawl [--force] [--only=<source>] [--report] | dedup | index [--force] | facts [--force] [--limit=N] | ask \"q\" [--trace] [--single-shot] | eval [--limit=N] [--engine=agent|single] [--retry-errors] [--only=q01,q15] [--render] | adversarial [--only=a01,p03] [--keep-db] [--render] | cost | stats | pipeline";
 
@@ -49,7 +50,11 @@ async function runCrawl() {
     console.table(report.byStatus);
     return;
   }
-  await crawl({ force: flags.force === "true", only: flags.only });
+  await withStageMetrics("crawl", async (stage) => {
+    const stats = await crawl({ force: flags.force === "true", only: flags.only });
+    stage.items(stats.fetched, "documents");
+    stage.meta({ ...stats });
+  }, { flags });
   console.table(crawlReport().bySource);
 }
 
@@ -57,25 +62,41 @@ async function runCrawl() {
  *  because the counts per method (url / hash / minhash) are what the report quotes. */
 async function runDedup() {
   const { dedup } = await import("./index/dedup.js");
-  console.log(JSON.stringify(dedup(), null, 2));
+  const report = await withStageMetrics("dedup", (stage) => {
+    const result = dedup();
+    stage.items(result.documents, "documents");
+    stage.meta({ clusters: result.clusters, aliases: result.aliases, by_method: result.by_method });
+    return result;
+  });
+  console.log(JSON.stringify(report, null, 2));
 }
 
 /** Chunk the canonical documents, strip injected instructions, embed. `--force` re-indexes
  *  documents that already have chunks — needed after any chunking or filter change. */
 async function runIndex() {
   const { buildIndex } = await import("./index/build.js");
-  await buildIndex({ force: flags.force === "true" });
+  await withStageMetrics("index", async (stage) => {
+    const stats = await buildIndex({ force: flags.force === "true" });
+    // Chunks, not documents: chunking and embedding both scale with chunks, and the $/unit
+    // column in COST.md is only meaningful against the unit the work is actually done in.
+    stage.items(stats.chunks || stats.embedded, "chunks");
+    stage.meta({ ...stats });
+  }, { flags });
 }
 
 /** Extract the dated fact ledger with the cheap model. `--limit` and `--url` exist because
  *  this is the one stage that costs a few dollars: they make a partial re-run affordable. */
 async function runFacts() {
   const { extractFacts } = await import("./index/facts.js");
-  await extractFacts({
-    force: flags.force === "true",
-    limit: flags.limit ? Number(flags.limit) : undefined,
-    urlLike: flags.url,
-  });
+  await withStageMetrics("facts", async (stage) => {
+    const stats = await extractFacts({
+      force: flags.force === "true",
+      limit: flags.limit ? Number(flags.limit) : undefined,
+      urlLike: flags.url,
+    });
+    stage.items(stats.documents, "documents");
+    stage.meta(stats);
+  }, { flags });
 }
 
 /** Answer one question and print the full JSON response (answer, citations, gates, cost). */
@@ -88,7 +109,11 @@ async function runAsk() {
   // Default is the agent (single-shot on non-Gemini providers); --single-shot forces the old path.
   const { answerQuestion } = await import("./ask/agent.js");
   const { ask } = await import("./ask/ask.js");
-  const result = flags["single-shot"] ? await ask(question) : await answerQuestion(question, traceListener());
+  // `answerQuestion` opens its own measured stage run; the forced single-shot path is wrapped
+  // here so that it, too, produces a `stage_runs` row and a receipt.
+  const result = flags["single-shot"]
+    ? await withStageMetrics("question", (stage) => { stage.items(1, "questions"); return ask(question); }, { question })
+    : await answerQuestion(question, traceListener());
   // Without --trace the trace is dropped from the printed JSON: it is hundreds of lines of
   // tool arguments and would bury the answer.
   console.log(JSON.stringify(flags.trace ? result : { ...result, trace: undefined }, null, 2));
@@ -130,12 +155,20 @@ async function runEval() {
   // matches the flag `ask` uses, and either selects the pre-agent path.
   const useSingleShot = flags.engine === "single" || flags["single-shot"] === "true";
   const engine = useSingleShot ? "single" as const : "agent" as const;
-  await execute({
-    limit: flags.limit ? Number(flags.limit) : undefined,
-    retryErrors: flags["retry-errors"] === "true",
-    only: flags.only ? String(flags.only).split(",") : undefined,
-    engine,
-  });
+  // Nested stage runs: each question inside opens its own `question` run, so the judge calls
+  // logged here belong to the eval run while the answers belong to their questions. The eval
+  // row's wall time therefore CONTAINS the questions' — said out loud in COST.md rather than
+  // netted off, because "how long does evaluating cost me" is the wall-clock question.
+  await withStageMetrics("eval", async (stage) => {
+    const result = await execute({
+      limit: flags.limit ? Number(flags.limit) : undefined,
+      retryErrors: flags["retry-errors"] === "true",
+      only: flags.only ? String(flags.only).split(",") : undefined,
+      engine,
+    });
+    stage.items(result?.rows?.length ?? 0, "questions");
+    stage.meta({ engine, metrics: result?.metrics });
+  }, { flags });
 }
 
 /** The prompt-injection / poisoned-corpus suite. Runs against a copy of the index with
@@ -152,10 +185,15 @@ async function runAdversarial() {
     console.log("ADVERSARIAL.md re-rendered", previous.summary);
     return;
   }
-  const result = await execute({
-    only: flags.only ? String(flags.only).split(",") : undefined,
-    keepDb: flags["keep-db"] === "true",
-  });
+  const result = await withStageMetrics("adversarial", async (stage) => {
+    const run = await execute({
+      only: flags.only ? String(flags.only).split(",") : undefined,
+      keepDb: flags["keep-db"] === "true",
+    });
+    stage.items(run.rows?.length ?? 0, "attacks");
+    stage.meta(run.summary);
+    return run;
+  }, { flags });
   if (result.summary.failed) process.exitCode = 1;   // red CI on any hard failure or canary hit
 }
 
@@ -168,10 +206,19 @@ async function writeReport(filename: string, markdown: string) {
   fs.writeFileSync(path.join(ROOT, filename), markdown);
 }
 
-/** Measured spend from `llm_calls`, plus the ×50 extrapolation quoted in REPORT.md §3. */
+/**
+ * Measured spend and resources, and the ×50 extrapolation quoted in REPORT.md §3.
+ *
+ * Prints the short console view and (re)writes `COST.md`, which is the committed artefact: the
+ * report has to be regenerable from the database by one command, or the day someone edits a
+ * number by hand it stops being measured.
+ */
 async function runCost() {
-  const { costReport } = await import("./eval/cost.js");
+  const { costReport, renderCostMd } = await import("./eval/cost.js");
+  const report = costReport(true);
+  await writeReport("COST.md", renderCostMd(report as any));
   console.log(costReport());
+  console.log("\nCOST.md written");
 }
 
 /** Corpus health: document, chunk, fact and instruction counts. */
@@ -183,13 +230,14 @@ async function runStats() {
 /** Everything, in dependency order, with default options — the cold-start path.
  *  Each stage reads what the previous one wrote, so the order here is not cosmetic. */
 async function runPipeline() {
-  await crawl({});
-  const { dedup } = await import("./index/dedup.js");
-  dedup();
-  const { buildIndex } = await import("./index/build.js");
-  await buildIndex({});
-  const { extractFacts } = await import("./index/facts.js");
-  await extractFacts({});
+  // Each stage measures itself through its own CLI handler, and the whole thing is wrapped once
+  // more so COST.md can state the end-to-end cold-start time next to the sum of its parts.
+  await withStageMetrics("pipeline", async () => {
+    await runCrawl();
+    await runDedup();
+    await runIndex();
+    await runFacts();
+  });
   const { stats } = await import("./ask/stats.js");
   console.log(JSON.stringify(stats(), null, 2));
 }

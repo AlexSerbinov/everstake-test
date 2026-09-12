@@ -503,3 +503,107 @@ fieldset input.dirty, fieldset select.dirty { border-color: var(--accent); backg
   background: var(--idk-wash); border: 1px dashed color-mix(in srgb, var(--idk) 45%, transparent);
   padding: 4px 10px; border-radius: 999px;
 }
+
+/* ── cost view ───────────────────────────────────────────────────────────── */
+/* Same three type families as everywhere else: serif for the headline claim,
+   sans for prose, mono for every figure. The one new idea is the stage colour,
+   reused from the tier hues so the bars read as part of the same system. */
+.cost-hero { padding: 34px 0 18px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+.cost-headline {
+  font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.12; letter-spacing: -.025em; margin: 6px 0 14px;
+}
+.cost-headline b { font-weight: 600; color: var(--accent); }
+.cost-where { font-size: 15px; color: var(--ink-2); max-width: 74ch; margin-bottom: 22px; }
+.cost-where b { color: var(--ink); font-weight: 650; }
+.cost-machine { font-family: var(--mono); font-size: 11px; line-height: 1.5; max-width: 100ch; }
+
+.cost-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-bottom: 8px; }
+@media (max-width: 900px) { .cost-bars { grid-template-columns: 1fr; } }
+.cost-bar { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 14px 16px 12px; }
+.cb-head {
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim);
+}
+.cb-track { display: flex; height: 16px; border-radius: 6px; overflow: hidden; background: var(--panel-2); }
+.cb-track.empty-track { border: 1px dashed var(--line); }
+.cb-track i { display: block; height: 100%; transition: filter var(--t); }
+.cb-track i:hover { filter: brightness(1.15); }
+.cb-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 11px; font-size: 12.5px; }
+.cb-key { display: inline-flex; align-items: center; gap: 6px; }
+.cb-key i { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+.cb-key b { font-family: var(--mono); font-size: 12px; font-weight: 500; }
+
+.cost-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 7px; vertical-align: 1px; }
+tr.cost-stage { cursor: pointer; transition: background var(--t); }
+tr.cost-stage:hover td { background: var(--panel-2); }
+tr.cost-stage.open td { background: var(--accent-wash); }
+tr.cost-runs > td { background: var(--panel-2); padding: 12px 14px; }
+table.inner { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+table.inner th { background: transparent; font-size: 10px; }
+table.inner td { font-size: 12px; }
+.cost-formula { display: grid; grid-template-columns: auto 1fr; gap: 10px; font-size: 13px; color: var(--ink-2); margin-bottom: 10px; max-width: 130ch; }
+.cost-formula .k {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); padding-top: 2px;
+}
+.cost-notes { display: grid; gap: 5px; margin: 12px 0 4px; font-size: 13.5px; color: var(--ink-2); max-width: 110ch; }
+
+.honesty { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 4px 18px 16px; }
+.honesty h4 {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+  margin: 14px 0 6px;
+}
+.honesty.is-measured { border-left: 3px solid var(--ok); }
+.honesty.is-measured h4 { color: var(--ok); }
+.honesty.is-assumed { border-left: 3px solid var(--idk); }
+.honesty.is-assumed h4 { color: var(--idk); }
+.honesty ul { margin: 0; padding-left: 18px; display: grid; gap: 7px; }
+.honesty li { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+.cost-crosslink {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 14px 18px; font-size: 14px;
+}
+
+/* ── receipt (cost view + under every answer) ────────────────────────────── */
+.receipt { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+.rc-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  padding: 13px 18px; background: var(--panel-2); border-bottom: 1px solid var(--line);
+}
+.rc-q { font-family: var(--serif); font-size: 17px; font-style: italic; }
+.rc-row {
+  display: grid; grid-template-columns: 26px minmax(0, 1fr) 232px 78px 68px; gap: 12px; align-items: baseline;
+  padding: 9px 18px; border-bottom: 1px dashed var(--line); font-size: 13.5px;
+}
+.rc-row:last-of-type { border-bottom: 0; }
+.rc-n { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+.rc-what b { font-weight: 500; }
+.rc-what { min-width: 0; }
+.rc-detail { display: block; font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 2px; }
+.rc-tok, .rc-usd, .rc-ms { font-family: var(--mono); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.rc-usd, .rc-ms { text-align: right; }
+.rc-row.model { border-left: 3px solid var(--accent); }
+.rc-row.tool { border-left: 3px solid var(--t1); }
+.rc-row.embedding { border-left: 3px solid var(--t2); }
+.rc-row.nested .rc-what b { font-weight: 400; color: var(--ink-2); }
+.rc-row.rc-total { border-left: 3px solid var(--ink); background: var(--panel-2); border-bottom: 0; }
+.rc-foot { padding: 11px 18px 14px; font-size: 12px; color: var(--dim); line-height: 1.5; border-top: 1px solid var(--line); }
+@media (max-width: 860px) {
+  .rc-row { grid-template-columns: 22px 1fr 70px; }
+  .rc-tok { grid-column: 2 / -1; }
+}
+
+/* the receipt as it appears under an answer: collapsed to one line by default */
+.pipe-receipt { border-top: 1px solid var(--line); background: var(--panel-2); }
+.pipe-receipt.open { background: var(--panel); }
+.rc-toggle {
+  display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: 0;
+  padding: 10px 16px; text-align: left; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2);
+  transition: color var(--t);
+}
+.rc-toggle:hover { color: var(--ink); }
+.rc-toggle .rc-lead { color: var(--accent); letter-spacing: .14em; text-transform: uppercase; font-size: 10.5px; }
+.rc-toggle .rc-more { margin-left: auto; color: var(--dim); }
+.pipe-receipt .receipt { border: 0; border-radius: 0; }
+.pipe-receipt .rc-head { display: none; }

@@ -22,6 +22,7 @@ import { getConfig } from "../config.js";
 import { nowIso } from "../db.js";
 import { embeddingsEnabled } from "../embeddings.js";
 import { completeWithTools, loadPrompt, type Turn } from "../llm.js";
+import { withStageMetrics } from "../metrics.js";
 import { ask } from "./ask.js";
 import { ftsQuery } from "./retrieve.js";
 import {
@@ -409,6 +410,19 @@ function final(emit: Emit, res: AskResult): AskResult {
  */
 export async function answerQuestion(question: string, emit?: Emit): Promise<AskResult> {
   const { env } = await import("../config.js");
-  if (env.llmProvider !== "gemini") return ask(question);
-  return runAgent(question, emit);
+  // One measured stage run per question, whichever engine answers it: this is what stamps
+  // `run_id` on the question's model calls (so the receipt can be derived from the ledger
+  // rather than counted twice) and what records its wall time, CPU and peak RSS in
+  // `stage_runs`. It wraps `answerQuestion` rather than `runAgent` so the single-shot path is
+  // measured on exactly the same terms — otherwise the two engines could not be compared.
+  return withStageMetrics(
+    "question",
+    async (stage) => {
+      stage.items(1, "questions");
+      const result = env.llmProvider !== "gemini" ? await ask(question) : await runAgent(question, emit);
+      stage.meta({ engine: result.trace.engine, gate: result.gate, status: result.status });
+      return result;
+    },
+    { question },
+  );
 }

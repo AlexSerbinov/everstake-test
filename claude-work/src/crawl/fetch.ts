@@ -15,6 +15,7 @@
 // loses the evidence that everstake.one and everstake.com are the same page.
 
 import { getConfig } from "../config.js";
+import { addStageBytes } from "../metrics.js";
 import { sleep } from "../util.js";
 import { isAllowed, robotsFor } from "./robots.js";
 
@@ -98,6 +99,10 @@ export async function politeFetch(url: string, opts: { skipRobots?: boolean } = 
     }
 
     const body = await response.text();
+    // Counted here rather than in the crawler so that every HTTP byte the process pulls down —
+    // pages, sitemaps, robots.txt, the agent's live-page fetches — lands in the stage's
+    // `bytes_in`, not just the ones that became documents. No-op outside a measured stage.
+    addStageBytes(Buffer.byteLength(body));
     return {
       ok: response.ok,
       status: response.status,

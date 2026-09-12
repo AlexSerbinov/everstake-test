@@ -51,9 +51,9 @@ export async function embed(texts: string[], purpose: "document" | "query" = "do
   if (!embeddingsEnabled() || texts.length === 0) return texts.map(() => new Float32Array(0));
   const startedAt = Date.now();
   try {
-    const { vectors, tokens } = env.embeddingsProvider === "openai"
-      ? await embedViaOpenAi(texts)
-      : await embedViaVoyage(texts, purpose);
+    const { vectors, tokens } = await withRateLimitRetry(() => (env.embeddingsProvider === "openai"
+      ? embedViaOpenAi(texts)
+      : embedViaVoyage(texts, purpose)));
     logCall({
       stage: "embed",
       provider: env.embeddingsProvider,
@@ -74,6 +74,40 @@ export async function embed(texts: string[], purpose: "document" | "query" = "do
       error: String(error?.message ?? error),
     });
     throw error;
+  }
+}
+
+/** Attempts after a 429 before giving up. Four covers three full TPM windows plus slack. */
+const RATE_LIMIT_RETRIES = 4;
+
+/** Wait after the first 429. Doubled each attempt: 20 s → 40 s → 80 s → 160 s. */
+const RATE_LIMIT_BACKOFF_MS = 20_000;
+
+/**
+ * Retry a rate-limited embedding request instead of failing the whole index build.
+ *
+ * Why this is not over-engineering: a full `npm run index -- --force` sends ~2.2 M tokens, and
+ * OpenAI's default limit for `text-embedding-3-small` is 1 M tokens per minute. Without this,
+ * a complete rebuild is simply impossible on a default account — it dies a third of the way in
+ * and has to be nursed back by re-running the incremental path several times, which is how it
+ * was done before this existed. That also broke the cost report: five partial runs, four of
+ * them failed, and no single run that could be pointed at as "this is what indexing costs".
+ *
+ * Only 429 is retried. Every other failure (a bad key, a malformed batch, a 500) is returned
+ * to the caller immediately: waiting 20 seconds to repeat a request that cannot succeed turns a
+ * clear error into a slow one. Rejected requests are not billed, so a retry is free.
+ */
+async function withRateLimitRetry<T>(attempt: () => Promise<T>): Promise<T> {
+  for (let retry = 0; ; retry++) {
+    try {
+      return await attempt();
+    } catch (error: any) {
+      const isRateLimit = String(error?.message ?? "").includes(" 429");
+      if (!isRateLimit || retry >= RATE_LIMIT_RETRIES) throw error;
+      const waitMs = RATE_LIMIT_BACKOFF_MS * 2 ** retry;
+      console.warn(`\n  embeddings rate-limited; waiting ${Math.round(waitMs / 1000)} s (attempt ${retry + 1}/${RATE_LIMIT_RETRIES})`);
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
   }
 }
 
