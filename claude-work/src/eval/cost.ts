@@ -338,15 +338,18 @@ export interface PipelineStageSummary {
   /**
    * Which runs the figures below describe, spelled out because it is the difference between
    * "what one index build costs" and "what we have spent on index builds":
-   *   "latest run"     — the most recent successful run of a stage that reprocesses the whole
-   *                      corpus. This is the cost of doing it ONCE, which is the number that
-   *                      belongs in a build estimate and in the ×50 column.
+   *   "largest complete run" — the biggest successful unrestricted run of a stage that
+   *                      reprocesses the whole corpus, most recent winning a tie. This is the
+   *                      cost of doing it ONCE, which is the number that belongs in a build
+   *                      estimate and in the ×50 column. Partial re-runs (`--only`, `--limit`,
+   *                      or an incremental `npm run index` that touched twelve documents) keep
+   *                      their rows but must not be published as the price of a build.
    *   "sum of runs"    — every measured run, for the stages where each run is a different
    *                      question or a different benchmark pass.
    *   "ledger tag only" — no run of this stage has ever been measured, so the money comes from
    *                      `llm_calls.stage` and there are no resource figures at all.
    */
-  basis: "latest run" | "sum of runs" | "ledger tag only";
+  basis: "largest complete run" | "sum of runs" | "ledger tag only" | "largest run (every recorded run was restricted)";
   /** How many times this stage has been recorded, successful or not. */
   runs: number;
   items: number | null;
@@ -428,7 +431,33 @@ function runsForBasis(stageId: PipelineStageId, runs: StageRunRow[]) {
   const successful = runs.filter((run) => run.ok && run.wall_ms != null);
   if (!successful.length) return { basis: "ledger tag only" as const, counted: [] as StageRunRow[] };
   if (PER_ITEM_STAGES.has(stageId)) return { basis: "sum of runs" as const, counted: successful };
-  return { basis: "latest run" as const, counted: [successful.at(-1)!] };
+  // The representative run of a build stage is its largest COMPLETE pass, not simply its newest
+  // row. Two things produce a newer, smaller row: an explicitly restricted run (`crawl
+  // --only=youtube` to repair twelve documents, `facts --limit=5` while iterating on a prompt)
+  // and an incremental one (`npm run index` after a refresh, which chunks only what lacks
+  // chunks). Publishing either as "what building the index costs" would report 27 chunks where
+  // 2 146 were embedded. So restricted runs are dropped first, then the largest of what is left
+  // is taken, most recent winning a tie.
+  //
+  // The trade-off, stated because it is real: if the corpus genuinely shrank, this keeps quoting
+  // the older, larger build until a bigger one replaces it. That is the safer error — it
+  // overstates the cost of building the index rather than understating it.
+  const whole = successful.filter((run) => !isRestrictedRun(run));
+  const candidates = whole.length ? whole : successful;
+  const counted = candidates.reduce((best, run) => ((run.items ?? 0) >= (best.items ?? 0) ? run : best));
+  return {
+    basis: whole.length ? "largest complete run" as const : "largest run (every recorded run was restricted)" as const,
+    counted: [counted],
+  };
+}
+
+/** Flags that mean a run deliberately processed a subset. Kept next to `runsForBasis` because
+ *  they are the only reason a stage's newest row may not be its representative one. */
+const RESTRICTING_FLAGS = ["only", "limit", "url"];
+
+function isRestrictedRun(run: StageRunRow): boolean {
+  const flags = safeJson(run.meta ?? "{}")?.flags;
+  return Boolean(flags && RESTRICTING_FLAGS.some((flag) => flags[flag] !== undefined));
 }
 
 function summariseStage(
@@ -841,8 +870,8 @@ function stageNotes(stage: PipelineStageSummary): string[] {
     caveats.push("Has not been run since per-stage measurement was added, and it calls no model, so there is nothing to report for it yet — run it once and this row fills in.");
   } else if (stage.basis === "ledger tag only") {
     caveats.push(`Never yet run under per-stage measurement: the ${formatUsd(stage.cost_usd)} and its ${stage.unattributed_calls} calls are exact ledger rows attributed by the \`llm_calls.stage\` tag, but no wall time, CPU or memory exists for them and none is invented.`);
-  } else if (stage.basis === "latest run") {
-    caveats.push(`Figures are the most recent complete run of ${stage.runs} recorded — what doing this ONCE costs.`
+  } else if (stage.basis === "largest complete run" || stage.basis === "largest run (every recorded run was restricted)") {
+    caveats.push(`Figures are the largest complete run of ${stage.runs} recorded — what doing this ONCE costs; partial re-runs and failed attempts keep their rows but are not this row.`
       + (stage.all_time_cost_usd > stage.cost_usd
         ? ` ${formatUsd(stage.all_time_cost_usd)} has been spent on this stage in total across every run and experiment; that is the project's history, not the price of an index.`
         : ""));

@@ -14,10 +14,19 @@ const { costReport, pipelineStages, costHeadline, measuredVsAssumed, renderCostM
 // not cosmetic — the embedding stage really was run six times around a rate limit, and summing
 // would have published five times the true cost of building the index once.
 
-const stageRun = (runId: string, stage: string, ok: number, wall: number, items: number | null, unit: string | null, bytes = 0) =>
-  run(`INSERT INTO stage_runs (run_id, stage, started_at, ended_at, wall_ms, cpu_user_ms, cpu_system_ms, peak_rss_bytes, items, item_unit, bytes_in, ok, host)
-       VALUES (?,?,'2026-09-12T10:00:00Z','2026-09-12T10:01:00Z',?,?,?,?,?,?,?,?,'dev laptop')`,
-    runId, stage, wall, Math.round(wall / 10), 5, 100_000_000 + wall, items, unit, bytes, ok);
+const stageRun = (
+  runId: string, stage: string, ok: number, wall: number, items: number | null, unit: string | null,
+  bytes: number | Record<string, unknown> = 0, meta: Record<string, unknown> | null = null,
+) => {
+  // `bytes` doubles as the meta slot so the existing call sites keep working: every one of them
+  // passes a number or nothing, and only the partial-run test needs to record flags.
+  const bytesIn = typeof bytes === "number" ? bytes : 0;
+  const metaJson = typeof bytes === "object" && bytes !== null ? bytes : meta;
+  return run(`INSERT INTO stage_runs (run_id, stage, started_at, ended_at, wall_ms, cpu_user_ms, cpu_system_ms, peak_rss_bytes, items, item_unit, bytes_in, ok, host, meta)
+       VALUES (?,?,'2026-09-12T10:00:00Z','2026-09-12T10:01:00Z',?,?,?,?,?,?,?,?,'dev laptop',?)`,
+    runId, stage, wall, Math.round(wall / 10), 5, 100_000_000 + wall, items, unit, bytesIn, ok,
+    metaJson ? JSON.stringify(metaJson) : null);
+};
 
 const callInRun = (runId: string, stage: string, model: string, input: number, output: number, cost: number) =>
   run(`INSERT INTO llm_calls (ts, stage, provider, model, input_tokens, output_tokens, cache_read_tokens, cost_usd, latency_ms, ok, run_id)
@@ -52,9 +61,9 @@ callInRun("q-2", "agent", "gemini-3.8-flash", 6_000, 300, 0.006);
 const stages = pipelineStages();
 const stageById = (id: string) => stages.find((row: any) => row.id === id)!;
 
-test("a whole-corpus stage is priced by its latest successful run, not the sum of its attempts", () => {
+test("a whole-corpus stage is priced by its largest complete run, not the sum of its attempts", () => {
   const index = stageById("index");
-  assert.equal(index.basis, "latest run");
+  assert.equal(index.basis, "largest complete run");
   assert.equal(index.runs, 3, "all three attempts are still recorded");
   assert.equal(index.cost_usd, 0.02, "the two failed attempts are not part of what indexing costs");
   assert.equal(index.all_time_cost_usd, 0.07,
@@ -130,4 +139,20 @@ test("COST.md renders every section and states the price table it used", () => {
   assert.match(markdown, /gemini-3\.8-flash` \| 0\.75 \| 3\.75 \| 0\.075/, "the price table is published, not just used");
   assert.match(markdown, /index-3/, "individual runs are listed by id so a figure can be traced to one run");
   assert.ok(!markdown.includes("$0.000000"), "a real cost is never rendered as a rounded-away zero");
+});
+
+test("a partial re-run keeps its row but is never published as the price of a build", () => {
+  // The case this exists for: repairing twelve emptied documents with `crawl --only=youtube`
+  // followed by an incremental `npm run index` left the cost report claiming the index build
+  // processed 27 chunks and the crawl 23 pages.
+  stageRun("index-4", "index", 1, 900, 27, "chunks", 0, { flags: {} });
+  callInRun("index-4", "embed", "text-embedding-3-small", 14_000, 0, 0.00025);
+  stageRun("crawl-only", "crawl", 1, 3_700, 23, "documents", 0, { flags: { only: "youtube" } });
+
+  const after = pipelineStages();
+  const index = after.find((row: any) => row.id === "index")!;
+  assert.equal(index.items, 2000, "the 2000-chunk build still represents the stage");
+  assert.equal(index.runs, 4, "…and the small run is still counted as a recorded run");
+  const crawl = after.find((row: any) => row.id === "crawl")!;
+  assert.notEqual(crawl.items, 23, "an --only run must not become the crawl's headline figure");
 });
