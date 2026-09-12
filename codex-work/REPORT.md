@@ -70,4 +70,6 @@ Retention should be policy-driven: raw audio 30–90 days by default, redacted t
 
 ## Deliberate cuts and remaining risks
 
+The speaker-aware build is deployed as `everstake-codex:v5-sources`; production health, corpus metadata/filtering, and a cited CEO query passed with zero container restarts. The prior image and corpus/index copies remain as rollback assets.
+
 I did not add authentication, tenant ACLs, external immutable storage, a human approval console, or production observability because the public take-home remains a single-host demo. Changed-document depth incrementally replaces only that document's chunks; a full-depth change recomputes cross-document duplicate groups and boilerplate globally. Ed25519 proves log integrity relative to the public key, but the same-host root/key compromise still needs an external chain-head anchor. Injection detection is deterministic and tested, not a substitute for a versioned classifier and analyst review at call-recording scale. The 24 cases are intentionally adversarial but still author-written; a production launch needs independent blind evals, numeric entailment grading, latency/error SLOs, and red-team ownership.

@@ -31,7 +31,7 @@ Every answer and abstention is appended to a SHA-256 chain and signed with Ed255
 
 **https://everstake-codex.89-167-19-222.sslip.io**
 
-The deployment section below is updated after the speaker-aware image is verified. No push is made.
+The active container is `everstake-codex:v5-sources`, bound only to `127.0.0.1:4321` behind the unchanged Caddy route. Production health, 304-document stats, the Corpus view, its six-result employee filter, and a cited CEO answer were verified; the container has 0 restarts and the refresh timer is active. `everstake-codex:v4-freshness` plus pre-deploy corpus/index copies remain available for rollback. No push was made.
 
 ## What I cut
 
