@@ -26,7 +26,7 @@ Every answer and abstention is appended to a SHA-256 chain and signed with Ed255
 
 **https://everstake-codex.89-167-19-222.sslip.io**
 
-The active container is `everstake-codex:v3-final`, bound only to `127.0.0.1:4321` behind the unchanged Caddy route. Corpus, index, ledgers, snapshots, signing key, and audit chain remain under `/data/everstake-codex/state/`. The former `v2-final` and smoke `v3` containers remain stopped as rollback points; no push was made.
+The active container is `everstake-codex:v4-freshness`, bound only to `127.0.0.1:4321` behind the unchanged Caddy route. The hourly policy timer is enabled; public health and freshness APIs return HTTP 200, the calculator reports the figures above, and the container has 0 restarts. Corpus, index, ledgers, snapshots, freshness history, signing key, and audit chain remain under `/data/everstake-codex/state/`; `v3-final` remains stopped as the immediate rollback point. No push was made.
 
 ## What I cut
 
