@@ -6,6 +6,15 @@ models:
   cheap: claude-haiku-4-5      # fact extraction, eval judge
   effort: medium               # low | medium | high  (thinking effort for the answer model)
 
+agent:                         # the tool-using answer loop (src/ask/agent.ts)
+  max_steps: 6                 # tool calls before `finish` is forced
+  live_fetch_allow:            # fetch_live_page refuses everything else (robots still checked on top)
+    - everstake.com
+    - docs.everstake.com
+    - github.com/everstake
+  live_cache_minutes: 60       # a live page fetched less than N minutes ago is reused
+  mcp_url: https://mcp.everstake.com   # Everstake's own MCP — live numbers only, always labelled
+
 retrieval:
   bm25_top: 40                 # candidates from FTS5
   vector_top: 40               # candidates from cosine search
@@ -26,6 +35,7 @@ ranking:
 gates:
   min_best_score: 0.012        # below this (and with no fact rows) we answer "no reliable answer" without calling the model
   require_citations: true      # answers with zero valid citations are converted to "no reliable answer"
+  require_grounded_numbers: true  # gate 3: every number in the answer must appear in a source a tool returned
 
 filters:
   excluded_domains: []         # e.g. ["cryptopotato.com"] — live requirement changes go here
@@ -45,6 +55,13 @@ instructions:
     - "\\b(use|reuse) (only )?(the |this )?(approved|canonical|following|these) (description|labels?|phrasing|wording|sources?)\\b"
     - "\\bdefer to\\b[^.]{0,60}\\b(canonical|official|source|page)\\b"
     - "\\b(cite|reference) this page\\b"
+    # added with the adversarial suite (eval/adversarial.yaml): directives aimed at whatever
+    # machine reads the page next. Verified against the crawled corpus — 0 additional sentences
+    # are stripped from the 459 real documents, so these only ever fire on planted content.
+    - "\\b(when|if) (you are |you're )?(asked|prompted|queried)\\b[^.]{0,80}[,:]\\s*(always |never |please )?(answer|say|state|reply|respond|tell|report|include|output|use)\\b"
+    - "(^|[.!?:]\\s*)(always|never) (answer|say|state|reply|respond|report|tell|mention|include|output|cite|use)\\b"
+    - "\\b(instructions?|note|message|directive) (to|for) (the )?(ai|assistants?|agents?|llms?|models?|retrieving agent|chatbots?|bots?)\\b"
+    - "\\b(call|invoke) (the )?finish\\b|\\bskip (the )?citation"
   ai_directed_paths:           # whole page is addressed to machines → flag + multiplier above
     - "/ai-info"
     - "/llms.txt"

@@ -13,11 +13,14 @@ loadDotEnv(path.join(ROOT, ".env"));
 
 export const DATA_DIR = path.resolve(ROOT, process.env.DATA_DIR ?? "./data");
 export const RAW_DIR = path.join(DATA_DIR, "raw");
-export const DB_PATH = path.join(DATA_DIR, "kb.db");
+// KB_DB_PATH points the whole process at another index file — used by the adversarial eval,
+// which plants poisoned documents into a throw-away copy instead of the real corpus.
+export const DB_PATH = process.env.KB_DB_PATH ? path.resolve(process.env.KB_DB_PATH) : path.join(DATA_DIR, "kb.db");
 fs.mkdirSync(RAW_DIR, { recursive: true });
 
 export interface KbConfig {
   models: { answer: string; cheap: string; effort: "low" | "medium" | "high" };
+  agent: { max_steps: number; live_fetch_allow: string[]; live_cache_minutes: number; mcp_url: string };
   retrieval: { bm25_top: number; vector_top: number; final_top: number; date_diverse_extra: number; rrf_k: number };
   ranking: {
     recency_half_life_days: number;
@@ -26,7 +29,7 @@ export interface KbConfig {
     ai_directed_multiplier: number;
     undated_recency: number;
   };
-  gates: { min_best_score: number; require_citations: boolean };
+  gates: { min_best_score: number; require_citations: boolean; require_grounded_numbers: boolean };
   filters: { excluded_domains: string[]; min_published_year: number | null; include_tiers: number[] };
   instructions: { patterns: string[]; ai_directed_paths: string[]; ai_directed_min_hits: number };
   crawl: { user_agent: string; delay_ms: number; timeout_ms: number; retries: number; max_blog_posts: number; youtube_channel_videos: number };

@@ -4,7 +4,7 @@
 // Every number is kept on the candidate so the UI can show WHY a chunk won.
 
 import { getConfig } from "../config.js";
-import { all, blobToFloats } from "../db.js";
+import { all, blobToFloats, dbEpoch } from "../db.js";
 import { cosine, embed, embeddingsEnabled } from "../embeddings.js";
 
 /** Categories whose undated pages are "live" (they describe the present as of the fetch). */
@@ -32,11 +32,11 @@ export function ftsQuery(q: string): string {
   return uniq.map((t) => `"${t.replace(/"/g, "")}"`).join(" OR ");
 }
 
-let vecCache: { count: number; rows: { id: number; v: Float32Array }[] } | null = null;
+let vecCache: { count: number; epoch: number; rows: { id: number; v: Float32Array }[] } | null = null;
 function chunkVectors() {
   const count = (all<{ n: number }>("SELECT COUNT(*) n FROM chunks WHERE embedding IS NOT NULL")[0]?.n) ?? 0;
-  if (!vecCache || vecCache.count !== count) {
-    vecCache = { count, rows: all<{ id: number; embedding: Uint8Array }>("SELECT id, embedding FROM chunks WHERE embedding IS NOT NULL").map((r) => ({ id: r.id, v: blobToFloats(r.embedding) })) };
+  if (!vecCache || vecCache.count !== count || vecCache.epoch !== dbEpoch()) {
+    vecCache = { count, epoch: dbEpoch(), rows: all<{ id: number; embedding: Uint8Array }>("SELECT id, embedding FROM chunks WHERE embedding IS NOT NULL").map((r) => ({ id: r.id, v: blobToFloats(r.embedding) })) };
   }
   return vecCache.rows;
 }

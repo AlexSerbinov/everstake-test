@@ -12,6 +12,7 @@
     "facts": "tsx src/cli.ts facts",
     "ask": "tsx src/cli.ts ask",
     "eval": "tsx src/cli.ts eval",
+    "eval:adversarial": "tsx src/cli.ts adversarial",
     "cost": "tsx src/cli.ts cost",
     "stats": "tsx src/cli.ts stats",
     "pipeline": "tsx src/cli.ts pipeline",
@@ -19,7 +20,7 @@
     "mcp": "tsx src/server/mcp.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server/main.js",
-    "test": "tsx --test src/**/*.test.ts",
+    "test": "tsx --test \"src/**/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

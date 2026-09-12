@@ -6,10 +6,25 @@ import { DatabaseSync } from "node:sqlite";
 import { DB_PATH } from "./config.js";
 
 let _db: DatabaseSync | null = null;
+let _path = DB_PATH;
+let _epoch = 0;
+
+/**
+ * Point the process at a different index file. The adversarial eval uses it to plant
+ * poisoned documents into a copy of `kb.db` instead of the corpus everything else reads.
+ * Anything caching rows keyed on `dbEpoch()` invalidates itself on the next read.
+ */
+export function setDbPath(file: string) {
+  if (file === _path) return;
+  _db?.close();
+  _db = null; _path = file; _epoch++;
+}
+export const dbPath = () => _path;
+export const dbEpoch = () => _epoch;
 
 export function db(): DatabaseSync {
   if (_db) return _db;
-  _db = new DatabaseSync(DB_PATH);
+  _db = new DatabaseSync(_path);
   _db.exec("PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA foreign_keys = ON;");
   migrate(_db);
   return _db;
@@ -117,6 +132,17 @@ function migrate(d: DatabaseSync) {
     ok            INTEGER NOT NULL DEFAULT 1,
     error         TEXT,
     meta          TEXT                    -- json
+  );
+
+  -- pages the agent fetched live during a question (fetch_live_page). Not part of the
+  -- corpus: never chunked, never embedded, never ranked — only quoted with today's date.
+  CREATE TABLE IF NOT EXISTS live_cache (
+    url        TEXT PRIMARY KEY,
+    fetched_at TEXT NOT NULL,           -- ISO timestamp; entries older than agent.live_cache_minutes are refetched
+    status     INTEGER,
+    title      TEXT,
+    text       TEXT,
+    published_at TEXT
   );
 
   CREATE TABLE IF NOT EXISTS questions_log (

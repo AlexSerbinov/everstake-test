@@ -3,14 +3,16 @@
 
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
-import { Hono } from "hono";
+import { Hono, type Context, type MiddlewareHandler } from "hono";
 import { cors } from "hono/cors";
+import { streamSSE } from "hono/streaming";
 import path from "node:path";
 import { ROOT, env, getConfig, resetConfigOverrides, setConfigOverrides, sourcesConfig } from "../config.js";
 import { all, one } from "../db.js";
 import { resolveModel } from "../llm.js";
 import { factLedger } from "../index/facts.js";
 import { ask } from "../ask/ask.js";
+import { answerQuestion } from "../ask/agent.js";
 import { dedupClusters, instructionsFound, stats } from "../ask/stats.js";
 import { costReport } from "../eval/cost.js";
 import { latestEval } from "../eval/run.js";
@@ -18,25 +20,54 @@ import { latestEval } from "../eval/run.js";
 export const app = new Hono();
 app.use("/api/*", cors());
 app.use("/ask", cors());
+app.use("/ask/stream", cors());
 
 // --- rate limit: 30 requests / minute / IP on the expensive endpoint -------------------
 const hits = new Map<string, number[]>();
-app.use("/ask", async (c, next) => {
+const rateLimit: MiddlewareHandler = async (c, next) => {
   const ip = c.req.header("x-forwarded-for")?.split(",")[0].trim() || "local";
   const now = Date.now();
   const arr = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
   if (arr.length >= 30) return c.json({ error: "rate limit: 30 questions per minute" }, 429);
   arr.push(now); hits.set(ip, arr);
   await next();
-});
+};
+app.use("/ask", rateLimit);
+app.use("/ask/stream", rateLimit);
 
-app.post("/ask", async (c) => {
+/** `{question}` → the question, or an error response if it is missing/too long. */
+async function readQuestion(c: Context): Promise<{ question: string; body: any } | Response> {
   const body = await c.req.json().catch(() => ({}));
   const question = String(body.question ?? "").trim();
   if (!question) return c.json({ error: "question is required" }, 400);
   if (question.length > 500) return c.json({ error: "question too long (500 chars max)" }, 400);
-  const r = await ask(question);
-  return c.json(body.trace === false ? { ...r, trace: undefined } : r);
+  return { question, body };
+}
+
+// Same answer as /ask/stream, waited for instead of watched. `steps[]` carries the tool trace.
+app.post("/ask", async (c) => {
+  const q = await readQuestion(c);
+  if (q instanceof Response) return q;
+  const r = await answerQuestion(q.question);
+  return c.json(q.body.trace === false ? { ...r, trace: undefined } : r);
+});
+
+// The agent's pipeline as it happens: stage / tool_call / tool_result / note / final / error.
+// Events are pushed synchronously from the agent's emit callback into this stream.
+app.post("/ask/stream", async (c) => {
+  const q = await readQuestion(c);
+  if (q instanceof Response) return q;
+  return streamSSE(c, async (stream) => {
+    // The agent emits synchronously; the queue keeps writes ordered without awaiting inside emit().
+    let queue: Promise<void> = Promise.resolve();
+    const send = (event: string, data: unknown) => { queue = queue.then(() => stream.writeSSE({ event, data: JSON.stringify(data) })); };
+    try {
+      await answerQuestion(q.question, (e) => send(e.event, e.data));
+    } catch (e: any) {
+      send("error", { message: String(e?.message ?? e).slice(0, 300) });
+    }
+    await queue;
+  });
 });
 
 app.get("/api/stats", (c) => c.json({ ...stats(), provider: { llm: env.llmProvider, embeddings: env.embeddingsProvider }, models: { ...getConfig().models, resolved_answer: resolveModel(getConfig().models.answer), resolved_cheap: resolveModel(getConfig().models.cheap) } }));

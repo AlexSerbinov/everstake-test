@@ -15,7 +15,7 @@ import { z } from "zod";
 import { ROOT, env, getConfig } from "./config.js";
 import { nowIso, run } from "./db.js";
 
-export type Stage = "facts" | "answer" | "judge" | "classify" | "embed" | "other";
+export type Stage = "facts" | "answer" | "agent" | "judge" | "classify" | "embed" | "other";
 
 export interface LlmResult<T = string> {
   data: T;
@@ -98,6 +98,70 @@ async function call<T>(opts: CallOpts, schema: z.ZodType<T> | null): Promise<Llm
     const costUsd = priceUsd(model, r.usage);
     const callId = logCall({ stage: opts.stage, provider: env.llmProvider, model, ...r.usage, costUsd, latencyMs, meta: opts.meta });
     return { data: r.data, usage: r.usage, costUsd, latencyMs, model, provider: env.llmProvider, callId };
+  } catch (e: any) {
+    logCall({ stage: opts.stage, provider: env.llmProvider, model, latencyMs: Date.now() - t0, ok: false, error: String(e?.message ?? e), meta: opts.meta });
+    throw e;
+  }
+}
+
+// --- function calling (the agent loop) -----------------------------------------------
+// Only Gemini implements it here: the agent is a Gemini feature of this build
+// (LLM_PROVIDER=gemini). Anthropic/OpenRouter keep the single-shot `ask()` path.
+
+/** A Gemini `FunctionDeclaration`: name + description + OpenAPI-subset parameter schema. */
+export interface ToolDecl { name: string; description: string; parameters: Record<string, unknown> }
+export interface ToolCall { name: string; args: Record<string, any> }
+/** One turn of the conversation in Gemini's wire format; the agent owns the array. */
+export interface Turn { role: "user" | "model"; parts: any[] }
+
+export interface ToolTurnResult {
+  text: string;        // any prose the model emitted alongside the call (surfaced as a `note`)
+  calls: ToolCall[];   // function calls requested this turn
+  parts: any[];        // raw parts, to be appended back as the `model` turn
+}
+
+export async function completeWithTools(opts: {
+  stage: Stage;
+  model: string;
+  system: string;
+  contents: Turn[];
+  tools: ToolDecl[];
+  allowedFunctionNames?: string[];   // narrow the choice (used to force `finish` on the last step)
+  maxTokens?: number;
+  meta?: unknown;
+}): Promise<LlmResult<ToolTurnResult>> {
+  if (env.llmProvider !== "gemini") throw new Error(`completeWithTools requires LLM_PROVIDER=gemini (got ${env.llmProvider})`);
+  const model = resolveModel(opts.model);
+  const t0 = Date.now();
+  try {
+    const body = {
+      systemInstruction: { parts: [{ text: opts.system }] },
+      contents: opts.contents,
+      tools: [{ functionDeclarations: opts.tools }],
+      // ANY = the model must call one of the tools. `finish` is itself a tool, so the loop
+      // always ends through the validated path and never through free-form prose.
+      toolConfig: { functionCallingConfig: { mode: "ANY", ...(opts.allowedFunctionNames ? { allowedFunctionNames: opts.allowedFunctionNames } : {}) } },
+      generationConfig: { maxOutputTokens: (opts.maxTokens ?? 3000) + 4000, temperature: 0.2 }, // +4000: thinking tokens count against the cap
+    };
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.geminiKey}`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    const j: any = await res.json();
+    const cand = j.candidates?.[0];
+    if (!cand) throw new Error(`gemini: no candidate (${j.promptFeedback?.blockReason ?? "empty"})`);
+    const parts: any[] = cand.content?.parts ?? [];
+    const data: ToolTurnResult = {
+      text: parts.filter((p) => !p.thought && p.text).map((p) => p.text).join("").trim(),
+      calls: parts.filter((p) => p.functionCall).map((p) => ({ name: p.functionCall.name, args: p.functionCall.args ?? {} })),
+      parts,
+    };
+    const u = j.usageMetadata ?? {};
+    const usage = { input: u.promptTokenCount ?? 0, output: (u.candidatesTokenCount ?? 0) + (u.thoughtsTokenCount ?? 0), cacheRead: u.cachedContentTokenCount ?? 0, cacheWrite: 0 };
+    const latencyMs = Date.now() - t0;
+    const costUsd = priceUsd(model, usage);
+    const callId = logCall({ stage: opts.stage, provider: env.llmProvider, model, ...usage, costUsd, latencyMs, meta: opts.meta });
+    return { data, usage, costUsd, latencyMs, model, provider: env.llmProvider, callId };
   } catch (e: any) {
     logCall({ stage: opts.stage, provider: env.llmProvider, model, latencyMs: Date.now() - t0, ok: false, error: String(e?.message ?? e), meta: opts.meta });
     throw e;

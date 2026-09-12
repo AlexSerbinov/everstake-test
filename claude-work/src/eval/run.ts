@@ -8,6 +8,7 @@ import YAML from "yaml";
 import { z } from "zod";
 import { ROOT, getConfig } from "../config.js";
 import { ask, type AskResult } from "../ask/ask.js";
+import { answerQuestion } from "../ask/agent.js";
 import { completeJson, loadPrompt } from "../llm.js";
 import { costReport } from "./cost.js";
 
@@ -16,14 +17,19 @@ export interface EvalRow {
   id: string; type: string; trap?: string; question: string; reference: string; expect_no_answer: boolean;
   system_status: string; system_answer: string; as_of: string | null; gate: string; sources: string[];
   verdict: string; reason: string; human_verdict?: string | null;
+  /** Hand-written after reading the run. Rendered in EVAL.md next to the judge's reason. */
+  analysis?: string | null;
   cost_usd: number; latency_ms: number; judge_cost_usd: number;
 }
-export interface EvalRun { ts: string; model: string; provider: string; rows: EvalRow[]; metrics: ReturnType<typeof metrics>; cost_summary: any }
+export type Engine = "agent" | "single";
+export interface EvalRun { ts: string; engine: Engine; model: string; resolved_model?: string | null; judge_model?: string | null; provider: string; rows: EvalRow[]; metrics: ReturnType<typeof metrics>; cost_summary: any }
 
 const Verdict = z.object({ verdict: z.enum(["correct", "partially_correct", "wrong", "hallucinated", "abstained_correctly", "abstained_wrongly"]), reason: z.string() });
 const RESULTS = path.join(ROOT, "eval/results");
 
-export async function runEval(opts: { limit?: number; retryErrors?: boolean; only?: string[] } = {}) {
+export async function runEval(opts: { limit?: number; retryErrors?: boolean; only?: string[]; engine?: Engine } = {}) {
+  // default: the agent (tool loop). --engine=single re-runs the original one-retrieval-one-prompt path.
+  const engine: Engine = opts.engine ?? "agent";
   const cfg = getConfig();
   const allQs: Q[] = YAML.parse(fs.readFileSync(path.join(ROOT, "eval/questions.yaml"), "utf8")).questions;
   // --retry-errors: keep graded rows from the latest run, re-ask only the ones that hit a provider error
@@ -33,11 +39,15 @@ export async function runEval(opts: { limit?: number; retryErrors?: boolean; onl
   const keptIds = new Set(keep.map((r) => r.id));
   const qs = allQs.filter((q) => !keptIds.has(q.id));
   if (previous) console.log(`retrying ${qs.length} questions, keeping ${keep.length} graded rows from ${previous.ts}`);
+  console.log(`engine: ${engine}`);
   const rows: EvalRow[] = [...keep];
+  let lastResolvedModel: string | null = null;
+  let lastJudgeModel: string | null = null;
   const judgeSystem = loadPrompt("judge");
   for (const q of qs.slice(0, opts.limit ?? qs.length)) {
     process.stdout.write(`${q.id} ${q.question.slice(0, 60)}… `);
-    const r: AskResult = await ask(q.question);
+    const r: AskResult = engine === "single" ? await ask(q.question) : await answerQuestion(q.question);
+    lastResolvedModel = r.trace.model ?? lastResolvedModel;   // config says "claude-opus-5"; the provider may serve something else
     let verdict = "", reason = "", judgeCost = 0;
     if (r.gate === "model_error") { verdict = "error"; reason = r.error ?? "provider error"; }
     else try {
@@ -46,7 +56,7 @@ export async function runEval(opts: { limit?: number; retryErrors?: boolean; onl
         user: `Question: ${q.question}\nReference answer: ${q.reference}\nexpect_no_answer: ${!!q.expect_no_answer}\n\nSystem status: ${r.status}\nSystem answer: ${r.answer}`,
         meta: { eval_id: q.id },
       });
-      verdict = j.data.verdict; reason = j.data.reason; judgeCost = j.costUsd;
+      verdict = j.data.verdict; reason = j.data.reason; judgeCost = j.costUsd; lastJudgeModel = j.model ?? lastJudgeModel;
     } catch (e: any) { verdict = "judge_error"; reason = String(e?.message ?? e).slice(0, 200); }
     // deterministic overrides the judge cannot get wrong (never for provider errors)
     if (r.gate !== "model_error") {
@@ -61,7 +71,7 @@ export async function runEval(opts: { limit?: number; retryErrors?: boolean; onl
     console.log(`→ ${r.status} / ${verdict}`);
   }
   rows.sort((a, b) => allQs.findIndex((q) => q.id === a.id) - allQs.findIndex((q) => q.id === b.id));
-  const run: EvalRun = { ts: new Date().toISOString(), model: cfg.models.answer, provider: process.env.LLM_PROVIDER ?? "", rows, metrics: metrics(rows), cost_summary: costReport(true) };
+  const run: EvalRun = { ts: new Date().toISOString(), engine, model: cfg.models.answer, resolved_model: lastResolvedModel, judge_model: lastJudgeModel, provider: process.env.LLM_PROVIDER ?? "", rows, metrics: metrics(rows), cost_summary: costReport(true) };
   fs.mkdirSync(RESULTS, { recursive: true });
   const file = path.join(RESULTS, run.ts.replace(/[:.]/g, "-") + ".json");
   fs.writeFileSync(file, JSON.stringify(run, null, 2));
@@ -101,7 +111,8 @@ export function metrics(rows: EvalRow[]) {
 
 export function latestEval(): EvalRun | null {
   if (!fs.existsSync(RESULTS)) return null;
-  const files = fs.readdirSync(RESULTS).filter((f) => f.endsWith(".json")).sort();
+  // `adversarial-*.json` lives in the same folder and is a different shape — never pick it up
+  const files = fs.readdirSync(RESULTS).filter((f) => f.endsWith(".json") && !f.startsWith("adversarial-")).sort();
   if (!files.length) return null;
   return JSON.parse(fs.readFileSync(path.join(RESULTS, files[files.length - 1]), "utf8"));
 }
@@ -112,7 +123,7 @@ export function renderEvalMd(run: EvalRun): string {
   const lines = [
     `# EVAL — 20 questions, measured`,
     ``,
-    `Run: ${run.ts} · answer model: \`${run.model}\` · provider: ${run.provider} · judge: Haiku 4.5 with deterministic overrides for abstentions.`,
+    `Run: ${run.ts} · engine: \`${run.engine ?? "single"}\`${run.engine === "agent" ? " (tool loop, src/ask/agent.ts)" : " (one retrieval → one prompt)"} · answer model: \`${run.resolved_model ?? run.model}\`${run.resolved_model && run.resolved_model !== run.model ? ` (config key \`${run.model}\`)` : ""} · provider: ${run.provider} · judge: \`${run.judge_model ?? "haiku-4.5"}\` with deterministic overrides for abstentions.`,
     ``,
     `## Metrics`,
     ``,
@@ -144,6 +155,11 @@ export function renderEvalMd(run: EvalRun): string {
   lines.push(`## Honest breakdown of failures`, ``);
   const fails = run.rows.filter((r) => !["correct", "abstained_correctly"].includes(r.human_verdict || r.verdict));
   if (!fails.length) lines.push(`No failures in this run.`);
-  for (const r of fails) lines.push(`- **${r.id}** (${r.human_verdict || r.verdict}, gate: ${r.gate}): ${esc(r.reason)}`);
+  for (const r of fails) lines.push(`- **${r.id}** (${r.human_verdict || r.verdict}, gate: ${r.gate}): ${esc(r.reason)}${r.analysis ? `\n  - _Looked at by hand:_ ${esc(r.analysis)}` : ""}`);
+  const overridden = run.rows.filter((r) => r.human_verdict && r.human_verdict !== r.verdict);
+  if (overridden.length) {
+    lines.push(``, `### Judge verdicts overridden by hand`, ``);
+    for (const r of overridden) lines.push(`- **${r.id}**: judge said \`${r.verdict}\`, recorded as \`${r.human_verdict}\`. ${esc(r.analysis ?? "")}`);
+  }
   return lines.join("\n") + "\n";
 }

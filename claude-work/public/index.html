@@ -3,165 +3,185 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Everstake KB</title>
+<title>Everstake KB — evidence-first answers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23111'/><text x='50' y='72' font-size='62' text-anchor='middle' fill='%23e0a03c' font-family='serif'>E</text></svg>">
 </head>
 <body>
-<header class="top">
-  <div class="brand">
-    <span class="logo">◆</span>
-    <div>
-      <div class="name">Everstake Knowledge Base</div>
-      <div class="sub">answers with a date and a source · says "I don't know" when the corpus doesn't</div>
+
+<!-- ══ CHROME ═════════════════════════════════════════════════════════════ -->
+<header class="chrome">
+  <button class="wordmark" id="homeBtn" title="Back to the question (Esc)">
+    <span class="mark">E</span>
+    <span class="wm-text">
+      <b>Everstake&nbsp;KB</b>
+      <i>evidence-first answers</i>
+    </span>
+  </button>
+
+  <div class="chrome-right">
+    <span id="provider" class="stat-strip"></span>
+    <div class="menu-wrap">
+      <button id="exploreBtn" class="btn-ghost" aria-haspopup="true" aria-expanded="false">Explore <span class="caret">▾</span></button>
+      <div class="menu" id="exploreMenu" hidden>
+        <button data-view="facts"><span class="mi">◷</span><span><b>Facts timeline</b><i>how a value changed over time</i></span></button>
+        <button data-view="corpus"><span class="mi">▤</span><span><b>Corpus</b><i>what was crawled, deduped, dropped</i></span></button>
+        <button data-view="instructions"><span class="mi">⚑</span><span><b>AI instructions</b><i>sentences stripped from the index</i></span></button>
+        <button data-view="eval"><span class="mi">✓</span><span><b>Eval</b><i>20 questions, verdicts, measured cost</i></span></button>
+        <button data-view="settings"><span class="mi">⚙</span><span><b>Settings</b><i>live ranking knobs, no restart</i></span></button>
+      </div>
     </div>
-  </div>
-  <nav class="tabs" id="tabs">
-    <button data-tab="ask" class="active">Ask</button>
-    <button data-tab="facts">Facts timeline</button>
-    <button data-tab="corpus">Corpus</button>
-    <button data-tab="instructions">AI instructions</button>
-    <button data-tab="eval">Eval</button>
-    <button data-tab="settings">Settings</button>
-  </nav>
-  <div class="right">
-    <span id="provider" class="pill muted">…</span>
-    <button id="theme" class="icon" title="toggle theme">◐</button>
+    <button id="theme" class="btn-ghost icon" title="Toggle theme">◐</button>
   </div>
 </header>
 
-<main>
-  <!-- ASK -------------------------------------------------------------- -->
-  <section id="tab-ask" class="tab active">
-    <form id="askForm" class="askbox">
-      <input id="q" type="text" placeholder="Ask about Everstake… e.g. Who is the CEO? How many networks are supported? What changed since 2025?" autocomplete="off" maxlength="500">
-      <button id="askBtn" type="submit">Ask</button>
+<main id="main">
+
+<!-- ══ ASK ════════════════════════════════════════════════════════════════ -->
+<section id="view-ask" class="view active">
+
+  <!-- hero: the only thing above the fold -->
+  <div class="hero" id="hero">
+    <p class="eyebrow">public corpus · dated · cited · allowed to say no</p>
+    <h1 class="hero-title">What do you want to know<br>about&nbsp;Everstake?</h1>
+    <form id="askForm" class="askbar" autocomplete="off">
+      <span class="askbar-icon">›</span>
+      <input id="q" type="text" maxlength="500" placeholder="Ask a question…" aria-label="Your question">
+      <kbd class="slash-hint" id="slashHint">/</kbd>
+      <button id="askBtn" type="submit" class="btn-accent">Ask</button>
     </form>
-    <div class="examples" id="examples">
-      <span>try:</span>
+    <div class="chips" id="examples">
       <button>Who is the CEO of Everstake?</button>
       <button>How many networks does Everstake support?</button>
       <button>How has the number of supported networks changed over time?</button>
-      <button>Which products appeared after 2025?</button>
       <button>What is the salary of Everstake's CEO?</button>
     </div>
+    <p class="hero-foot">Every answer carries an <em>as-of</em> date and the sources it stands on. When the corpus can't support one, it says so.</p>
+  </div>
 
-    <div id="answer" class="hidden">
-      <div class="card answer">
-        <div class="answer-head">
-          <span id="statusBadge" class="badge"></span>
-          <span id="modeBadge" class="pill"></span>
-          <span id="asOf" class="pill"></span>
-          <span id="confidence" class="pill"></span>
-          <span id="gate" class="pill muted"></span>
-          <span id="costPill" class="pill muted"></span>
-        </div>
-        <div id="answerText" class="answer-text"></div>
+  <!-- results -->
+  <div class="results" id="results" hidden>
+    <div class="asked" id="asked">
+      <div><span class="asked-label">question</span><h2 id="askedText"></h2></div>
+      <button class="btn-ghost sm" id="newQ">New question</button>
+    </div>
+
+    <div class="grid">
+      <div class="col-main">
+        <div id="answerSlot"></div>
+        <div id="pipelineSlot"></div>
       </div>
-
-      <h3 class="h">Sources <span class="muted" id="srcCount"></span></h3>
-      <div id="sources" class="sources"></div>
-
-      <details class="trace" id="traceBox">
-        <summary>Why these sources? — retrieval trace</summary>
-        <div class="trace-meta" id="traceMeta"></div>
-        <div class="tablewrap"><table id="traceTable">
-          <thead><tr><th>#</th><th>source</th><th>date</th><th>tier</th><th>bm25</th><th>vec</th><th>rrf</th><th>recency</th><th>authority</th><th>score</th><th></th></tr></thead>
-          <tbody></tbody>
-        </table></div>
-        <div id="factsUsed"></div>
-      </details>
+      <aside class="col-side" id="sideCol">
+        <div class="side-head" id="sideHead" hidden><span>Sources</span><span id="srcCount" class="mono dim"></span></div>
+        <div id="sources"></div>
+      </aside>
     </div>
-  </section>
+    <div id="traceSlot"></div>
+  </div>
+</section>
 
-  <!-- FACTS -------------------------------------------------------------- -->
-  <section id="tab-facts" class="tab">
-    <div class="row">
-      <select id="factKey"></select>
-      <span class="muted">Every recorded value of a fact, newest first — the same ledger the answerer sees.</span>
+<!-- ══ FACTS ══════════════════════════════════════════════════════════════ -->
+<section id="view-facts" class="view">
+  <div class="view-head">
+    <h2>Facts timeline</h2>
+    <p>Every recorded value of a fact, newest first — the same ledger the answerer reads. Identical values repeated across many pages are grouped.</p>
+  </div>
+  <div class="toolbar"><label class="field"><span>fact key</span><select id="factKey"></select></label></div>
+  <div id="factTimeline" class="timeline"></div>
+</section>
+
+<!-- ══ CORPUS ═════════════════════════════════════════════════════════════ -->
+<section id="view-corpus" class="view">
+  <div class="view-head"><h2>Corpus</h2><p>What the crawler found, what it threw away, and why.</p></div>
+  <div id="statTiles" class="tiles"></div>
+  <div class="cols">
+    <div>
+      <h3 class="h">Documents by domain</h3>
+      <div class="tablewrap"><table id="domainTable"><thead><tr><th>domain</th><th>tier</th><th>docs</th><th>aliases</th><th>oldest</th><th>newest</th></tr></thead><tbody></tbody></table></div>
+      <h3 class="h">Documents by year <span class="dim">(publication date, not sitemap lastmod)</span></h3>
+      <div id="yearBars" class="bars"></div>
     </div>
-    <div id="factTimeline" class="timeline"></div>
-  </section>
-
-  <!-- CORPUS -------------------------------------------------------------- -->
-  <section id="tab-corpus" class="tab">
-    <div id="statTiles" class="tiles"></div>
-    <div class="cols">
-      <div>
-        <h3 class="h">Documents by domain</h3>
-        <div class="tablewrap"><table id="domainTable"><thead><tr><th>domain</th><th>tier</th><th>docs</th><th>aliases</th><th>oldest</th><th>newest</th></tr></thead><tbody></tbody></table></div>
-        <h3 class="h">Documents by year <span class="muted">(publication date, not sitemap lastmod)</span></h3>
-        <div id="yearBars" class="bars"></div>
-      </div>
-      <div>
-        <h3 class="h">Duplicates found</h3>
-        <div id="dedupSummary"></div>
-        <div class="tablewrap"><table id="dedupTable"><thead><tr><th>alias</th><th>→ canonical</th><th>method</th><th>sim</th></tr></thead><tbody></tbody></table></div>
-        <h3 class="h">Dropped at crawl time</h3>
-        <div class="tablewrap"><table id="droppedTable"><thead><tr><th>reason</th><th>n</th></tr></thead><tbody></tbody></table></div>
-      </div>
+    <div>
+      <h3 class="h">Duplicates found</h3>
+      <div id="dedupSummary"></div>
+      <div class="tablewrap"><table id="dedupTable"><thead><tr><th>alias</th><th>→ canonical</th><th>method</th><th>sim</th></tr></thead><tbody></tbody></table></div>
+      <h3 class="h">Dropped at crawl time</h3>
+      <div class="tablewrap"><table id="droppedTable"><thead><tr><th>reason</th><th>n</th></tr></thead><tbody></tbody></table></div>
     </div>
-    <h3 class="h">Browse documents</h3>
-    <input id="docSearch" type="text" placeholder="filter by url or title…">
-    <div class="tablewrap"><table id="docTable"><thead><tr><th>id</th><th>title</th><th>domain</th><th>tier</th><th>date</th><th>chars</th><th>flags</th></tr></thead><tbody></tbody></table></div>
-  </section>
+  </div>
+  <h3 class="h">Browse documents</h3>
+  <input id="docSearch" type="text" placeholder="filter by url or title…">
+  <div class="tablewrap"><table id="docTable"><thead><tr><th>id</th><th>title</th><th>domain</th><th>tier</th><th>date</th><th>chars</th><th>flags</th></tr></thead><tbody></tbody></table></div>
+</section>
 
-  <!-- INSTRUCTIONS ---------------------------------------------------------- -->
-  <section id="tab-instructions" class="tab">
-    <p class="lead">Sentences in the corpus that talk <em>to</em> AI assistants. They were cut out of the searchable text at index time and stored here, so neither the retriever nor the answer model ever sees them as instructions. The answerer additionally receives sources as tagged data and must cite only provided sources (checked in code).</p>
-    <div id="instrSummary" class="muted"></div>
-    <div id="instrList"></div>
-  </section>
+<!-- ══ INSTRUCTIONS ═══════════════════════════════════════════════════════ -->
+<section id="view-instructions" class="view">
+  <div class="view-head">
+    <h2>AI instructions found in the corpus</h2>
+    <p>Sentences addressed <em>to</em> AI assistants. They were cut out of the searchable text at index time and parked here, so neither the retriever nor the answer model ever meets them as instructions. The answerer additionally receives sources as tagged data and may cite only provided sources — checked in code, not asked for in a prompt.</p>
+  </div>
+  <div id="instrSummary" class="dim mono"></div>
+  <div id="instrList"></div>
+</section>
 
-  <!-- EVAL ---------------------------------------------------------------- -->
-  <section id="tab-eval" class="tab">
-    <div id="evalTiles" class="tiles"></div>
-    <div class="tablewrap"><table id="evalTable"><thead><tr><th>#</th><th>question</th><th>reference</th><th>system answer</th><th>verdict</th></tr></thead><tbody></tbody></table></div>
-    <h3 class="h">Measured cost</h3>
-    <pre id="costBox" class="pre"></pre>
-  </section>
+<!-- ══ EVAL ═══════════════════════════════════════════════════════════════ -->
+<section id="view-eval" class="view">
+  <div class="view-head"><h2>Eval</h2><p>Twenty questions, including traps that should be refused. Verdicts and the measured cost of the whole run.</p></div>
+  <div id="evalTiles" class="tiles"></div>
+  <div class="tablewrap"><table id="evalTable"><thead><tr><th>#</th><th>question</th><th>reference</th><th>system answer</th><th>verdict</th></tr></thead><tbody></tbody></table></div>
+  <h3 class="h">Measured cost</h3>
+  <pre id="costBox" class="pre"></pre>
+</section>
 
-  <!-- SETTINGS -------------------------------------------------------------- -->
-  <section id="tab-settings" class="tab">
-    <p class="lead">Live knobs. Changes apply to the next question immediately (in-memory override of <code>config/kb.yaml</code>, no restart). This is how a "new requirement" during the defence is handled: change a knob, ask again, compare the trace.</p>
-    <div class="settings">
-      <fieldset><legend>Ranking</legend>
-        <label>Recency half-life (days) <input type="number" data-path="ranking.recency_half_life_days" min="30" max="3650"></label>
-        <label>Recency floor <input type="number" data-path="ranking.recency_floor" step="0.05" min="0" max="1"></label>
-        <label>Tier 1 weight (first-party) <input type="number" data-path="ranking.tier_weights.1" step="0.1" min="0" max="1"></label>
-        <label>Tier 2 weight (press / third-party) <input type="number" data-path="ranking.tier_weights.2" step="0.1" min="0" max="1"></label>
-        <label>Tier 3 weight (video ASR / social) <input type="number" data-path="ranking.tier_weights.3" step="0.1" min="0" max="1"></label>
-        <label>AI-directed page multiplier <input type="number" data-path="ranking.ai_directed_multiplier" step="0.1" min="0" max="1"></label>
-        <label>Undated document multiplier <input type="number" data-path="ranking.undated_recency" step="0.1" min="0" max="1"></label>
-      </fieldset>
-      <fieldset><legend>Retrieval</legend>
-        <label>Chunks to the model <input type="number" data-path="retrieval.final_top" min="1" max="30"></label>
-        <label>Extra date-diverse chunks <input type="number" data-path="retrieval.date_diverse_extra" min="0" max="10"></label>
-        <label>BM25 candidates <input type="number" data-path="retrieval.bm25_top" min="5" max="200"></label>
-        <label>Vector candidates <input type="number" data-path="retrieval.vector_top" min="0" max="200"></label>
-      </fieldset>
-      <fieldset><legend>Filters (requirement changes)</legend>
-        <label>Excluded domains (comma-separated) <input type="text" data-path="filters.excluded_domains" data-list="1" placeholder="e.g. cryptopotato.com, bitget.com"></label>
-        <label>Ignore sources published before year <input type="number" data-path="filters.min_published_year" min="2015" max="2030" placeholder="empty = no limit"></label>
-        <label>Tiers included (comma-separated) <input type="text" data-path="filters.include_tiers" data-list="num" placeholder="1, 2, 3"></label>
-      </fieldset>
-      <fieldset><legend>Gates &amp; model</legend>
-        <label>Min best score before asking the model <input type="number" data-path="gates.min_best_score" step="0.001" min="0" max="1"></label>
-        <label>Require valid citations <select data-path="gates.require_citations"><option value="true">yes</option><option value="false">no</option></select></label>
-        <label>Answer model <select data-path="models.answer"><option>claude-opus-5</option><option>claude-sonnet-5</option><option>claude-haiku-4-5</option><option>gemini-3.8-flash</option><option>gemini-2.5-pro</option><option>gemini-2.5-flash</option><option>gemini-2.5-flash-lite</option></select></label>
-        <label>Thinking effort <select data-path="models.effort"><option>low</option><option>medium</option><option>high</option></select></label>
-      </fieldset>
-    </div>
-    <div class="row">
-      <button id="saveCfg">Apply</button>
-      <button id="resetCfg" class="secondary">Reset to file</button>
-      <span id="cfgMsg" class="muted"></span>
-    </div>
-  </section>
+<!-- ══ SETTINGS ═══════════════════════════════════════════════════════════ -->
+<section id="view-settings" class="view">
+  <div class="view-head">
+    <h2>Operator panel</h2>
+    <p>Live knobs. A change applies to the next question immediately — an in-memory override of <code>config/kb.yaml</code>, no restart. This is how a new requirement mid-demo is handled: turn a knob, ask again, compare the trace.</p>
+  </div>
+  <div class="settings">
+    <fieldset><legend>Ranking</legend>
+      <label>Recency half-life (days) <input type="number" data-path="ranking.recency_half_life_days" min="30" max="3650"></label>
+      <label>Recency floor <input type="number" data-path="ranking.recency_floor" step="0.05" min="0" max="1"></label>
+      <label><span><span class="tier t1">T1</span> first-party weight</span> <input type="number" data-path="ranking.tier_weights.1" step="0.1" min="0" max="1"></label>
+      <label><span><span class="tier t2">T2</span> press weight</span> <input type="number" data-path="ranking.tier_weights.2" step="0.1" min="0" max="1"></label>
+      <label><span><span class="tier t3">T3</span> video / social weight</span> <input type="number" data-path="ranking.tier_weights.3" step="0.1" min="0" max="1"></label>
+      <label>AI-directed page multiplier <input type="number" data-path="ranking.ai_directed_multiplier" step="0.1" min="0" max="1"></label>
+      <label>Undated document multiplier <input type="number" data-path="ranking.undated_recency" step="0.1" min="0" max="1"></label>
+    </fieldset>
+    <fieldset><legend>Retrieval</legend>
+      <label>Chunks to the model <input type="number" data-path="retrieval.final_top" min="1" max="30"></label>
+      <label>Extra date-diverse chunks <input type="number" data-path="retrieval.date_diverse_extra" min="0" max="10"></label>
+      <label>BM25 candidates <input type="number" data-path="retrieval.bm25_top" min="5" max="200"></label>
+      <label>Vector candidates <input type="number" data-path="retrieval.vector_top" min="0" max="200"></label>
+    </fieldset>
+    <fieldset><legend>Filters (requirement changes)</legend>
+      <label>Excluded domains <input type="text" data-path="filters.excluded_domains" data-list="1" placeholder="cryptopotato.com, bitget.com"></label>
+      <label>Ignore sources before year <input type="number" data-path="filters.min_published_year" min="2015" max="2030" placeholder="empty = no limit"></label>
+      <label>Tiers included <input type="text" data-path="filters.include_tiers" data-list="num" placeholder="1, 2, 3"></label>
+    </fieldset>
+    <fieldset><legend>Gates &amp; model</legend>
+      <label>Min best score before asking the model <input type="number" data-path="gates.min_best_score" step="0.001" min="0" max="1"></label>
+      <label>Require valid citations <select data-path="gates.require_citations"><option value="true">yes</option><option value="false">no</option></select></label>
+        <label>Require grounded numbers (gate 3) <select data-path="gates.require_grounded_numbers"><option value="true">yes</option><option value="false">no</option></select></label>
+      <label>Answer model <select data-path="models.answer"><option>claude-opus-5</option><option>claude-sonnet-5</option><option>claude-haiku-4-5</option><option>gemini-3.8-flash</option><option>gemini-2.5-pro</option><option>gemini-2.5-flash</option><option>gemini-2.5-flash-lite</option></select></label>
+      <label>Thinking effort <select data-path="models.effort"><option>low</option><option>medium</option><option>high</option></select></label>
+    </fieldset>
+  </div>
+  <div class="toolbar sticky-actions">
+    <button id="saveCfg" class="btn-accent">Apply</button>
+    <button id="resetCfg" class="btn-ghost">Reset to file</button>
+    <span id="cfgMsg" class="dim"></span>
+  </div>
+</section>
+
 </main>
 
-<div id="docModal" class="modal hidden"><div class="modal-body"><button class="close" id="docClose">×</button><div id="docContent"></div></div></div>
+<div id="docModal" class="modal" hidden><div class="modal-body"><button class="close" id="docClose" title="Close (Esc)">×</button><div id="docContent"></div></div></div>
 
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
