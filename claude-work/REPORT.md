@@ -120,7 +120,9 @@ All numbers are from the `llm_calls` table (every call logs provider usage); `np
 index = $2.19 × 50 = **≈ $109** (linear: every document is embedded and read once by the extractor; with Gemini Flash-Lite as extractor ≈ $15).
 Per query: **unchanged — $0.04 (Opus 5) or $0.011 (Gemini 3.8 Flash)** — because the model always reads a fixed top-k (10 + 4 chunks + ≤14 fact rows); what grows is retrieval work: BM25 over 107 000 chunks and a brute-force cosine over 107 000 × 1 536 floats (~160 MB) is still tens of milliseconds in-process, but at that size we would move vectors to sqlite-vec or pgvector. 1 000 questions ≈ $40 (Opus) / ≈ $11 (3.8 Flash); with Anthropic prompt caching the system-prompt share of input (~1.5k tokens) costs 10× less.
 
-**Eval headline (EVAL.md, Gemini 3.8 Flash run):** 20 questions, **0 invented facts, 0 wrong**, 5/5 negative cases correctly abstained, 9/15 positive fully correct, 5 partially correct (extra or missing detail vs the reference), 1 wrongly abstained (products launched since 2025). Strict accuracy 70%, lenient 95%.
+**Eval headline — current run (`EVAL.md`, agent path, Gemini 3.8 Flash):** 20 questions, **0 wrong, 1 invented fact**, 4/5 negative cases correctly abstained, 0 wrongly abstained, 12/15 positive fully correct, 3 partially correct. Strict accuracy 80%, lenient 95%. The single failure is n03: on a negative case the agent, having more tool calls than the single-shot path, found the pages that *do* publish commission rates and answered with them instead of abstaining — every figure cited and gate 3 passed, but a skim-reader could mistake a public rate for an institutional one, so it is scored as a failure rather than argued away (full reasoning in `EVAL.md`).
+
+**The earlier single-shot run**, on the same 20 questions and the same model, scored strict 70% / lenient 95% with **0 invented facts** and 5/5 negatives abstained, but 1 wrongly abstained. That is the honest trade the agent layer bought: +10 points of strict accuracy and one fewer wrong abstention, paid for with the one over-answered negative case above and ~4× the cost per question.
 
 ## 4. Baseline: Everstake's MCP server (§5.7)
 

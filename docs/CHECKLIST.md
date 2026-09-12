@@ -2,6 +2,8 @@
 
 Легенда: ✅ зроблено і перевірено · 🟡 зроблено, є застереження · ⬜ на тобі
 
+> **Знімок стану на вечір 11.09.2026.** Цифри й вердикти нижче — станом на той момент і з того часу змінились (агентний шлях, gate 3, adversarial-набір, strict 80%). Актуальний стан: [`../README.md`](../README.md), [`../claude-work/EVAL.md`](../claude-work/EVAL.md), [`../CHANGELOG.md`](../CHANGELOG.md). Файл лишений як слід процесу, а не як довідник.
+
 ## Частина A
 
 | Пункт | Стан | Де дивитись |
@@ -23,13 +25,13 @@
 
 | Пункт | Стан |
 |---|---|
-| 7. PROCESS.md: As-Is→To-Be, метрики, failure mode, що не агент | ⬜ пишеш ти. Скелет із заголовками лежить у `everstake-kb/PROCESS.md` |
+| 7. PROCESS.md: As-Is→To-Be, метрики, failure mode, що не агент | ⬜ пишеш ти. Скелет із заголовками лежить у `claude-work/PROCESS.md` |
 
 ## 8. Що подати
 
 | Пункт | Стан | Де |
 |---|---|---|
-| Репозиторій: код, README, agents, skills, prompts як файли | ✅ | `everstake-kb/` — `agents/*.md`, `skills/everstake-kb/SKILL.md`, `prompts/*.md` |
+| Репозиторій: код, README, agents, skills, prompts як файли | ✅ | `claude-work/` — `agents/*.md`, `skills/everstake-kb/SKILL.md`, `prompts/*.md` |
 | EVAL.md: таблиця 20, метрики, чесний розбір невдач | ✅ | згенерований, з причинами суддi по кожному партіалу |
 | REPORT.md: 2–3 стор.: архітектура, рішення, чому, вартість, що вирізано, що б зробив за місяць | ✅ | REPORT.md (~3 стор.) |
 | PROCESS.md | ⬜ | твоя частина |

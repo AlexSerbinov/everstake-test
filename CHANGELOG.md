@@ -1,6 +1,10 @@
 # Changelog — Everstake test assignment
 
-Timeline of the work, real clock (Europe/Madrid, 2026-09-11). The assignment asks for "how you got there", not only the result, so this file is kept alongside the git history.
+Timeline of the work, real clock (Europe/Madrid). The assignment asks for "how you got there", not only the result, so this file is kept alongside the git history — and the git timestamps are real, not rewritten.
+
+**Effort:** two working sessions inside the five-day window the assignment allows — 2026-09-11 evening (~19:20–22:45) and 2026-09-11/12 night (~23:30–04:00), plus a later readability pass. Roughly 7–8 hours of hands-on time.
+
+Repository map: [`README.md`](README.md) · documentation index: [`docs/README.md`](docs/README.md).
 
 ## 2026-09-11
 
@@ -26,6 +30,73 @@ Timeline of the work, real clock (Europe/Madrid, 2026-09-11). The assignment ask
 - **22:00–22:32** — Codex (GPT-5.6) finished its independent attempt in `codex-work/`: Python, 280 documents, 1 075 chunks, Gemini Flash-Lite for answers, deployed at `https://everstake-codex.89-167-19-222.sslip.io`. Own EVAL/REPORT/SUMMARY, 4 commits. Blind-checked afterwards: CEO question correct, negative case abstains, the networks-over-time question drifts to Cosmos IBC chain counts (no timeline).
 
 - **22:45** — Answer model switched to `gemini-3.8-flash` (intro pricing $0.75 / $3.75 per MTok). Full eval re-run: 0 hallucinations, 0 wrong, 5/5 negatives, strict 70% / lenient 95%, $0.011 per question. The networks-over-time question now returns the full trajectory (70+ → 85+ → 130+ historical / 30+ active).
+
+## 2026-09-12
+
+Second session, roughly 23:30 → 04:00 (Europe/Madrid). Goal: replace "one retrieval, one
+prompt" with a tool-using agent, make its reasoning visible, and measure whether the freedom
+costs accuracy. Detailed write-up: [`docs/reports/2026-09-12.md`](docs/reports/2026-09-12.md).
+
+- **~23:30–01:30** — **Agentic layer** in `claude-work` (`src/ask/agent.ts`): the answer model
+  is given six tools — corpus search, fact-ledger history, document read, live fetch of an
+  allow-listed page (robots + 1 h cache), Everstake's own MCP for live APY/uptime, and
+  `finish` — and picks its own path, up to six calls. Selection rules live in
+  `prompts/agent.md`, the human-readable description in `agents/orchestrator.md`. Every gate
+  stayed in code: both paths import them from `src/ask/shared.ts`, so the agent cannot relax a
+  rule the single-shot path enforces.
+- **~00:30–02:00** — **Visible pipeline.** `POST /ask/stream` emits SSE events
+  (`stage` / `tool_call` / `tool_result` / `note` / `final`); the rebuilt UI replays them live —
+  plan → ledger → search → live page → answer → verification, with per-step timings. First
+  screen stays a single question box; everything else moved behind an Explore menu.
+- **~01:30** — **Gate 3, number grounding.** Every numeral in an answer must appear in text a
+  tool actually returned this run ("1.6 million" is grounded by "1,600,000"). A citation cannot
+  catch an invented number — the sentence around it can be perfectly cited — so this gate can.
+- **01:33–01:44** — **Adversarial suite** (`eval/adversarial.yaml`): 8 question-level
+  injections, 6 planted documents with canary tokens (indexed into a throw-away copy of the
+  database through the normal path), 6 false premises. Verdicts are deterministic predicates in
+  code, not a judge model. Result: **16 PASS, 4 WARN, 0 FAIL, 0 canary tokens** in any answer.
+  All four WARNs are the same shape and the opposite of a breach — the system refuted a false
+  premise *with citations* where the case expected a bare abstention.
+- **01:48** — **Eval re-run on the agent path**: strict **80%** (was 70% single-shot), lenient
+  95%, 0 wrong, 0 wrongly abstained, 1 judge-scored hallucination on n03. Honest read of the
+  trade: the agent buys +10 points and one fewer wrong abstention, and pays with one
+  over-answered negative case and ~4× cost per question ($0.048, ~10 s).
+- **~02:00–03:15** — **Research notes** (`docs/research/`, Ukrainian): freshness strategy,
+  scale and tamper-evidence for 6 000–10 000 call recordings, the adversarial plan, an internal
+  knowledge system for the COO (material for Part B), and how this project reports on itself.
+- **03:22–03:56** — Codex (GPT-5.6) received the same goals and evolved `codex-work/`
+  independently: its own tool loop, Ed25519-signed audit receipts, weekly refresh timer,
+  20/20 adversarial, $0.26 total spend. Commits, deploy, `docs/reports/2026-09-12.md`.
+
+## 2026-09-12, later — readability pass
+
+Both implementations were rewritten for readability, on the assignment's own condition
+("you must be able to explain and modify any line of what you submit"). Behaviour was frozen:
+names spelled out, functions kept under ~40 lines, every constant and heuristic given a *why*
+comment that says whether its value is measured, taken from a spec, or hand-tuned — an
+assumption is labelled as an assumption rather than given an invented justification.
+
+- **The safety net came first.** A characterization-test layer was written before a single
+  line was refactored: TypeScript **26 → 147** tests, Python **16 → 283**. It pins the pieces
+  that would fail silently — ranking, dedup clustering, robots precedence, the date-priority
+  chain, the gates, the audit chain, the injection patterns, the cost arithmetic.
+- **Two coverage gaps were closed by extraction**, not by hoping: the `as_of` priority chain
+  was welded inside a worker loop (`resolveFactAsOf`) and the JSON extractor was private to a
+  provider call (`extractFirstJsonObject`). Both are now pure functions with tests.
+- **Behaviour was verified, not assumed.** Beyond the suites: the SQLite schema diffed
+  byte-identical between old and new DDL; the Python pipeline re-run old-vs-new over all 280
+  corpus documents, 500+ URLs and 252 full `answer()` calls including prompt hashes; both
+  markdown renderers reproduced byte-identical output on all 10 stored runs; the UI diffed
+  byte-identical DOM and **0 differing pixels** across 9 screenshot pairs; and the server was
+  booted against the real 441-document index and asked both a trap question (CEO — answered
+  correctly with citations) and an unanswerable one (2024 revenue — abstained).
+- **One measurement bug fixed.** `--render` recomputed metrics in memory, wrote `EVAL.md` and
+  discarded the recomputed block, so the results JSON kept its pre-`human_verdict` numbers.
+  Since `GET /api/eval` serves that JSON, the live demo reported strict 75% while `EVAL.md`
+  and `REPORT.md` said 80%. `--render` now writes the run back, `REPORT.md` §3 was corrected
+  to the current numbers, and `eval/results/*.json` is no longer gitignored — it is the
+  primary evidence for requirement 5.5 and `EVAL.md` cites it by name.
+- Repository navigation added ([`README.md`](README.md), [`docs/README.md`](docs/README.md)).
 
 ## Open
 
