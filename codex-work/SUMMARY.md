@@ -16,15 +16,16 @@ Every answer and abstention is appended to a SHA-256 chain and signed with Ed255
 - Fresh measured build: **280 documents**, **1,072 chunks**, **775,151 embedding tokens**, **$0.01550302**, **4.71 min wall time**; the served frozen index remains 1,075 chunks.
 - Quality rerun: **19/20**, zero invented facts, **$0.09753750**; the sole miss was an unchanged lexical ShredStream assertion.
 - Final adversarial set: **20/20**; four real agent cases cost **$0.02038270**, averaged **3.02 s**, and averaged **$0.00509568/question**.
-- Current-task API spend before deployed smoke: **$0.30090939**; complete known assignment activity: **$0.56056891**, below the combined ~$2 ceiling.
+- Current-task API spend including deployed smoke: **$0.30510199**; complete known assignment activity: **$0.56476151**, below the combined ~$2 ceiling.
 - `COST.md` records provider usage plus measured wall/CPU/RSS/bytes for every stage and shows row-by-row ×50 arithmetic.
+- Public smoke: HTTP 200, Gemini CEO answer **$0.00419260 / 3.19 s**, expandable four-step receipt, signed audit `verified: true`, container **0 restarts**.
 - Weekly refresh timer is enabled; its dry run checked a live source, found **0 changes**, and spent **$0** on indexing.
 
 ## Deployment
 
 **https://everstake-codex.89-167-19-222.sslip.io**
 
-The deployment details and final public smoke measurements below are updated after the new image is verified. The service remains bound only to `127.0.0.1:4321` behind its existing Caddy route, with corpus, index, ledgers, snapshots, signing key, and audit chain in persistent storage.
+The active container is `everstake-codex:v3-final`, bound only to `127.0.0.1:4321` behind the unchanged Caddy route. Corpus, index, ledgers, snapshots, signing key, and audit chain remain under `/data/everstake-codex/state/`. The former `v2-final` and smoke `v3` containers remain stopped as rollback points; no push was made.
 
 ## What I cut
 

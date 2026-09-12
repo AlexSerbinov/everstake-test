@@ -582,9 +582,9 @@
     "legacy_all_environment_cost_usd": 0.25965952,
     "current_task_local_provider_events": 150,
     "current_task_local_cost_usd": 0.30090939,
-    "external_current_task_cost_usd": 0.0,
-    "current_task_all_environment_cost_usd": 0.30090939,
-    "known_assignment_total_usd": 0.56056891,
+    "external_current_task_cost_usd": 0.0041926,
+    "current_task_all_environment_cost_usd": 0.30510199,
+    "known_assignment_total_usd": 0.56476151,
     "legacy_resource_fields": null
   },
   "assumptions": [

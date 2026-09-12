@@ -47,7 +47,7 @@ Measured on **MacBook Pro (local development)**.
 
 Before this task, **397** local provider events totalled **$0.25609992**. Their provider token/cost fields remain in the append-only paid-call ledger; wall time, CPU and RAM were never captured and are therefore not reconstructed.
 
-This task used **$0.30090939** across local and deployed checks. The complete known assignment spend is **$0.56056891**.
+This task used **$0.30510199** across local and deployed checks. The complete known assignment spend is **$0.56476151**.
 
 ## What is measured vs assumed
 

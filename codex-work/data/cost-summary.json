@@ -1,6 +1,6 @@
 {
   "currency": "USD",
-  "generated_at": "2026-09-12T14:20:00Z",
+  "generated_at": "2026-09-12T14:28:00Z",
   "measured_fresh_index": {
     "model": "text-embedding-3-small",
     "documents": 280,
@@ -43,9 +43,17 @@
     "price_per_million_output_tokens": 2.5,
     "thinking_config": "omitted"
   },
-  "spend_before_deployed_smoke": {
-    "current_task": 0.30090939,
-    "known_assignment_total": 0.56056891
+  "deployed_smoke": {
+    "model": "gemini-3.8-flash",
+    "input_tokens": 5065,
+    "output_tokens": 106,
+    "cost": 0.0041926,
+    "wall_ms": 3190.231,
+    "audit_verified": true
+  },
+  "final_spend": {
+    "current_task": 0.30510199,
+    "known_assignment_total": 0.56476151
   },
   "pricing_sources": {
     "openai_embeddings": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
