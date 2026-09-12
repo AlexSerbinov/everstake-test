@@ -32,6 +32,7 @@ so the first submission stays reproducible.
 from __future__ import annotations
 
 import math
+import json
 import re
 import sqlite3
 import struct
@@ -41,7 +42,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .api_clients import embed, generate_json
-from .config import DB_PATH, load_dotenv
+from .config import DB_PATH, KB_CONFIG_PATH, load_dotenv
 
 # --- Hybrid score weights -----------------------------------------------------
 # Semantic carries most of the weight because the corpus is small and questions are
@@ -82,6 +83,7 @@ COMPANY_ABOUT_AUTHORITY = 1.30  # /company/about: the human equivalent
 SITE_AUTHORITY = 1.16  # product/docs/canonical pages: maintained, not dated
 EVERSTAKE_BLOG_AUTHORITY = 1.00  # first-party but point-in-time commentary
 THIRD_PARTY_AUTHORITY = 0.82  # everything else, including press mirrors
+VOICE_AUTHORITY = json.loads(KB_CONFIG_PATH.read_text())["voice_authority"]
 CANONICAL_PATHS = {
     "/ai-info": AI_INFO_AUTHORITY,
     "/company/about": COMPANY_ABOUT_AUTHORITY,
@@ -385,8 +387,7 @@ def _hybrid_score(row: sqlite3.Row, query_vector: list[float], lexical_scores: d
 
 def _voice_authority(voice: str | None) -> float:
     """Configured voice authority, with safe defaults for pre-migration rows."""
-    values = {"first_party_channel": 0.7, "employee_on_third_party": 0.6, "third_party": 0.4}
-    return values.get(voice, 1.0)
+    return VOICE_AUTHORITY.get(voice, 1.0)
 
 
 def _recency_multiplier(row: sqlite3.Row, current_year: int, prefer_recent: bool) -> float:
