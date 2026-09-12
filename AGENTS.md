@@ -61,6 +61,12 @@ Folders `reference/`, `everstake-mcp/`, `raw/`, `mcp-test/` are local scratch (t
 - **Tests must stay green** (`npm test` in `claude-work`, the Python test suite in `codex-work`) before a commit.
 - **Deployment.** Each implementation has its own deploy script targeting its own port and data directory on the demo host; never stop, modify or remove services you did not create.
 
+## Defence notes: `docs/DEFENCE.md`
+
+Everything that will be shown or explained at the defence session is collected in `docs/DEFENCE.md`, written in **Ukrainian**, as **short plain-language theses**, one block per part of the system: how it works, what to show on screen, and a one-sentence takeaway. Keep it that way — it is a speaker's script, not documentation.
+
+Add to it whenever work produces something worth showing: a design decision with a clear reason, a mechanism that is verified at the system level rather than assumed (a gate in code, a measured number, a test that proves a property), a surprising finding in the corpus, or a trade-off that was made deliberately. If a behaviour is non-obvious — two sources disagree and the system picks one, a number is blocked, a source is down-weighted — write down *why*, in words a non-engineer follows, and which screen demonstrates it. Prefer honesty over polish: limitations belong there too, with the answer to "what would you do next".
+
 ## Where to look for specific answers
 
 | Question | File |
