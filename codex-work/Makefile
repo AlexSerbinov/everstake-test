@@ -1,4 +1,4 @@
-.PHONY: crawl index serve eval test
+.PHONY: crawl index serve eval test refresh
 
 crawl:
 	python3 -m app.crawler --seeds ../docs/corpus_sources.csv --output data/corpus.jsonl
@@ -15,3 +15,5 @@ eval:
 test:
 	python3 -m unittest discover -s tests -v
 
+refresh:
+	python3 -m app.refresh --apply

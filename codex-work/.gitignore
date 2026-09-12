@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 data/raw/
 data/run-costs.jsonl
+data/answer-audit.jsonl
+data/audit-ed25519.key
+data/snapshots/
+data/refresh-report.json

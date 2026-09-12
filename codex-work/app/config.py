@@ -8,6 +8,8 @@ DATA_DIR = ROOT / "data"
 DB_PATH = Path(os.getenv("EVERSTAKE_DB", DATA_DIR / "index.sqlite3"))
 CORPUS_PATH = Path(os.getenv("EVERSTAKE_CORPUS", DATA_DIR / "corpus.jsonl"))
 COST_LOG = Path(os.getenv("EVERSTAKE_COST_LOG", DATA_DIR / "run-costs.jsonl"))
+AUDIT_LOG = Path(os.getenv("EVERSTAKE_AUDIT_LOG", DB_PATH.parent / "answer-audit.jsonl"))
+AUDIT_KEY = Path(os.getenv("EVERSTAKE_AUDIT_KEY", DB_PATH.parent / "audit-ed25519.key"))
 PORT = int(os.getenv("PORT", "4321"))
 
 
@@ -21,4 +23,3 @@ def load_dotenv(path: Path = ROOT / ".env") -> None:
             continue
         key, value = line.split("=", 1)
         os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
-

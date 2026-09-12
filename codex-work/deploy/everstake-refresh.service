@@ -1,0 +1,7 @@
+[Unit]
+Description=Refresh Everstake Evidence Agent corpus
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker exec everstake-codex python -m app.refresh --corpus /app/runtime/corpus.jsonl --database /app/runtime/index.sqlite3 --apply

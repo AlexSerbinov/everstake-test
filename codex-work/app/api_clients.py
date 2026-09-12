@@ -14,6 +14,8 @@ from .config import COST_LOG
 EMBEDDING_PRICE_PER_MILLION = 0.02
 GEMINI_INPUT_PRICE_PER_MILLION = 0.10
 GEMINI_OUTPUT_PRICE_PER_MILLION = 0.40
+AGENT_INPUT_PRICE_PER_MILLION = 0.40
+AGENT_OUTPUT_PRICE_PER_MILLION = 1.60
 
 
 def _post_json(url: str, payload: dict, headers: dict[str, str], retries: int = 4) -> dict:
@@ -75,3 +77,32 @@ def generate_json(prompt: str, operation: str = "answer") -> tuple[dict[str, Any
     raw = response["candidates"][0]["content"]["parts"][0]["text"]
     return json.loads(raw), {"input_tokens": input_tokens, "output_tokens": output_tokens, "cost_usd": cost, "model": model}
 
+
+def create_agent_response(instructions: str, inputs: list[dict], tools: list[dict]) -> tuple[dict[str, Any], dict]:
+    """Call the Responses API for one bounded agent turn."""
+    model = os.getenv("AGENT_MODEL", "gpt-4.1-mini-2025-04-14")
+    response = _post_json(
+        "https://api.openai.com/v1/responses",
+        {
+            "model": model,
+            "instructions": instructions,
+            "input": inputs,
+            "tools": tools,
+            "tool_choice": "auto",
+            "parallel_tool_calls": False,
+            "max_output_tokens": 900,
+            "store": False,
+        },
+        {"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
+    )
+    usage = response.get("usage", {})
+    input_tokens = int(usage.get("input_tokens", 0))
+    output_tokens = int(usage.get("output_tokens", 0))
+    cost = input_tokens / 1_000_000 * AGENT_INPUT_PRICE_PER_MILLION + output_tokens / 1_000_000 * AGENT_OUTPUT_PRICE_PER_MILLION
+    record_cost("agent_turn", model, input_tokens, output_tokens, cost)
+    return response, {
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "cost_usd": round(cost, 10),
+        "model": model,
+    }

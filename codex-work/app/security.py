@@ -44,3 +44,16 @@ def sanitize_untrusted_text(text: str) -> SanitizedText:
         if safe_sentences:
             kept.append(" ".join(safe_sentences))
     return SanitizedText("\n".join(kept), removed)
+
+
+def question_injection_reason(question: str) -> str | None:
+    """Reject attempts to replace the evidence contract, while allowing normal questions."""
+    patterns = (
+        r"ignore (all |any )?(previous|prior|system|developer|tool) instructions?",
+        r"(reveal|print|show) (the )?(system|developer) prompt",
+        r"(do not|don't) (use|call|cite|verify) (the )?(tools?|sources?|evidence)",
+        r"pretend (you|the answer|everstake)",
+        r"answer (without|with no) (citations?|sources?|verification)",
+        r"override (the )?(rules?|policy|guardrails?)",
+    )
+    return "The question attempts to override the evidence policy." if any(re.search(p, question, re.I) for p in patterns) else None

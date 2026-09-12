@@ -1,5 +1,3 @@
-The production grounded-answer prompt is the `ANSWER_PROMPT` constant in `app/retrieval.py`.
-It treats evidence as untrusted quoted data, requires citations, separates factual and synthesis modes,
-and mandates an exact insufficient-evidence answer. It is kept in code so the running prompt and tests
-cannot drift; this file exists as the reviewer-facing prompt inventory.
-
+Legacy single-pass prompt retained for reproducibility of the first attempt. The deployed agent now loads
+`prompts/agent-system.txt` and `agents/tools.json` directly, so reviewer-visible policy and production
+behavior cannot drift.
