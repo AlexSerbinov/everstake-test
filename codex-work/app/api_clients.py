@@ -34,8 +34,8 @@ from .config import COST_LOG
 # fetched: the cost ledger must stay reproducible after prices change, so a past run's
 # recorded cost keeps meaning what it meant when it was written.
 EMBEDDING_PRICE_PER_MILLION = 0.02      # text-embedding-3-small
-GEMINI_INPUT_PRICE_PER_MILLION = 0.10   # gemini-2.5-flash-lite, legacy baseline path
-GEMINI_OUTPUT_PRICE_PER_MILLION = 0.40
+GEMINI_INPUT_PRICE_PER_MILLION = 0.75   # gemini-3.8-flash, legacy baseline path (intro price to 2026-12-31)
+GEMINI_OUTPUT_PRICE_PER_MILLION = 3.75
 AGENT_INPUT_PRICE_PER_MILLION = 0.40    # gpt-4.1-mini, the deployed answer path
 AGENT_OUTPUT_PRICE_PER_MILLION = 1.60
 
@@ -164,7 +164,7 @@ def generate_json(prompt: str, operation: str = "answer") -> tuple[dict[str, Any
     against the agent path. The model id comes from `GEMINI_MODEL` so a comparison run
     can change it without touching code.
     """
-    model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
+    model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
     key = os.environ["GEMINI_API_KEY"]
     response = _post_json(
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",

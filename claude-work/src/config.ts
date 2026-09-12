@@ -206,8 +206,8 @@ export const env = {
   geminiKey: process.env.GEMINI_API_KEY ?? "",
   // `config/kb.yaml` names Claude models even on a Gemini run; these two are what those names
   // resolve to. See `resolveModel` in llm.ts and the provider note in REPORT.md §2.8.
-  geminiAnswerModel: process.env.GEMINI_ANSWER_MODEL ?? "gemini-2.5-flash",
-  geminiCheapModel: process.env.GEMINI_CHEAP_MODEL ?? "gemini-2.5-flash-lite",
+  geminiAnswerModel: process.env.GEMINI_ANSWER_MODEL ?? "gemini-3.8-flash",
+  geminiCheapModel: process.env.GEMINI_CHEAP_MODEL ?? "gemini-3.5-flash-lite",
   embeddingsProvider: defaultEmbeddingsProvider(),
   openaiKey: process.env.OPENAI_API_KEY ?? "",
   voyageKey: process.env.VOYAGE_API_KEY ?? "",

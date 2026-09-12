@@ -16,7 +16,7 @@ test("price is per million tokens across all four usage buckets", () => {
 // a model with no cache pricing must charge zero for cache tokens, not NaN — a NaN here would
 // poison SUM(cost_usd) for the whole stage and silently zero out the cost report
 test("missing cache prices and unknown models cost zero rather than NaN", () => {
-  assert.equal(priceUsd("gemini-2.5-pro", { input: 0, output: 0, cacheRead: 1_000_000, cacheWrite: 1_000_000 }), 0);
+  assert.equal(priceUsd("gemini-unknown-model", { input: 0, output: 0, cacheRead: 1_000_000, cacheWrite: 1_000_000 }), 0);
   assert.equal(priceUsd("no-such-model", { input: 1_000_000, output: 1_000_000 }), 0);
   assert.equal(priceUsd("claude-opus-5", { input: 0, output: 0 }), 0);
 });
@@ -41,7 +41,7 @@ test("on Gemini a Claude name maps to the cheap or the answer model by family", 
     assert.equal(resolveModel("claude-haiku-4-5"), env.geminiCheapModel);
     assert.equal(resolveModel("claude-opus-5"), env.geminiAnswerModel);
     assert.equal(resolveModel("claude-sonnet-5"), env.geminiAnswerModel, "anything that is not haiku is an answer model");
-    assert.equal(resolveModel("gemini-2.5-pro"), "gemini-2.5-pro", "an explicit Gemini name is never remapped");
+    assert.equal(resolveModel("gemini-3.7-flash"), "gemini-3.7-flash", "an explicit Gemini name is never remapped");
   } finally { (env as any).llmProvider = provider; }
 });
 

@@ -129,7 +129,9 @@ test("the score is computed before rounding, so the displayed factors cannot alw
   const by = new Map((await retrieve("How many networks does Everstake support?")).candidates.map((c) => [c.doc_id, c]));
   const live = by.get(1)!;
   assert.equal(live.score, Number((1 / 61 * recencyMultiplier("2026-09-10") * 1).toFixed(5)));
-  assert.notEqual(live.score, Number((live.rrf * live.recency * live.authority).toFixed(5)), "the rounded factors are off by one ulp of display");
+  // whether re-multiplying the rounded factors lands on the same 5 decimals depends on today's
+  // date (recency decays daily), so only assert that it is within one unit of display
+  assert.ok(Math.abs(live.score - live.rrf * live.recency * live.authority) < 0.00002, "rounded factors reproduce the score within one ulp of display");
 
   // documents whose recency is pinned to a constant (undated, or already at the floor) are exact
   assert.equal(by.get(8)!.score, Number((1 / 66 * 0.6 * 0.7).toFixed(5)));

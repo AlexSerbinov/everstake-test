@@ -95,6 +95,5 @@ pricing_usd_per_mtok:          # measured cost uses these (Anthropic list prices
   text-embedding-3-small: { input: 0.02, output: 0 }
   voyage-3-lite: { input: 0.02, output: 0 }
   gemini-3.8-flash: { input: 0.75, output: 3.75, cache_read: 0.075 }   # intro rate until 2026-12-31, then 1.50 / 7.50
-  gemini-2.5-pro: { input: 1.25, output: 10 }
-  gemini-2.5-flash: { input: 0.30, output: 2.5, cache_read: 0.075 }
-  gemini-2.5-flash-lite: { input: 0.10, output: 0.40, cache_read: 0.025 }
+  gemini-3.7-flash: { input: 0.75, output: 3.75, cache_read: 0.075 }
+  gemini-3.5-flash-lite: { input: 0.30, output: 2.50, cache_read: 0.03 }   # cheap path: extraction, judging

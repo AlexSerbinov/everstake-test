@@ -68,7 +68,7 @@ const DEFAULT_MAX_OUTPUT_TOKENS = 4000;
 const DEFAULT_TOOL_MAX_OUTPUT_TOKENS = 3000;
 
 /**
- * Extra output budget granted to thinking-capable Gemini models. On Gemini 2.5+ the thinking
+ * Extra output budget granted to thinking-capable Gemini models. On thinking-capable Gemini models the thinking
  * tokens are charged against `maxOutputTokens`, so a cap sized for the visible answer alone
  * makes the model stop mid-thought and return an empty candidate. Hand-tuned: 4000 was enough
  * for every question in the eval set; no measurement backs the exact value.
@@ -370,7 +370,8 @@ function parseToolTurn(body: any): ToolTurnResult {
 // callers above, so a new provider cannot accidentally omit them.
 
 async function viaGemini<T>(opts: CallOpts, schema: z.ZodType<T> | null) {
-  // "lite" models have no thinking mode, so they need neither the headroom nor the opt-out.
+  // "lite" models: thinking stays off unless a thinkingConfig is sent (Gemini 3.x rejects thinkingBudget),
+  // so they need neither the headroom nor an explicit opt-out.
   const isLiteModel = opts.model.includes("lite");
   const body: any = {
     systemInstruction: { parts: [{ text: opts.system + jsonSchemaInstruction(schema) }] },
@@ -379,7 +380,6 @@ async function viaGemini<T>(opts: CallOpts, schema: z.ZodType<T> | null) {
       maxOutputTokens: (opts.maxTokens ?? DEFAULT_MAX_OUTPUT_TOKENS) + (isLiteModel ? 0 : GEMINI_THINKING_HEADROOM_TOKENS),
       temperature: GEMINI_TEMPERATURE,
       ...(schema ? { responseMimeType: "application/json" } : {}),
-      ...(isLiteModel ? { thinkingConfig: { thinkingBudget: 0 } } : {}),   // no thinking for extraction/judging: cheaper, deterministic
     },
   };
   const response = await fetchGemini(opts.model, body);

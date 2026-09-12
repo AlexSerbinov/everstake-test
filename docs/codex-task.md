@@ -5,7 +5,7 @@ You are doing a take-home test assignment end to end, autonomously, on your own 
 - The assignment, verbatim: `../docs/TEST_ASSIGNMENT_EN.md` (read it fully; every numbered requirement in Part A and section 8 is a deliverable). Part B (`PROCESS.md`) is NOT your job — leave a one-line placeholder.
 - Seed URL list: `../docs/corpus_sources.csv`.
 - Work only inside this directory (`codex-work/`). It is inside a git repository; commit your own work as you go with real commit messages (only paths under `codex-work/`), do not touch or read anything under `../claude-work/` — that is a separate, independent attempt and must not influence yours.
-- API keys are in `./.env` (already present): `GEMINI_API_KEY` (Gemini models, e.g. gemini-2.5-flash / gemini-2.5-flash-lite / gemini-2.5-pro) and `OPENAI_API_KEY` (usable for embeddings such as text-embedding-3-small, or for gpt models). No Anthropic key is available. Keep total API spend under about $5 and record what you actually spent.
+- API keys are in `./.env` (already present): `GEMINI_API_KEY` (Gemini models, e.g. gemini-3.8-flash / gemini-3.5-flash-lite — use the 3.x generation only) and `OPENAI_API_KEY` (usable for embeddings such as text-embedding-3-small, or for gpt models). No Anthropic key is available. Keep total API spend under about $5 and record what you actually spent.
 - Tools available on this machine: node 26, python3, curl, git, docker, yt-dlp, pandoc, ssh.
 
 ## Deployment target (mandatory: the assignment requires the reviewers to run it or see it running)
