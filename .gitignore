@@ -7,3 +7,6 @@ mcp-test/
 .mcp.json
 docs/codex-run.log
 docs/codex-last-message.md
+docs/codex-run*.log
+docs/codex-last-message*.md
+docs/telegram-ideas-*.md
