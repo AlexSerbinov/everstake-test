@@ -284,9 +284,12 @@ async function expandLlmsTxt(source: SourceDef): Promise<Target[]> {
 async function expandGithubOrg(source: SourceDef, userAgent: string): Promise<Target[]> {
   const targets: Target[] = [];
   try {
-    const response = await fetch(`https://api.github.com/orgs/${source.org}/repos?per_page=100&type=public`, {
-      headers: { "User-Agent": userAgent, Accept: "application/vnd.github+json" },
-    });
+    // GITHUB_TOKEN is optional and needs no scopes for public repos: it only lifts the
+    // unauthenticated 60-requests-per-hour-per-IP budget to 5 000, which a shared host or a
+    // scheduled refresh exhausts quickly. The refresher sends the same header.
+    const headers: Record<string, string> = { "User-Agent": userAgent, Accept: "application/vnd.github+json" };
+    if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    const response = await fetch(`https://api.github.com/orgs/${source.org}/repos?per_page=100&type=public`, { headers });
     if (response.ok) {
       const repos: any[] = await response.json();
       // Forks are someone else's text and archived repos describe abandoned code — both would be

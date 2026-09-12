@@ -76,7 +76,18 @@ function migrate(database: DatabaseSync) {
   createChunkTables(database);
   createFactTables(database);
   createOperationalTables(database);
+  createRefreshTables(database);
   addColumnIfMissing(database, "llm_calls", "run_id", "TEXT");
+  // The four columns the refresh sieves need on an already-shipped kb.db. All nullable: a
+  // document crawled before freshness existed has genuinely never been conditionally checked,
+  // and NULL says that, where a zero or an epoch date would claim a measurement we never made.
+  addColumnIfMissing(database, "documents", "etag", "TEXT");                 // sieve 2: If-None-Match
+  addColumnIfMissing(database, "documents", "last_modified_header", "TEXT"); // sieve 2: If-Modified-Since
+  addColumnIfMissing(database, "documents", "sitemap_lastmod", "TEXT");      // sieve 1: the <lastmod> we last saw
+  addColumnIfMissing(database, "documents", "checked_at", "TEXT");           // last time a sieve ran, changed or not
+  // GitHub only: the repo's `pushed_at` when we last summarised it. One org-wide API call
+  // compares every repo against this, which is the whole reason the GitHub source is cheap.
+  addColumnIfMissing(database, "documents", "last_pushed_at", "TEXT");
 }
 
 /**
@@ -316,6 +327,67 @@ function createOperationalTables(database: DatabaseSync) {
     meta           TEXT                    -- json: flags the stage ran with, question text, …
   );
   CREATE INDEX IF NOT EXISTS idx_stage_runs_stage ON stage_runs(stage, started_at);
+  `);
+}
+
+/**
+ * The two tables `npm run refresh` writes: one row per run, and one row per thing that happened
+ * to a document (or to a fact) during that run.
+ *
+ * Why a log and not just "update the document and move on": the operator-facing question is not
+ * "is the corpus current" but "what changed since I last looked", and that question cannot be
+ * answered from the corpus itself — a re-crawled page overwrites the evidence that it used to
+ * say something else. `refresh_changes` is the only place where "the CEO fact changed value on
+ * this date, from this URL" survives. It is also what the UI's "what changed" panel reads.
+ *
+ * Kept deliberately append-only: nothing here is ever updated or deleted, so the log is a
+ * history rather than a status board.
+ */
+function createRefreshTables(database: DatabaseSync) {
+  database.exec(`
+  CREATE TABLE IF NOT EXISTS refresh_runs (
+    id            INTEGER PRIMARY KEY,
+    run_id        TEXT NOT NULL UNIQUE,     -- the stage_runs.run_id of this run: joins to money and CPU
+    started_at    TEXT NOT NULL,
+    ended_at      TEXT,
+    policy        TEXT,                     -- json: the policy this run executed, verbatim
+    preset        TEXT,                     -- the preset name it came from, or 'custom'
+    types         TEXT,                     -- json: which source types were due this run
+    due           INTEGER NOT NULL DEFAULT 0,   -- documents whose interval had elapsed
+    checked       INTEGER NOT NULL DEFAULT 0,   -- documents that reached at least sieve 1
+    conditional_gets INTEGER NOT NULL DEFAULT 0,-- sieve 2 requests actually sent
+    not_modified  INTEGER NOT NULL DEFAULT 0,   -- 304s: the cheapest possible outcome
+    unchanged     INTEGER NOT NULL DEFAULT 0,   -- fetched, but the content hash was identical
+    changed       INTEGER NOT NULL DEFAULT 0,
+    added         INTEGER NOT NULL DEFAULT 0,
+    removed       INTEGER NOT NULL DEFAULT 0,
+    reindexed     INTEGER NOT NULL DEFAULT 0,   -- documents re-chunked + re-embedded
+    refacted      INTEGER NOT NULL DEFAULT 0,   -- documents whose facts were re-extracted
+    facts_changed INTEGER NOT NULL DEFAULT 0,   -- fact rows whose VALUE differs from before
+    bytes_in      INTEGER NOT NULL DEFAULT 0,
+    cost_usd      REAL NOT NULL DEFAULT 0,      -- cross-check only; the ledger figure comes from llm_calls
+    ok            INTEGER NOT NULL DEFAULT 1,
+    error         TEXT,
+    dry_run       INTEGER NOT NULL DEFAULT 0
+  );
+
+  -- One row per observed change. 'unchanged' outcomes are counted on the run, not stored here:
+  -- 440 "nothing happened" rows per run would bury the handful that matter.
+  CREATE TABLE IF NOT EXISTS refresh_changes (
+    id         INTEGER PRIMARY KEY,
+    run_id     TEXT NOT NULL,
+    ts         TEXT NOT NULL,
+    kind       TEXT NOT NULL,      -- new | changed | removed | fact_changed | index_stale | error
+    source_type TEXT,              -- one of the seven policy types
+    doc_id     INTEGER,            -- NULL for a page that was discovered but not stored
+    url        TEXT,
+    title      TEXT,
+    detail     TEXT,               -- human sentence: which sieve fired, what the commits said
+    fact_key   TEXT,               -- fact_changed only
+    old_value  TEXT,
+    new_value  TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_refresh_changes_run ON refresh_changes(run_id);
   `);
 }
 

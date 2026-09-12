@@ -32,6 +32,7 @@
         <button data-view="instructions"><span class="mi">⚑</span><span><b>AI instructions</b><i>sentences stripped from the index</i></span></button>
         <button data-view="eval"><span class="mi">✓</span><span><b>Eval</b><i>20 questions, verdicts, measured cost</i></span></button>
         <button data-view="cost"><span class="mi">$</span><span><b>Cost</b><i>what every stage cost, measured</i></span></button>
+        <button data-view="freshness"><span class="mi">↻</span><span><b>Freshness</b><i>how often we re-check, and what it costs</i></span></button>
         <button data-view="settings"><span class="mi">⚙</span><span><b>Settings</b><i>live ranking knobs, no restart</i></span></button>
       </div>
     </div>
@@ -172,6 +173,52 @@
 
   <h3 class="h">Price table the costs were computed from</h3>
   <div id="costPrices"></div>
+</section>
+
+<!-- ══ FRESHNESS ══════════════════════════════════════════════════════════ -->
+<section id="view-freshness" class="view">
+  <!-- Painted by loadFreshness() in app.js from GET /api/freshness. Every number comes from
+       POST /api/freshness/estimate, which runs the same pure calculator the tests pin over the
+       measured unit costs in the cost ledger — the page cannot quote a price the ledger does
+       not support. The markup below is only the frame. -->
+  <div class="view-head">
+    <h2>Freshness</h2>
+    <p>How often each kind of source is re-checked, how deeply a change is processed, and what that costs per month. Move a control and every number below updates — nothing here is a rule of thumb: the prices come from what the crawl, the embeddings and the fact extractor actually cost on this corpus.</p>
+  </div>
+
+  <p class="eyebrow">pick a starting point</p>
+  <div id="freshPresets" class="fresh-presets"></div>
+
+  <h3 class="h">Your policy <span class="dim">— change anything; the totals follow</span></h3>
+  <div id="freshTotals" class="tiles"></div>
+  <p id="freshHeadline" class="fresh-headline"></p>
+
+  <div class="fresh-grid" id="freshGrid"></div>
+
+  <!-- Not sticky, unlike the Settings panel's: this section opens on the preset cards, and a bar
+       pinned to the bottom of the viewport would cover them before the reader has chosen one. -->
+  <div class="toolbar fresh-actions">
+    <button id="freshApply" class="btn-accent">Apply this policy</button>
+    <button id="freshReset" class="btn-ghost">Back to the file</button>
+    <span id="freshMsg" class="dim"></span>
+  </div>
+
+  <h3 class="h">Where the money and the staleness sit</h3>
+  <div id="freshBars" class="cost-bars"></div>
+
+  <h3 class="h">Last refreshed</h3>
+  <div class="tablewrap">
+    <table id="freshStatus">
+      <thead><tr><th>source type</th><th>documents</th><th>never checked</th><th>oldest check</th><th>newest check</th><th>interval</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <h3 class="h">What changed</h3>
+  <div id="freshLog"></div>
+
+  <h3 class="h">What this calculator assumes</h3>
+  <div id="freshAssumptions" class="cost-notes"></div>
 </section>
 
 <!-- ══ SETTINGS ═══════════════════════════════════════════════════════════ -->

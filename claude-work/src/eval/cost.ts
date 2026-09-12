@@ -250,7 +250,7 @@ const UNATTRIBUTED_LLM_STAGE_TO_PIPELINE: Record<string, PipelineStageId> = {
   other: "question",
 };
 
-export type PipelineStageId = "crawl" | "dedup" | "index" | "facts" | "eval" | "question";
+export type PipelineStageId = "crawl" | "dedup" | "index" | "facts" | "refresh" | "eval" | "question";
 
 /**
  * The rows of the stage table, in pipeline order, with the plain-language description each one
@@ -292,6 +292,12 @@ const PIPELINE_STAGES: {
     scaling_reason: "One model call per document, so 50× the documents is 50× the calls and 50× the bill. This is the row that dominates the index cost.",
   },
   {
+    id: "refresh", label: "Refresh", what_runs: "code + model",
+    plain: "Re-checking the corpus incrementally: three sieves, then re-index and re-extract only what changed.",
+    scales: "linear",
+    scaling_reason: "Checking scales with documents (one conditional GET each, minus whatever a sitemap settles for free), and the processing scales with how many of them changed. A run that finds nothing costs nothing at any corpus size — which is the whole point of the sieves.",
+  },
+  {
     id: "eval", label: "Evaluation", what_runs: "model",
     plain: "Running the 20-question benchmark and grading the answers with a judge model.",
     scales: "constant",
@@ -327,7 +333,7 @@ interface LlmGroup {
  * else re-processes the same corpus on every run, so summing three crawls would claim 1 500
  * documents were fetched and three crawls' worth of money was the price of one index.
  */
-const PER_ITEM_STAGES = new Set<PipelineStageId>(["question", "eval"]);
+const PER_ITEM_STAGES = new Set<PipelineStageId>(["question", "eval", "refresh"]);
 
 export interface PipelineStageSummary {
   id: PipelineStageId;

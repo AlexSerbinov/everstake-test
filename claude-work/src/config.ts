@@ -49,7 +49,7 @@ export interface KbConfig {
   };
   agent: {
     /** Tool calls allowed before `finish` is forced — the cost ceiling for one question. */
-    max_steps: number;
+    max_steps: number; stop_after_fruitless_calls: number;
     /** Domains `fetch_live_page` may touch at all; robots.txt is still checked on top. */
     live_fetch_allow: string[];
     live_cache_minutes: number;
@@ -107,6 +107,22 @@ export interface KbConfig {
     minhash_perms: number;
     same_domain_jaccard: number;
     cross_domain_containment: number;
+  };
+  /** How often each source type is re-checked and how deeply a change is processed.
+   *  Consumed by `src/refresh/*`; the shape of a policy lives in `src/refresh/policy.ts`. */
+  freshness: {
+    /** Name of the preset the active policy came from, or "custom" once it was hand-edited. */
+    preset: string;
+    active: Record<string, { interval: string; depth: string }>;
+    presets: Record<string, Record<string, { interval: string; depth: string }>>;
+    scheduler: { enabled: boolean; tick_minutes: number; run_on_start: boolean };
+    /** The calculator's non-measurable inputs, stated so the UI can print them. */
+    assumptions: {
+      change_rate_per_month: Record<string, number>;
+      new_docs_per_month: Record<string, number>;
+      sitemap_coverage: Record<string, number>;
+      prices_as_of: string;
+    };
   };
   /** USD per million tokens, per model, per usage bucket. The single input to every cost
    *  figure the system reports; see `priceUsd` in `llm.ts`. */

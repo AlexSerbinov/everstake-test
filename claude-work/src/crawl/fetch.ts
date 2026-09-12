@@ -34,6 +34,19 @@ export interface FetchResult {
   error?: string;
   /** Present only when robots.txt refused this URL; the crawler records that as the drop reason. */
   disallowed?: boolean;
+  /** The response's own ETag, if it sent one. Stored on the document so the next conditional
+   *  GET can offer it back as `If-None-Match` — sieve 2 of the refresh (src/refresh/sieves.ts). */
+  etag?: string | null;
+  /** True when the server answered 304 to our conditional GET: the page is provably unchanged
+   *  and no body crossed the wire. `ok` is false for a 304 (fetch() says so), which is why this
+   *  flag exists — the refresher must not read it as a failure. */
+  notModified?: boolean;
+}
+
+/** Validators from the last time we fetched a URL, offered back to make the GET conditional. */
+export interface ConditionalValidators {
+  etag?: string | null;
+  lastModified?: string | null;
 }
 
 /** Host → timestamp of the last request we started, used to space out consecutive hits. */
@@ -60,7 +73,10 @@ const NETWORK_ERROR_BACKOFF_MS = 1000;
  * `skipRobots` exists for the one case where robots was already checked by the caller
  * (src/ask/tools.ts checks it against its own allow-list first); it never means "ignore robots".
  */
-export async function politeFetch(url: string, opts: { skipRobots?: boolean } = {}): Promise<FetchResult> {
+export async function politeFetch(
+  url: string,
+  opts: { skipRobots?: boolean; conditional?: ConditionalValidators } = {},
+): Promise<FetchResult> {
   const config = getConfig().crawl;
   const chain: FetchResult["chain"] = [];
   let current = url;
@@ -82,8 +98,21 @@ export async function politeFetch(url: string, opts: { skipRobots?: boolean } = 
     // does not earn the next one an extra pause on top of its own latency.
     lastHitAt.set(host, Date.now());
 
-    const { response, error } = await requestWithRetries(current, config);
+    const { response, error } = await requestWithRetries(current, config, opts.conditional);
     if (!response) return failedFetch({ status: 0, finalUrl: current, chain, error });
+
+    // 304 Not Modified: sieve 2 succeeded and there is no body to read. Returned before the
+    // redirect branch cannot happen (304 is not in REDIRECT_STATUSES) but before `response.text()`
+    // it must, because reading a 304 gives an empty string that would hash as a changed page.
+    if (response.status === 304) {
+      return {
+        ok: true, status: 304, finalUrl: current, chain, body: "",
+        contentType: response.headers.get("content-type") ?? "",
+        lastModified: response.headers.get("last-modified"),
+        etag: response.headers.get("etag"),
+        bytes: 0, notModified: true,
+      };
+    }
 
     if (REDIRECT_STATUSES.includes(response.status)) {
       const location = response.headers.get("location");
@@ -111,6 +140,7 @@ export async function politeFetch(url: string, opts: { skipRobots?: boolean } = 
       body,
       contentType: response.headers.get("content-type") ?? "",
       lastModified: response.headers.get("last-modified"),
+      etag: response.headers.get("etag"),
       bytes: Buffer.byteLength(body), // byte length, not string length: the report counts bytes
       error: response.ok ? undefined : `http ${response.status}`,
     };
@@ -139,13 +169,22 @@ async function waitOutPolitenessDelay(host: string, delayMs: number) {
 async function requestWithRetries(
   url: string,
   config: ReturnType<typeof getConfig>["crawl"],
+  conditional?: ConditionalValidators,
 ): Promise<{ response: Response | null; error: string }> {
   let error = "";
+  // Offer both validators when we have both: a server may honour one and ignore the other, and
+  // RFC 9110 lets it answer 304 on either. Sent only by the refresher — the first crawl of a URL
+  // has nothing to offer and must get the body.
+  const conditionalHeaders: Record<string, string> = {};
+  if (conditional?.etag) conditionalHeaders["If-None-Match"] = conditional.etag;
+  if (conditional?.lastModified) conditionalHeaders["If-Modified-Since"] = conditional.lastModified;
+
   for (let attempt = 0; attempt <= config.retries; attempt++) {
     try {
       const response = await fetch(url, {
         redirect: "manual", // we follow redirects ourselves so the chain can be recorded
         headers: {
+          ...conditionalHeaders,
           "User-Agent": config.user_agent,
           // text/markdown is listed because docs.everstake.com serves its pages as Markdown.
           Accept: "text/html,application/xhtml+xml,text/plain,text/markdown,application/xml;q=0.9,*/*;q=0.5",

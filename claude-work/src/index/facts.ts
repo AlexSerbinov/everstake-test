@@ -70,13 +70,18 @@ interface FactSourceDoc {
  * call; `force` re-extracts, `urlLike` and `limit` exist to iterate on the prompt against a
  * handful of pages without paying for the whole corpus.
  */
-export async function extractFacts(opts: { force?: boolean; limit?: number; urlLike?: string }) {
+export async function extractFacts(opts: { force?: boolean; limit?: number; urlLike?: string; docIds?: number[] }) {
   const cfg = getConfig();
   const docs = all<FactSourceDoc>(
     `SELECT d.id, d.url, d.title, d.text, d.published_at, d.fetched_at, d.category, (SELECT COUNT(*) FROM facts f WHERE f.doc_id = d.id) n
      FROM documents d WHERE d.status='ok' AND d.duplicate_of IS NULL ORDER BY d.tier, d.id`);
+  // `docIds` is the refresher's entry point: it knows exactly which documents changed, and
+  // re-extracting the whole corpus to pick up three edited pages is the mistake this option
+  // exists to make impossible. It implies `force`, since a changed document already has rows.
+  const only = opts.docIds ? new Set(opts.docIds) : null;
   const todo = docs
-    .filter((doc) => (opts.force || doc.n === 0) && (!opts.urlLike || doc.url.includes(opts.urlLike)))
+    .filter((doc) => (only ? only.has(doc.id) : opts.force || doc.n === 0))
+    .filter((doc) => !opts.urlLike || doc.url.includes(opts.urlLike))
     .slice(0, opts.limit ?? Infinity);
 
   console.log(`extracting facts from ${todo.length} documents with ${cfg.models.cheap}…`);

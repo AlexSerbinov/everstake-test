@@ -7,7 +7,8 @@ models:
   effort: medium               # low | medium | high  (thinking effort for the answer model)
 
 agent:                         # the tool-using answer loop (src/ask/agent.ts)
-  max_steps: 6                 # tool calls before `finish` is forced
+  max_steps: 6                 # tool calls before `finish` is forced (a cost ceiling: every turn re-reads all earlier results)
+  stop_after_fruitless_calls: 2 # end early when N consecutive calls surface no new source (0 = off)
   live_fetch_allow:            # fetch_live_page refuses everything else (robots still checked on top)
     - everstake.com
     - docs.everstake.com
@@ -97,3 +98,103 @@ pricing_usd_per_mtok:          # measured cost uses these (Anthropic list prices
   gemini-3.8-flash: { input: 0.75, output: 3.75, cache_read: 0.075 }   # intro rate until 2026-12-31, then 1.50 / 7.50
   gemini-3.7-flash: { input: 0.75, output: 3.75, cache_read: 0.075 }
   gemini-3.5-flash-lite: { input: 0.30, output: 2.50, cache_read: 0.03 }   # cheap path: extraction, judging
+
+# ── Freshness ───────────────────────────────────────────────────────────────────────────────
+# How often each kind of source is re-checked and how deeply a detected change is processed.
+# `npm run refresh` reads `active` (see src/refresh/refresh.ts); the UI's Freshness view prices
+# any policy against the measured unit costs and writes the chosen one back through
+# PUT /api/config, so the sliders take effect without a restart.
+#
+#   interval: hourly | daily | weekly | monthly | never
+#   depth:    check    — three sieves only (sitemap lastmod → conditional GET → content hash).
+#                        The change is logged and NOTHING is overwritten — not the text, not the
+#                        hash, not the ETag — so an unresolved change keeps being reported rather
+#                        than turning into a corpus that is stale but looks fresh.
+#             reindex  — re-chunk and re-embed the changed document (embedding money only).
+#             refacts  — reindex + re-run the fact extractor on the changed document. The only
+#                        depth that can report "a fact changed value".
+freshness:
+  # Which named preset the sliders started from. `custom` means `active` was hand-edited.
+  preset: balanced
+
+  # The policy the scheduler actually runs. Kept separate from `presets` so that switching a
+  # preset in the UI is a copy into here, and the presets stay the documented reference points.
+  active:
+    live_pages:     { interval: daily,   depth: refacts }
+    blog:           { interval: daily,   depth: refacts }
+    docs:           { interval: weekly,  depth: reindex }
+    reports_events: { interval: weekly,  depth: refacts }
+    github:         { interval: daily,   depth: refacts }
+    video:          { interval: monthly, depth: reindex }
+    press:          { interval: weekly,  depth: check   }
+
+  presets:
+    # Cheapest defensible policy: nothing is checked more than daily, and only the two types
+    # where a *value* can change (live pages, GitHub) pay for fact re-extraction.
+    economy:
+      live_pages:     { interval: daily,   depth: refacts }
+      blog:           { interval: weekly,  depth: reindex }
+      docs:           { interval: monthly, depth: reindex }
+      reports_events: { interval: monthly, depth: check   }
+      github:         { interval: weekly,  depth: refacts }
+      video:          { interval: never,   depth: check   }
+      press:          { interval: monthly, depth: check   }
+    # The demo default. Live pages and the blog daily, everything else weekly or slower.
+    balanced:
+      live_pages:     { interval: daily,   depth: refacts }
+      blog:           { interval: daily,   depth: refacts }
+      docs:           { interval: weekly,  depth: reindex }
+      reports_events: { interval: weekly,  depth: refacts }
+      github:         { interval: daily,   depth: refacts }
+      video:          { interval: monthly, depth: reindex }
+      press:          { interval: weekly,  depth: check   }
+    # Hourly on everything that can move within a day. Video stays monthly at every preset:
+    # an ASR transcript of a 2021 interview does not get rewritten.
+    realtime:
+      live_pages:     { interval: hourly,  depth: refacts }
+      blog:           { interval: hourly,  depth: refacts }
+      docs:           { interval: daily,   depth: refacts }
+      reports_events: { interval: daily,   depth: refacts }
+      github:         { interval: hourly,  depth: refacts }
+      video:          { interval: monthly, depth: reindex }
+      press:          { interval: daily,   depth: refacts }
+
+  # In-process scheduler for `npm run serve` / `node dist/refresh/schedule.js`. Off by default so
+  # that a test run, a local `npm run serve` and CI never make network requests or spend money
+  # without being asked; the Docker deployment turns it on with REFRESH_SCHEDULER=1.
+  scheduler:
+    enabled: false
+    tick_minutes: 15        # how often the loop wakes up and asks "is anything due?"
+    run_on_start: false     # do a pass immediately at boot instead of waiting a full tick
+
+  # Inputs the calculator cannot measure. Stated here rather than buried in code so the UI can
+  # print them as its assumptions footnote and a reviewer can argue with the numbers.
+  assumptions:
+    # Fraction of the EXISTING documents of a type whose content changes in a month. Where the
+    # corpus carries publication dates the calculator measures the arrival rate of *new*
+    # documents itself and only uses this for edits of existing ones.
+    change_rate_per_month:
+      live_pages: 0.10      # ~3 of 33 pages a month: pricing, product copy, the team block
+      blog: 0.01            # posts are published, not edited; typo fixes only
+      docs: 0.06            # ~4 of 69 pages a month, moving with releases
+      reports_events: 0.04  # event pages gain results after the event
+      github: 0.09          # 1 of 11 READMEs a month — matches wallet-sdk + mcp being the active repos
+      video: 0.0            # a published auto-subtitle track is never rewritten
+      press: 0.01           # third-party articles are not edited after publication
+    # Types with no publication dates in the corpus (docs, GitHub READMEs) cannot have their
+    # arrival rate measured; this is the assumed number of NEW documents per month for them.
+    new_docs_per_month:
+      docs: 1.0
+      github: 0.2
+    # Share of a type's documents whose freshness can be settled by the sitemap `lastmod` sieve
+    # alone, i.e. with no HTTP request of their own. everstake.com's sitemap covers the site;
+    # docs, GitHub and video are discovered through llms.txt / the API / yt-dlp instead.
+    sitemap_coverage:
+      live_pages: 1.0
+      blog: 1.0
+      docs: 0.0
+      reports_events: 1.0
+      github: 1.0           # the org repo list is one API call and plays the sitemap's role
+      video: 0.0
+      press: 0.0
+    prices_as_of: "2026-09"

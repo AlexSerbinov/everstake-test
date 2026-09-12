@@ -30,7 +30,7 @@ import { all, nowIso, one, run } from "./db.js";
 
 /** The stages COST.md has a row for. Matches `stage_runs.stage`. */
 export type StageName =
-  | "crawl" | "dedup" | "index" | "facts" | "eval" | "adversarial" | "question" | "pipeline";
+  | "crawl" | "dedup" | "index" | "facts" | "eval" | "adversarial" | "question" | "pipeline" | "refresh";
 
 /** Microseconds → milliseconds. `process.cpuUsage()` reports µs; every other duration here is ms. */
 const MICROSECONDS_PER_MILLISECOND = 1000;
@@ -88,6 +88,17 @@ export function reportStageItems(items: number, unit: string) {
 export function addStageBytes(bytes: number) {
   const store = stageStorage.getStore();
   if (store) store.bytesIn += bytes;
+}
+
+/**
+ * Bytes downloaded so far by the current stage, or 0 outside one.
+ *
+ * Exists because a stage that wants to write its OWN summary row (the refresh does) needs the
+ * figure before `withStageMetrics` writes the `stage_runs` row in its `finally` — reading it back
+ * from the table at that point returns nothing, since the row does not exist yet.
+ */
+export function currentStageBytes(): number {
+  return stageStorage.getStore()?.bytesIn ?? 0;
 }
 
 /** Attach free-form context to the stage row (flags it ran with, the question asked, …). */

@@ -66,13 +66,14 @@ it can gate a deploy. Point the whole process at another index with `KB_DB_PATH=
 
 | Interface | Where | Notes |
 |---|---|---|
-| Web UI | `/` | Ask, sources, retrieval trace with every score, per-answer cost receipt, fact timeline, corpus & duplicates, AI-directed instructions found, eval, cost, live settings |
-| HTTP API | `POST /ask {question}` | JSON: `status`, `answer`, `as_of`, `confidence`, `sources[]`, `gate`, `steps[]` (the tool trace), `trace` |
+| Web UI | `/` | Ask, sources, retrieval trace with every score, per-answer cost receipt, fact timeline, corpus & duplicates, AI-directed instructions found, eval, cost, freshness policy + live calculator, live settings |
+| HTTP API | `POST /ask {question}` | JSON: `status`, `answer`, `as_of`, `confidence`, `sources[]` (one per cited passage — the `n` of `[n]`; the UI and the MCP tool group them per page), `gate`, `steps[]` (the tool trace), `trace` |
 | Live pipeline | `POST /ask/stream {question}` | the same answer, streamed as it is produced (see below) |
 | Adversarial suite | `npm run eval:adversarial` | 20 attacks, code-graded, poisoned corpus in a throw-away DB copy → `ADVERSARIAL.md` |
 | Live config | `GET/PUT/DELETE /api/config` | change ranking weights, filters, model — next question uses them (requirement changes during the defence) |
 | MCP server | `npm run mcp` (stdio) | tools `ask_everstake`, `everstake_fact_history`, `everstake_kb_stats` — sits next to Everstake's own MCP in Claude Desktop/Code |
 | Claude Code skill | `skills/everstake-kb/SKILL.md` | tells Claude Code to call the API instead of answering from memory |
+| Freshness | `npm run refresh` · `GET /api/freshness` · `GET\|POST /api/freshness/estimate` · `GET /api/freshness/log` | incremental re-check with three sieves, a change log, and a calculator that prices any policy from the measured unit costs |
 | Other endpoints | `/api/stats /api/facts /api/instructions /api/dedup /api/cost /api/eval /api/doc/:id /api/docs?q=` | everything the UI shows |
 
 ## The stream (`POST /ask/stream`)
@@ -94,6 +95,63 @@ curl -N -X POST localhost:4320/ask/stream -H 'Content-Type: application/json' \
      -d '{"question":"What is Everstake'\''s current validator uptime?"}'
 ```
 
+## Keeping the corpus current (`npm run refresh`)
+
+An index is only as good as its last crawl — the CEO case in REPORT §2.2 is a rule ("a live page
+describes the present as of the fetch date") that decays the moment the fetch is old. So the
+corpus is re-checked incrementally, and **what that costs is a number you can see before you
+choose it**, not after the bill arrives.
+
+```bash
+npm run refresh                       # one pass with the policy in config/kb.yaml
+npm run refresh -- --dry-run          # what the free sieve concludes: no requests, no spend, no writes
+npm run refresh -- --preset=economy   # run a named policy without editing the file
+npm run refresh -- --only=github,docs # one or more source types
+npm run refresh -- --force --limit=20 # ignore intervals, check the 20 stalest documents
+npm run schedule                      # the in-process scheduler in the foreground (Docker: the `refresher` service)
+```
+
+**Three sieves, cheapest first** (`src/refresh/sieves.ts`), and only a document that survives all
+three costs anything:
+
+| # | sieve | requests | settles |
+|---|---|---|---|
+| 1 | sitemap `lastmod` vs the value stored at the last check | **0 per document** — one sitemap read covers 336 pages | most of everstake.com |
+| 2 | conditional GET with the stored `ETag` / `Last-Modified` | 1 request, no body on a 304 | docs, press, anything without a sitemap |
+| 3 | sha1 of the normalised text vs `content_hash` | body already fetched | pages that changed only a banner or a counter |
+
+GitHub is cheaper still: one `GET /orgs/everstake/repos` gives `pushed_at` for every repo, and a
+repo that moved is summarised from `commits?since=` into its document — the README is usually
+untouched by the very commits that matter.
+
+**`GITHUB_TOKEN` in `.env`** (optional, no scopes needed for public repos) is sent as
+`Authorization: Bearer …` on every GitHub API call by both the crawler and the refresher. Without
+it GitHub allows 60 requests/hour **per IP**, shared with everything else on the machine — enough
+for a daily check on a quiet laptop, and not enough for a scheduled refresh on a shared host,
+which then skips the GitHub source for that run with a warning rather than failing. With a token
+the budget is 5 000/hour.
+
+**Per source type** — live pages, blog, docs, reports/events, GitHub, video, press — the policy
+sets an `interval` (`hourly … monthly … never`) and a `depth`: `check` (notice it, leave the index
+alone), `reindex` (re-chunk and re-embed), `refacts` (also re-run the fact extractor, the only
+depth that can report *"the CEO value changed"*). Three presets ship as named bundles in
+`config/kb.yaml`; the UI writes the chosen one through `PUT /api/config`, so the scheduler and the
+next run obey it with no restart.
+
+**Explore → Freshness** in the UI is the calculator: three preset cards with their monthly cost,
+a per-type grid of interval + depth controls, live totals and bar charts, "last refreshed",
+"what changed", and the assumptions spelled out. Every figure comes from
+`POST /api/freshness/estimate`, which runs the pure function in `src/refresh/calculator.ts` over
+the unit costs measured in the same ledger `npm run cost` reads — $/chunk from the real embedding
+run, $/document from the real extraction run, seconds and bytes per page from the real crawl.
+
+```bash
+curl localhost:4320/api/freshness/estimate?preset=economy
+curl -X POST localhost:4320/api/freshness/estimate -H 'Content-Type: application/json' \
+     -d '{"policy":{"blog":{"interval":"hourly","depth":"refacts"}}}'
+curl localhost:4320/api/freshness/log            # what the last runs found
+```
+
 Config for the loop lives in `config/kb.yaml` under `agent:` — `max_steps`, the `fetch_live_page`
 allow-list, the live-page cache window and the MCP URL — and is live-overridable like everything else.
 
@@ -107,6 +165,9 @@ src/index/              URL canonicalisation, 3-sieve dedup (url → hash → Mi
 src/ask/                hybrid retrieval + explainable ranking, the agent loop (agent.ts, tools.ts),
                         the single-shot ask() fallback, the shared gates (shared.ts), the
                         per-question cost receipt (receipt.ts), stats
+src/refresh/            the incremental re-check: policy vocabulary (policy.ts), the three sieves
+                        (sieves.ts), the runner + change log (refresh.ts), the pure cost
+                        calculator (calculator.ts), its measured inputs (units.ts), scheduler
 src/metrics.ts          withStageMetrics(): one `stage_runs` row per stage execution — wall time,
                         CPU, peak RSS, items, bytes — plus the run id stamped onto every model call
 src/server/             Hono API + static UI, MCP server
@@ -120,5 +181,9 @@ data/kb.db              the whole index in one SQLite file (gitignored)
 ```
 
 ## Deploy
+
+`docker compose up -d` starts two services from one image: `kb` (the API and UI) and `refresher`
+(`node dist/refresh/schedule.js`, the freshness loop) against the same mounted `kb.db`. Why they
+are separate processes, and a systemd-timer alternative, are in [`deploy/README.md`](deploy/README.md).
 
 `scripts/deploy.sh` rsyncs the code and the built `kb.db` to a host, builds the Docker image there, starts it on port 4320 and adds a Caddy site block for `everstake.89-167-19-222.sslip.io`. Only the API key(s) in `.env` are needed on the host; the index is built locally.

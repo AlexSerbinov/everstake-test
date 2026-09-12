@@ -13,6 +13,9 @@
 //   GET/PUT/DELETE /api/config — the tunable gates and models, so the demo can toggle a defence
 //   GET  /api/sources-config, /api/facts, /api/instructions, /api/dedup
 //   GET  /api/cost, /api/eval, /api/questions, /api/docs, /api/doc/:id
+//   GET  /api/freshness             — policy, presets priced, measured units, per-type status
+//   GET/POST /api/freshness/estimate— price a named preset / an arbitrary policy
+//   GET  /api/freshness/log         — the change log: what the last runs found
 //   GET  /health        — {ok:true}, used by the deployment check
 //   GET  /*             — the static UI from public/
 //
@@ -34,6 +37,11 @@ import { answerQuestion } from "../ask/agent.js";
 import { dedupClusters, instructionsFound, stats } from "../ask/stats.js";
 import { costReport } from "../eval/cost.js";
 import { latestEval } from "../eval/run.js";
+import { estimateFreshness } from "../refresh/calculator.js";
+import { normalisePolicy } from "../refresh/policy.js";
+import { freshnessStatus, refreshLog } from "../refresh/refresh.js";
+import { corpusProfile, measureUnits } from "../refresh/units.js";
+import { startScheduler } from "../refresh/schedule.js";
 
 /** Questions per IP per window. Chosen to be generous for a demo and useless for a bill attack. */
 const MAX_QUESTIONS_PER_WINDOW = 30;
@@ -191,6 +199,75 @@ app.get("/api/docs", (c) => {
      ORDER BY status, tier, published_at DESC LIMIT ${DOC_SEARCH_LIMIT}`, like, like));
 });
 
+// --- freshness -------------------------------------------------------------------------------
+//
+// Three read endpoints and one estimator. The estimator is a GET with `?preset=` for the three
+// named policies (so the UI's preset cards are three plain URLs a reviewer can curl) and a POST
+// for whatever the sliders currently say. Both call the same pure function the tests pin, over
+// the same measured units `npm run cost` reads — the page cannot show a price the ledger does
+// not support.
+
+/** Everything the Freshness view needs on first paint, in one round trip. */
+app.get("/api/freshness", (c) => {
+  const cfg = getConfig().freshness;
+  const units = measureUnits();
+  const corpus = corpusProfile();
+  const presets = Object.fromEntries(Object.entries(cfg.presets).map(([name, policy]) => [
+    name,
+    { policy, estimate: estimateFreshness({ policy: normalisePolicy(policy, policy as any), units: units.units, corpus }) },
+  ]));
+  return c.json({
+    preset: cfg.preset,
+    active: cfg.active,
+    // The whole section verbatim, so the UI can PUT it back with only `preset` and `active`
+    // changed. `setConfigOverrides` merges one level deep, so a patch that named `active` alone
+    // would drop `presets`, `scheduler` and `assumptions` from the live config.
+    raw_section: cfg,
+    presets,
+    scheduler: cfg.scheduler,
+    assumptions: { ...cfg.assumptions, units: units.notes },
+    units: units.units,
+    corpus,
+    status: freshnessStatus(),
+    active_estimate: estimateFreshness({
+      policy: normalisePolicy(cfg.active, cfg.active as any), units: units.units, corpus,
+    }),
+  });
+});
+
+/** Price a named preset. `?policy=<json>` is accepted too, for a one-off check from a shell. */
+app.get("/api/freshness/estimate", (c) => {
+  const cfg = getConfig().freshness;
+  const presetName = c.req.query("policy") ?? c.req.query("preset") ?? cfg.preset;
+  const source = cfg.presets[presetName] ?? cfg.active;
+  const policy = normalisePolicy(source, cfg.active as any);
+  return c.json({
+    policy_name: cfg.presets[presetName] ? presetName : "active",
+    policy,
+    estimate: estimateFreshness({ policy, units: measureUnits().units, corpus: corpusProfile() }),
+  });
+});
+
+/** Price an arbitrary policy — what every slider drag in the UI calls. Pure and free. */
+app.post("/api/freshness/estimate", async (c) => {
+  const body = await c.req.json().catch(() => ({}));
+  const cfg = getConfig().freshness;
+  // Normalised against the active policy rather than rejected: a partial body from a curl should
+  // price the difference it names, not 400.
+  const policy = normalisePolicy(body.policy ?? body, cfg.active as any);
+  return c.json({
+    policy_name: "custom",
+    policy,
+    estimate: estimateFreshness({ policy, units: measureUnits().units, corpus: corpusProfile() }),
+  });
+});
+
+/** The change log: the last few runs with everything they found. */
+app.get("/api/freshness/log", (c) => c.json({
+  runs: refreshLog(Number(c.req.query("limit") ?? 5)),
+  status: freshnessStatus(),
+}));
+
 app.get("/health", (c) => c.json({ ok: true }));
 
 // Must be registered last: this matches every path, so any route declared after it is dead.
@@ -204,4 +281,7 @@ if (import.meta.url === `file://${process.argv[1]}`
   || process.argv[1]?.endsWith("server/main.js")) {
   serve({ fetch: app.fetch, port: env.port }, (info) =>
     console.log(`everstake-kb listening on http://localhost:${info.port}  (llm=${env.llmProvider}, embeddings=${env.embeddingsProvider})`));
+  // The in-process freshness scheduler. A no-op unless `freshness.scheduler.enabled` is true or
+  // REFRESH_SCHEDULER=1 — importing this module (tests, tooling) must never start a crawl.
+  startScheduler();
 }

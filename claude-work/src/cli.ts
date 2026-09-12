@@ -18,7 +18,7 @@
 import { crawl, crawlReport } from "./crawl/crawler.js";
 import { withStageMetrics } from "./metrics.js";
 
-const USAGE = "commands: crawl [--force] [--only=<source>] [--report] | dedup | index [--force] | facts [--force] [--limit=N] | ask \"q\" [--trace] [--single-shot] | eval [--limit=N] [--engine=agent|single] [--retry-errors] [--only=q01,q15] [--render] | adversarial [--only=a01,p03] [--keep-db] [--render] | cost | stats | pipeline";
+const USAGE = "commands: crawl [--force] [--only=<source>] [--report] | dedup | index [--force] | facts [--force] [--limit=N] | ask \"q\" [--trace] [--single-shot] | eval [--limit=N] [--engine=agent|single] [--retry-errors] [--only=q01,q15] [--render] | adversarial [--only=a01,p03] [--keep-db] [--render] | cost | stats | pipeline | refresh [--dry-run] [--force] [--only=blog,docs] [--preset=economy] [--limit=N] | schedule";
 
 const [command, ...args] = process.argv.slice(2);
 const flags = parseFlags(args);
@@ -221,6 +221,53 @@ async function runCost() {
   console.log("\nCOST.md written");
 }
 
+/**
+ * Incremental re-check of the corpus (`npm run refresh`).
+ *
+ * The three sieves decide what is even looked at, and `freshness.active` in config/kb.yaml
+ * decides how deeply a change is processed; `--preset` runs a named policy instead without
+ * touching the file. `--dry-run` reports what the free sieve concluded and makes no conditional
+ * GETs, no model calls and no writes — the safe way to see how much work a policy implies.
+ */
+async function runRefresh() {
+  const { refresh } = await import("./refresh/refresh.js");
+  const { SOURCE_TYPES } = await import("./refresh/policy.js");
+  const { getConfig } = await import("./config.js");
+
+  const preset = flags.preset;
+  const presets = getConfig().freshness.presets;
+  if (preset && !presets[preset]) {
+    console.error(`unknown preset "${preset}"; available: ${Object.keys(presets).join(", ")}`);
+    process.exit(1);
+  }
+  const only = flags.only
+    ? String(flags.only).split(",").filter((name) => (SOURCE_TYPES as readonly string[]).includes(name)) as any[]
+    : undefined;
+
+  await withStageMetrics("refresh", async () => {
+    await refresh({
+      force: flags.force === "true",
+      dryRun: flags["dry-run"] === "true",
+      limit: flags.limit ? Number(flags.limit) : undefined,
+      only,
+      preset,
+      policy: preset ? (presets[preset] as any) : undefined,
+    });
+  }, { flags });
+}
+
+/** The in-process scheduler as a foreground process — what the Docker `refresher` service runs. */
+async function runSchedule() {
+  const { startScheduler } = await import("./refresh/schedule.js");
+  const stop = startScheduler({ force: true });
+  // Keep the process alive until the container stops it.
+  await new Promise<void>((resolve) => {
+    const shutdown = () => { stop(); resolve(); };
+    process.on("SIGINT", shutdown);
+    process.on("SIGTERM", shutdown);
+  });
+}
+
 /** Corpus health: document, chunk, fact and instruction counts. */
 async function runStats() {
   const { stats } = await import("./ask/stats.js");
@@ -251,6 +298,8 @@ const COMMANDS: Record<string, () => Promise<void>> = {
   eval: runEval,
   adversarial: runAdversarial,
   cost: runCost,
+  refresh: runRefresh,
+  schedule: runSchedule,
   stats: runStats,
   pipeline: runPipeline,
 };

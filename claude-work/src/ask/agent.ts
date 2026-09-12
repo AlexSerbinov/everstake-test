@@ -238,6 +238,8 @@ async function runToolLoop(
   let answer: Answer | null = null;
   let toolCalls = 0;
   let emptyTurns = 0;
+  let fruitless = 0; // consecutive corpus searches whose top hits the run had already seen
+  const seenTopHits = new Set<string>();
 
   emit(stageEvent("plan", "start"));
   const planStart = Date.now();
@@ -309,6 +311,26 @@ async function runToolLoop(
     const { step, content } = await runToolStep(toolCalls, call, state.reg, emit);
     state.steps.push(step);
     contents.push({ role: "user", parts: [{ functionResponse: { name: call.name, response: content as object } }] });
+
+    // Diminishing returns (typical for unanswerable questions, where the model keeps rephrasing
+    // the same search): two consecutive searches that only return pages already seen end the run
+    // early. Cheaper than spending the whole budget, and the answer cannot improve on evidence
+    // that is not there. Other tools neither count nor reset the counter.
+    if (call.name === "search_corpus") {
+      // Progress means the search surfaced a top hit this run has not seen; rephrasing the same
+      // query and getting the same first three pages back is not progress.
+      const top = (step.items ?? []).slice(0, 3).map((i) => String((i as any).url ?? (i as any).title ?? ""));
+      const novel = top.filter((u) => u && !seenTopHits.has(u)).length >= 2; // one new page among three is noise, not progress
+      top.forEach((u) => u && seenTopHits.add(u));
+      fruitless = novel ? 0 : fruitless + 1;
+    }
+    const fruitlessStop = cfg.agent.stop_after_fruitless_calls > 0 && fruitless >= cfg.agent.stop_after_fruitless_calls;
+    if (fruitlessStop && toolCalls < cfg.agent.max_steps) {
+      emit({ event: "note", data: { text: `The last ${fruitless} searches returned only pages already seen — asking the model to conclude with what it has.` } });
+      contents.push({ role: "user", parts: [{ text: `The last ${fruitless} searches returned only pages you already saw. Call finish now with what you have, or with status "no_reliable_answer".` }] });
+      toolCalls = cfg.agent.max_steps; // next turn is restricted to `finish`
+      continue;
+    }
 
     if (toolCalls >= cfg.agent.max_steps) {
       // Said in words as well as enforced by `allowedFunctionNames` next turn, so the model

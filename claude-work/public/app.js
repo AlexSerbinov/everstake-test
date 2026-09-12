@@ -123,6 +123,7 @@ const VIEW_LOADERS = {
   instructions: loadInstructions,
   eval: loadEval,
   cost: loadCost,
+  freshness: loadFreshness,
   settings: loadSettings,
 };
 
@@ -1374,8 +1375,9 @@ const STAGE_COLORS = {
   dedup: "var(--t2)",
   index: "var(--t3)",
   facts: "var(--accent)",
+  refresh: "var(--ok)",
   eval: "var(--idk)",
-  question: "var(--ok)",
+  question: "var(--t1)",
 };
 
 /* A segment thinner than this is invisible and unhoverable, so a stage that cost
@@ -1879,3 +1881,398 @@ $("#docModal").onclick = (event) => {
 /* On a normal load the Ask view is already active, so the caret starts in the
    question box. Skipped when a hash sent the user straight to another view. */
 if ($("#view-ask").classList.contains("active")) $("#q").focus();
+
+/* ---------------------------------------------------------------------------
+   Freshness — the policy editor and its live price
+   ---------------------------------------------------------------------------
+
+   The rule this view follows is the same one the Cost view follows: the page
+   owns no arithmetic. Every figure comes from POST /api/freshness/estimate,
+   which runs `estimateFreshness()` — the pure function pinned by
+   src/refresh/calculator.test.ts — over the unit costs measured in the cost
+   ledger. Moving a control re-posts the whole policy and repaints; nothing is
+   interpolated in the browser, so the page cannot drift from the report.
+
+   `Apply` is the only thing here that writes: it PUTs the policy into the live
+   config override, exactly like the Settings panel, so the scheduler and the
+   next `npm run refresh` pick it up without a restart. */
+
+/** How long to wait after the last control change before pricing again. Long
+    enough that dragging through four intervals is one request, short enough
+    that the numbers feel attached to the control. */
+const FRESH_DEBOUNCE_MS = 160;
+
+/** value → the label on the dropdown. "every hour" reads better than "hourly"
+    when the row above it says "never". */
+const INTERVAL_OPTIONS = [
+  ["hourly", "every hour"],
+  ["daily", "every day"],
+  ["weekly", "every week"],
+  ["monthly", "every month"],
+  ["never", "never"],
+];
+const DEPTH_OPTIONS = [
+  ["check", "check only", "Notice the change. Cheapest: no re-index, no model call."],
+  ["reindex", "re-index", "Re-chunk and re-embed the changed page."],
+  ["refacts", "re-read facts", "Re-index and re-run the fact extractor — the only depth that can report a changed value."],
+];
+
+/** Colour per source type, reused by both bar charts so a type keeps its colour. */
+const TYPE_COLORS = {
+  live_pages: "var(--accent)",
+  blog: "var(--t1)",
+  docs: "var(--t2)",
+  reports_events: "var(--t3)",
+  github: "var(--ok)",
+  video: "var(--idk)",
+  press: "var(--line-hard)",
+};
+
+const TYPE_LABELS = {
+  live_pages: "Live pages",
+  blog: "Blog",
+  docs: "Docs",
+  reports_events: "Reports & events",
+  github: "GitHub",
+  video: "Video",
+  press: "Press & third-party",
+};
+
+const TYPE_BLURBS = {
+  live_pages: "About, team, products, /mcp, ai-info — undated pages that describe the present.",
+  blog: "everstake.com blog posts. New ones appear constantly; old ones are rarely edited.",
+  docs: "docs.everstake.com, served as Markdown. Changes with product releases.",
+  reports_events: "Quarterly reports, event pages and the press index.",
+  github: "Public repo READMEs and the MCP tool list, through the GitHub API.",
+  video: "YouTube auto-subtitles. A published transcript is never rewritten.",
+  press: "Third-party coverage and profiles. New URLs appear; old articles stay put.",
+};
+
+const CHANGE_KIND_LABELS = {
+  new: "new page",
+  changed: "changed",
+  removed: "removed",
+  fact_changed: "fact changed",
+  index_stale: "index left stale",
+  error: "could not check",
+};
+
+/** The policy currently on screen. Mutated by the controls, posted for pricing,
+    and PUT wholesale when Apply is pressed. */
+let freshPolicy = null;
+let freshData = null;
+let freshDebounce = null;
+
+/** Hours → the phrase the estimate uses, so the cards and the rows agree. */
+function formatStalenessHours(hours) {
+  if (hours == null || !Number.isFinite(hours)) return "unbounded";
+  if (hours <= 24) return `${hours} hour${hours === 1 ? "" : "s"}`;
+  if (hours < 730) return `${Math.round(hours / 24)} days`;
+  return "a month";
+}
+
+/** Money on this view: a monthly figure nobody acts on below a cent. */
+function formatMonthly(usd) {
+  if (usd == null) return "—";
+  if (usd === 0) return "$0";
+  if (usd < 0.01) return "<$0.01";
+  if (usd < 10) return `$${usd.toFixed(2)}`;
+  return `$${usd.toFixed(0)}`;
+}
+
+async function loadFreshness() {
+  freshData = await fetchJson("/api/freshness");
+  freshPolicy = structuredClone(freshData.active);
+  renderFreshPresets(freshData);
+  renderFreshGrid(freshData.active_estimate);
+  renderFreshTotals(freshData.active_estimate);
+  renderFreshBars(freshData.active_estimate);
+  renderFreshStatus(freshData);
+  renderFreshAssumptions(freshData);
+  loadFreshLog();
+
+  $("#freshApply").onclick = applyFreshPolicy;
+  $("#freshReset").onclick = resetFreshPolicy;
+}
+
+/** The three preset cards, priced by the server before the page ever loaded. */
+function renderFreshPresets(data) {
+  const order = ["economy", "balanced", "realtime"];
+  const blurbs = {
+    economy: "Nothing faster than daily. Only the pages where a value can actually move pay for a fact re-read.",
+    balanced: "Live pages, the blog and GitHub daily; the rest weekly. What the demo runs.",
+    realtime: "Hourly on everything that can move within a day. Video stays monthly — a transcript is never rewritten.",
+  };
+  $("#freshPresets").innerHTML = order
+    .filter((name) => data.presets[name])
+    .map((name) => {
+      const total = data.presets[name].estimate.total;
+      const active = data.preset === name;
+      return `<button class="fresh-preset${active ? " on" : ""}" data-preset="${name}">
+        <div class="fp-head"><b>${escapeHtml(name)}</b>${active ? '<span class="pill key">in use</span>' : ""}</div>
+        <div class="fp-money">${escapeHtml(formatMonthly(total.usd_per_month))}<i>/month</i></div>
+        <p>${escapeHtml(blurbs[name] || "")}</p>
+        <dl>
+          <div><dt>worst-case staleness</dt><dd>${escapeHtml(formatStalenessHours(total.worst_case_staleness_hours))}</dd></div>
+          <div><dt>machine time</dt><dd>${Math.round(total.machine_minutes_per_month)} min/month</dd></div>
+          <div><dt>model tokens</dt><dd>${groupDigits(total.tokens_per_month)}/month</dd></div>
+          <div><dt>pages checked</dt><dd>${groupDigits(total.checks_per_month)}/month</dd></div>
+        </dl>
+      </button>`;
+    }).join("");
+
+  $("#freshPresets").onclick = (event) => {
+    const card = event.target.closest("[data-preset]");
+    if (!card) return;
+    freshPolicy = structuredClone(freshData.presets[card.dataset.preset].policy);
+    $$(".fresh-preset").forEach((node) => node.classList.toggle("chosen", node === card));
+    repriceFreshness();
+  };
+}
+
+/** One row per source type: the two controls, then what that row costs. */
+function renderFreshGrid(estimate) {
+  const byType = Object.fromEntries(estimate.per_type.map((row) => [row.type, row]));
+  $("#freshGrid").innerHTML = estimate.per_type.map((row) => {
+    const policy = freshPolicy[row.type];
+    return `<div class="fresh-row" data-type="${row.type}">
+      <div class="fr-name">
+        <span class="fr-dot" style="background:${TYPE_COLORS[row.type]}"></span>
+        <b>${escapeHtml(TYPE_LABELS[row.type])}</b>
+        <span class="mono dim">${row.documents} doc${row.documents === 1 ? "" : "s"}</span>
+        <p>${escapeHtml(TYPE_BLURBS[row.type])}</p>
+      </div>
+      <div class="fr-controls">
+        <label class="field"><span>check</span>
+          <select data-fresh-interval="${row.type}">
+            ${INTERVAL_OPTIONS.map(([value, label]) => `<option value="${value}"${value === policy.interval ? " selected" : ""}>${label}</option>`).join("")}
+          </select>
+        </label>
+        <div class="fr-depth" role="group" aria-label="depth">
+          ${DEPTH_OPTIONS.map(([value, label, title]) => `<button type="button" data-fresh-depth="${row.type}" data-value="${value}"
+             class="${policy.depth === value ? "on" : ""}" title="${escapeHtml(title)}"${policy.interval === "never" ? " disabled" : ""}>${escapeHtml(label)}</button>`).join("")}
+        </div>
+      </div>
+      <div class="fr-numbers">
+        <div><b>${escapeHtml(formatMonthly(byType[row.type].usd_per_month))}</b><i>per month</i></div>
+        <div><b>${escapeHtml(formatStalenessHours(row.worst_case_staleness_hours))}</b><i>worst-case delay</i></div>
+      </div>
+      <p class="fr-plain">${escapeHtml(row.plain)}</p>
+    </div>`;
+  }).join("");
+
+  /* Delegated: the grid is replaced on every reprice, so per-node handlers would
+     be discarded with it. */
+  $("#freshGrid").onchange = (event) => {
+    const select = event.target.closest("[data-fresh-interval]");
+    if (!select) return;
+    freshPolicy[select.dataset.freshInterval].interval = select.value;
+    repriceFreshness();
+  };
+  $("#freshGrid").onclick = (event) => {
+    const button = event.target.closest("[data-fresh-depth]");
+    if (!button || button.disabled) return;
+    freshPolicy[button.dataset.freshDepth].depth = button.dataset.value;
+    repriceFreshness();
+  };
+}
+
+function renderFreshTotals(estimate) {
+  const total = estimate.total;
+  $("#freshTotals").innerHTML = [
+    ["monthly cost", formatMonthly(total.usd_per_month)],
+    ["a year of this", formatMonthly(total.usd_per_month * 12)],
+    ["model tokens / month", groupDigits(total.tokens_per_month)],
+    ["machine time / month", `${Math.round(total.machine_minutes_per_month)} min`],
+    ["pages checked / month", groupDigits(total.checks_per_month)],
+    ["worst-case staleness", formatStalenessHours(total.worst_case_staleness_hours)],
+  ].map(([label, value]) => `<div class="tile"><div class="v">${escapeHtml(String(value))}</div><div class="l">${label}</div></div>`).join("");
+  $("#freshHeadline").textContent = estimate.plain;
+}
+
+/**
+ * Two bars: where the money goes, and how stale each type is allowed to get.
+ *
+ * The staleness bar is deliberately NOT stacked — staleness does not add up, it
+ * is a per-type promise — so it is drawn as one track per type, scaled against
+ * the slowest interval on screen.
+ */
+function renderFreshBars(estimate) {
+  const priced = estimate.per_type.filter((row) => row.usd_per_month > 0);
+  const money = priced.length
+    ? stackedBarHtml("Money · per month by source type",
+      priced.map((row) => ({ id: row.type, label: TYPE_LABELS[row.type], cost: row.usd_per_month })),
+      (row) => row.cost, formatMonthly)
+    : `<div class="cost-bar"><div class="cb-head"><span>Money · per month by source type</span><span class="dim mono">nothing is checked</span></div><div class="cb-track empty-track"></div></div>`;
+
+  const checked = estimate.per_type.filter((row) => Number.isFinite(row.worst_case_staleness_hours));
+  const worst = Math.max(1, ...checked.map((row) => row.worst_case_staleness_hours));
+  const staleness = `<div class="cost-bar">
+    <div class="cb-head"><span>How stale each type may get</span><span class="mono dim">shorter is fresher</span></div>
+    <div class="fresh-stale">${estimate.per_type.map((row) => {
+      const infinite = !Number.isFinite(row.worst_case_staleness_hours);
+      const width = infinite ? 100 : Math.max(2, 100 * row.worst_case_staleness_hours / worst);
+      return `<div class="fs-row"><span class="fs-label">${escapeHtml(TYPE_LABELS[row.type])}</span>
+        <span class="fs-track"><i style="width:${width}%;background:${infinite ? "repeating-linear-gradient(45deg,var(--line-hard),var(--line-hard) 4px,transparent 4px,transparent 8px)" : TYPE_COLORS[row.type]}"></i></span>
+        <span class="fs-value mono">${escapeHtml(formatStalenessHours(row.worst_case_staleness_hours))}</span></div>`;
+    }).join("")}</div></div>`;
+
+  $("#freshBars").innerHTML = money + staleness;
+}
+
+/* `stackedBarHtml` expects `{id, label}` plus a value accessor, and colours by
+   STAGE_COLORS; source types are not stages, so the colour is patched in here
+   rather than by widening that function's contract. */
+for (const [type, colour] of Object.entries(TYPE_COLORS)) STAGE_COLORS[type] = colour;
+
+/** Re-price whatever the controls now say. Debounced; the request is free. */
+function repriceFreshness() {
+  clearTimeout(freshDebounce);
+  freshDebounce = setTimeout(async () => {
+    const response = await fetchJson("/api/freshness/estimate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ policy: freshPolicy }),
+    });
+    renderFreshGrid(response.estimate);
+    renderFreshTotals(response.estimate);
+    renderFreshBars(response.estimate);
+  }, FRESH_DEBOUNCE_MS);
+}
+
+/** Write the policy into the live config override — the same mechanism the
+    Settings panel uses, so the scheduler and the next `npm run refresh` obey it
+    with no restart. */
+async function applyFreshPolicy() {
+  await fetchJson("/api/config", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    /* The whole `freshness` section is sent, because setConfigOverrides merges one
+       level deep: a patch naming only `active` would replace the section's other
+       keys with nothing. */
+    body: JSON.stringify({
+      freshness: {
+        ...freshData.raw_section,
+        preset: matchPresetName(),
+        active: freshPolicy,
+      },
+    }),
+  });
+  showFreshMessage("Applied. The scheduler and the next refresh run use this policy.");
+}
+
+/** If the policy on screen is identical to a named preset, keep its name — the
+    run log is much easier to read when it says "balanced" than "custom". */
+function matchPresetName() {
+  for (const [name, entry] of Object.entries(freshData.presets)) {
+    if (JSON.stringify(entry.policy) === JSON.stringify(freshPolicy)) return name;
+  }
+  return "custom";
+}
+
+async function resetFreshPolicy() {
+  await fetchJson("/api/config", { method: "DELETE" });
+  loadedViews.freshness = false;
+  await loadFreshness();
+  showFreshMessage("Back to config/kb.yaml.");
+}
+
+function showFreshMessage(text) {
+  $("#freshMsg").textContent = text;
+  setTimeout(() => { $("#freshMsg").textContent = ""; }, CONFIG_MESSAGE_TIMEOUT_MS);
+}
+
+/** "Last refreshed", per type, from the documents rather than from the run log —
+    a type the last run skipped still shows its real staleness. */
+function renderFreshStatus(data) {
+  const interval = (type) => (freshPolicy[type] || {}).interval || "—";
+  $("#freshStatus tbody").innerHTML = data.status.map((row) => `<tr>
+    <td><span class="fr-dot" style="background:${TYPE_COLORS[row.type]}"></span> ${escapeHtml(TYPE_LABELS[row.type])}</td>
+    <td class="num">${row.documents}</td>
+    <td class="num">${row.never_checked ? `<span style="color:var(--idk)">${row.never_checked}</span>` : "0"}</td>
+    <td class="num subtle">${escapeHtml(shortStamp(row.oldest_checked_at))}</td>
+    <td class="num subtle">${escapeHtml(shortStamp(row.newest_checked_at))}</td>
+    <td class="subtle">${escapeHtml(interval(row.type))}</td>
+  </tr>`).join("");
+}
+
+const shortStamp = (iso) => (iso ? iso.slice(0, 16).replace("T", " ") : "never");
+
+/** The change log: what the last runs found, newest first. */
+async function loadFreshLog() {
+  const log = await fetchJson("/api/freshness/log?limit=5").catch(() => ({ runs: [] }));
+  if (!log.runs?.length) {
+    $("#freshLog").innerHTML =
+      '<div class="empty">No refresh has run against this index yet. Run <code>npm run refresh</code> — or <code>npm run refresh -- --dry-run</code> to see what a policy would do without spending anything.</div>';
+    return;
+  }
+  $("#freshLog").innerHTML = log.runs.map(freshRunHtml).join("");
+  /* The change rows link to the document modal, like every other page-reference
+     in this UI. */
+  wireDocLinks($("#freshLog"));
+}
+
+function freshRunHtml(run) {
+  const when = (run.started_at || "").slice(0, 16).replace("T", " ");
+  const tallies = [
+    [run.checked, "checked"],
+    [run.not_modified, "not modified"],
+    [run.unchanged, "unchanged"],
+    [run.changed, "changed"],
+    [run.added, "new"],
+    [run.removed, "removed"],
+    [run.facts_changed, "facts changed"],
+  ].map(([value, label]) => `<span class="fl-tally${value ? " hit" : ""}"><b>${value}</b> ${label}</span>`).join("");
+
+  const changes = run.changes.length
+    ? `<table class="inner"><thead><tr><th>what</th><th>source type</th><th>page</th><th>detail</th></tr></thead><tbody>
+        ${run.changes.map(freshChangeRowHtml).join("")}</tbody></table>`
+    : `<p class="dim" style="font-size:13px;margin:8px 0 0">Nothing changed — every document the sieves looked at was already current. This is what a healthy run looks like, and it is why it cost ${formatMonthly(run.cost_usd)}.</p>`;
+
+  return `<div class="fresh-run">
+    <div class="fl-head">
+      <span><b>${escapeHtml(when)}</b> <span class="pill quiet">${escapeHtml(run.preset || "custom")}</span></span>
+      <span class="mono dim">${formatDurationLong(run.wall_ms)} · ${formatBytes(run.bytes_in)} · ${formatMoney(run.cost_usd)}</span>
+    </div>
+    <div class="fl-tallies">${tallies}</div>
+    ${changes}
+  </div>`;
+}
+
+function freshChangeRowHtml(change) {
+  const value = change.kind === "fact_changed"
+    ? `<code>${escapeHtml(change.fact_key || "")}</code>: ${escapeHtml(change.old_value ?? "—")} → <b>${escapeHtml(change.new_value ?? "—")}</b>`
+    : escapeHtml(change.detail || "");
+  return `<tr>
+    <td><span class="pill k-${escapeHtml(change.kind)}">${escapeHtml(CHANGE_KIND_LABELS[change.kind] || change.kind)}</span></td>
+    <td class="subtle">${escapeHtml(TYPE_LABELS[change.source_type] || change.source_type || "—")}</td>
+    <td class="subtle">${change.doc_id
+      ? `<a href="#" class="doclink" data-doc="${change.doc_id}">${escapeHtml(change.title || change.url || "")}</a>`
+      : escapeHtml(change.url || "—")}</td>
+    <td class="subtle">${value}</td>
+  </tr>`;
+}
+
+/**
+ * The assumptions footnote. Everything the calculator could not measure is named
+ * here with its value, and everything it did measure is named with the run it
+ * came from — the same honesty split COST.md makes.
+ */
+function renderFreshAssumptions(data) {
+  const units = data.assumptions.units || {};
+  const measured = Object.entries(units).filter(([, note]) => note.startsWith("measured"));
+  const assumed = Object.entries(units).filter(([, note]) => !note.startsWith("measured"));
+  const rates = Object.entries(data.corpus).map(([type, profile]) =>
+    `<li><b>${escapeHtml(TYPE_LABELS[type])}</b>: ${profile.documents} documents, `
+    + `${profile.chunks_per_doc.toFixed(1)} chunks each, `
+    + `${profile.new_docs_per_month.toFixed(1)} new/month — <span class="dim">${escapeHtml(profile.basis)}</span>; `
+    + `assumed edit rate ${(profile.change_rate_per_month * 100).toFixed(0)}% of pages per month.</li>`).join("");
+
+  $("#freshAssumptions").innerHTML = `
+    <p><b>Prices</b> are the list prices in <code>config/kb.yaml</code> as of ${escapeHtml(data.assumptions.prices_as_of)}; the Gemini rows are an introductory rate that ends 2026-12-31, after which every model figure here doubles. <b>Machine time</b> is wall time on the machine that took the measurement, and it is mostly the politeness delay between requests, not computation.</p>
+    <p><b>Measured</b> — ${measured.map(([field, note]) => `<code>${escapeHtml(field)}</code> <span class="dim">(${escapeHtml(note)})</span>`).join("; ")}.</p>
+    <p><b>Assumed</b> — ${assumed.map(([field, note]) => `<code>${escapeHtml(field)}</code> <span class="dim">(${escapeHtml(note)})</span>`).join("; ")}.</p>
+    <p><b>Per source type</b>, counted from the corpus itself:</p>
+    <ul class="fresh-rates">${rates}</ul>
+    <p class="dim">Two modelling choices worth knowing: a page that is <em>new</em> is indexed and fact-extracted whatever the depth, because a missing page is not stale but absent; and a page can only be found changed once per check, so a slower interval genuinely costs less rather than merely arriving later.</p>`;
+}

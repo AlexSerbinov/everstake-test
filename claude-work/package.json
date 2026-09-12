@@ -4,7 +4,9 @@
   "description": "Knowledge assistant over a public corpus about Everstake: crawl, dedup, rank by recency/authority, answer with sources and dates, honest 'I don't know'.",
   "type": "module",
   "private": true,
-  "engines": { "node": ">=22.13" },
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
     "crawl": "tsx src/cli.ts crawl",
     "dedup": "tsx src/cli.ts dedup",
@@ -14,6 +16,8 @@
     "eval": "tsx src/cli.ts eval",
     "eval:adversarial": "tsx src/cli.ts adversarial",
     "cost": "tsx src/cli.ts cost",
+    "refresh": "tsx src/cli.ts refresh",
+    "schedule": "tsx src/cli.ts schedule",
     "stats": "tsx src/cli.ts stats",
     "pipeline": "tsx src/cli.ts pipeline",
     "serve": "tsx src/server/main.ts",

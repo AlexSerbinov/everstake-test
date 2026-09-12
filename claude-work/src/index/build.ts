@@ -108,6 +108,39 @@ export async function buildIndex(opts: { force?: boolean }): Promise<IndexBuildS
   return stats;
 }
 
+/**
+ * Re-chunk and re-embed exactly these documents, and nothing else.
+ *
+ * `buildIndex` is document-set-wide by design (it asks the database which documents lack chunks);
+ * the refresher knows the handful that changed and must not pay for a scan of the other 440. The
+ * work itself is identical — the same `rewriteDocumentChunks`, the same stripping, the same
+ * embedding batches — so a document re-indexed by a refresh is indistinguishable from one built
+ * by `npm run index`, which is the property that keeps the two paths from drifting.
+ *
+ * Returns what it did, so the refresh log can report chunks as well as documents.
+ */
+export async function reindexDocuments(docIds: number[]): Promise<IndexBuildStats> {
+  const stats: IndexBuildStats = { documents: 0, chunks: 0, instructions: 0, embedded: 0 };
+  if (docIds.length === 0) return stats;
+  const cfg = getConfig();
+  const pending: { id: number; text: string }[] = [];
+
+  for (const id of docIds) {
+    const doc = all<{ id: number; url: string; final_url: string; text: string }>(
+      "SELECT id, url, final_url, text FROM documents WHERE id = ? AND text IS NOT NULL", id)[0];
+    if (!doc) continue;
+    const written = rewriteDocumentChunks(doc, cfg.instructions.ai_directed_min_hits, pending);
+    stats.documents++;
+    stats.chunks += written.chunksMade;
+    stats.instructions += written.instructionHits;
+  }
+
+  if (!embeddingsEnabled()) return stats;
+  await embedChunks(pending);
+  stats.embedded = pending.length;
+  return stats;
+}
+
 /** What one index build did. Returned so the caller (the CLI) can record it against the stage
  *  run without re-querying — the numbers the console prints and the numbers COST.md shows are
  *  then the same numbers, not two counts of the same thing. */
