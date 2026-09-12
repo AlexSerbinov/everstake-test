@@ -46,6 +46,35 @@ document.querySelectorAll('[data-view]').forEach(button => {
   button.onclick = () => showView(button.dataset.view);
 });
 
+async function loadCorpus(voice = '') {
+  const payload = await fetch(`/api/corpus${voice ? `?voice=${encodeURIComponent(voice)}` : ''}`).then(r => r.json());
+  select('#corpus-counts').textContent = Object.entries(payload.counts || {}).map(([key, value]) => `${key.replaceAll('_', ' ')} ${value}`).join(' · ');
+  const list = select('#corpus-list');
+  list.innerHTML = '';
+  (payload.documents || []).forEach(source => {
+    const row = document.createElement('article');
+    const title = document.createElement('a');
+    title.href = source.url; title.target = '_blank'; title.rel = 'noopener'; title.textContent = source.title;
+    const badges = document.createElement('div'); badges.className = 'badges';
+    addBadge(badges, source.voice?.replaceAll('_', ' ') || 'unknown voice', 'voice');
+    (source.speakers || []).forEach(speaker => addBadge(badges, `${speaker.name} · ${speaker.role}`, 'speaker'));
+    if (source.unverified) addBadge(badges, 'unverified claim', 'warning');
+    if (source.trust_penalty < 1) addBadge(badges, `trust ×${source.trust_penalty}`, 'warning');
+    const meta = document.createElement('small'); meta.textContent = `${source.claim_provenance || 'stated'} · ${source.published_at || 'undated'}${source.trust_penalty_reason ? ` · ${source.trust_penalty_reason}` : ''}`;
+    row.append(title, badges, meta); list.append(row);
+  });
+}
+
+function addBadge(parent, text, tone) {
+  const badge = document.createElement('span'); badge.className = `badge ${tone}`; badge.textContent = text; parent.append(badge);
+}
+
+document.querySelectorAll('[data-voice]').forEach(button => button.addEventListener('click', () => {
+  document.querySelectorAll('[data-voice]').forEach(item => item.classList.toggle('active', item === button));
+  loadCorpus(button.dataset.voice);
+}));
+loadCorpus();
+
 function showView(name) {
   document.querySelectorAll('.view').forEach(view => { view.hidden = view.id !== `${name}-view`; });
   document.querySelectorAll('[data-view]').forEach(button => {
@@ -573,7 +602,12 @@ function renderSources(sources) {
     const provenance = source.provenance.replaceAll('_', ' ');
     const count = passages.length > 1 ? ` · ${passages.length} passages` : '';
     meta.textContent = `${provenance} · ${source.date}${count} · ${hashes}`;
-    item.append(link, meta);
+    const badges = document.createElement('div'); badges.className = 'badges';
+    addBadge(badges, (source.voice || 'unknown_voice').replaceAll('_', ' '), 'voice');
+    (source.speakers || []).forEach(speaker => addBadge(badges, `${speaker.name} · ${speaker.role}`, 'speaker'));
+    if (source.unverified) addBadge(badges, 'unverified', 'warning');
+    if (source.trust_penalty < 1) addBadge(badges, `trust ×${source.trust_penalty}`, 'warning');
+    item.append(link, badges, meta);
     list.append(item);
   });
   const pages = `${sources.length} source${sources.length === 1 ? '' : 's'}`;

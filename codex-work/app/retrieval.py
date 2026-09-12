@@ -160,6 +160,13 @@ class Evidence:
     tier: int
     category: str
     score: float
+    voice: str = "first_party_channel"
+    speakers: str = "[]"
+    attribution: str = "Everstake"
+    claim_provenance: str = "stated"
+    trust_penalty: float = 1.0
+    trust_penalty_reason: str | None = None
+    unverified_claims: int = 0
 
     @property
     def evidence_date(self) -> str:
@@ -285,7 +292,8 @@ def source_authority(url: str, category: str) -> float:
 # mirrored on five sites cannot look like five confirmations.
 _CANDIDATE_CHUNKS_SQL = """
     SELECT c.id chunk_id,c.document_id,c.text,c.embedding,d.title,d.final_url url,d.published_at,
-           d.modified_at,d.fetched_at,d.tier,d.category,d.duplicate_group
+           d.modified_at,d.fetched_at,d.tier,d.category,d.duplicate_group,d.voice,d.speakers,
+           d.attribution,d.claim_provenance,d.trust_penalty,d.trust_penalty_reason,d.unverified_claims
     FROM chunks c JOIN documents d ON d.id=c.document_id WHERE d.is_canonical=1
 """
 
@@ -370,8 +378,15 @@ def _hybrid_score(row: sqlite3.Row, query_vector: list[float], lexical_scores: d
     lexical = lexical_scores.get(row["chunk_id"], 0.0)
     relevance = SEMANTIC_WEIGHT * semantic + LEXICAL_WEIGHT * lexical
     tier_multiplier = 1.0 if row["tier"] == 1 else TIER_2_MULTIPLIER
-    authority = tier_multiplier * source_authority(row["url"], row["category"])
+    voice_authority = (row["trust_penalty"] or 1.0) * _voice_authority(row["voice"])
+    authority = tier_multiplier * source_authority(row["url"], row["category"]) * voice_authority
     return relevance * authority * _recency_multiplier(row, current_year, prefer_recent)
+
+
+def _voice_authority(voice: str | None) -> float:
+    """Configured voice authority, with safe defaults for pre-migration rows."""
+    values = {"first_party_channel": 0.7, "employee_on_third_party": 0.6, "third_party": 0.4}
+    return values.get(voice, 1.0)
 
 
 def _recency_multiplier(row: sqlite3.Row, current_year: int, prefer_recent: bool) -> float:
@@ -403,7 +418,10 @@ def _select_diverse(ranked: list[tuple[float, sqlite3.Row]], limit: int) -> list
         selected.append(Evidence(
             row["chunk_id"], row["document_id"], row["title"], row["url"], row["text"],
             row["published_at"], row["modified_at"], row["fetched_at"],
-            row["tier"], row["category"], score,
+            row["tier"], row["category"], score, row["voice"] or "first_party_channel",
+            row["speakers"] or "[]", row["attribution"] or "Everstake",
+            row["claim_provenance"] or "stated", row["trust_penalty"] or 1.0,
+            row["trust_penalty_reason"], row["unverified_claims"] or 0,
         ))
         chunks_taken[row["document_id"]] = chunks_taken.get(row["document_id"], 0) + 1
         if len(selected) == limit:

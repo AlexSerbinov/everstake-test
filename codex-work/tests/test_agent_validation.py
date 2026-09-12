@@ -212,8 +212,46 @@ class AcceptedSubmissionShapeTests(ValidationHarness):
     def test_sources_expose_ref_title_url_date_provenance_and_content_hash(self):
         self.register()
         source = self.validate({"answer": "x", "citations": ["E1"], "sufficient": True})["sources"][0]
-        self.assertEqual(set(source), {"ref", "title", "url", "date", "provenance", "content_sha256"})
+        self.assertEqual(set(source), {"ref", "title", "url", "date", "provenance", "content_sha256", "passages",
+                                       "voice", "speakers", "attribution", "claim_provenance", "trust_penalty",
+                                       "trust_penalty_reason", "unverified"})
         self.assertEqual(len(source["content_sha256"]), 64)
+        self.assertEqual(source["passages"], [{"ref": "E1", "content_sha256": source["content_sha256"]}])
+
+    def test_several_cited_chunks_of_one_page_are_one_source_with_several_passages(self):
+        self.register(content="chunk one")
+        self.register(url="https://everstake.com/b", content="other page")
+        self.register(content="chunk two")
+        self.register(content="chunk three")
+        result = self.validate({"answer": "x", "citations": ["E1", "E3", "E4", "E2"], "sufficient": True})
+        # Citations stay chunk-level; the rendered source list is per page, first-cited first.
+        self.assertEqual(result["citations"], ["E1", "E3", "E4", "E2"])
+        self.assertEqual([source["url"] for source in result["sources"]],
+                         ["https://everstake.com/a", "https://everstake.com/b"])
+        page = result["sources"][0]
+        self.assertEqual(page["ref"], "E1")
+        self.assertEqual([passage["ref"] for passage in page["passages"]], ["E1", "E3", "E4"])
+        self.assertEqual(len({passage["content_sha256"] for passage in page["passages"]}), 3)
+        self.assertEqual(page["content_sha256"], page["passages"][0]["content_sha256"])
+
+    def test_a_search_hit_and_a_document_read_of_the_same_page_are_one_source(self):
+        self.register(content="search chunk")
+        self.context._register(RegisteredEvidence(
+            "", "A", "https://everstake.com/a", "2026-01-01", "whole document head", "corpus_document", 1,
+        ))
+        result = self.validate({"answer": "x", "citations": ["E1", "E2"], "sufficient": True})
+        self.assertEqual(len(result["sources"]), 1)
+        self.assertEqual([p["ref"] for p in result["sources"][0]["passages"]], ["E1", "E2"])
+        self.assertEqual(result["sources"][0]["provenance"], "corpus_snapshot")
+
+    def test_a_snapshot_and_a_live_fetch_of_the_same_page_stay_separate_sources(self):
+        self.register(date="2026-07-01")
+        self.context._register(RegisteredEvidence(
+            "", "A", "https://everstake.com/a", "2026-09-12", "live text", "allowlisted_live_fetch",
+        ))
+        result = self.validate({"answer": "x", "citations": ["E1", "E2"], "sufficient": True})
+        self.assertEqual([(s["provenance"], s["date"]) for s in result["sources"]],
+                         [("corpus_snapshot", "2026-07-01"), ("allowlisted_live_fetch", "2026-09-12")])
 
     def test_the_answer_text_is_stripped_of_surrounding_whitespace(self):
         self.register()

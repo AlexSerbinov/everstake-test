@@ -39,6 +39,7 @@ from .accounting import RunRecorder
 from .api_clients import embed
 from .config import load_dotenv
 from .security import sanitize_untrusted_text
+from .consistency import consistency_pass
 
 # --- Near-duplicate detection -------------------------------------------------
 # All four thresholds were tuned by hand against this 280-page corpus (10 exact
@@ -331,9 +332,14 @@ def pack(vector: list[float]) -> bytes:
 SCHEMA = """
 CREATE TABLE documents(id INTEGER PRIMARY KEY, url TEXT UNIQUE, final_url TEXT, title TEXT, category TEXT,
  tier INTEGER, language TEXT, published_at TEXT, modified_at TEXT, fetched_at TEXT, duplicate_group INTEGER,
- is_canonical INTEGER, injection_hits INTEGER, removed_passages TEXT, word_count INTEGER);
+ is_canonical INTEGER, injection_hits INTEGER, removed_passages TEXT, word_count INTEGER,
+ voice TEXT, speakers TEXT, attribution TEXT, claim_provenance TEXT, authority REAL,
+ trust_penalty REAL, trust_penalty_reason TEXT, contradiction_count INTEGER, unverified_claims INTEGER);
 CREATE TABLE chunks(id INTEGER PRIMARY KEY, document_id INTEGER, position INTEGER, text TEXT, embedding BLOB,
  FOREIGN KEY(document_id) REFERENCES documents(id));
+CREATE TABLE facts(id INTEGER PRIMARY KEY, document_id INTEGER, fact_key TEXT, period TEXT, value TEXT,
+ normalized_value TEXT, statement TEXT, provenance TEXT, attribution TEXT, first_party INTEGER,
+ contradiction INTEGER, unverified INTEGER, FOREIGN KEY(document_id) REFERENCES documents(id));
 CREATE VIRTUAL TABLE chunks_fts USING fts5(text, content='chunks', content_rowid='id', tokenize='porter unicode61');
 CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT);
 """
@@ -351,8 +357,10 @@ CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT);
 
 _INSERT_DOCUMENT_SQL = """
 INSERT INTO documents(url, final_url, title, category, tier, language, published_at, modified_at,
-                      fetched_at, duplicate_group, is_canonical, injection_hits, removed_passages, word_count)
-VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                      fetched_at, duplicate_group, is_canonical, injection_hits, removed_passages, word_count,
+                      voice, speakers, attribution, claim_provenance, authority, trust_penalty,
+                      trust_penalty_reason, contradiction_count, unverified_claims)
+VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 """
 
 _INSERT_CHUNK_SQL = "INSERT INTO chunks(document_id,position,text,embedding) VALUES(?,?,?,?)"
@@ -372,6 +380,7 @@ def build(corpus: Path, database: Path, record_accounting: bool = False) -> dict
     """
     docs = [json.loads(line) for line in corpus.read_text().splitlines() if line.strip()]
     dedup_run = _stage_recorder("dedup", record_accounting, "code")
+    facts, consistency_stats = consistency_pass(docs)
     groups, dedup_stats = duplicate_groups(docs)
     if dedup_run:
         dedup_run.finish(items={"documents": len(docs), "unique_groups": dedup_stats["unique_groups"]})
@@ -384,6 +393,7 @@ def build(corpus: Path, database: Path, record_accounting: bool = False) -> dict
     pending_chunks, cleaning_stats = _insert_documents(
         connection, docs, groups, canonical_index, boilerplate
     )
+    _insert_facts(connection, facts)
     if chunk_run:
         chunk_run.finish(items={"documents": len(docs), "chunks": len(pending_chunks)})
 
@@ -413,6 +423,9 @@ def build(corpus: Path, database: Path, record_accounting: bool = False) -> dict
         "boilerplate_signatures": len(boilerplate),
         "boilerplate_lines_removed": cleaning_stats["boilerplate_lines_removed"],
         "literal_fact_chunks": literal_fact_chunks,
+        **consistency_stats,
+        "voices": {voice: sum(doc.get("voice") == voice for doc in docs) for voice in
+                   ("first_party_channel", "employee_on_third_party", "third_party")},
         "embedding_model": EMBEDDING_MODEL,
         "embedding_dimensions": EMBEDDING_DIMENSIONS,
         "index_input_tokens": embedding_tokens,
@@ -511,6 +524,10 @@ def _insert_documents(connection: sqlite3.Connection, docs: list[dict], groups: 
             # Word count of the *sanitised* text, so the stored length matches what
             # is actually retrievable rather than what was crawled.
             len(normalized_words(sanitized.text)),
+            doc.get("voice"), json.dumps(doc.get("speakers", [])), doc.get("attribution"),
+            doc.get("provenance"), doc.get("authority", 1.0 if doc.get("tier") == 1 else 0.82),
+            doc.get("trust_penalty", 1.0), doc.get("trust_penalty_reason"),
+            doc.get("contradiction_count", 0), doc.get("unverified_claims", 0),
         ))
         for position, chunk_text in enumerate(chunks(sanitized.text)):
             pending_chunks.append((cursor.lastrowid, position, chunk_text))
@@ -518,6 +535,18 @@ def _insert_documents(connection: sqlite3.Connection, docs: list[dict], groups: 
         "injection_documents": injection_documents,
         "boilerplate_lines_removed": boilerplate_lines_removed,
     }
+
+
+def _insert_facts(connection: sqlite3.Connection, facts: list[dict]) -> None:
+    """Persist attribution and consistency verdicts next to the searchable evidence."""
+    for fact in facts:
+        connection.execute(
+            "INSERT INTO facts(document_id,fact_key,period,value,normalized_value,statement,provenance,"
+            "attribution,first_party,contradiction,unverified) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+            (fact["document_index"] + 1, fact["key"], fact["period"], fact["value"],
+             fact["normalized_value"], fact["statement"], fact["provenance"], fact["attribution"],
+             int(fact["first_party"]), int(fact.get("contradiction", False)), int(fact["unverified"])),
+        )
 
 
 def _embed_and_insert_chunks(connection: sqlite3.Connection,

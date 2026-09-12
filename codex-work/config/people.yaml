@@ -1,0 +1,11 @@
+{
+  "people": [
+    {"name": "Sergii Vasylchuk", "aliases": ["Sergey Vasylchuk", "Serhii Vasylchuk"], "role": "CEO", "from": "2018-01-01", "to": null},
+    {"name": "David Kinitsky", "aliases": ["Dmytro Kinitsky"], "role": "CCDO", "from": "2024-01-01", "to": null},
+    {"name": "Bohdan Opryshko", "aliases": [], "role": "COO", "from": "2018-01-01", "to": null},
+    {"name": "Anna Petrenko", "aliases": [], "role": "CBDO", "from": "2022-01-01", "to": null},
+    {"name": "Denys Averin", "aliases": ["Denis Averin"], "role": "CIO", "from": "2022-01-01", "to": null},
+    {"name": "Gennaro Loiudice", "aliases": [], "role": "CMO", "from": "2023-01-01", "to": null},
+    {"name": "Iurii Tkachenko", "aliases": ["Yurii Tkachenko", "Yuri Tkachenko"], "role": "CFO", "from": "2023-01-01", "to": null}
+  ]
+}

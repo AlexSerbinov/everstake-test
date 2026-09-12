@@ -88,6 +88,16 @@ _ABSENCE_CLAIM = re.compile(
 # Live tools whose result cannot be improved by asking again in the same question.
 _TERMINAL_LIVE_MCP_TOOLS = {"staking_calculator", "get_uptime_metrics"}
 
+# Provenances that are the same observation of a page for the purpose of listing sources:
+# a `corpus_search` chunk and a `document_read` of the same URL both come from the frozen
+# index, so they are one source. Anything not listed (a live fetch, an MCP payload) is
+# its own observation and stays a separate row. Used by `_source_records`.
+_SOURCE_ORIGIN = {"corpus_snapshot": "corpus", "corpus_document": "corpus"}
+_NUMBER_CLAIM = re.compile(r"(?<!\w)(?:\$\s*)?\d[\d,.]*(?:\s*(?:%|billion|million|bps|APY|APR))?", re.I)
+_REPORTED_MARKER = re.compile(r"according to .{1,100}\(20\d{2}(?:-\d{2}-\d{2})?\)", re.I)
+_NEGATIVE_CLAIM = re.compile(r"\b(fraud|scam|stole|theft|criminal|corrupt|dishonest|illegal|misconduct|lied)\b", re.I)
+_CLAIM_LANGUAGE = re.compile(r"\b(claims?|alleges?|according to|unverified)\b", re.I)
+
 
 def _emit_event(emit: Emit | None, event: str, payload: dict) -> None:
     """Send one SSE event if the caller is streaming, and do nothing if it is not.
@@ -374,7 +384,9 @@ def _finalise(submitted: dict | None, context: ToolContext, mode: str, question:
     _emit_event(emit, "verification", {
         "status": "passed" if result["sufficient"] else "abstained",
         "message": result["reasoning"],
+        # Pages vs passages: `sources` is one row per cited page, `citations` one per chunk.
         "evidence_count": len(result["sources"]),
+        "passage_count": len(result["citations"]),
     })
     # Only cited evidence goes into the audit record, at full length. Everything the
     # tools returned but the answer did not use is deliberately left out: the record
@@ -443,6 +455,18 @@ def _passes_sufficiency_contract(submitted: dict, refs: list[str], answer_text: 
         return False
     if mode == "synthesis" and not _straddles_requested_years(refs, context, question):
         return False
+    evidence = [context.evidence[ref] for ref in refs]
+    if any(item.unverified_claims for item in evidence) and not re.search(
+        r"\b(claims?|rumou?rs?|opinions?|reports?|allegations?)\b", question, re.I
+    ):
+        return False
+    if _NUMBER_CLAIM.search(answer_text) and evidence and all(
+        item.claim_provenance == "reported" for item in evidence
+    ) and not _REPORTED_MARKER.search(answer_text):
+        return False
+    if _NEGATIVE_CLAIM.search(answer_text) and any(item.voice == "third_party" for item in evidence):
+        if not (_CLAIM_LANGUAGE.search(answer_text) and "unverified" in answer_text.lower()):
+            return False
     return True
 
 
@@ -533,19 +557,48 @@ def _accepted_result(submitted: dict, refs: list[str], answer_text: str, mode: s
 def _source_records(refs: list[str], context: ToolContext) -> list[dict]:
     """The per-source rows rendered under the answer and stored in the receipt.
 
-    Carries the content hash alongside the URL so a reader can check that the cited page
-    still says what it said — the URL alone proves nothing once a page has been edited.
+    One row per cited *page*, not per cited passage. Citations are chunk-level (`E1`,
+    `E3`, `E4` may all be chunks of `/ai-info`), and that granularity is right for the
+    audit record — but a reader shown "3 sources" that are three copies of one title
+    reads it as corroboration that was never claimed. So passages are folded under the
+    page they came from, in first-citation order, and each keeps its own hash in
+    `passages` so every cited chunk can still be re-checked individually. The page-level
+    `ref` and `content_sha256` are those of its first cited passage.
+
+    Grouped by (url, origin) rather than url alone: a corpus snapshot of a page and a
+    live fetch of the same page are two different observations at two different dates,
+    and collapsing them would hide exactly the disagreement a reader should see. A
+    search hit and a `document_read` of the same page are *not* different observations —
+    both read the frozen index — so those two provenances fold into one row.
     Deliberately omits the passage text: the full content lives in the audit record,
     which is fetched on demand rather than shipped with every answer.
     """
-    return [
-        {
-            "ref": ref,
-            "title": context.evidence[ref].title,
-            "url": context.evidence[ref].url,
-            "date": context.evidence[ref].date,
-            "provenance": context.evidence[ref].provenance,
-            "content_sha256": context.evidence[ref].audit_dict()["content_sha256"],
-        }
-        for ref in refs
-    ]
+    pages: dict[tuple[str, str], dict] = {}
+    for ref in refs:
+        item = context.evidence[ref]
+        passage = {"ref": ref, "content_sha256": item.audit_dict()["content_sha256"]}
+        key = (item.url, _SOURCE_ORIGIN.get(item.provenance, item.provenance))
+        page = pages.get(key)
+        if page is None:
+            pages[key] = {
+                "ref": ref,
+                "title": item.title,
+                "url": item.url,
+                "date": item.date,
+                "provenance": item.provenance,
+                "voice": item.voice,
+                "speakers": item.speakers or [],
+                "attribution": item.attribution,
+                "claim_provenance": item.claim_provenance,
+                "trust_penalty": item.trust_penalty,
+                "trust_penalty_reason": item.trust_penalty_reason,
+                "unverified": bool(item.unverified_claims),
+                "content_sha256": passage["content_sha256"],
+                "passages": [passage],
+            }
+            continue
+        page["passages"].append(passage)
+        # Chunks of one page normally share a date; if they do not, the page is only
+        # claimed as of the newest passage — the same rule `as_of` follows.
+        page["date"] = max(page["date"], item.date)
+    return list(pages.values())

@@ -63,7 +63,9 @@ class RegisteredEvidenceTests(unittest.TestCase):
         item = registered()
         audit = item.audit_dict()
         self.assertEqual(set(audit), {"ref", "title", "url", "date", "content",
-                                      "provenance", "document_id", "content_sha256"})
+                                      "provenance", "document_id", "content_sha256", "voice", "speakers",
+                                      "attribution", "claim_provenance", "trust_penalty",
+                                      "trust_penalty_reason", "unverified_claims"})
         self.assertEqual(len(audit["content_sha256"]), 64)
 
     def test_document_id_defaults_to_none(self):

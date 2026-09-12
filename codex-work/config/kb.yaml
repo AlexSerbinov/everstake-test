@@ -1,0 +1,12 @@
+{
+  "official_youtube_channel_ids": ["UCMKYtasvtCCSyfPj0r6FDcQ"],
+  "official_youtube_handles": ["@Everstake"],
+  "voice_authority": {
+    "first_party_channel": 0.7,
+    "employee_on_third_party": 0.6,
+    "third_party": 0.4
+  },
+  "negative_lookalikes": ["everrise", "es-fintech", "es fintech", "everest"],
+  "minimum_video_seconds": 60,
+  "transcript_relevance_mentions": 3
+}

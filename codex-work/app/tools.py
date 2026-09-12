@@ -126,6 +126,13 @@ class RegisteredEvidence:
     content: str
     provenance: str
     document_id: int | None = None
+    voice: str = "first_party_channel"
+    speakers: list[dict] | None = None
+    attribution: str = "Everstake"
+    claim_provenance: str = "stated"
+    trust_penalty: float = 1.0
+    trust_penalty_reason: str | None = None
+    unverified_claims: int = 0
 
     def audit_dict(self) -> dict:
         """The full record of this evidence for the signed audit log.
@@ -221,6 +228,7 @@ class ToolContext:
             prefer_recent=mode != "synthesis",
         )
         rows = adjudicate_evidence(search_query, mode, rows)
+        rows = _exclude_unverified(rows, query)
         if mode == "synthesis":
             rows = _rebalance_for_synthesis(search_query, rows)
         result_count = SYNTHESIS_RESULTS if mode == "synthesis" else FACTUAL_RESULTS
@@ -238,6 +246,7 @@ class ToolContext:
         rows, usage = retrieve(query, limit=NUMBER_LOOKUP_RETRIEVAL_LIMIT,
                                database=self.database, prefer_recent=True)
         rows = adjudicate_evidence(query, "factual", rows)
+        rows = _exclude_unverified(rows, query)
         numeric = [row for row in rows if _contains_literal_value(row.text)]
         # Fall back to the unfiltered rows rather than returning nothing: an empty
         # result teaches the model nothing, whereas the topical passages let it see for
@@ -264,6 +273,9 @@ class ToolContext:
             content,
             "corpus_document",
             document_id,
+            row["voice"], json.loads(row["speakers"] or "[]"), row["attribution"],
+            row["claim_provenance"], row["trust_penalty"], row["trust_penalty_reason"],
+            row["unverified_claims"],
         ))
         return {"evidence": _model_evidence(item, DOCUMENT_READ_CHARS)}
 
@@ -382,7 +394,18 @@ def _as_registered_evidence(item: Evidence | RegisteredEvidence) -> RegisteredEv
         item.text,
         "corpus_snapshot",
         item.document_id,
+        item.voice, json.loads(item.speakers or "[]"), item.attribution,
+        item.claim_provenance, item.trust_penalty, item.trust_penalty_reason,
+        item.unverified_claims,
     )
+
+
+def _exclude_unverified(rows: list[Evidence], question: str) -> list[Evidence]:
+    """Hide unverified third-party claims unless the user explicitly asks about claims."""
+    asks_about_claims = bool(re.search(r"\b(claims?|rumou?rs?|opinions?|reports?|allegations?)\b", question, re.I))
+    if asks_about_claims:
+        return rows
+    return [row for row in rows if not (row.claim_provenance == "reported" and row.unverified_claims)]
 
 
 def _enrich_synthesis_query(query: str, mode: str) -> str:
@@ -515,6 +538,13 @@ def _model_evidence(item: RegisteredEvidence, limit: int = SEARCH_SNIPPET_CHARS)
         "url": item.url,
         "date": item.date,
         "provenance": item.provenance,
+        "voice": item.voice,
+        "speakers": item.speakers or [],
+        "attribution": item.attribution,
+        "claim_provenance": item.claim_provenance,
+        "trust_penalty": item.trust_penalty,
+        "trust_penalty_reason": item.trust_penalty_reason,
+        "unverified": bool(item.unverified_claims),
         "content_sha256": sha256_text(item.content),
         "content": item.content[:limit],
     }
@@ -522,7 +552,9 @@ def _model_evidence(item: RegisteredEvidence, limit: int = SEARCH_SNIPPET_CHARS)
 
 # Fields of an evidence item that are safe and useful to keep in the permanent trace:
 # enough to say what was returned, with the hash standing in for the text itself.
-_TRACE_EVIDENCE_FIELDS = ("ref", "title", "date", "provenance", "content_sha256")
+_TRACE_EVIDENCE_FIELDS = ("ref", "title", "date", "provenance", "voice", "speakers",
+                          "attribution", "claim_provenance", "trust_penalty",
+                          "trust_penalty_reason", "unverified", "content_sha256")
 
 
 def _summary(result: dict) -> dict:
@@ -538,7 +570,7 @@ def _summary(result: dict) -> dict:
     # document_read and the live tools return a single evidence object; the search tools
     # return a list. Normalise so the trace shape is the same either way.
     items = raw if isinstance(raw, list) else [raw]
-    return {"evidence": [{key: item.get(key) for key in _TRACE_EVIDENCE_FIELDS} for item in items]}
+    return {"evidence": [{key: item[key] for key in _TRACE_EVIDENCE_FIELDS if key in item} for item in items]}
 
 
 # Length of the SSE field prefix "data: ", skipped when parsing the payload.

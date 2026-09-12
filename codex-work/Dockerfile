@@ -6,6 +6,7 @@ COPY app app
 COPY web web
 COPY agents agents
 COPY prompts prompts
+COPY config config
 COPY data/index-stats.json data/index-stats.json
 COPY data/cost-report.json data/cost-report.json
 COPY data/freshness-policy.json data/freshness-policy.json

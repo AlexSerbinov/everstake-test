@@ -23,9 +23,9 @@
     }
   },
   "headline": {
-    "index_cost_usd": 0.01550302,
-    "index_wall_ms": 282655.211,
-    "mean_question_cost_usd": 0.005095675,
+    "index_cost_usd": 0.01746852,
+    "index_wall_ms": 252640.535,
+    "mean_question_cost_usd": 0.00624843,
     "measured_questions": 4
   },
   "stages": [
@@ -87,12 +87,12 @@
       "models": [],
       "providers": [],
       "units": {
-        "count": 280,
+        "count": 304,
         "label": "documents"
       },
       "items": {
-        "documents": 280,
-        "unique_groups": 269
+        "documents": 304,
+        "unique_groups": 294
       },
       "bytes_downloaded": 0,
       "tokens": {
@@ -101,10 +101,10 @@
         "cached_input": 0
       },
       "cost_usd": 0.0,
-      "wall_ms": 3590.554,
-      "cpu_ms": 3579.198,
-      "peak_rss_mb": 84.83,
-      "machine": "MacBook Pro (local development)",
+      "wall_ms": 5271.919,
+      "cpu_ms": 4888.728,
+      "peak_rss_mb": 90.02,
+      "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
       "cost_per_unit": 0.0,
       "runs": [
         {
@@ -128,6 +128,28 @@
           "cost_usd": 0.0,
           "models": [],
           "status": "completed"
+        },
+        {
+          "run_id": "c074f292-30ed-42a9-b7cf-7a136492eeae",
+          "started_at": "2026-09-12T15:11:56.185618+00:00",
+          "ended_at": "2026-09-12T15:12:01.457792+00:00",
+          "wall_ms": 5271.919,
+          "cpu_ms": 4888.728,
+          "peak_rss_mb": 90.02,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "documents": 304,
+            "unique_groups": 294
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0,
+          "models": [],
+          "status": "completed"
         }
       ]
     },
@@ -138,12 +160,12 @@
       "models": [],
       "providers": [],
       "units": {
-        "count": 1072,
+        "count": 1223,
         "label": "chunks"
       },
       "items": {
-        "documents": 280,
-        "chunks": 1072
+        "documents": 304,
+        "chunks": 1223
       },
       "bytes_downloaded": 0,
       "tokens": {
@@ -152,10 +174,10 @@
         "cached_input": 0
       },
       "cost_usd": 0.0,
-      "wall_ms": 854.044,
-      "cpu_ms": 818.878,
-      "peak_rss_mb": 84.83,
-      "machine": "MacBook Pro (local development)",
+      "wall_ms": 1050.169,
+      "cpu_ms": 969.56,
+      "peak_rss_mb": 90.02,
+      "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
       "cost_per_unit": 0.0,
       "runs": [
         {
@@ -179,6 +201,28 @@
           "cost_usd": 0.0,
           "models": [],
           "status": "completed"
+        },
+        {
+          "run_id": "5f77adc4-f414-4549-b4c3-9f68257aee43",
+          "started_at": "2026-09-12T15:12:01.458978+00:00",
+          "ended_at": "2026-09-12T15:12:02.509182+00:00",
+          "wall_ms": 1050.169,
+          "cpu_ms": 969.56,
+          "peak_rss_mb": 90.02,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "documents": 304,
+            "chunks": 1223
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0,
+          "models": [],
+          "status": "completed"
         }
       ]
     },
@@ -189,12 +233,12 @@
       "models": [],
       "providers": [],
       "units": {
-        "count": 1072,
+        "count": 1223,
         "label": "chunks scanned"
       },
       "items": {
-        "chunks_scanned": 1072,
-        "literal_fact_chunks": 1047
+        "chunks_scanned": 1223,
+        "literal_fact_chunks": 1191
       },
       "bytes_downloaded": 0,
       "tokens": {
@@ -203,10 +247,10 @@
         "cached_input": 0
       },
       "cost_usd": 0.0,
-      "wall_ms": 11.456,
-      "cpu_ms": 11.379,
-      "peak_rss_mb": 84.83,
-      "machine": "MacBook Pro (local development)",
+      "wall_ms": 12.869,
+      "cpu_ms": 12.844,
+      "peak_rss_mb": 90.02,
+      "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
       "cost_per_unit": 0.0,
       "runs": [
         {
@@ -220,6 +264,28 @@
           "items": {
             "chunks_scanned": 1072,
             "literal_fact_chunks": 1047
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0,
+          "models": [],
+          "status": "completed"
+        },
+        {
+          "run_id": "21c091b0-c888-419e-ab34-d8b93f1da6bb",
+          "started_at": "2026-09-12T15:12:02.509435+00:00",
+          "ended_at": "2026-09-12T15:12:02.522311+00:00",
+          "wall_ms": 12.869,
+          "cpu_ms": 12.844,
+          "peak_rss_mb": 90.02,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "chunks_scanned": 1223,
+            "literal_fact_chunks": 1191
           },
           "bytes_downloaded": 0,
           "tokens": {
@@ -244,25 +310,25 @@
         "OpenAI"
       ],
       "units": {
-        "count": 1072,
+        "count": 1223,
         "label": "chunks"
       },
       "items": {
-        "chunks": 1072,
-        "requests": 17
+        "chunks": 1223,
+        "requests": 20
       },
       "bytes_downloaded": 0,
       "tokens": {
-        "input": 775151,
+        "input": 873426,
         "output": 0,
         "cached_input": 0
       },
-      "cost_usd": 0.01550302,
-      "wall_ms": 43792.604,
-      "cpu_ms": 441.67,
-      "peak_rss_mb": 84.83,
-      "machine": "MacBook Pro (local development)",
-      "cost_per_unit": 1.44618e-05,
+      "cost_usd": 0.01746852,
+      "wall_ms": 11899.025,
+      "cpu_ms": 348.519,
+      "peak_rss_mb": 90.02,
+      "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+      "cost_per_unit": 1.42833e-05,
       "runs": [
         {
           "run_id": "ec8760f5-a703-42f5-9603-8b003b87718c",
@@ -283,6 +349,30 @@
             "cached_input": 0
           },
           "cost_usd": 0.01550302,
+          "models": [
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        },
+        {
+          "run_id": "89e90ffb-d0b7-4c76-bae7-f824492b320b",
+          "started_at": "2026-09-12T15:12:02.522440+00:00",
+          "ended_at": "2026-09-12T15:12:14.421393+00:00",
+          "wall_ms": 11899.025,
+          "cpu_ms": 348.519,
+          "peak_rss_mb": 90.02,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "chunks": 1223,
+            "requests": 20
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 873426,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.01746852,
           "models": [
             "text-embedding-3-small"
           ],
@@ -361,24 +451,24 @@
         "OpenAI"
       ],
       "units": {
-        "count": 20,
+        "count": 24,
         "label": "questions"
       },
       "items": {
-        "questions": 20
+        "questions": 24
       },
       "bytes_downloaded": 0,
       "tokens": {
-        "input": 22886,
-        "output": 865,
+        "input": 25235,
+        "output": 1625,
         "cached_input": 0
       },
-      "cost_usd": 0.0203827,
-      "wall_ms": 12082.048,
-      "cpu_ms": 433.7,
-      "peak_rss_mb": 59.77,
-      "machine": "MacBook Pro (local development)",
-      "cost_per_unit": 0.001019135,
+      "cost_usd": 0.02499372,
+      "wall_ms": 17283.849,
+      "cpu_ms": 476.712,
+      "peak_rss_mb": 60.36,
+      "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+      "cost_per_unit": 0.001041405,
       "runs": [
         {
           "run_id": "a9afed79-14ed-49a0-9b27-0e2d06b2f62a",
@@ -451,31 +541,127 @@
             "text-embedding-3-small"
           ],
           "status": "completed"
+        },
+        {
+          "run_id": "a7f7d114-e1b7-40a8-8526-95f6574fded6",
+          "started_at": "2026-09-12T15:11:12.948761+00:00",
+          "ended_at": "2026-09-12T15:11:33.169908+00:00",
+          "wall_ms": 20220.893,
+          "cpu_ms": 297.743,
+          "peak_rss_mb": 47.62,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "questions": 24
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 23075,
+            "output": 578,
+            "cached_input": 0
+          },
+          "cost_usd": 0.01944893,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        },
+        {
+          "run_id": "2fb27582-bcb3-4f6e-a068-dcd6df47c0ed",
+          "started_at": "2026-09-12T15:12:22.913561+00:00",
+          "ended_at": "2026-09-12T15:12:36.257794+00:00",
+          "wall_ms": 13343.909,
+          "cpu_ms": 463.106,
+          "peak_rss_mb": 63.95,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "questions": 24
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 25298,
+            "output": 538,
+            "cached_input": 0
+          },
+          "cost_usd": 0.02096618,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        },
+        {
+          "run_id": "9929a9ea-3c34-4087-84a7-44e59cafeb5e",
+          "started_at": "2026-09-12T15:12:58.190926+00:00",
+          "ended_at": "2026-09-12T15:13:12.697660+00:00",
+          "wall_ms": 14506.494,
+          "cpu_ms": 503.729,
+          "peak_rss_mb": 59.66,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "questions": 24
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 26205,
+            "output": 1627,
+            "cached_input": 0
+          },
+          "cost_usd": 0.02573018,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        },
+        {
+          "run_id": "f7f9c743-ba45-4aef-ac8e-c6774af18518",
+          "started_at": "2026-09-12T15:14:21.635483+00:00",
+          "ended_at": "2026-09-12T15:14:38.919671+00:00",
+          "wall_ms": 17283.849,
+          "cpu_ms": 476.712,
+          "peak_rss_mb": 60.36,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "questions": 24
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 25235,
+            "output": 1625,
+            "cached_input": 0
+          },
+          "cost_usd": 0.02499372,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
         }
       ]
     }
   ],
   "representative_question": {
     "schema_version": 1,
-    "run_id": "900e84ef-cb9e-4bd6-83b3-8d8a16165fc4",
+    "run_id": "37b29922-8699-453a-bd5f-3302fa5fd782",
     "kind": "question",
     "name": "single_question",
-    "started_at": "2026-09-12T14:15:50.096733+00:00",
-    "ended_at": "2026-09-12T14:15:53.494295+00:00",
-    "wall_ms": 3397.521,
-    "cpu_ms": 84.555,
-    "peak_rss_mb": 59.77,
-    "machine": "MacBook Pro (local development)",
+    "started_at": "2026-09-12T15:14:35.548500+00:00",
+    "ended_at": "2026-09-12T15:14:38.886885+00:00",
+    "wall_ms": 3338.389,
+    "cpu_ms": 95.362,
+    "peak_rss_mb": 60.36,
+    "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
     "items": {
       "questions": 1
     },
     "bytes_downloaded": 0,
     "tokens": {
-      "input": 6824,
-      "output": 454,
+      "input": 6928,
+      "output": 334,
       "cached_input": 0
     },
-    "cost_usd": 0.00680371,
+    "cost_usd": 0.00642879,
     "models": [
       "gemini-3.8-flash",
       "text-embedding-3-small"
@@ -491,14 +677,14 @@
         "provider": "Google",
         "model": "gemini-3.8-flash",
         "tokens": {
-          "input": 1143,
-          "output": 33,
+          "input": 1307,
+          "output": 37,
           "cached_input": 0
         },
-        "cost_usd": 0.000981,
-        "wall_ms": 693.215,
-        "cpu_ms": 3.201,
-        "peak_rss_mb": 59.77,
+        "cost_usd": 0.001119,
+        "wall_ms": 1054.783,
+        "cpu_ms": 2.719,
+        "peak_rss_mb": 60.36,
         "price_copied_at": "2026-09-12",
         "metadata": {
           "thought_tokens": 0
@@ -510,14 +696,14 @@
         "provider": "OpenAI",
         "model": "text-embedding-3-small",
         "tokens": {
-          "input": 23,
+          "input": 27,
           "output": 0,
           "cached_input": 0
         },
-        "cost_usd": 4.6e-07,
-        "wall_ms": 207.125,
-        "cpu_ms": 3.111,
-        "peak_rss_mb": 59.77,
+        "cost_usd": 5.4e-07,
+        "wall_ms": 218.387,
+        "cpu_ms": 2.913,
+        "peak_rss_mb": 60.36,
         "price_copied_at": "2026-09-12",
         "metadata": {
           "items": 1
@@ -534,12 +720,12 @@
           "cached_input": 0
         },
         "cost_usd": 0.0,
-        "wall_ms": 277.35,
-        "cpu_ms": 68.286,
-        "peak_rss_mb": 59.77,
+        "wall_ms": 310.147,
+        "cpu_ms": 84.167,
+        "peak_rss_mb": 60.36,
         "metadata": {
           "tool": "corpus_search",
-          "nested_provider_cost_usd": 4.6e-07
+          "nested_provider_cost_usd": 5.4e-07
         }
       },
       {
@@ -548,14 +734,14 @@
         "provider": "Google",
         "model": "gemini-3.8-flash",
         "tokens": {
-          "input": 5658,
-          "output": 421,
+          "input": 5594,
+          "output": 297,
           "cached_input": 0
         },
-        "cost_usd": 0.00582225,
-        "wall_ms": 2417.675,
-        "cpu_ms": 4.796,
-        "peak_rss_mb": 59.77,
+        "cost_usd": 0.00530925,
+        "wall_ms": 1963.928,
+        "cpu_ms": 2.855,
+        "peak_rss_mb": 60.36,
         "price_copied_at": "2026-09-12",
         "metadata": {
           "thought_tokens": 0
@@ -568,7 +754,7 @@
       "mode": "synthesis",
       "parent_runs": [
         {
-          "run_id": "5db6fdcc-b5de-49a9-b912-4d81c38c0616",
+          "run_id": "f7f9c743-ba45-4aef-ac8e-c6774af18518",
           "name": "adversarial_eval"
         }
       ],
@@ -580,11 +766,11 @@
     "legacy_local_provider_events": 397,
     "legacy_local_cost_usd": 0.25609992,
     "legacy_all_environment_cost_usd": 0.25965952,
-    "current_task_local_provider_events": 150,
-    "current_task_local_cost_usd": 0.30090939,
+    "current_task_local_provider_events": 261,
+    "current_task_local_cost_usd": 0.48906329,
     "external_current_task_cost_usd": 0.0041926,
-    "current_task_all_environment_cost_usd": 0.30510199,
-    "known_assignment_total_usd": 0.56476151,
+    "current_task_all_environment_cost_usd": 0.49325589,
+    "known_assignment_total_usd": 0.75291541,
     "legacy_resource_fields": null
   },
   "assumptions": [

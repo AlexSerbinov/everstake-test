@@ -2,6 +2,10 @@
 
 ## What changed in this evolution
 
+The corpus now understands who is speaking. Free YouTube discovery added 24 filtered, timestamped auto-subtitle transcripts; a maintained people registry classifies official-channel, employee-on-third-party, and third-party voices. The index carries speaker, attribution, `stated`/`reported` provenance, configurable voice authority, contradiction penalties, and unverified flags through to answer evidence and UI badges.
+
+A deterministic consistency pass extracted 2,924 numeric facts, detected 38 same-key/period contradictions, penalized 14 documents, and marked 23 reported claims unverified. Code gates require “according to X (date)” for reported-only numbers, hide unverified claims outside explicit claims/rumour questions, and prevent third-party-only negative allegations from being stated as fact. The Corpus view filters by voice and exposes the decision metadata.
+
 The original cited RAG interface is now a bounded Gemini 3 evidence agent. `gemini-3.8-flash` chooses among corpus search, literal fact/number lookup, canonical document read, allow-listed live page fetch, and Everstake's read-only MCP; `gemini-3.5-flash-lite` is reserved for cheap work, while OpenAI is used only for embeddings. Native function calls preserve Gemini thought signatures, and the server still owns citation, temporal-synthesis, abstention, APR/APY, and read-only MCP guarantees.
 
 `POST /api/query/stream` exposes live planning, exact tool arguments, hashed result summaries, verification, and answer events. The interface now adds a dedicated Cost view with headline spend, stage money/time bars, expandable measured runs, and an expandable per-answer receipt. Both themes and mobile/error/abstention states remain intact.
@@ -12,21 +16,22 @@ Every answer and abstention is appended to a SHA-256 chain and signed with Ed255
 
 ## Measured result
 
-- Deterministic suite: **304/304 tests passed**.
-- Fresh measured build: **280 documents**, **1,072 chunks**, **775,151 embedding tokens**, **$0.01550302**, **4.71 min wall time**; the served frozen index remains 1,075 chunks.
+- Deterministic suite: **314/314 tests passed**.
+- Source discovery: **24 accepted videos** from 31 inspected; 9 official, 6 employee-on-third-party, 9 third-party.
+- Speaker-aware index: **304 documents**, **1,223 chunks**, **873,426 embedding tokens**, **$0.01746852** rebuild cost.
+- Final adversarial set: **24/24**, including four new source-trust attacks; source-expansion API spend was about **$0.084**.
 - Quality rerun: **19/20**, zero invented facts, **$0.09753750**; the sole miss was an unchanged lexical ShredStream assertion.
-- Final adversarial set: **20/20**; four real agent cases cost **$0.02038270**, averaged **3.02 s**, and averaged **$0.00509568/question**.
-- Known current-task API spend including the refresh: **$0.32063767**; complete known assignment activity: **$0.58029719**, below the combined ~$2 ceiling.
+- Prior freshness evolution spend was **$0.32063767**; this source-trust evolution added about **$0.084**, keeping cumulative assignment activity below its ceilings.
 - `COST.md` records provider usage plus measured wall/CPU/RSS/bytes for every stage and shows row-by-row ×50 arithmetic.
 - Public smoke: HTTP 200, Gemini CEO answer **$0.00419260 / 3.19 s**, expandable four-step receipt, signed audit `verified: true`, container **0 restarts**.
-- A real refresh checked 20 web documents and 69 GitHub repositories, found and applied **2 live-page changes**, and re-indexed 776,784 tokens for **$0.01553568** in 69.27 seconds.
+- The preceding real refresh checked 20 web documents and 69 GitHub repositories and applied two live-page changes; those historical measurements remain in `COST.md`.
 - Balanced projects **$0.20/month**, **9.87M tokens**, **220.8 machine minutes**, and at most **7 days stale** under the disclosed change-rate assumptions.
 
 ## Deployment
 
 **https://everstake-codex.89-167-19-222.sslip.io**
 
-The active container is `everstake-codex:v4-freshness`, bound only to `127.0.0.1:4321` behind the unchanged Caddy route. The hourly policy timer is enabled; public health and freshness APIs return HTTP 200, the calculator reports the figures above, and the container has 0 restarts. Corpus, index, ledgers, snapshots, freshness history, signing key, and audit chain remain under `/data/everstake-codex/state/`; `v3-final` remains stopped as the immediate rollback point. No push was made.
+The deployment section below is updated after the speaker-aware image is verified. No push is made.
 
 ## What I cut
 

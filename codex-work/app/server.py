@@ -31,6 +31,8 @@ from __future__ import annotations
 
 import json
 import mimetypes
+import sqlite3
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -115,6 +117,9 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/api/freshness":
             self._json(200, {"calculator": calculator_payload(), "status": freshness_status()})
             return
+        if self.path.startswith("/api/corpus"):
+            self._serve_corpus()
+            return
         if self.path == "/api/audit/public-key":
             self._serve_audit_public_key()
             return
@@ -146,6 +151,30 @@ class Handler(BaseHTTPRequestHandler):
         """
         path = DB_PATH.with_name("index-stats.json")
         self._json(200, json.loads(path.read_text()))
+
+    def _serve_corpus(self) -> None:
+        """Expose speaker-aware document metadata, never transcript bodies."""
+        voice = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get("voice", [""])[0]
+        allowed = {"first_party_channel", "employee_on_third_party", "third_party"}
+        if voice and voice not in allowed:
+            self._json(400, {"error": "Unknown voice filter."})
+            return
+        connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
+        try:
+            where, params = ("WHERE voice=?", (voice,)) if voice else ("", ())
+            rows = connection.execute(
+                "SELECT id,title,final_url url,published_at,voice,speakers,attribution,claim_provenance,"
+                "trust_penalty,trust_penalty_reason,unverified_claims FROM documents " + where +
+                " ORDER BY COALESCE(published_at,fetched_at) DESC LIMIT 200", params,
+            ).fetchall()
+            counts = dict(connection.execute("SELECT voice,COUNT(*) FROM documents GROUP BY voice").fetchall())
+        finally:
+            connection.close()
+        self._json(200, {"counts": counts, "documents": [
+            {**dict(row), "speakers": json.loads(row["speakers"] or "[]"),
+             "unverified": bool(row["unverified_claims"])} for row in rows
+        ]})
 
     def _serve_audit_public_key(self) -> None:
         """Publish everything needed to verify a receipt without trusting this server."""

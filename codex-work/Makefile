@@ -1,4 +1,4 @@
-.PHONY: crawl index serve eval adversarial test refresh cost
+.PHONY: crawl index serve eval adversarial test refresh cost discover\:youtube people\:sync
 
 crawl:
 	python3 -m app.crawler --seeds ../docs/corpus_sources.csv --output data/corpus.jsonl
@@ -23,3 +23,9 @@ refresh:
 
 cost:
 	python3 -m app.render_cost
+
+discover\:youtube:
+	python3 -m app.sources discover --limit 40
+
+people\:sync:
+	python3 -m app.sources people-sync

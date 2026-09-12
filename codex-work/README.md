@@ -1,6 +1,6 @@
 # Everstake Evidence Agent
 
-A tool-using, public-knowledge agent for Everstake. It chooses between a dated corpus, exact-value lookup, full-document reads, allow-listed live pages, and Everstake's read-only MCP tools. Every supported answer has source dates, exact evidence hashes, and an Ed25519-signed audit receipt; unsupported questions abstain.
+A tool-using, public-knowledge agent for Everstake. It chooses between a dated, speaker-aware corpus, exact-value lookup, full-document reads, allow-listed live pages, and Everstake's read-only MCP tools. Every supported answer has source dates, voice/provenance, exact evidence hashes, and an Ed25519-signed audit receipt; unsupported questions abstain.
 
 **Live:** https://everstake-codex.89-167-19-222.sslip.io
 
@@ -16,6 +16,8 @@ A tool-using, public-knowledge agent for Everstake. It chooses between a dated c
 - `app/accounting.py`, `app/render_cost.py`: measured stage/question receipts and generated cost report.
 - `app/server.py`, `web/`: JSON API, live SSE pipeline, responsive Ask and Cost views.
 - `app/crawler.py`, `app/indexer.py`, `app/retrieval.py`: original auditable ingestion and hybrid retrieval base.
+- `app/sources.py`, `config/people.yaml`, `config/kb.yaml`: YouTube discovery, people registry, speaker classification, and voice authority.
+- `app/consistency.py`: code-only attributed-fact ledger, contradiction penalties, and unverified flags.
 - `skills/`: concise operational rules for source conflicts, live evidence, abstention, and audit.
 - `eval/adversarial.json`, `EVAL.md`: 20 tricky cases and measured outputs.
 - `COST.md`: generated stage, question, resource, spend, and ×50 accounting.
@@ -71,7 +73,9 @@ The record endpoint returns `verified: true` only when the Ed25519 signature, re
 make crawl          # full seed + sitemap crawl
 make index          # sanitize, dedupe, embed, build SQLite
 make refresh        # known-source change detection; rebuild only on change
-make adversarial    # 20 safety/trust cases, including four full agent runs
+make discover:youtube # discover/filter videos and append free timestamped auto-subtitles
+make people:sync    # propose registry additions from the indexed About page; never auto-apply
+make adversarial    # 24 safety/trust cases, including four full agent runs
 make cost           # regenerate COST.md and Cost-view JSON from measured runs
 make test           # deterministic unit suite
 ```
@@ -80,8 +84,10 @@ The hourly scheduler in `deploy/everstake-refresh.{service,timer}` executes the 
 
 Open `#freshness` in the UI for Economy, Balanced, Real-time, and custom controls. It recalculates monthly dollars, model tokens, machine minutes, per-source bars, and worst-case staleness immediately from measured ledger units. `GET /api/freshness` returns the same inputs plus the latest refresh/change log.
 
+Open `#corpus` to filter sources by who is speaking: official channel, known employee on a third-party channel, or third party. Source cards expose speakers, `stated` versus `reported`, trust penalties, and unverified badges. Auto-subtitle transcripts preserve minute markers so a YouTube citation remains inspectable.
+
 ## Guarantees and limits
 
-The server, not the model, enforces exact source refs, distinct-source/date coverage for synthesis, URL and MCP allowlists, question-injection blocking, live-content sanitation, and signed evidence capture. It never treats retrieval similarity as proof. The exact abstention is `No reliable answer was found in the corpus.`
+The server, not the model, enforces exact source refs, distinct-source/date coverage for synthesis, reported-number phrasing, exclusion of unverified claims, defamation-safe third-party attribution, URL/MCP allowlists, question-injection blocking, live-content sanitation, and signed evidence capture. A third party may report a company claim but cannot establish or override it. The exact abstention is `No reliable answer was found in the corpus.`
 
 This is still a public single-tenant demo. Authentication, per-client ACLs, external immutable chain anchoring, and human review are documented production extensions rather than claims made by this deployment. See `REPORT.md` for trade-offs, costs, the 6,000–10,000-call plan, and remaining risks.
