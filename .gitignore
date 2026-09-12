@@ -10,3 +10,6 @@ docs/codex-last-message.md
 docs/codex-run*.log
 docs/codex-last-message*.md
 docs/telegram-ideas-*.md
+
+# Codex agent scratch (YouTube discovery probes)
+codex-work/scratchpad/
