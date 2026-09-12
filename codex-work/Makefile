@@ -1,4 +1,4 @@
-.PHONY: crawl index serve eval test refresh
+.PHONY: crawl index serve eval adversarial test refresh
 
 crawl:
 	python3 -m app.crawler --seeds ../docs/corpus_sources.csv --output data/corpus.jsonl
@@ -11,6 +11,9 @@ serve:
 
 eval:
 	python3 -m app.evaluate
+
+adversarial:
+	python3 -m app.adversarial_eval
 
 test:
 	python3 -m unittest discover -s tests -v

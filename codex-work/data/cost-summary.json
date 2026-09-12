@@ -1,6 +1,6 @@
 {
   "currency": "USD",
-  "generated_at": "2026-09-11T20:31:00Z",
+  "generated_at": "2026-09-12T01:38:00Z",
   "final_index": {
     "model": "text-embedding-3-small",
     "input_tokens": 776291,
@@ -20,12 +20,21 @@
     "input_tokens": 38814550,
     "embedding_cost": 0.776291
   },
+  "agent_evolution": {
+    "model": "gpt-4.1-mini-2025-04-14",
+    "price_per_million_input_tokens": 0.4,
+    "price_per_million_output_tokens": 1.6,
+    "final_adversarial_suite_full_agent_subset_cost": 0.014634,
+    "local_development_and_eval_increment": 0.12342996,
+    "deployed_v2_smoke_increment": 0.0035596,
+    "total_increment": 0.12698956
+  },
   "all_assignment_api_activity_including_discarded_runs_and_deployed_smoke_tests": {
-    "cost": 0.13266996
+    "cost": 0.25965952
   },
   "pricing_sources": {
     "openai": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+    "openai_agent": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
     "gemini": "https://ai.google.dev/gemini-api/docs/pricing"
   }
 }
-

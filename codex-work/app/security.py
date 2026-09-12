@@ -54,6 +54,6 @@ def question_injection_reason(question: str) -> str | None:
         r"(do not|don't) (use|call|cite|verify) (the )?(tools?|sources?|evidence)",
         r"pretend (you|the answer|everstake)",
         r"answer (without|with no) (citations?|sources?|verification)",
-        r"override (the )?(rules?|policy|guardrails?)",
+        r"override (the )?(?:safety |evidence |tool )?(rules?|policy|guardrails?)",
     )
     return "The question attempts to override the evidence policy." if any(re.search(p, question, re.I) for p in patterns) else None

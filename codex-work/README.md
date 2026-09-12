@@ -1,82 +1,81 @@
-# Everstake Knowledge Assistant
+# Everstake Evidence Agent
 
-A deployed, public-corpus knowledge assistant built for the Everstake AI Automation & Agentic Systems Lead take-home. It supports factual lookup and multi-source synthesis, returns an evidence date and source links, and abstains when the corpus does not support an answer.
+A tool-using, public-knowledge agent for Everstake. It chooses between a dated corpus, exact-value lookup, full-document reads, allow-listed live pages, and Everstake's read-only MCP tools. Every supported answer has source dates, exact evidence hashes, and an Ed25519-signed audit receipt; unsupported questions abstain.
 
 **Live:** https://everstake-codex.89-167-19-222.sslip.io
 
-## What is included
+## Repository map
 
-- `app/crawler.py`: robots-aware, rate-limited sitemap/seed crawler with an explicit host allowlist and audit log.
-- `app/indexer.py`: normalization, repeated-template removal, exact/near deduplication, instruction screening, chunking, and embedding.
-- `app/retrieval.py`: SQLite FTS5 + cosine retrieval, authority/recency scoring, source contracts, and grounded generation.
-- `app/server.py` and `web/`: dependency-light HTTP API and UI.
-- `agents/`, `skills/`, `prompts/`: actual reviewer-facing agent, skill, and prompt files.
-- `data/corpus.jsonl`: 280 fetched public documents with provenance.
-- `data/index.sqlite3`: frozen, ready-to-query index (270 unique document groups; 1,075 chunks).
-- `data/crawl-audit.json`, `data/index-stats.json`, `data/eval-results.json`: measured run artifacts.
+- `app/agent.py`: bounded Responses API tool loop and deterministic final validation.
+- `agents/tools.json`: production function schemas loaded at runtime.
+- `prompts/agent-system.txt`: production selection, stop, citation, freshness, and abstention policy.
+- `app/tools.py`: corpus, exact-value, document, live-fetch, and MCP adapters.
+- `app/audit.py`: content hashes, append-only hash chain, Ed25519 signatures, and verification.
+- `app/refresh.py`: change-detecting scheduled first-party refresh and snapshot preservation.
+- `app/server.py`, `web/`: JSON API, live SSE pipeline, dark/light responsive UI.
+- `app/crawler.py`, `app/indexer.py`, `app/retrieval.py`: original auditable ingestion and hybrid retrieval base.
+- `skills/`: concise operational rules for source conflicts, live evidence, abstention, and audit.
+- `eval/adversarial.json`, `EVAL.md`: 20 tricky cases and measured outputs.
+- `data/corpus.jsonl`, `data/index.sqlite3`: 280 source snapshots and ready-to-query index.
+- `screenshots/`: verified dark, light, and completed-answer states.
 
 ## Run locally
 
-Python 3.11+ is sufficient (tested with Python 3.14).
+Python 3.11+ is sufficient.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-# Add OPENAI_API_KEY and GEMINI_API_KEY to .env
+# Add OPENAI_API_KEY and GEMINI_API_KEY
 make test
 make serve
 ```
 
-Open http://localhost:4321. The committed index means crawling and indexing are not required to review the app. Each query uses OpenAI `text-embedding-3-small` for one query vector and Gemini `gemini-2.5-flash-lite` for grounded JSON generation.
+Open http://localhost:4321. The deployed answer path uses the pinned `gpt-4.1-mini-2025-04-14` snapshot for tool selection/final submission and `text-embedding-3-small` for query vectors. Gemini remains only in the legacy baseline code so the first attempt is reproducible.
 
-Docker uses the same frozen index via a persistent runtime mount:
+## APIs
 
-```bash
-mkdir -p runtime
-cp data/index.sqlite3 runtime/index.sqlite3
-docker build -t everstake-codex .
-docker run --rm -p 4321:4321 --env-file .env \
-  -v "$PWD/runtime:/app/runtime" everstake-codex
-```
-
-Example API call:
+Synchronous query:
 
 ```bash
 curl -sS http://localhost:4321/api/query \
   -H 'content-type: application/json' \
-  -d '{"question":"Who is the current CEO of Everstake?","mode":"factual"}'
+  -d '{"question":"Who is the current CEO of Everstake?","mode":"auto"}'
 ```
 
-## Rebuild and evaluate
-
-The seed CSV is provided one directory above this submission. Crawling makes real network requests and intentionally takes several minutes.
+Live pipeline:
 
 ```bash
-make crawl
-make index
-make eval
-python3 -m app.render_eval
+curl -N http://localhost:4321/api/query/stream \
+  -H 'content-type: application/json' \
+  -d '{"question":"What is Solana current APY?","mode":"auto"}'
 ```
 
-`make crawl` identifies itself, checks each origin's `robots.txt`, waits 650 ms between requests to the same host, discovers only publisher sitemap URLs, and fails closed if robots policy cannot be read. The index build records API-reported token usage and cost events. Evaluation inputs and deterministic verdict rules are in `eval/questions.json` and `app/evaluate.py`.
-
-## Retrieval and safety in one minute
-
-Documents receive a source tier from the supplied seed or the official sitemap. The retriever combines FTS5 and 512-dimensional embeddings, then applies authority and date decay. Mutable corporate facts have small explicit source contracts: for example, current leadership comes from `/ai-info` and `/company/about`, not an older appointment announcement. Duplicate groups nominate one canonical document before retrieval.
-
-Web content is untrusted. At ingestion, instruction-like sentences are removed and audited before chunking/embedding; repeated template passages are also removed corpus-wide. The generator receives only sanitized evidence in quoted XML blocks. Its output must cite evidence, and application code validates citations, synthesis source count, evidence threshold, and date contract. The exact abstention is `No reliable answer was found in the corpus.`
-
-## Tests and live-change friendliness
+Audit verification:
 
 ```bash
-make test
+curl -sS http://localhost:4321/api/audit/public-key
+curl -sS http://localhost:4321/api/audit/RECEIPT_ID
 ```
 
-The code deliberately uses small modules and standard-library HTTP/SQLite rather than a framework or opaque RAG library. Authority weights, abstention threshold, chunk size, and source contracts are named functions/constants, so a live requirement change can be made and tested without understanding a framework graph.
+The record endpoint returns `verified: true` only when the Ed25519 signature, record hash, and all preceding chain links validate. It includes the exact evidence payload used for the answer.
 
-## Deployment
+## Rebuild, refresh, and evaluate
 
-The live instance is a single Docker container bound to `127.0.0.1:4321`; Caddy terminates TLS for `everstake-codex.89-167-19-222.sslip.io`. Persistent index and cost events live under `/data/everstake-codex/state/`. The deployed health check is `GET /health`.
+```bash
+make crawl          # full seed + sitemap crawl
+make index          # sanitize, dedupe, embed, build SQLite
+make refresh        # known-source change detection; rebuild only on change
+make adversarial    # 20 safety/trust cases, including four full agent runs
+make test           # deterministic unit suite
+```
 
+The deployed weekly timer is defined in `deploy/everstake-refresh.{service,timer}`. Dynamic APY/APR, uptime, and reward questions do not wait for that timer: the agent queries `https://mcp.everstake.com` at answer time. Only read-only MCP tools are exposed.
+
+## Guarantees and limits
+
+The server, not the model, enforces exact source refs, distinct-source/date coverage for synthesis, URL and MCP allowlists, question-injection blocking, live-content sanitation, and signed evidence capture. It never treats retrieval similarity as proof. The exact abstention is `No reliable answer was found in the corpus.`
+
+This is still a public single-tenant demo. Authentication, per-client ACLs, external immutable chain anchoring, and human review are documented production extensions rather than claims made by this deployment. See `REPORT.md` for trade-offs, costs, the 6,000–10,000-call plan, and remaining risks.

@@ -78,7 +78,7 @@ def generate_json(prompt: str, operation: str = "answer") -> tuple[dict[str, Any
     return json.loads(raw), {"input_tokens": input_tokens, "output_tokens": output_tokens, "cost_usd": cost, "model": model}
 
 
-def create_agent_response(instructions: str, inputs: list[dict], tools: list[dict]) -> tuple[dict[str, Any], dict]:
+def create_agent_response(instructions: str, inputs: list[dict], tools: list[dict], tool_choice: str | dict = "auto") -> tuple[dict[str, Any], dict]:
     """Call the Responses API for one bounded agent turn."""
     model = os.getenv("AGENT_MODEL", "gpt-4.1-mini-2025-04-14")
     response = _post_json(
@@ -88,7 +88,7 @@ def create_agent_response(instructions: str, inputs: list[dict], tools: list[dic
             "instructions": instructions,
             "input": inputs,
             "tools": tools,
-            "tool_choice": "auto",
+            "tool_choice": tool_choice,
             "parallel_tool_calls": False,
             "max_output_tokens": 900,
             "store": False,

@@ -56,7 +56,9 @@ def refresh(corpus: Path, database: Path, apply: bool = False, limit: int = 0) -
         temporary = corpus.with_suffix(".next.jsonl")
         temporary.write_text("".join(json.dumps(doc, ensure_ascii=False) + "\n" for doc in docs))
         os.replace(temporary, corpus)
-        report["index"] = build(corpus, database)
+        next_database = database.with_suffix(".next.sqlite3")
+        report["index"] = build(corpus, next_database)
+        os.replace(next_database, database)
     corpus.with_name("refresh-report.json").write_text(json.dumps(report, indent=2))
     return report
 

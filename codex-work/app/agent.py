@@ -45,7 +45,7 @@ def run_agent(question: str, mode: str = "auto", database: Path = DB_PATH, emit:
     inputs = [{"role": "user", "content": [{"type": "input_text", "text": f"MODE: {resolved_mode}\nQUESTION: {question}"}]}]
     usage: list[dict] = []
     submitted: dict | None = None
-    for turn in range(6):
+    for turn in range(5):
         response, turn_usage = create_agent_response(instructions, inputs, specs)
         usage.append(turn_usage)
         calls = [item for item in response.get("output", []) if item.get("type") == "function_call"]
@@ -69,8 +69,31 @@ def run_agent(question: str, mode: str = "auto", database: Path = DB_PATH, emit:
         _emit(emit, "tool_result", {"tool": name, **context.trace[-1]["result"]})
         inputs.extend(response.get("output", []))
         inputs.append({"type": "function_call_output", "call_id": call["call_id"], "output": json.dumps(tool_result, ensure_ascii=False)})
+        # These read-only live tools are terminal evidence for their narrowly
+        # defined questions. Reserve the next turn for verified submission and
+        # prevent duplicate network calls that cannot improve freshness.
+        if name == "everstake_mcp" and arguments.get("tool") in {"staking_calculator", "get_uptime_metrics"} and "error" not in tool_result:
+            break
 
-    result = _validate_submission(submitted, context, resolved_mode)
+    # Reserve the sixth and final turn for a schema-bound decision. This recovers
+    # safely if the model emits prose instead of the required submit tool.
+    if submitted is None and context.evidence:
+        submit_spec = next(spec for spec in specs if spec["name"] == "submit_answer")
+        forced, turn_usage = create_agent_response(
+            instructions + "\nThis is the final turn. Call submit_answer now; do not call another evidence tool.",
+            inputs,
+            [submit_spec],
+            "required",
+        )
+        usage.append(turn_usage)
+        calls = [item for item in forced.get("output", []) if item.get("type") == "function_call" and item.get("name") == "submit_answer"]
+        if calls:
+            try:
+                submitted = json.loads(calls[0].get("arguments") or "{}")
+            except json.JSONDecodeError:
+                submitted = None
+
+    result = _validate_submission(submitted, context, resolved_mode, question)
     result["usage"] = {"agent": usage, "estimated_cost_usd": round(sum(item["cost_usd"] for item in usage), 8)}
     _emit(emit, "verification", {"status": "passed" if result["sufficient"] else "abstained", "message": result["reasoning"], "evidence_count": len(result["sources"])})
     cited = [context.evidence[ref].audit_dict() for ref in result["citations"]]
@@ -80,22 +103,29 @@ def run_agent(question: str, mode: str = "auto", database: Path = DB_PATH, emit:
     return result
 
 
-def _validate_submission(submitted: dict | None, context: ToolContext, mode: str) -> dict:
+def _validate_submission(submitted: dict | None, context: ToolContext, mode: str, question: str = "") -> dict:
     if not submitted:
         return _abstention("The agent stopped without a verifiable final submission.", mode)
     refs = []
     for value in submitted.get("citations", []):
         if isinstance(value, str) and value in context.evidence and value not in refs:
             refs.append(value)
-    sufficient = bool(submitted.get("sufficient")) and bool(refs) and submitted.get("answer") != ABSTENTION
+    answer_text = str(submitted.get("answer", "")).strip()
+    absence_claim = bool(re.search(r"\b(no information (?:is )?available|there is no information|not (?:publicly )?available|not published|cannot be found|is private)\b", answer_text, re.I))
+    sufficient = bool(submitted.get("sufficient")) and bool(refs) and answer_text != ABSTENTION and not absence_claim
     if mode == "synthesis" and len({context.evidence[ref].url for ref in refs}) < 2:
         sufficient = False
+    requested_years = [int(value) for value in re.findall(r"20\d{2}", question)]
+    if mode == "synthesis" and requested_years and refs:
+        evidence_years = [int(context.evidence[ref].date[:4]) for ref in refs if re.match(r"20\d{2}", context.evidence[ref].date)]
+        if not evidence_years or min(evidence_years) > min(requested_years) or max(evidence_years) <= min(requested_years):
+            sufficient = False
     if not sufficient:
         return _abstention("Available evidence did not satisfy the citation and sufficiency contract.", mode)
     dates = [context.evidence[ref].date for ref in refs]
     sources = [{"ref": ref, "title": context.evidence[ref].title, "url": context.evidence[ref].url, "date": context.evidence[ref].date, "provenance": context.evidence[ref].provenance, "content_sha256": sha256} for ref in refs for sha256 in [context.evidence[ref].audit_dict()["content_sha256"]]]
     return {
-        "answer": str(submitted.get("answer", "")).strip(),
+        "answer": answer_text,
         "as_of": str(submitted.get("as_of") or max(dates))[:10],
         "citations": refs,
         "sources": sources,

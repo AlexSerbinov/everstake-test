@@ -9,7 +9,7 @@ DB_PATH = Path(os.getenv("EVERSTAKE_DB", DATA_DIR / "index.sqlite3"))
 CORPUS_PATH = Path(os.getenv("EVERSTAKE_CORPUS", DATA_DIR / "corpus.jsonl"))
 COST_LOG = Path(os.getenv("EVERSTAKE_COST_LOG", DATA_DIR / "run-costs.jsonl"))
 AUDIT_LOG = Path(os.getenv("EVERSTAKE_AUDIT_LOG", DB_PATH.parent / "answer-audit.jsonl"))
-AUDIT_KEY = Path(os.getenv("EVERSTAKE_AUDIT_KEY", DB_PATH.parent / "audit-ed25519.key"))
+AUDIT_KEY = Path(os.getenv("EVERSTAKE_SIGNING_PATH", DB_PATH.parent / "audit-ed25519.key"))
 PORT = int(os.getenv("PORT", "4321"))
 
 

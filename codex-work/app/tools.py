@@ -69,9 +69,22 @@ class ToolContext:
         return result
 
     def corpus_search(self, query: str, mode: str = "factual") -> dict:
-        rows, usage = retrieve(query, limit=8 if mode == "synthesis" else 6, database=self.database, prefer_recent=mode != "synthesis")
+        rows, usage = retrieve(query, limit=20 if mode == "synthesis" else 6, database=self.database, prefer_recent=mode != "synthesis")
         rows = adjudicate_evidence(query, mode, rows)
-        items = [self._register(row) for row in rows[:6]]
+        if mode == "synthesis":
+            # Duplicate chunks from current canonical pages otherwise crowd out
+            # older anchors, making a "since 2024" answer look temporal without
+            # actually citing 2024 evidence.
+            unique = []
+            seen_documents = set()
+            for row in rows:
+                if row.document_id not in seen_documents:
+                    unique.append(row)
+                    seen_documents.add(row.document_id)
+            years = [int(value) for value in re.findall(r"20\d{2}", query)]
+            anchors = [row for row in unique if years and int(row.evidence_date[:4]) <= min(years)]
+            rows = anchors[:2] + [row for row in unique if row not in anchors][:6]
+        items = [self._register(row) for row in rows[:8 if mode == "synthesis" else 6]]
         return {"evidence": [_model_evidence(item) for item in items], "retrieval": usage}
 
     def fact_number_lookup(self, query: str) -> dict:
@@ -117,6 +130,10 @@ class ToolContext:
         # get_chains has no server-side filter. Filter locally before the result
         # reaches the model to reduce cost and prevent cross-chain confusion.
         server_arguments = {} if tool == "get_chains" else requested
+        if tool == "staking_calculator":
+            network = requested.get("network") or requested.get("currency")
+            currency = requested.get("currency") or requested.get("network")
+            server_arguments = {"network": network, "currency": currency, "amount": requested.get("amount", 1)}
         payload = _mcp_call(tool, server_arguments)
         if tool == "get_chains" and requested.get("network"):
             needle = str(requested["network"]).lower()
