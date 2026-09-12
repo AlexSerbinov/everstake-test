@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from app.accounting import RunRecorder, price_usd, record_code_step, record_provider_step
-from app.api_clients import _gemini_declaration, create_agent_response
+from app.api_clients import _gemini_declaration, _thinking_config, create_agent_response
 from app.render_cost import build_report, receipt_totals
 
 
@@ -58,8 +58,24 @@ class ReceiptTests(unittest.TestCase):
         self.assertEqual(report["stages"][0]["cost_usd"], 0.2)
         self.assertEqual([run["run_id"] for run in report["stages"][0]["runs"]], ["old", "new"])
 
+    def test_nested_run_records_its_parent_for_suite_scoped_means(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "accounting.jsonl"
+            parent = RunRecorder("eval", "adversarial_eval", log_path=path).activate()
+            child = RunRecorder("question", "single_question", log_path=path).activate()
+            child.finish()
+            parent.finish()
+        self.assertEqual(child.record["metadata"]["parent_runs"], [
+            {"run_id": parent.record["run_id"], "name": "adversarial_eval"}
+        ])
+
 
 class GeminiAdapterTests(unittest.TestCase):
+    def test_lite_omits_thinking_config_and_flash_uses_a_level_not_a_budget(self):
+        self.assertEqual(_thinking_config("gemini-3.5-flash-lite"), {})
+        self.assertEqual(_thinking_config("gemini-3.8-flash"),
+                         {"thinkingConfig": {"thinkingLevel": "low"}})
+
     def test_openai_only_schema_fields_are_removed(self):
         declaration = _gemini_declaration({
             "type": "function", "name": "done", "description": "finish", "strict": True,

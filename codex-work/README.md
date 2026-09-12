@@ -6,16 +6,18 @@ A tool-using, public-knowledge agent for Everstake. It chooses between a dated c
 
 ## Repository map
 
-- `app/agent.py`: bounded Responses API tool loop and deterministic final validation.
+- `app/agent.py`: bounded Gemini function-calling loop and deterministic final validation.
 - `agents/tools.json`: production function schemas loaded at runtime.
 - `prompts/agent-system.txt`: production selection, stop, citation, freshness, and abstention policy.
 - `app/tools.py`: corpus, exact-value, document, live-fetch, and MCP adapters.
 - `app/audit.py`: content hashes, append-only hash chain, Ed25519 signatures, and verification.
 - `app/refresh.py`: change-detecting scheduled first-party refresh and snapshot preservation.
-- `app/server.py`, `web/`: JSON API, live SSE pipeline, dark/light responsive UI.
+- `app/accounting.py`, `app/render_cost.py`: measured stage/question receipts and generated cost report.
+- `app/server.py`, `web/`: JSON API, live SSE pipeline, responsive Ask and Cost views.
 - `app/crawler.py`, `app/indexer.py`, `app/retrieval.py`: original auditable ingestion and hybrid retrieval base.
 - `skills/`: concise operational rules for source conflicts, live evidence, abstention, and audit.
 - `eval/adversarial.json`, `EVAL.md`: 20 tricky cases and measured outputs.
+- `COST.md`: generated stage, question, resource, spend, and ×50 accounting.
 - `data/corpus.jsonl`, `data/index.sqlite3`: 280 source snapshots and ready-to-query index.
 - `screenshots/`: verified dark, light, and completed-answer states.
 
@@ -33,7 +35,7 @@ make test
 make serve
 ```
 
-Open http://localhost:4321. The deployed answer path uses the pinned `gpt-4.1-mini-2025-04-14` snapshot for tool selection/final submission and `text-embedding-3-small` for query vectors. Gemini remains only in the legacy baseline code so the first attempt is reproducible.
+Open http://localhost:4321. The deployed answer path uses `gemini-3.8-flash` with native Gemini function calling and low thinking. Cheap generation and judging uses `gemini-3.5-flash-lite` without a thinking configuration. OpenAI is used only for `text-embedding-3-small` vectors.
 
 ## APIs
 
@@ -69,6 +71,7 @@ make crawl          # full seed + sitemap crawl
 make index          # sanitize, dedupe, embed, build SQLite
 make refresh        # known-source change detection; rebuild only on change
 make adversarial    # 20 safety/trust cases, including four full agent runs
+make cost           # regenerate COST.md and Cost-view JSON from measured runs
 make test           # deterministic unit suite
 ```
 

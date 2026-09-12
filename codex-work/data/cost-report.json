@@ -23,13 +23,570 @@
     }
   },
   "headline": {
-    "index_cost_usd": 0,
-    "index_wall_ms": 0,
-    "mean_question_cost_usd": 0,
-    "measured_questions": 0
+    "index_cost_usd": 0.01550302,
+    "index_wall_ms": 282655.211,
+    "mean_question_cost_usd": 0.005095675,
+    "measured_questions": 4
   },
-  "stages": [],
-  "representative_question": null,
+  "stages": [
+    {
+      "name": "crawl",
+      "label": "Polite crawl",
+      "code_or_model": "code",
+      "models": [],
+      "providers": [],
+      "units": {
+        "count": 280,
+        "label": "documents"
+      },
+      "items": {
+        "documents": 280,
+        "visited_urls": 290
+      },
+      "bytes_downloaded": 95077247,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cached_input": 0
+      },
+      "cost_usd": 0.0,
+      "wall_ms": 234406.553,
+      "cpu_ms": 6392.388,
+      "peak_rss_mb": 61.67,
+      "machine": "MacBook Pro (local development)",
+      "cost_per_unit": 0.0,
+      "runs": [
+        {
+          "run_id": "e3982b16-c583-4672-93d0-8f215759a28a",
+          "started_at": "2026-09-12T14:02:46.186322+00:00",
+          "ended_at": "2026-09-12T14:06:40.596862+00:00",
+          "wall_ms": 234406.553,
+          "cpu_ms": 6392.388,
+          "peak_rss_mb": 61.67,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "documents": 280,
+            "visited_urls": 290
+          },
+          "bytes_downloaded": 95077247,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0,
+          "models": [],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "dedup",
+      "label": "Deduplication",
+      "code_or_model": "code",
+      "models": [],
+      "providers": [],
+      "units": {
+        "count": 280,
+        "label": "documents"
+      },
+      "items": {
+        "documents": 280,
+        "unique_groups": 269
+      },
+      "bytes_downloaded": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cached_input": 0
+      },
+      "cost_usd": 0.0,
+      "wall_ms": 3590.554,
+      "cpu_ms": 3579.198,
+      "peak_rss_mb": 84.83,
+      "machine": "MacBook Pro (local development)",
+      "cost_per_unit": 0.0,
+      "runs": [
+        {
+          "run_id": "7a3008eb-b74b-4b95-86f7-419ff9e93265",
+          "started_at": "2026-09-12T14:06:45.518062+00:00",
+          "ended_at": "2026-09-12T14:06:49.108872+00:00",
+          "wall_ms": 3590.554,
+          "cpu_ms": 3579.198,
+          "peak_rss_mb": 84.83,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "documents": 280,
+            "unique_groups": 269
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0,
+          "models": [],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "chunk_index",
+      "label": "Clean, chunk & index",
+      "code_or_model": "code",
+      "models": [],
+      "providers": [],
+      "units": {
+        "count": 1072,
+        "label": "chunks"
+      },
+      "items": {
+        "documents": 280,
+        "chunks": 1072
+      },
+      "bytes_downloaded": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cached_input": 0
+      },
+      "cost_usd": 0.0,
+      "wall_ms": 854.044,
+      "cpu_ms": 818.878,
+      "peak_rss_mb": 84.83,
+      "machine": "MacBook Pro (local development)",
+      "cost_per_unit": 0.0,
+      "runs": [
+        {
+          "run_id": "fa0cc578-f39b-40de-b57b-53dca2a79aee",
+          "started_at": "2026-09-12T14:06:49.109302+00:00",
+          "ended_at": "2026-09-12T14:06:49.963339+00:00",
+          "wall_ms": 854.044,
+          "cpu_ms": 818.878,
+          "peak_rss_mb": 84.83,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "documents": 280,
+            "chunks": 1072
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0,
+          "models": [],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "fact_extraction",
+      "label": "Fact-ledger extraction",
+      "code_or_model": "code",
+      "models": [],
+      "providers": [],
+      "units": {
+        "count": 1072,
+        "label": "chunks scanned"
+      },
+      "items": {
+        "chunks_scanned": 1072,
+        "literal_fact_chunks": 1047
+      },
+      "bytes_downloaded": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cached_input": 0
+      },
+      "cost_usd": 0.0,
+      "wall_ms": 11.456,
+      "cpu_ms": 11.379,
+      "peak_rss_mb": 84.83,
+      "machine": "MacBook Pro (local development)",
+      "cost_per_unit": 0.0,
+      "runs": [
+        {
+          "run_id": "6ca31fcc-b22c-44c8-9dc5-357bef10806a",
+          "started_at": "2026-09-12T14:06:49.963732+00:00",
+          "ended_at": "2026-09-12T14:06:49.975197+00:00",
+          "wall_ms": 11.456,
+          "cpu_ms": 11.379,
+          "peak_rss_mb": 84.83,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "chunks_scanned": 1072,
+            "literal_fact_chunks": 1047
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0,
+          "models": [],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "embeddings",
+      "label": "Index embeddings",
+      "code_or_model": "model",
+      "models": [
+        "text-embedding-3-small"
+      ],
+      "providers": [
+        "OpenAI"
+      ],
+      "units": {
+        "count": 1072,
+        "label": "chunks"
+      },
+      "items": {
+        "chunks": 1072,
+        "requests": 17
+      },
+      "bytes_downloaded": 0,
+      "tokens": {
+        "input": 775151,
+        "output": 0,
+        "cached_input": 0
+      },
+      "cost_usd": 0.01550302,
+      "wall_ms": 43792.604,
+      "cpu_ms": 441.67,
+      "peak_rss_mb": 84.83,
+      "machine": "MacBook Pro (local development)",
+      "cost_per_unit": 1.44618e-05,
+      "runs": [
+        {
+          "run_id": "ec8760f5-a703-42f5-9603-8b003b87718c",
+          "started_at": "2026-09-12T14:06:49.975756+00:00",
+          "ended_at": "2026-09-12T14:07:33.768820+00:00",
+          "wall_ms": 43792.604,
+          "cpu_ms": 441.67,
+          "peak_rss_mb": 84.83,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "chunks": 1072,
+            "requests": 17
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 775151,
+            "output": 0,
+            "cached_input": 0
+          },
+          "cost_usd": 0.01550302,
+          "models": [
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "quality_eval",
+      "label": "Quality evaluation",
+      "code_or_model": "model + code",
+      "models": [
+        "text-embedding-3-small",
+        "gemini-3.8-flash"
+      ],
+      "providers": [
+        "OpenAI",
+        "Google"
+      ],
+      "units": {
+        "count": 20,
+        "label": "questions"
+      },
+      "items": {
+        "questions": 20
+      },
+      "bytes_downloaded": 0,
+      "tokens": {
+        "input": 118844,
+        "output": 2285,
+        "cached_input": 0
+      },
+      "cost_usd": 0.0975375,
+      "wall_ms": 32042.188,
+      "cpu_ms": 1639.333,
+      "peak_rss_mb": 48.09,
+      "machine": "MacBook Pro (local development)",
+      "cost_per_unit": 0.004876875,
+      "runs": [
+        {
+          "run_id": "1f4c3ce2-ff4b-4ffc-9ec4-601e0a4b35b6",
+          "started_at": "2026-09-12T14:09:48.309449+00:00",
+          "ended_at": "2026-09-12T14:10:20.352140+00:00",
+          "wall_ms": 32042.188,
+          "cpu_ms": 1639.333,
+          "peak_rss_mb": 48.09,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "questions": 20
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 118844,
+            "output": 2285,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0975375,
+          "models": [
+            "text-embedding-3-small",
+            "gemini-3.8-flash"
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "adversarial_eval",
+      "label": "Adversarial evaluation",
+      "code_or_model": "model + code",
+      "models": [
+        "gemini-3.8-flash",
+        "text-embedding-3-small"
+      ],
+      "providers": [
+        "Google",
+        "OpenAI"
+      ],
+      "units": {
+        "count": 20,
+        "label": "questions"
+      },
+      "items": {
+        "questions": 20
+      },
+      "bytes_downloaded": 0,
+      "tokens": {
+        "input": 22886,
+        "output": 865,
+        "cached_input": 0
+      },
+      "cost_usd": 0.0203827,
+      "wall_ms": 12082.048,
+      "cpu_ms": 433.7,
+      "peak_rss_mb": 59.77,
+      "machine": "MacBook Pro (local development)",
+      "cost_per_unit": 0.001019135,
+      "runs": [
+        {
+          "run_id": "a9afed79-14ed-49a0-9b27-0e2d06b2f62a",
+          "started_at": "2026-09-12T14:10:42.274763+00:00",
+          "ended_at": "2026-09-12T14:11:07.927132+00:00",
+          "wall_ms": 25651.704,
+          "cpu_ms": 595.96,
+          "peak_rss_mb": 58.66,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "questions": 20
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 51239,
+            "output": 1650,
+            "cached_input": 0
+          },
+          "cost_usd": 0.04458682,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        },
+        {
+          "run_id": "dd8c3c72-80d6-4e30-8d0c-cff94b5bf05d",
+          "started_at": "2026-09-12T14:14:45.907420+00:00",
+          "ended_at": "2026-09-12T14:14:59.200151+00:00",
+          "wall_ms": 13292.447,
+          "cpu_ms": 401.872,
+          "peak_rss_mb": 60.83,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "questions": 20
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 23309,
+            "output": 1329,
+            "cached_input": 0
+          },
+          "cost_usd": 0.02243995,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        },
+        {
+          "run_id": "5db6fdcc-b5de-49a9-b912-4d81c38c0616",
+          "started_at": "2026-09-12T14:15:41.444911+00:00",
+          "ended_at": "2026-09-12T14:15:53.527336+00:00",
+          "wall_ms": 12082.048,
+          "cpu_ms": 433.7,
+          "peak_rss_mb": 59.77,
+          "machine": "MacBook Pro (local development)",
+          "items": {
+            "questions": 20
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 22886,
+            "output": 865,
+            "cached_input": 0
+          },
+          "cost_usd": 0.0203827,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "representative_question": {
+    "schema_version": 1,
+    "run_id": "900e84ef-cb9e-4bd6-83b3-8d8a16165fc4",
+    "kind": "question",
+    "name": "single_question",
+    "started_at": "2026-09-12T14:15:50.096733+00:00",
+    "ended_at": "2026-09-12T14:15:53.494295+00:00",
+    "wall_ms": 3397.521,
+    "cpu_ms": 84.555,
+    "peak_rss_mb": 59.77,
+    "machine": "MacBook Pro (local development)",
+    "items": {
+      "questions": 1
+    },
+    "bytes_downloaded": 0,
+    "tokens": {
+      "input": 6824,
+      "output": 454,
+      "cached_input": 0
+    },
+    "cost_usd": 0.00680371,
+    "models": [
+      "gemini-3.8-flash",
+      "text-embedding-3-small"
+    ],
+    "providers": [
+      "Google",
+      "OpenAI"
+    ],
+    "steps": [
+      {
+        "name": "Model turn",
+        "kind": "model",
+        "provider": "Google",
+        "model": "gemini-3.8-flash",
+        "tokens": {
+          "input": 1143,
+          "output": 33,
+          "cached_input": 0
+        },
+        "cost_usd": 0.000981,
+        "wall_ms": 693.215,
+        "cpu_ms": 3.201,
+        "peak_rss_mb": 59.77,
+        "price_copied_at": "2026-09-12",
+        "metadata": {
+          "thought_tokens": 0
+        }
+      },
+      {
+        "name": "query_embedding",
+        "kind": "embedding",
+        "provider": "OpenAI",
+        "model": "text-embedding-3-small",
+        "tokens": {
+          "input": 23,
+          "output": 0,
+          "cached_input": 0
+        },
+        "cost_usd": 4.6e-07,
+        "wall_ms": 207.125,
+        "cpu_ms": 3.111,
+        "peak_rss_mb": 59.77,
+        "price_copied_at": "2026-09-12",
+        "metadata": {
+          "items": 1
+        }
+      },
+      {
+        "name": "Searching and ranking the corpus",
+        "kind": "code",
+        "provider": null,
+        "model": null,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cached_input": 0
+        },
+        "cost_usd": 0.0,
+        "wall_ms": 277.35,
+        "cpu_ms": 68.286,
+        "peak_rss_mb": 59.77,
+        "metadata": {
+          "tool": "corpus_search",
+          "nested_provider_cost_usd": 4.6e-07
+        }
+      },
+      {
+        "name": "Model turn",
+        "kind": "model",
+        "provider": "Google",
+        "model": "gemini-3.8-flash",
+        "tokens": {
+          "input": 5658,
+          "output": 421,
+          "cached_input": 0
+        },
+        "cost_usd": 0.00582225,
+        "wall_ms": 2417.675,
+        "cpu_ms": 4.796,
+        "peak_rss_mb": 59.77,
+        "price_copied_at": "2026-09-12",
+        "metadata": {
+          "thought_tokens": 0
+        }
+      }
+    ],
+    "status": "completed",
+    "metadata": {
+      "question": "How has Everstake's positioning shifted since 2024?",
+      "mode": "synthesis",
+      "parent_runs": [
+        {
+          "run_id": "5db6fdcc-b5de-49a9-b912-4d81c38c0616",
+          "name": "adversarial_eval"
+        }
+      ],
+      "resolved_mode": "synthesis",
+      "answer_sufficient": true
+    }
+  },
+  "spend": {
+    "legacy_local_provider_events": 397,
+    "legacy_local_cost_usd": 0.25609992,
+    "legacy_all_environment_cost_usd": 0.25965952,
+    "current_task_local_provider_events": 150,
+    "current_task_local_cost_usd": 0.30090939,
+    "external_current_task_cost_usd": 0.0,
+    "current_task_all_environment_cost_usd": 0.30090939,
+    "known_assignment_total_usd": 0.56056891,
+    "legacy_resource_fields": null
+  },
   "assumptions": [
     "Provider list prices copied 2026-09-12; later prices may differ.",
     "Provider usage fields are measured; no tokenizer estimates are used.",

@@ -173,7 +173,10 @@ def _evaluate_end_to_end(case: dict) -> tuple[bool, str, dict]:
         "tools": [item["tool"] for item in record["tool_trace"]],
         "citations": result["citations"],
         "audit_verified": record["verified"],
-        "cost_usd": result["usage"].get("estimated_cost_usd", 0),
+        "cost_usd": result["cost_receipt"]["cost_usd"],
+        "tokens": result["cost_receipt"]["tokens"],
+        "cpu_ms": result["cost_receipt"]["cpu_ms"],
+        "peak_rss_mb": result["cost_receipt"]["peak_rss_mb"],
     }
 
 
@@ -333,7 +336,7 @@ def _end_to_end_section(row: dict) -> list[str]:
     return [
         f"### {row['id']}. {row['question']}",
         "",
-        row["output"],
+        "\n".join(line.rstrip() for line in row["output"].splitlines()),
         "",
         f"Trace: `{json.dumps(row['details'], ensure_ascii=False)}`",
         "",

@@ -16,6 +16,7 @@ from app.tools import (
     READ_ONLY_MCP_TOOLS,
     RegisteredEvidence,
     ToolContext,
+    _enrich_synthesis_query,
     _model_evidence,
     _read_sse_json,
     _summary,
@@ -24,6 +25,16 @@ from app.tools import (
 
 ALLOWLIST_ERROR = "URL is outside the live-fetch allowlist."
 MCP_ERROR = "Only allow-listed read-only MCP tools are available."
+
+
+class SynthesisQueryTests(unittest.TestCase):
+    def test_positioning_queries_gain_company_evolution_vocabulary(self):
+        enriched = _enrich_synthesis_query("How has positioning shifted?", "synthesis")
+        self.assertIn("institutional infrastructure", enriched)
+
+    def test_factual_queries_are_never_rewritten(self):
+        query = "What is the current positioning?"
+        self.assertEqual(_enrich_synthesis_query(query, "factual"), query)
 
 
 def registered(url="https://everstake.com/a", content="body", date="2026-01-01", title="T"):

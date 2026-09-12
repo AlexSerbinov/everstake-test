@@ -60,15 +60,11 @@ ERROR_DETAIL_CHARS = 500
 # the cost of every similarity scan to a third.
 EMBEDDING_DIMENSIONS = 512
 
-# Near-zero temperature: this system is graded on repeatability, and a creative
-# rephrasing of a cited number is a defect, not variety.
-GENERATION_TEMPERATURE = 0.1
-
 # Output ceilings. The legacy path returns one JSON answer object; an agent turn returns
 # at most one tool call plus short reasoning, so it needs less. Both are also a cost
 # guard — output tokens are the expensive ones (4x input for the agent model).
-GEMINI_MAX_OUTPUT_TOKENS = 1200
-AGENT_MAX_OUTPUT_TOKENS = 900
+GEMINI_MAX_OUTPUT_TOKENS = 2400
+AGENT_MAX_OUTPUT_TOKENS = 1600
 
 # Cost is stored to 10 decimals because a single embedding call can cost a few
 # millionths of a dollar, and rounding those to cents would total to zero.
@@ -167,10 +163,10 @@ def generate_json(prompt: str, operation: str = "answer") -> tuple[dict[str, Any
     """Single-shot grounded answer — the legacy baseline path, not the deployed one.
 
     Kept so the first RAG attempt described in REPORT.md can be re-run and compared
-    against the agent path. The model id comes from `GEMINI_MODEL` so a comparison run
-    can change it without touching code.
+    against the agent path. The approved Gemini 3.x model is fixed in code so an
+    environment override cannot silently violate the deployment contract.
     """
-    model = os.getenv("GEMINI_MODEL", GENERATION_MODEL)
+    model = GENERATION_MODEL
     key = os.environ["GEMINI_API_KEY"]
     wall_start, cpu_start = time.perf_counter(), time.process_time()
     response = _post_json(
@@ -178,11 +174,11 @@ def generate_json(prompt: str, operation: str = "answer") -> tuple[dict[str, Any
         {
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],
             "generationConfig": {
-                "temperature": GENERATION_TEMPERATURE,
                 # Forcing a JSON mime type is what lets the caller parse the reply
                 # instead of scraping fields out of prose.
                 "responseMimeType": "application/json",
                 "maxOutputTokens": GEMINI_MAX_OUTPUT_TOKENS,
+                **_thinking_config(model),
             },
         },
         {},
@@ -215,7 +211,7 @@ def create_agent_response(instructions: str, inputs: list[dict], tools: list[dic
     loop's turn budget is enforced in `app/agent.py` — a self-driving agent API would put
     that limit on the provider's side where it cannot be audited.
     """
-    model = os.getenv("AGENT_MODEL", GENERATION_MODEL)
+    model = GENERATION_MODEL
     declarations = [_gemini_declaration(spec) for spec in tools]
     function_mode = "ANY" if tool_choice == "required" else "AUTO"
     wall_start, cpu_start = time.perf_counter(), time.process_time()
@@ -226,11 +222,11 @@ def create_agent_response(instructions: str, inputs: list[dict], tools: list[dic
             "contents": inputs,
             "tools": [{"functionDeclarations": declarations}],
             "toolConfig": {"functionCallingConfig": {"mode": function_mode}},
-            # No thinkingConfig is sent. In particular, Lite rejects the old
-            # thinkingBudget field; omitting the object is the documented off path.
+            # Lite receives no thinkingConfig at all; full Flash uses the supported
+            # low level. The rejected thinkingBudget field is never sent.
             "generationConfig": {
-                "temperature": GENERATION_TEMPERATURE,
                 "maxOutputTokens": AGENT_MAX_OUTPUT_TOKENS,
+                **_thinking_config(model),
             },
         },
         {"x-goog-api-key": os.environ["GEMINI_API_KEY"]},
@@ -297,3 +293,15 @@ def _gemini_schema(schema: dict) -> dict:
         else:
             converted[key] = value
     return converted
+
+
+def _thinking_config(model: str) -> dict[str, dict[str, str]]:
+    """Use Gemini 3's supported level setting, never the rejected token budget.
+
+    Flash-Lite is intentionally omitted entirely: for that cheap path omission is how
+    thinking stays off. Full Flash gets minimal reasoning so function selection remains
+    reliable without consuming the short structured-output ceiling.
+    """
+    if model == CHEAP_MODEL:
+        return {}
+    return {"thinkingConfig": {"thinkingLevel": "low"}}

@@ -1,0 +1,8 @@
+{
+  "captured_before_current_task": "2026-09-12T14:02:08Z",
+  "legacy_local_provider_events": 397,
+  "legacy_local_cost_usd": 0.25609992,
+  "legacy_all_environment_cost_usd": 0.25965952,
+  "external_current_task_cost_usd": 0.0,
+  "note": "Legacy provider tokens and USD are recoverable; wall time, CPU, and RSS are not."
+}

@@ -8,10 +8,30 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.agent import ABSTENTION, _validate_submission
+from app.agent import ABSTENTION, _is_terminal_evidence, _validate_submission
 from app.tools import RegisteredEvidence, ToolContext
 
 CONTRACT_FAILURE = "Available evidence did not satisfy the citation and sufficiency contract."
+
+
+class StopRuleTests(unittest.TestCase):
+    def test_one_temporally_broad_synthesis_search_is_terminal(self):
+        result = {"evidence": [
+            {"url": "https://everstake.com/old", "date": "2024-01-01"},
+            {"url": "https://everstake.com/new", "date": "2026-01-01"},
+        ]}
+        self.assertTrue(_is_terminal_evidence(
+            "corpus_search", {"mode": "synthesis"}, result
+        ))
+
+    def test_one_source_is_not_enough_to_stop_synthesis(self):
+        result = {"evidence": [
+            {"url": "https://everstake.com/one", "date": "2024-01-01"},
+            {"url": "https://everstake.com/one", "date": "2026-01-01"},
+        ]}
+        self.assertFalse(_is_terminal_evidence(
+            "corpus_search", {"mode": "synthesis"}, result
+        ))
 
 
 class ValidationHarness(unittest.TestCase):

@@ -241,7 +241,7 @@ def _run_evidence_turns(instructions: str, inputs: list[dict], specs: list[dict]
             if call.get("call_id"):
                 function_response["id"] = call["call_id"]
             function_responses.append({"functionResponse": function_response})
-            terminal = terminal or _is_terminal_live_evidence(name, arguments, tool_result)
+            terminal = terminal or _is_terminal_evidence(name, arguments, tool_result)
 
         # Gemini 3 requires the model content to be replayed byte-for-byte so every
         # thoughtSignature stays attached to its original functionCall part.
@@ -302,8 +302,8 @@ def _plain_tool_name(name: str) -> str:
     }.get(name, f"Running {name}")
 
 
-def _is_terminal_live_evidence(name: str, arguments: dict, tool_result: dict) -> bool:
-    """Whether this tool result should end the loop immediately.
+def _is_terminal_evidence(name: str, arguments: dict, tool_result: dict) -> bool:
+    """Whether this evidence should end searching and reserve the submission turn.
 
     A successful staking-calculator or uptime reading is the freshest the system can
     ever get: calling the same live tool again in the same question cannot improve it,
@@ -311,11 +311,19 @@ def _is_terminal_live_evidence(name: str, arguments: dict, tool_result: dict) ->
     the next turn for the forced submission. Copied from the stop rule in
     prompts/agent-system.txt.
     """
-    return (
+    live_terminal = (
         name == "everstake_mcp"
         and arguments.get("tool") in _TERMINAL_LIVE_MCP_TOOLS
         and "error" not in tool_result
     )
+    evidence = tool_result.get("evidence", [])
+    synthesis_ready = (
+        name == "corpus_search"
+        and arguments.get("mode") == "synthesis"
+        and len({item.get("url") for item in evidence if item.get("url")}) >= 2
+        and len([item for item in evidence if item.get("date")]) >= 2
+    )
+    return live_terminal or synthesis_ready
 
 
 def _force_final_submission(instructions: str, inputs: list[dict], specs: list[dict],
@@ -361,7 +369,7 @@ def _finalise(submitted: dict | None, context: ToolContext, mode: str, question:
         "agent": usage,
         # Rounded to 8 decimals because a single turn can cost well under a cent and
         # the total is displayed verbatim in the UI's usage panel.
-        "estimated_cost_usd": round(sum(item["cost_usd"] for item in usage), 8),
+        "cost_usd": round(sum(item["cost_usd"] for item in usage), 8),
     }
     _emit_event(emit, "verification", {
         "status": "passed" if result["sufficient"] else "abstained",

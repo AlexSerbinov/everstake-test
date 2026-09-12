@@ -7,7 +7,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from .config import ACCOUNTING_LOG, COST_REPORT_PATH, PRICE_TABLE, PRICE_TABLE_COPIED_AT, ROOT
+from .config import ACCOUNTING_LOG, COST_LOG, COST_REPORT_PATH, PRICE_TABLE, PRICE_TABLE_COPIED_AT, ROOT
 
 STAGE_ORDER = ("crawl", "dedup", "chunk_index", "fact_extraction", "embeddings",
                "quality_eval", "adversarial_eval")
@@ -71,10 +71,21 @@ def build_report(records: list[dict[str, Any]]) -> dict[str, Any]:
             "peak_rss_mb": latest.get("peak_rss_mb"),
             "machine": latest.get("machine"),
             "cost_per_unit": round(latest.get("cost_usd", 0) / max(1, units["count"]), 10),
-            "runs": runs[-8:],
+            "runs": [_compact_run(run) for run in runs[-8:]],
         })
 
-    questions = [row for row in completed if row.get("name") == "single_question"]
+    adversarial_runs = grouped.get("adversarial_eval", [])
+    final_adversarial_id = adversarial_runs[-1]["run_id"] if adversarial_runs else None
+    questions = [
+        row for row in completed
+        if row.get("name") == "single_question"
+        and (
+            not final_adversarial_id
+            or final_adversarial_id in {
+                parent["run_id"] for parent in row.get("metadata", {}).get("parent_runs", [])
+            }
+        )
+    ]
     representative = next(
         (row for row in reversed(questions) if row.get("metadata", {}).get("answer_sufficient")),
         questions[-1] if questions else None,
@@ -85,6 +96,12 @@ def build_report(records: list[dict[str, Any]]) -> dict[str, Any]:
     index_stages = [row for row in stages if row["name"] in STAGE_ORDER[:5]]
     index_cost = sum(row["cost_usd"] for row in index_stages)
     index_wall = sum(row["wall_ms"] or 0 for row in index_stages)
+    baseline_path = ROOT / "data/cost-baseline.json"
+    baseline = json.loads(baseline_path.read_text()) if baseline_path.exists() else {}
+    paid_events = load_records(COST_LOG)
+    legacy_count = int(baseline.get("legacy_local_provider_events", 0))
+    current_local_spend = sum(float(row.get("cost_usd", 0)) for row in paid_events[legacy_count:])
+    task_spend = current_local_spend + float(baseline.get("external_current_task_cost_usd", 0))
     return {
         "generated_from": str(ACCOUNTING_LOG.relative_to(ROOT)),
         "price_table_copied_at": PRICE_TABLE_COPIED_AT,
@@ -97,6 +114,19 @@ def build_report(records: list[dict[str, Any]]) -> dict[str, Any]:
         },
         "stages": stages,
         "representative_question": representative,
+        "spend": {
+            "legacy_local_provider_events": legacy_count,
+            "legacy_local_cost_usd": baseline.get("legacy_local_cost_usd"),
+            "legacy_all_environment_cost_usd": baseline.get("legacy_all_environment_cost_usd"),
+            "current_task_local_provider_events": max(0, len(paid_events) - legacy_count),
+            "current_task_local_cost_usd": round(current_local_spend, 10),
+            "external_current_task_cost_usd": baseline.get("external_current_task_cost_usd", 0),
+            "current_task_all_environment_cost_usd": round(task_spend, 10),
+            "known_assignment_total_usd": round(
+                float(baseline.get("legacy_all_environment_cost_usd", 0)) + task_spend, 10
+            ),
+            "legacy_resource_fields": None,
+        },
         "assumptions": [
             f"Provider list prices copied {PRICE_TABLE_COPIED_AT}; later prices may differ.",
             "Provider usage fields are measured; no tokenizer estimates are used.",
@@ -105,6 +135,14 @@ def build_report(records: list[dict[str, Any]]) -> dict[str, Any]:
             "Historical runs without resource telemetry are excluded from current stage timing.",
         ],
     }
+
+
+def _compact_run(run: dict[str, Any]) -> dict[str, Any]:
+    """The Cost endpoint needs run summaries, not thousands of nested eval steps."""
+    return {key: run.get(key) for key in (
+        "run_id", "started_at", "ended_at", "wall_ms", "cpu_ms", "peak_rss_mb",
+        "machine", "items", "bytes_downloaded", "tokens", "cost_usd", "models", "status",
+    )}
 
 
 def _units(items: dict[str, int]) -> dict[str, Any]:
@@ -128,19 +166,19 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         "## Per-stage measurements",
         "",
-        "| Stage | Runs as | Model | Units | Tokens in / out (cache) | USD | Wall | CPU | Peak RAM | $ / unit |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Stage | Runs as | Model | Units | Download | Tokens in / out (cache) | USD | Wall | CPU | Peak RAM | Machine | $ / unit |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---:|",
     ]
     for row in report["stages"]:
         token = row["tokens"]
         models = ", ".join(row["models"]) or "—"
         lines.append(
             f"| {row['label']} | {row['code_or_model']} | {models} | "
-            f"{row['units']['count']:,} {row['units']['label']} | "
+            f"{row['units']['count']:,} {row['units']['label']} | {_bytes(row['bytes_downloaded'])} | "
             f"{token.get('input', 0):,} / {token.get('output', 0):,} "
             f"({token.get('cached_input', 0):,}) | ${row['cost_usd']:.8f} | "
             f"{_duration(row['wall_ms'])} | {_duration(row['cpu_ms'])} | "
-            f"{row['peak_rss_mb']:.2f} MB | ${row['cost_per_unit']:.10f} |"
+            f"{row['peak_rss_mb']:.2f} MB | {row['machine']} | ${row['cost_per_unit']:.10f} |"
         )
 
     question = report.get("representative_question")
@@ -182,7 +220,16 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"{_duration(question['wall_ms'])} × 50 = **{_duration(question['wall_ms'] * 50)}** |"
         )
 
-    lines += ["", "## What is measured vs assumed", ""]
+    spend = report["spend"]
+    lines += ["", "## Spend ledger", "",
+              f"Before this task, **{spend['legacy_local_provider_events']}** local provider events "
+              f"totalled **${spend['legacy_local_cost_usd']:.8f}**. Their provider token/cost fields "
+              "remain in the append-only paid-call ledger; wall time, CPU and RAM were never captured "
+              "and are therefore not reconstructed.", "",
+              f"This task used **${spend['current_task_all_environment_cost_usd']:.8f}** across local "
+              f"and deployed checks. The complete known assignment spend is "
+              f"**${spend['known_assignment_total_usd']:.8f}**.",
+              "", "## What is measured vs assumed", ""]
     lines.extend(f"- {item}" for item in report["assumptions"])
     lines += ["", _where_money_goes(report), ""]
     return "\n".join(lines)
@@ -191,7 +238,15 @@ def render_markdown(report: dict[str, Any]) -> str:
 def _duration(milliseconds: float | None) -> str:
     if milliseconds is None:
         return "unknown"
+    if milliseconds >= 60_000:
+        return f"{milliseconds / 60_000:.2f}m"
     return f"{milliseconds / 1000:.2f}s" if milliseconds >= 1000 else f"{milliseconds:.1f}ms"
+
+
+def _bytes(value: int) -> str:
+    if not value:
+        return "0 B"
+    return f"{value / 1_000_000:.2f} MB"
 
 
 def _where_money_goes(report: dict[str, Any]) -> str:

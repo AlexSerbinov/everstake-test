@@ -89,7 +89,13 @@ class RunRecorder:
         self._finished = False
 
     def activate(self) -> "RunRecorder":
-        self._token = _ACTIVE.set((*_ACTIVE.get(), self))
+        parents = _ACTIVE.get()
+        if parents:
+            self.record["metadata"]["parent_runs"] = [
+                {"run_id": parent.record["run_id"], "name": parent.record["name"]}
+                for parent in parents
+            ]
+        self._token = _ACTIVE.set((*parents, self))
         return self
 
     def add_step(self, step: dict[str, Any]) -> None:
