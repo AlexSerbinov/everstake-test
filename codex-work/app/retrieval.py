@@ -43,6 +43,7 @@ from pathlib import Path
 
 from .api_clients import embed, generate_json
 from .config import DB_PATH, KB_CONFIG_PATH, load_dotenv
+from .trust import score_answer, source_authority_value
 
 # --- Hybrid score weights -----------------------------------------------------
 # Semantic carries most of the weight because the corpus is small and questions are
@@ -498,6 +499,7 @@ Return one JSON object with these fields:
 - citations: array of integer evidence IDs that directly support the answer
 - sufficient: boolean
 - reasoning: one short sentence explaining evidence selection or insufficiency
+- confidence: your evidence-fit self-assessment from 0 to 1; code gives it only a minor score weight
 
 Rules:
 1. Prefer tier 1 and newer evidence for facts that can change. An old press release does not override a newer canonical page.
@@ -569,6 +571,11 @@ def answer(question: str, mode: str = "auto", database: Path | str = DB_PATH) ->
         # most recent evidence supporting it.
         result["as_of"] = max(evidence_by_id[number].evidence_date[:10] for number in citations)
 
+    cited_evidence = [evidence_by_id[number] for number in citations]
+    trust = score_answer(
+        question, result["answer"], result.get("as_of"), cited_evidence, evidence,
+        result.get("confidence", 0.5), database,
+    ) if sufficient else None
     return {
         "answer": result["answer"],
         "as_of": result.get("as_of"),
@@ -578,6 +585,7 @@ def answer(question: str, mode: str = "auto", database: Path | str = DB_PATH) ->
         "mode": mode,
         "usage": {"embedding": embedding_usage, "generation": generation_usage},
         "reasoning": result.get("reasoning", ""),
+        "trust": trust,
     }
 
 
@@ -633,6 +641,7 @@ def _abstention(mode: str, embedding_usage: dict, reasoning: str) -> dict:
         "mode": mode,
         "usage": {"embedding": embedding_usage, "generation": None},
         "reasoning": reasoning,
+        "trust": None,
     }
 
 
@@ -695,4 +704,10 @@ def _source_record(item: Evidence) -> dict:
     should follow the URL rather than trust our excerpt of it. The date shown is the
     same one used for `as_of`, so the two can never disagree on screen.
     """
-    return {"title": item.title, "url": item.url, "date": item.evidence_date, "tier": item.tier}
+    authority = source_authority_value(item)
+    return {
+        "title": item.title, "url": item.url, "date": item.evidence_date, "tier": item.tier,
+        "authority_score": round(authority, 3),
+        "authority_label": "high" if authority >= 0.9 else "medium" if authority >= 0.65 else "low",
+        "stance": "supports",
+    }

@@ -2,6 +2,10 @@
 
 ## What changed in this evolution
 
+Every supported answer now has a deterministic 0–100 Trust Score built from source authority, independent agreement, recency, grounding, extraction confidence, and a separately labelled 5% model self-assessment. Dedup clusters, syndicated copies, and repeated domains count once; low-authority disagreement is visible but penalizes less. Abstentions have no score.
+
+The score and six-row explanation are present in JSON, the final SSE event, pipeline trace, signed audit record, source cards, and a band-coloured UI badge. A new Trust view edits weights live without a restart or model call while enforcing a 100% total and a 10% model-component cap.
+
 The corpus now understands who is speaking. Free YouTube discovery added 24 filtered, timestamped auto-subtitle transcripts; a maintained people registry classifies official-channel, employee-on-third-party, and third-party voices. The index carries speaker, attribution, `stated`/`reported` provenance, configurable voice authority, contradiction penalties, and unverified flags through to answer evidence and UI badges.
 
 A deterministic consistency pass extracted 2,924 numeric facts, detected 38 same-key/period contradictions, penalized 14 documents, and marked 23 reported claims unverified. Code gates require “according to X (date)” for reported-only numbers, hide unverified claims outside explicit claims/rumour questions, and prevent third-party-only negative allegations from being stated as fact. The Corpus view filters by voice and exposes the decision metadata.
@@ -16,11 +20,12 @@ Every answer and abstention is appended to a SHA-256 chain and signed with Ed255
 
 ## Measured result
 
-- Deterministic suite: **314/314 tests passed**.
+- Deterministic suite: **323/323 tests passed**, including both worked Trust Score examples.
 - Source discovery: **24 accepted videos** from 31 inspected; 9 official, 6 employee-on-third-party, 9 third-party.
 - Speaker-aware index: **304 documents**, **1,223 chunks**, **873,426 embedding tokens**, **$0.01746852** rebuild cost.
-- Final adversarial set: **24/24**, including four new source-trust attacks; source-expansion API spend was about **$0.084**.
-- Quality rerun: **19/20**, zero invented facts, **$0.09753750**; the sole miss was an unchanged lexical ShredStream assertion.
+- Final adversarial set: **24/24**; correct supported answers averaged **89.7**, while the planted old third-party wrong-number counterfactual scored **40**.
+- Quality rerun: **18/20**, zero invented facts, **$0.09809025**. Correct answered rows averaged **88.9** versus **88.0** for two semantically correct lexical-rubric misses (correlation **0.196**).
+- Trust Score eval plus adversarial reruns cost **$0.12183974**; scoring and weight changes themselves cost $0.
 - Prior freshness evolution spend was **$0.32063767**; this source-trust evolution added about **$0.084**, keeping cumulative assignment activity below its ceilings.
 - `COST.md` records provider usage plus measured wall/CPU/RSS/bytes for every stage and shows row-by-row ×50 arithmetic.
 - Public smoke: HTTP 200, Gemini CEO answer **$0.00419260 / 3.19 s**, expandable four-step receipt, signed audit `verified: true`, container **0 restarts**.
@@ -31,7 +36,7 @@ Every answer and abstention is appended to a SHA-256 chain and signed with Ed255
 
 **https://everstake-codex.89-167-19-222.sslip.io**
 
-The active container is `everstake-codex:v5-sources`, bound only to `127.0.0.1:4321` behind the unchanged Caddy route. Production health, 304-document stats, the Corpus view, its six-result employee filter, and a cited CEO answer were verified; the container has 0 restarts and the refresh timer is active. `everstake-codex:v4-freshness` plus pre-deploy corpus/index copies remain available for rollback. No push was made.
+The active container is `everstake-codex:v6-trust`, bound only to `127.0.0.1:4321` behind the unchanged Caddy route. Production health, default live weights, SSE `trust` plus final payload, a CEO score of 89, source authority badges, and the UI pipeline were verified; the container has 0 restarts and the refresh timer is active. `everstake-codex:v5-sources` remains available for rollback. No push was made.
 
 ## What I cut
 

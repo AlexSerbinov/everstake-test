@@ -142,6 +142,7 @@ def _build_record(question: str, result: dict, evidence: list[dict], tool_trace:
         # `_abstention` helper always sets it, but a caller passing a bare result dict
         # must not be able to produce a record that silently claims sufficiency.
         "sufficient": result.get("sufficient", False),
+        "trust": result.get("trust"),
         "evidence": evidence,
         "tool_trace": tool_trace,
         "previous_hash": previous_hash,

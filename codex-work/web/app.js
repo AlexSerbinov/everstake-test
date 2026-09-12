@@ -8,6 +8,7 @@
  *   tool_call     - the model asked for a tool, with its arguments
  *   tool_result   - what that tool returned (refs and hashes only, never passage text)
  *   verification  - the deterministic gate's verdict: passed, abstained or blocked
+ *   trust         - the deterministic evidence-quality score and its components
  *   answer        - the final result plus its signed audit receipt; ends the run
  *   error         - the server failed mid-stream, after headers were already sent
  *
@@ -28,6 +29,9 @@ const pipelinePanel = select('#pipeline');
 let costLoaded = false;
 let freshnessLoaded = false;
 let freshnessData = null;
+let trustLoaded = false;
+let trustData = null;
+let trustSaveTimer = null;
 
 // Sequence number shown in each pipeline row's badge. Reset at the start of every run.
 let completedSteps = 0;
@@ -83,10 +87,84 @@ function showView(name) {
   history.replaceState(null, '', `#${name}`);
   if (name === 'cost' && !costLoaded) loadCostView();
   if (name === 'freshness' && !freshnessLoaded) loadFreshnessView();
+  if (name === 'trust' && !trustLoaded) loadTrustSettings();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-showView(['cost', 'freshness'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'ask');
+showView(['cost', 'freshness', 'trust', 'corpus'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'ask');
+
+const TRUST_LABELS = {
+  source_authority: 'Source authority', independent_agreement: 'Independent agreement',
+  recency: 'Recency / currency', grounding: 'Grounding gates',
+  extraction_confidence: 'Extraction confidence', model_self_assessment: 'Model self-assessment',
+};
+
+async function loadTrustSettings() {
+  try {
+    const response = await fetch('/api/trust');
+    if (!response.ok) throw new Error(`Trust config failed (${response.status})`);
+    trustData = await response.json();
+    renderTrustWeights();
+    trustLoaded = true;
+  } catch (error) {
+    select('#trust-weight-status').textContent = 'Weights unavailable';
+  }
+}
+
+function renderTrustWeights() {
+  const rows = select('#trust-weight-rows');
+  rows.innerHTML = '';
+  Object.entries(trustData.weights).forEach(([name, weight]) => {
+    const row = document.createElement('label'); row.className = 'trust-weight-row';
+    const title = document.createElement('span'); title.textContent = TRUST_LABELS[name];
+    const slider = document.createElement('input'); slider.type = 'range'; slider.min = '0';
+    slider.max = name === 'model_self_assessment' ? '10' : '60'; slider.step = '1';
+    slider.value = Math.round(weight * 100); slider.dataset.weight = name;
+    const value = document.createElement('strong'); value.textContent = `${slider.value}%`;
+    slider.oninput = () => rebalanceTrustWeights(name, Number(slider.value) / 100);
+    row.append(title, slider, value); rows.append(row);
+  });
+  select('#trust-weight-total').textContent = `${Math.round(Object.values(trustData.weights).reduce((a, b) => a + b, 0) * 100)}%`;
+  select('#trust-weight-status').textContent = 'Applied to the next answer';
+}
+
+function rebalanceTrustWeights(changed, value) {
+  const old = trustData.weights[changed];
+  const otherTotal = 1 - old;
+  const remaining = 1 - value;
+  Object.keys(trustData.weights).forEach(name => {
+    if (name === changed) trustData.weights[name] = value;
+    else trustData.weights[name] = otherTotal > 0
+      ? trustData.weights[name] * remaining / otherTotal
+      : remaining / (Object.keys(trustData.weights).length - 1);
+  });
+  renderTrustWeights();
+  clearTimeout(trustSaveTimer);
+  trustSaveTimer = setTimeout(saveTrustWeights, 250);
+}
+
+async function saveTrustWeights() {
+  select('#trust-weight-status').textContent = 'Saving…';
+  try {
+    const response = await fetch('/api/trust', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ weights: trustData.weights }),
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error);
+    trustData.weights = payload.weights;
+    select('#trust-weight-status').textContent = 'Saved live';
+  } catch (error) {
+    select('#trust-weight-status').textContent = error.message || 'Save failed';
+  }
+}
+
+select('#trust-reset').onclick = () => {
+  if (!trustData) return;
+  trustData.weights = { ...trustData.defaults };
+  renderTrustWeights();
+  saveTrustWeights();
+};
 
 async function loadFreshnessView() {
   try {
@@ -451,10 +529,40 @@ function renderAnswer(data) {
   // the text before it adds a single tag. See the block comment above.
   select('#answer').innerHTML = renderMarkdown(data.answer);
   select('#reasoning').textContent = data.reasoning;
+  renderTrust(data.trust);
   renderCostReceipt(data.cost_receipt);
   renderSources(data.sources);
   renderAuditReceipt(data.audit);
   resetSubmitButton('Run evidence agent');
+}
+
+function renderTrust(trust) {
+  const badge = select('#trust-badge');
+  const details = select('#trust-breakdown');
+  if (!trust) {
+    badge.hidden = true; details.hidden = true; return;
+  }
+  badge.hidden = false; details.hidden = false;
+  badge.className = `trust-badge trust-${trust.band}`;
+  badge.textContent = `${trust.score} · ${trust.band}`;
+  badge.onclick = () => { details.open = !details.open; details.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
+  select('#trust-title').textContent = `Trust Score ${trust.score}/100`;
+  select('#trust-label').textContent = trust.label;
+  const rows = select('#trust-components'); rows.innerHTML = '';
+  trust.components.forEach(component => {
+    const row = document.createElement('div'); row.className = 'trust-component';
+    const copy = document.createElement('span');
+    const title = document.createElement('strong'); title.textContent = component.label || TRUST_LABELS[component.name];
+    const reason = document.createElement('small'); reason.textContent = component.reason;
+    copy.append(title, reason);
+    const math = document.createElement('b');
+    math.textContent = `${Math.round(component.weight * 100)}% × ${Math.round(component.value * 100)}% = +${component.points}`;
+    row.append(copy, math); rows.append(row);
+  });
+  const disagreements = select('#trust-disagreements');
+  disagreements.textContent = trust.disagreements.length
+    ? trust.disagreements.map(item => `${item.source}: ${item.reason} (${item.level} trust)`).join(' · ')
+    : `${trust.independent_sources} independent source${trust.independent_sources === 1 ? '' : 's'}; no detected disagreement.`;
 }
 
 /** Render a plain-language, expandable receipt whose total comes from server accounting. */
@@ -607,6 +715,8 @@ function renderSources(sources) {
     (source.speakers || []).forEach(speaker => addBadge(badges, `${speaker.name} · ${speaker.role}`, 'speaker'));
     if (source.unverified) addBadge(badges, 'unverified', 'warning');
     if (source.trust_penalty < 1) addBadge(badges, `trust ×${source.trust_penalty}`, 'warning');
+    if (source.authority_label) addBadge(badges, `${source.authority_label} authority ${Math.round(source.authority_score * 100)}`, 'authority');
+    if (source.stance) addBadge(badges, source.stance, source.stance === 'supports' ? 'supports' : 'warning');
     item.append(link, badges, meta);
     list.append(item);
   });
@@ -636,6 +746,7 @@ function handleEvent(type, data) {
   if (type === 'tool_call') addStep(`Calling ${data.tool}`, formatToolArguments(data.arguments));
   if (type === 'tool_result') addStep(`${data.tool} returned`, describeToolResult(data));
   if (type === 'verification') addStep('Verification', data.message);
+  if (type === 'trust') addStep('Trust Score computed', `${data.score}/100 · ${data.label}`);
   if (type === 'answer') renderAnswer(data);
   // Thrown rather than rendered here so the one catch block in the submit handler owns
   // every failure path, whether it came from the network or from the server.

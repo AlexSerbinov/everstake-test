@@ -214,7 +214,8 @@ class AcceptedSubmissionShapeTests(ValidationHarness):
         source = self.validate({"answer": "x", "citations": ["E1"], "sufficient": True})["sources"][0]
         self.assertEqual(set(source), {"ref", "title", "url", "date", "provenance", "content_sha256", "passages",
                                        "voice", "speakers", "attribution", "claim_provenance", "trust_penalty",
-                                       "trust_penalty_reason", "unverified"})
+                                       "trust_penalty_reason", "unverified", "authority_score",
+                                       "authority_label", "stance"})
         self.assertEqual(len(source["content_sha256"]), 64)
         self.assertEqual(source["passages"], [{"ref": "E1", "content_sha256": source["content_sha256"]}])
 
@@ -272,7 +273,7 @@ class AcceptedSubmissionShapeTests(ValidationHarness):
         self.register()
         result = self.validate({"answer": "x", "citations": ["E1"], "sufficient": True})
         self.assertEqual(set(result), {"answer", "as_of", "citations", "sources",
-                                       "sufficient", "mode", "reasoning"})
+                                       "sufficient", "mode", "reasoning", "trust"})
 
 
 if __name__ == "__main__":

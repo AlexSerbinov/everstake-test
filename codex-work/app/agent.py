@@ -32,6 +32,7 @@ from .audit import append_answer
 from .config import DB_PATH, ROOT, load_dotenv
 from .security import question_injection_reason
 from .tools import ToolContext, load_tool_specs
+from .trust import score_answer, source_authority_value
 
 # The one sentence the system says when it cannot answer. It must be byte-identical
 # everywhere, because three separate things compare against it as a literal string:
@@ -124,6 +125,7 @@ def _abstention_result(reason: str, mode: str) -> dict:
         "sufficient": False,
         "mode": mode,
         "reasoning": reason,
+        "trust": None,
         # Populated by run_agent when a model was actually called; an empty list here
         # keeps the key present for a refusal issued before any model call.
         "usage": {"agent": []},
@@ -388,6 +390,16 @@ def _finalise(submitted: dict | None, context: ToolContext, mode: str, question:
         "evidence_count": len(result["sources"]),
         "passage_count": len(result["citations"]),
     })
+    if result["trust"]:
+        context.trace.append({
+            "tool": "trust_score",
+            "arguments": {"weights": {row["name"]: row["weight"] for row in result["trust"]["components"]}},
+            "result": {"score": result["trust"]["score"], "band": result["trust"]["band"]},
+        })
+        record_code_step("Computing deterministic Trust Score", 0, 0, {
+            "score": result["trust"]["score"], "band": result["trust"]["band"],
+        })
+        _emit_event(emit, "trust", result["trust"])
     # Only cited evidence goes into the audit record, at full length. Everything the
     # tools returned but the answer did not use is deliberately left out: the record
     # documents what the answer rests on, not what was browsed.
@@ -415,7 +427,7 @@ def _validate_submission(submitted: dict | None, context: ToolContext, mode: str
             "Available evidence did not satisfy the citation and sufficiency contract.",
             mode,
         )
-    return _accepted_result(submitted, refs, answer_text, mode, context)
+    return _accepted_result(submitted, refs, answer_text, mode, context, question)
 
 
 def _resolve_citations(claimed: list, context: ToolContext) -> list[str]:
@@ -530,7 +542,7 @@ def _straddles_requested_years(refs: list[str], context: ToolContext, question: 
 
 
 def _accepted_result(submitted: dict, refs: list[str], answer_text: str, mode: str,
-                     context: ToolContext) -> dict:
+                     context: ToolContext, question: str) -> dict:
     """Assemble the answer payload once every contract has been satisfied.
 
     Only reachable for an answer that passed validation, so this function contains no
@@ -538,12 +550,14 @@ def _accepted_result(submitted: dict, refs: list[str], answer_text: str, mode: s
     one place to look for "why was this rejected".
     """
     dates = [context.evidence[ref].date for ref in refs]
+    as_of = str(submitted.get("as_of") or max(dates))[:10]
+    cited = [context.evidence[ref] for ref in refs]
     return {
         "answer": answer_text,
         # Fall back to the newest cited evidence date when the model omits `as_of`: a
         # mutable corporate fact shown without a date invites the reader to assume it is
         # current. Sliced to 10 characters so a full timestamp becomes a plain date.
-        "as_of": str(submitted.get("as_of") or max(dates))[:10],
+        "as_of": as_of,
         "citations": refs,
         "sources": _source_records(refs, context),
         "sufficient": True,
@@ -551,6 +565,10 @@ def _accepted_result(submitted: dict, refs: list[str], answer_text: str, mode: s
         "reasoning": str(
             submitted.get("reasoning", "Evidence references passed deterministic validation.")
         )[:REASONING_MAX_CHARS],
+        "trust": score_answer(
+            question, answer_text, as_of, cited, list(context.evidence.values()),
+            submitted.get("confidence", 0.5), context.database,
+        ),
     }
 
 
@@ -593,6 +611,9 @@ def _source_records(refs: list[str], context: ToolContext) -> list[dict]:
                 "trust_penalty": item.trust_penalty,
                 "trust_penalty_reason": item.trust_penalty_reason,
                 "unverified": bool(item.unverified_claims),
+                "authority_score": round(source_authority_value(item), 3),
+                "authority_label": _authority_label(source_authority_value(item)),
+                "stance": "supports",
                 "content_sha256": passage["content_sha256"],
                 "passages": [passage],
             }
@@ -602,3 +623,11 @@ def _source_records(refs: list[str], context: ToolContext) -> list[dict]:
         # claimed as of the newest passage — the same rule `as_of` follows.
         page["date"] = max(page["date"], item.date)
     return list(pages.values())
+
+
+def _authority_label(value: float) -> str:
+    if value >= 0.9:
+        return "high"
+    if value >= 0.65:
+        return "medium"
+    return "low"

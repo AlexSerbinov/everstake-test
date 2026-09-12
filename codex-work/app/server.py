@@ -11,12 +11,14 @@ Routes (all part of the public contract — README.md documents them and the UI 
   GET  /api/stats               the frozen index's build statistics
   GET  /api/costs               generated measured cost/resource report
   GET  /api/freshness           active policy, measured calculator, refresh/change log
+  GET  /api/trust               active live-editable Trust Score weights
   GET  /api/audit/public-key    the Ed25519 verification key, for offline checking
   GET  /api/audit/<id>          one audit record with a verdict on the chain up to it
   GET  /<path>                  static files from web/
   POST /api/query               answer, one JSON response
   POST /api/query/stream        answer, streamed as SSE (thinking, tool_call,
-                                tool_result, verification, answer, error)
+                                tool_result, verification, trust, answer, error)
+  POST /api/trust               atomically replace the validated Trust Score weights
 
 Built on `http.server` on purpose: no framework means no dependency the reviewer has to
 audit, and the whole request path fits in one readable file. It is `ThreadingHTTPServer`
@@ -41,6 +43,7 @@ from .agent import run_agent
 from .audit import get_record, public_key_b64
 from .freshness import calculator_payload
 from .refresh import freshness_status
+from .trust import DEFAULT_WEIGHTS, load_weights, save_weights
 
 WEB = ROOT / "web"
 
@@ -116,6 +119,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/api/freshness":
             self._json(200, {"calculator": calculator_payload(), "status": freshness_status()})
+            return
+        if self.path == "/api/trust":
+            self._json(200, {"weights": load_weights(), "defaults": DEFAULT_WEIGHTS})
             return
         if self.path.startswith("/api/corpus"):
             self._serve_corpus()
@@ -225,6 +231,9 @@ class Handler(BaseHTTPRequestHandler):
         traceback escaping here would kill the connection mid-stream and leave the UI
         spinning forever.
         """
+        if self.path == "/api/trust":
+            self._update_trust_weights()
+            return
         if self.path not in {"/api/query", "/api/query/stream"}:
             self.send_error(404)
             return
@@ -238,6 +247,15 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(200, run_agent(question, mode))
         except Exception as error:
             self._report_failure(error)
+
+    def _update_trust_weights(self) -> None:
+        """Validate and persist the live override without invoking the answer path."""
+        try:
+            length = min(int(self.headers.get("Content-Length", "0")), MAX_REQUEST_BODY_BYTES)
+            payload = json.loads(self.rfile.read(length))
+            self._json(200, {"weights": save_weights(payload.get("weights", {}))})
+        except (ValueError, TypeError, json.JSONDecodeError) as error:
+            self._json(400, {"error": str(error)})
 
     def _read_query_request(self) -> tuple[str | None, str]:
         """Parse and validate the request body, answering 400 itself if it is bad.

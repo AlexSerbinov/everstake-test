@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-09-12T15:14:38.920083+00:00",
+  "run_at": "2026-09-12T15:33:41.040641+00:00",
   "questions": 24,
   "passed": 24,
   "failed": 0,
@@ -228,22 +228,25 @@
       "output": "The CEO of Everstake is Sergii Vasylchuk.",
       "details": {
         "tools": [
-          "corpus_search"
+          "corpus_search",
+          "trust_score"
         ],
         "citations": [
           "E4"
         ],
         "audit_verified": true,
-        "cost_usd": 0.0046621,
+        "cost_usd": 0.0048481,
         "tokens": {
-          "input": 5686,
-          "output": 107,
+          "input": 5834,
+          "output": 127,
           "cached_input": 0
         },
-        "cpu_ms": 124.855,
-        "peak_rss_mb": 58.25
+        "cpu_ms": 124.52,
+        "peak_rss_mb": 63.23,
+        "trust_score": 89,
+        "correctness": "correct"
       },
-      "latency_seconds": 5.099
+      "latency_seconds": 2.643
     },
     {
       "id": 18,
@@ -259,22 +262,25 @@
       "details": {
         "tools": [
           "everstake_mcp",
-          "everstake_mcp"
+          "everstake_mcp",
+          "trust_score"
         ],
         "citations": [
           "E2"
         ],
         "audit_verified": true,
-        "cost_usd": 0.008307,
+        "cost_usd": 0.004725,
         "tokens": {
-          "input": 5726,
-          "output": 1070,
+          "input": 5435,
+          "output": 173,
           "cached_input": 0
         },
-        "cpu_ms": 41.275,
-        "peak_rss_mb": 60.36
+        "cpu_ms": 40.095,
+        "peak_rss_mb": 64.14,
+        "trust_score": 92,
+        "correctness": "correct"
       },
-      "latency_seconds": 6.443
+      "latency_seconds": 5.752
     },
     {
       "id": 19,
@@ -289,16 +295,18 @@
         ],
         "citations": [],
         "audit_verified": true,
-        "cost_usd": 0.00559583,
+        "cost_usd": 0.00654008,
         "tokens": {
-          "input": 6895,
-          "output": 114,
+          "input": 7214,
+          "output": 302,
           "cached_input": 0
         },
-        "cpu_ms": 89.432,
-        "peak_rss_mb": 60.36
+        "cpu_ms": 90.652,
+        "peak_rss_mb": 64.14,
+        "trust_score": null,
+        "correctness": "abstention"
       },
-      "latency_seconds": 2.37
+      "latency_seconds": 3.772
     },
     {
       "id": 20,
@@ -309,28 +317,31 @@
       ],
       "expected": "Require two distinct dated corpus sources for synthesis.",
       "passed": true,
-      "output": "Since 2024, Everstake's positioning has expanded from a general multi-chain validator serving retail and network ecosystems into an institutional-grade infrastructure provider. While early 2024 milestones highlighted its origins as a validator for individual blockchains and general staking across broad PoS ecosystems [E1], subsequent communications explicitly position Everstake under the slogan \"Secure staking made institutional\" [E3]. In addition to self-service retail staking, the company emphasizes enterprise and institutional offerings, including Institutional Staking and Validator-as-a-Service (VaaS), direct custody integrations (such as Fireblocks, BitGo, and Anchorage), and formal security and compliance alignments (including SOC 2 Type II, ISO 27001, and NIST CSF) [E3, E4, E7].",
+      "output": "Since 2024, Everstake has shifted its positioning from a multi-chain validator focused heavily on general blockchain infrastructure and retail staking expansion to an institutional-grade, non-custodial staking and infrastructure provider bridging decentralized and traditional finance. \n\nSpecifically:\n1. **Evolution in Scope and Audience**: In June 2024, Everstake highlighted its six-year trajectory from validating two blockchains to handling over 70 networks, serving retail delegators, and evaluating blockchain projects for internal investment and validation (Everstake, 2024). By 2026, Everstake explicitly positions itself as a \"global non-custodial staking provider for institutional and retail clients\" and defines its core mission as bridging the gap between traditional and decentralized finance by providing \"institutional-grade staking\" (Everstake, 2026).\n2. **Dedicated Institutional Offerings and Infrastructure**: Everstake expanded beyond standard validator operations into institutional services, such as dedicated Validator-as-a-Service (VaaS) for ETF issuers, custodians, and asset managers, along with advanced network infrastructure including Solana Blockspace, MEV optimization, ShredStream, and SWQoS (Everstake, 2026).\n3. **Institutional and Regulatory Alignment**: Reflected in its reporting and service design post-2024, Everstake aligns its infrastructure with formal enterprise compliance frameworks (including SOC 2 Type II, ISO 27001, NIST CSF, and GDPR) to serve institutional capital flows, ETF-driven adoption, and digital asset treasuries (Everstake, 2026).",
       "details": {
         "tools": [
-          "corpus_search"
+          "corpus_search",
+          "trust_score"
         ],
         "citations": [
           "E1",
           "E3",
           "E4",
-          "E7"
+          "E6"
         ],
         "audit_verified": true,
-        "cost_usd": 0.00642879,
+        "cost_usd": 0.00763631,
         "tokens": {
-          "input": 6928,
-          "output": 334,
+          "input": 7739,
+          "output": 494,
           "cached_input": 0
         },
-        "cpu_ms": 95.362,
-        "peak_rss_mb": 60.36
+        "cpu_ms": 105.616,
+        "peak_rss_mb": 64.14,
+        "trust_score": 88,
+        "correctness": "correct"
       },
-      "latency_seconds": 3.37
+      "latency_seconds": 6.658
     },
     {
       "id": 21,
@@ -386,7 +397,7 @@
       "details": {
         "model_calls": 0
       },
-      "latency_seconds": 0.0
+      "latency_seconds": 0.001
     },
     {
       "id": 23,
@@ -444,7 +455,9 @@
       "passed": true,
       "output": "reported=1, unverified=1",
       "details": {
-        "model_calls": 0
+        "model_calls": 0,
+        "trust_score": 40,
+        "correctness": "wrong"
       },
       "latency_seconds": 0.0
     }

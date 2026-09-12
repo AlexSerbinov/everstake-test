@@ -1,6 +1,6 @@
 # Measured Cost & Resources
 
-Building the measured index pipeline cost **$0.017469**. Across 4 measured full-agent questions, one question averaged **$0.006248**.
+Building the measured index pipeline cost **$0.017469**. Across 4 measured full-agent questions, one question averaged **$0.005937**.
 
 Prices were copied on **2026-09-12**. Tokens are provider-reported; wall time, process CPU and peak RSS are captured during the run.
 
@@ -13,8 +13,8 @@ Prices were copied on **2026-09-12**. Tokens are provider-reported; wall time, p
 | Clean, chunk & index | code | — | 1,223 chunks | 0 B | 0 / 0 (0) | $0.00000000 | 1.05s | 969.6ms | 90.02 MB | Darwin arm64 (Alexs-MacBook-Pro.local) | $0.0000000000 |
 | Fact-ledger extraction | code | — | 1,223 chunks scanned | 0 B | 0 / 0 (0) | $0.00000000 | 12.9ms | 12.8ms | 90.02 MB | Darwin arm64 (Alexs-MacBook-Pro.local) | $0.0000000000 |
 | Index embeddings | model | text-embedding-3-small | 1,223 chunks | 0 B | 873,426 / 0 (0) | $0.01746852 | 11.90s | 348.5ms | 90.02 MB | Darwin arm64 (Alexs-MacBook-Pro.local) | $0.0000142833 |
-| Quality evaluation | model + code | text-embedding-3-small, gemini-3.8-flash | 20 questions | 0 B | 118,844 / 2,285 (0) | $0.09753750 | 32.04s | 1.64s | 48.09 MB | MacBook Pro (local development) | $0.0048768750 |
-| Adversarial evaluation | model + code | gemini-3.8-flash, text-embedding-3-small | 24 questions | 0 B | 25,235 / 1,625 (0) | $0.02499372 | 17.28s | 476.7ms | 60.36 MB | Darwin arm64 (Alexs-MacBook-Pro.local) | $0.0010414050 |
+| Quality evaluation | model + code | text-embedding-3-small, gemini-3.8-flash | 20 questions | 0 B | 118,531 / 2,495 (0) | $0.09809025 | 48.64s | 1.78s | 49.91 MB | Darwin arm64 (Alexs-MacBook-Pro.local) | $0.0049045125 |
+| Adversarial evaluation | model + code | gemini-3.8-flash, text-embedding-3-small | 24 questions | 0 B | 26,222 / 1,096 (0) | $0.02374949 | 18.83s | 500.4ms | 64.14 MB | Darwin arm64 (Alexs-MacBook-Pro.local) | $0.0009895621 |
 
 ## One real question, step by step
 
@@ -22,11 +22,12 @@ Prices were copied on **2026-09-12**. Tokens are provider-reported; wall time, p
 
 | Step | Tool or model | Tokens in / out (cache) | USD | Time |
 |---|---|---:|---:|---:|
-| Model turn | gemini-3.8-flash | 1,307 / 37 (0) | $0.00111900 | 1.05s |
-| query_embedding | text-embedding-3-small | 27 / 0 (0) | $0.00000054 | 218.4ms |
-| Searching and ranking the corpus | code | 0 / 0 (0) | $0.00000000 | 310.1ms |
-| Model turn | gemini-3.8-flash | 5,594 / 297 (0) | $0.00530925 | 1.96s |
-| **Total** |  | **6,928 / 334 (0)** | **$0.00642879** | **3.34s** |
+| Model turn | gemini-3.8-flash | 1,381 / 40 (0) | $0.00118575 | 879.8ms |
+| query_embedding | text-embedding-3-small | 28 / 0 (0) | $0.00000056 | 223.9ms |
+| Searching and ranking the corpus | code | 0 / 0 (0) | $0.00000000 | 333.9ms |
+| Model turn | gemini-3.8-flash | 6,330 / 454 (0) | $0.00645000 | 5.39s |
+| Computing deterministic Trust Score | code | 0 / 0 (0) | $0.00000000 | 0.0ms |
+| **Total** |  | **7,739 / 494 (0)** | **$0.00763631** | **6.62s** |
 
 Measured on **Darwin arm64 (Alexs-MacBook-Pro.local)**.
 
@@ -39,15 +40,15 @@ Measured on **Darwin arm64 (Alexs-MacBook-Pro.local)**.
 | Clean, chunk & index | $0.00000000 | $0.00000000 × 50 = **$0.00000000** | 1.05s × 50 = **52.51s** |
 | Fact-ledger extraction | $0.00000000 | $0.00000000 × 50 = **$0.00000000** | 12.9ms × 50 = **643.5ms** |
 | Index embeddings | $0.01746852 | $0.01746852 × 50 = **$0.87342600** | 11.90s × 50 = **9.92m** |
-| Quality evaluation | $0.09753750 | $0.09753750 × 50 = **$4.87687500** | 32.04s × 50 = **26.70m** |
-| Adversarial evaluation | $0.02499372 | $0.02499372 × 50 = **$1.24968600** | 17.28s × 50 = **14.40m** |
-| One full-agent question | $0.00642879 | $0.00642879 × 50 = **$0.32143950** | 3.34s × 50 = **2.78m** |
+| Quality evaluation | $0.09809025 | $0.09809025 × 50 = **$4.90451250** | 48.64s × 50 = **40.53m** |
+| Adversarial evaluation | $0.02374949 | $0.02374949 × 50 = **$1.18747450** | 18.83s × 50 = **15.69m** |
+| One full-agent question | $0.00763631 | $0.00763631 × 50 = **$0.38181550** | 6.62s × 50 = **5.52m** |
 
 ## Spend ledger
 
 Before this task, **397** local provider events totalled **$0.25609992**. Their provider token/cost fields remain in the append-only paid-call ledger; wall time, CPU and RAM were never captured and are therefore not reconstructed.
 
-This task used **$0.49325589** across local and deployed checks. The complete known assignment spend is **$0.75291541**.
+This task used **$0.61509563** across local and deployed checks. The complete known assignment spend is **$0.87475515**.
 
 ## What is measured vs assumed
 

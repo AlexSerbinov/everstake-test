@@ -491,7 +491,9 @@ class AnswerPostProcessingTests(IndexHarness):
     def test_sources_expose_title_url_date_and_tier(self):
         self.two_documents()
         result = self.answer("staking rewards", "factual", {"answer": "x", "citations": [1], "sufficient": True})
-        self.assertEqual(set(result["sources"][0]), {"title", "url", "date", "tier"})
+        self.assertEqual(set(result["sources"][0]), {
+            "title", "url", "date", "tier", "authority_score", "authority_label", "stance"
+        })
 
     def test_usage_reports_both_the_embedding_and_generation_legs(self):
         self.two_documents()
@@ -507,7 +509,7 @@ class AnswerPostProcessingTests(IndexHarness):
         self.two_documents()
         result = self.answer("staking rewards", "factual", {"answer": "x", "citations": [1], "sufficient": True})
         self.assertEqual(set(result), {"answer", "as_of", "citations", "sources",
-                                       "sufficient", "mode", "usage", "reasoning"})
+                                       "sufficient", "mode", "usage", "reasoning", "trust"})
 
     def test_a_missing_reasoning_field_becomes_an_empty_string(self):
         self.two_documents()

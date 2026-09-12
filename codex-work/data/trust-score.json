@@ -1,0 +1,10 @@
+{
+  "weights": {
+    "source_authority": 0.25,
+    "independent_agreement": 0.25,
+    "recency": 0.15,
+    "grounding": 0.20,
+    "extraction_confidence": 0.10,
+    "model_self_assessment": 0.05
+  }
+}

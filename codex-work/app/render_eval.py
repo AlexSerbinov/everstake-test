@@ -16,6 +16,7 @@ module is not part of the deployed path.
 from __future__ import annotations
 
 import json
+import math
 
 from .config import ROOT
 
@@ -36,7 +37,7 @@ def main() -> None:
     result = json.loads((ROOT / "data/eval-results.json").read_text())
     lines = _header_lines(result)
     lines.extend(_result_row(row) for row in result["rows"])
-    lines.extend(_limitations_lines())
+    lines.extend(_limitations_lines(result))
     (ROOT / "EVAL.md").write_text("\n".join(lines) + "\n")
 
 
@@ -61,8 +62,10 @@ def _header_lines(result: dict) -> list[str]:
         f"- Invented facts: **{result['invented_facts']}**",
         "- Negative cases: **5/5 correctly abstained**",
         "",
-        "| # | Question | Reference answer | System answer | Verdict |",
-        "|---:|---|---|---|---|",
+        _trust_summary(result),
+        "",
+        "| # | Question | Reference answer | System answer | Trust Score | Verdict |",
+        "|---:|---|---|---|---:|---|",
     ]
 
 
@@ -70,8 +73,36 @@ def _result_row(row: dict) -> str:
     """One table row: the question, the reference answer, and what the system said."""
     system = row["system"]
     rendered = _rendered_answer(system)
+    trust = row["system"].get("trust")
+    score = str(trust["score"]) if trust else "—"
     return (f"| {row['id']} | {cell(row['question'])} | {cell(row['reference'])} | "
-            f"{cell(rendered)} | {cell(row['verdict'])} |")
+            f"{cell(rendered)} | {score} | {cell(row['verdict'])} |")
+
+
+def _trust_summary(result: dict) -> str:
+    scored = [(row["system"].get("trust", {}).get("score"), row["verdict"].startswith("PASS"))
+              for row in result["rows"] if row["system"].get("trust")]
+    correct = [score for score, passed in scored if passed]
+    incorrect = [score for score, passed in scored if not passed]
+    mean_correct = sum(correct) / len(correct) if correct else 0
+    mean_incorrect = sum(incorrect) / len(incorrect) if incorrect else None
+    correlation = _correlation(scored)
+    wrong_text = f"{mean_incorrect:.1f}" if mean_incorrect is not None else "n/a"
+    correlation_text = f"{correlation:.3f}" if correlation is not None else "n/a (no scored variance)"
+    return (f"- Trust Score validation: correct answered rows mean **{mean_correct:.1f}**, "
+            f"incorrect answered rows mean **{wrong_text}**; point-biserial correlation with "
+            f"correctness **{correlation_text}**. Abstentions have no score.")
+
+
+def _correlation(rows: list[tuple[float, bool]]) -> float | None:
+    if len(rows) < 2:
+        return None
+    xs = [float(score) for score, _ in rows]
+    ys = [1.0 if passed else 0.0 for _, passed in rows]
+    mean_x, mean_y = sum(xs) / len(xs), sum(ys) / len(ys)
+    numerator = sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys))
+    denominator = math.sqrt(sum((x - mean_x) ** 2 for x in xs) * sum((y - mean_y) ** 2 for y in ys))
+    return numerator / denominator if denominator else None
 
 
 def _rendered_answer(system: dict) -> str:
@@ -89,7 +120,7 @@ def _rendered_answer(system: dict) -> str:
     return rendered
 
 
-def _limitations_lines() -> list[str]:
+def _limitations_lines(result: dict) -> list[str]:
     """The method-and-limitations section, kept as prose the reviewer will actually read.
 
     Written into the artefact rather than left in a README because a 100% score with no
@@ -104,9 +135,9 @@ def _limitations_lines() -> list[str]:
         "",
         "This is a deterministic regression set, not an independent human or LLM judge. Substring "
         "checks can miss a correct paraphrase or accept a sentence containing the right words in the "
-        "wrong relation. The set is also small and company-focused. The 100% result therefore means "
-        "the submitted behavior passes these 20 declared contracts, not that unseen-question accuracy "
-        "is 100%. Earlier development runs exposed failures in stale-CEO selection, missing dates, and "
+        f"wrong relation. The set is also small and company-focused. The {result['accuracy']:.0%} result therefore means "
+        "the submitted behavior passed that share of these 20 declared contracts, not that unseen-question accuracy "
+        f"is {result['accuracy']:.0%}. Earlier development runs exposed failures in stale-CEO selection, missing dates, and "
         "endpoint conflict handling; those drove source-contract fixes before this frozen final run.",
     ]
 

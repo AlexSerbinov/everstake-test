@@ -52,6 +52,9 @@ FRESHNESS_LOG_PATH: Path = Path(
 )
 PEOPLE_PATH: Path = Path(os.getenv("EVERSTAKE_PEOPLE", ROOT / "config/people.yaml"))
 KB_CONFIG_PATH: Path = Path(os.getenv("EVERSTAKE_KB_CONFIG", ROOT / "config/kb.yaml"))
+TRUST_CONFIG_PATH: Path = Path(
+    os.getenv("EVERSTAKE_TRUST_CONFIG", DATA_DIR / "trust-score.json")
+)
 
 # Prices copied on this date. A run stores the applicable row with its usage so later
 # price changes cannot rewrite history. `cached_input` intentionally equals ordinary

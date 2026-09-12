@@ -11,15 +11,17 @@ A tool-using, public-knowledge agent for Everstake. It chooses between a dated, 
 - `prompts/agent-system.txt`: production selection, stop, citation, freshness, and abstention policy.
 - `app/tools.py`: corpus, exact-value, document, live-fetch, and MCP adapters.
 - `app/audit.py`: content hashes, append-only hash chain, Ed25519 signatures, and verification.
+- `app/trust.py`, `data/trust-score.json`: deterministic score components, bands, reasons, and live weights.
 - `app/refresh.py`: policy scheduler, HTTP/GitHub change detection, change log, and snapshot preservation.
 - `app/freshness.py`, `data/freshness-policy.json`: per-source policy, presets, and measured monthly calculator.
 - `app/accounting.py`, `app/render_cost.py`: measured stage/question receipts and generated cost report.
-- `app/server.py`, `web/`: JSON API, live SSE pipeline, responsive Ask and Cost views.
+- `app/server.py`, `web/`: JSON API, live SSE pipeline, responsive Ask, Trust, Freshness, Corpus, and Cost views.
 - `app/crawler.py`, `app/indexer.py`, `app/retrieval.py`: original auditable ingestion and hybrid retrieval base.
 - `app/sources.py`, `config/people.yaml`, `config/kb.yaml`: YouTube discovery, people registry, speaker classification, and voice authority.
 - `app/consistency.py`: code-only attributed-fact ledger, contradiction penalties, and unverified flags.
 - `skills/`: concise operational rules for source conflicts, live evidence, abstention, and audit.
-- `eval/adversarial.json`, `EVAL.md`: 20 tricky cases and measured outputs.
+- `eval/questions.json`, `EVAL.md`: 20-question quality run with per-answer Trust Score and correctness correlation.
+- `eval/adversarial.json`, `ADVERSARIAL.md`: 24 attack cases, including a score-40 fake-number counterfactual.
 - `COST.md`: generated stage, question, resource, spend, and ×50 accounting.
 - `data/corpus.jsonl`, `data/index.sqlite3`: 280 source snapshots and ready-to-query index.
 - `screenshots/`: verified dark, light, and completed-answer states.
@@ -58,6 +60,17 @@ curl -N http://localhost:4321/api/query/stream \
   -d '{"question":"What is Solana current APY?","mode":"auto"}'
 ```
 
+Live Trust Score weights:
+
+```bash
+curl -sS http://localhost:4321/api/trust
+curl -sS http://localhost:4321/api/trust \
+  -H 'content-type: application/json' \
+  -d '{"weights":{"source_authority":0.20,"independent_agreement":0.35,"recency":0.15,"grounding":0.20,"extraction_confidence":0.05,"model_self_assessment":0.05}}'
+```
+
+Supported query responses expose `trust: {score, band, label, components, independent_sources, disagreements}`; the final SSE `answer` carries the identical object and a preceding `trust` event makes the computation visible in the pipeline. Abstentions return `trust: null`.
+
 Audit verification:
 
 ```bash
@@ -85,6 +98,8 @@ The hourly scheduler in `deploy/everstake-refresh.{service,timer}` executes the 
 Open `#freshness` in the UI for Economy, Balanced, Real-time, and custom controls. It recalculates monthly dollars, model tokens, machine minutes, per-source bars, and worst-case staleness immediately from measured ledger units. `GET /api/freshness` returns the same inputs plus the latest refresh/change log.
 
 Open `#corpus` to filter sources by who is speaking: official channel, known employee on a third-party channel, or third party. Source cards expose speakers, `stated` versus `reported`, trust penalties, and unverified badges. Auto-subtitle transcripts preserve minute markers so a YouTube citation remains inspectable.
+
+Open `#trust` to edit the six weights live. They must total 100%, and model self-assessment is capped at 10%. Each supported answer shows a band-coloured badge and an expandable row-by-row breakdown: weight, component value, point contribution, and a plain-language reason. Source cards label their own authority and whether they support the answer. The score describes evidence quality, not truth.
 
 ## Guarantees and limits
 

@@ -25,7 +25,7 @@
   "headline": {
     "index_cost_usd": 0.01746852,
     "index_wall_ms": 252640.535,
-    "mean_question_cost_usd": 0.00624843,
+    "mean_question_cost_usd": 0.0059373725,
     "measured_questions": 4
   },
   "stages": [
@@ -401,16 +401,16 @@
       },
       "bytes_downloaded": 0,
       "tokens": {
-        "input": 118844,
-        "output": 2285,
+        "input": 118531,
+        "output": 2495,
         "cached_input": 0
       },
-      "cost_usd": 0.0975375,
-      "wall_ms": 32042.188,
-      "cpu_ms": 1639.333,
-      "peak_rss_mb": 48.09,
-      "machine": "MacBook Pro (local development)",
-      "cost_per_unit": 0.004876875,
+      "cost_usd": 0.09809025,
+      "wall_ms": 48635.255,
+      "cpu_ms": 1782.25,
+      "peak_rss_mb": 49.91,
+      "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+      "cost_per_unit": 0.0049045125,
       "runs": [
         {
           "run_id": "1f4c3ce2-ff4b-4ffc-9ec4-601e0a4b35b6",
@@ -430,6 +430,30 @@
             "cached_input": 0
           },
           "cost_usd": 0.0975375,
+          "models": [
+            "text-embedding-3-small",
+            "gemini-3.8-flash"
+          ],
+          "status": "completed"
+        },
+        {
+          "run_id": "66368ff6-0431-42b6-a7c5-e3c169279ce6",
+          "started_at": "2026-09-12T15:32:18.390883+00:00",
+          "ended_at": "2026-09-12T15:33:07.026619+00:00",
+          "wall_ms": 48635.255,
+          "cpu_ms": 1782.25,
+          "peak_rss_mb": 49.91,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "questions": 20
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 118531,
+            "output": 2495,
+            "cached_input": 0
+          },
+          "cost_usd": 0.09809025,
           "models": [
             "text-embedding-3-small",
             "gemini-3.8-flash"
@@ -459,16 +483,16 @@
       },
       "bytes_downloaded": 0,
       "tokens": {
-        "input": 25235,
-        "output": 1625,
+        "input": 26222,
+        "output": 1096,
         "cached_input": 0
       },
-      "cost_usd": 0.02499372,
-      "wall_ms": 17283.849,
-      "cpu_ms": 476.712,
-      "peak_rss_mb": 60.36,
+      "cost_usd": 0.02374949,
+      "wall_ms": 18828.845,
+      "cpu_ms": 500.409,
+      "peak_rss_mb": 64.14,
       "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
-      "cost_per_unit": 0.001041405,
+      "cost_per_unit": 0.0009895621,
       "runs": [
         {
           "run_id": "a9afed79-14ed-49a0-9b27-0e2d06b2f62a",
@@ -637,31 +661,55 @@
             "text-embedding-3-small"
           ],
           "status": "completed"
+        },
+        {
+          "run_id": "ae13927c-0f4b-41c8-b777-d847ebe9745c",
+          "started_at": "2026-09-12T15:33:22.210824+00:00",
+          "ended_at": "2026-09-12T15:33:41.040041+00:00",
+          "wall_ms": 18828.845,
+          "cpu_ms": 500.409,
+          "peak_rss_mb": 64.14,
+          "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
+          "items": {
+            "questions": 24
+          },
+          "bytes_downloaded": 0,
+          "tokens": {
+            "input": 26222,
+            "output": 1096,
+            "cached_input": 0
+          },
+          "cost_usd": 0.02374949,
+          "models": [
+            "gemini-3.8-flash",
+            "text-embedding-3-small"
+          ],
+          "status": "completed"
         }
       ]
     }
   ],
   "representative_question": {
     "schema_version": 1,
-    "run_id": "37b29922-8699-453a-bd5f-3302fa5fd782",
+    "run_id": "8667f710-6c3c-421e-878d-b6106235d840",
     "kind": "question",
     "name": "single_question",
-    "started_at": "2026-09-12T15:14:35.548500+00:00",
-    "ended_at": "2026-09-12T15:14:38.886885+00:00",
-    "wall_ms": 3338.389,
-    "cpu_ms": 95.362,
-    "peak_rss_mb": 60.36,
+    "started_at": "2026-09-12T15:33:34.380539+00:00",
+    "ended_at": "2026-09-12T15:33:41.003405+00:00",
+    "wall_ms": 6622.79,
+    "cpu_ms": 105.616,
+    "peak_rss_mb": 64.14,
     "machine": "Darwin arm64 (Alexs-MacBook-Pro.local)",
     "items": {
       "questions": 1
     },
     "bytes_downloaded": 0,
     "tokens": {
-      "input": 6928,
-      "output": 334,
+      "input": 7739,
+      "output": 494,
       "cached_input": 0
     },
-    "cost_usd": 0.00642879,
+    "cost_usd": 0.00763631,
     "models": [
       "gemini-3.8-flash",
       "text-embedding-3-small"
@@ -677,14 +725,14 @@
         "provider": "Google",
         "model": "gemini-3.8-flash",
         "tokens": {
-          "input": 1307,
-          "output": 37,
+          "input": 1381,
+          "output": 40,
           "cached_input": 0
         },
-        "cost_usd": 0.001119,
-        "wall_ms": 1054.783,
-        "cpu_ms": 2.719,
-        "peak_rss_mb": 60.36,
+        "cost_usd": 0.00118575,
+        "wall_ms": 879.847,
+        "cpu_ms": 3.692,
+        "peak_rss_mb": 64.14,
         "price_copied_at": "2026-09-12",
         "metadata": {
           "thought_tokens": 0
@@ -696,14 +744,14 @@
         "provider": "OpenAI",
         "model": "text-embedding-3-small",
         "tokens": {
-          "input": 27,
+          "input": 28,
           "output": 0,
           "cached_input": 0
         },
-        "cost_usd": 5.4e-07,
-        "wall_ms": 218.387,
-        "cpu_ms": 2.913,
-        "peak_rss_mb": 60.36,
+        "cost_usd": 5.6e-07,
+        "wall_ms": 223.947,
+        "cpu_ms": 3.436,
+        "peak_rss_mb": 64.14,
         "price_copied_at": "2026-09-12",
         "metadata": {
           "items": 1
@@ -720,12 +768,12 @@
           "cached_input": 0
         },
         "cost_usd": 0.0,
-        "wall_ms": 310.147,
-        "cpu_ms": 84.167,
-        "peak_rss_mb": 60.36,
+        "wall_ms": 333.921,
+        "cpu_ms": 88.762,
+        "peak_rss_mb": 64.14,
         "metadata": {
           "tool": "corpus_search",
-          "nested_provider_cost_usd": 5.4e-07
+          "nested_provider_cost_usd": 5.6e-07
         }
       },
       {
@@ -734,17 +782,36 @@
         "provider": "Google",
         "model": "gemini-3.8-flash",
         "tokens": {
-          "input": 5594,
-          "output": 297,
+          "input": 6330,
+          "output": 454,
           "cached_input": 0
         },
-        "cost_usd": 0.00530925,
-        "wall_ms": 1963.928,
-        "cpu_ms": 2.855,
-        "peak_rss_mb": 60.36,
+        "cost_usd": 0.00645,
+        "wall_ms": 5386.403,
+        "cpu_ms": 5.689,
+        "peak_rss_mb": 64.14,
         "price_copied_at": "2026-09-12",
         "metadata": {
           "thought_tokens": 0
+        }
+      },
+      {
+        "name": "Computing deterministic Trust Score",
+        "kind": "code",
+        "provider": null,
+        "model": null,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cached_input": 0
+        },
+        "cost_usd": 0.0,
+        "wall_ms": 0,
+        "cpu_ms": 0,
+        "peak_rss_mb": 64.14,
+        "metadata": {
+          "score": 88,
+          "band": "good"
         }
       }
     ],
@@ -754,7 +821,7 @@
       "mode": "synthesis",
       "parent_runs": [
         {
-          "run_id": "f7f9c743-ba45-4aef-ac8e-c6774af18518",
+          "run_id": "ae13927c-0f4b-41c8-b777-d847ebe9745c",
           "name": "adversarial_eval"
         }
       ],
@@ -766,11 +833,11 @@
     "legacy_local_provider_events": 397,
     "legacy_local_cost_usd": 0.25609992,
     "legacy_all_environment_cost_usd": 0.25965952,
-    "current_task_local_provider_events": 261,
-    "current_task_local_cost_usd": 0.48906329,
+    "current_task_local_provider_events": 313,
+    "current_task_local_cost_usd": 0.61090303,
     "external_current_task_cost_usd": 0.0041926,
-    "current_task_all_environment_cost_usd": 0.49325589,
-    "known_assignment_total_usd": 0.75291541,
+    "current_task_all_environment_cost_usd": 0.61509563,
+    "known_assignment_total_usd": 0.87475515,
     "legacy_resource_fields": null
   },
   "assumptions": [
