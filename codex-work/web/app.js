@@ -197,7 +197,8 @@ function updateFreshnessCalculation() {
   const maximum = Math.max(...result.rows.map(row => row.cost), 0.000001);
   result.rows.forEach((row, index) => {
     const item = document.createElement('div');
-    item.innerHTML = `<span>${freshnessData.calculator.source_labels[row.name]}</span><i><b class="tone-${index % 7}" style="width:${Math.max(1, row.cost / maximum * 100)}%"></b></i><strong>${money(row.cost)}</strong>`;
+    const share = Math.max(1, Math.round(row.cost / maximum * 20));
+    item.innerHTML = `<span>${freshnessData.calculator.source_labels[row.name]}</span><i><b class="tone-${index % 7} share-${share}"></b></i><strong>${money(row.cost)}</strong>`;
     chart.append(item);
   });
   const blog = result.rows.find(row => row.name === 'blog');
