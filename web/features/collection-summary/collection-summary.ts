@@ -1,3 +1,4 @@
+import { averageQuality } from "../evaluation/average-quality.js";
 import { el, getJson, metric, money } from "../../shared/dom.js";
 import { publicEvaluations } from "../evaluation/current-evaluation.js";
 import { defaultEvaluationRun } from "../evaluation/default-evaluation-run.js";
@@ -48,15 +49,18 @@ export function collectionSummary(): HTMLElement {
         return;
       }
       const progress = evaluationMetrics(run);
-      quality.replaceWith(
-        metric(
-          run.viewKind === "updated" ? "Evaluation after rechecks" : "Saved evaluation accuracy",
-          progress.accuracy,
-          run.viewKind === "updated"
-            ? `${run.summary.passed}/${progress.planned} passed, including ${run.recheckedCount} rechecked questions. Updated saved answers, not a new full run or a guarantee for new questions.`
-            : `${run.summary.passed}/${progress.planned} passed · ${run.mode} · ${run.corpusVersion}. Saved results, not a guarantee for new questions.`,
-        ),
+      const average = averageQuality(run);
+      const result = metric(
+        average === null ? "Saved evaluation" : "Average answer rubric score",
+        average === null ? "See results" : `${average.toFixed(2)} / 100`,
+        average === null
+          ? "See the saved answers and failure analysis in Evaluation."
+          : `Post-hoc rubric review, including partial credit. ${run.summary.passed}/${progress.planned} fully passed${run.viewKind === "updated" ? ` after ${run.recheckedCount} rechecks; not a new full run` : ""}. Not a probability of correctness.`,
       );
+      const link = el("a", "small", "Scores and failures →");
+      link.href = "#evaluation";
+      result.append(link);
+      quality.replaceWith(result);
     })
     .catch(() => {
       quality.replaceWith(metric("Saved evaluation", "Unavailable"));
