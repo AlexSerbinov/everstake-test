@@ -1,0 +1,240 @@
+{
+  "generatedAt": "2026-09-13T14:07:57.378Z",
+  "overview": {
+    "calls": 6,
+    "inputTokens": 13241,
+    "outputTokens": 2980,
+    "knownCostUsd": 0.021105749999999996,
+    "unknownCalls": 3,
+    "pendingCalls": 0,
+    "byModel": [
+      {
+        "provider": "soniox",
+        "model": "stt-async-v5",
+        "calls": 3,
+        "knownCostUsd": 0,
+        "unknownCalls": 3
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "calls": 3,
+        "knownCostUsd": 0.021105749999999996,
+        "unknownCalls": 0
+      }
+    ],
+    "byStatus": [
+      {
+        "status": "completed",
+        "calls": 6,
+        "knownCostUsd": 0.021105749999999996,
+        "unknownCalls": 3
+      }
+    ]
+  },
+  "calls": [
+    {
+      "id": "ee391f0e-f881-4fba-954f-3dcfee8614d0",
+      "run_id": "1506eba7-31fa-441b-9e24-317bb83ae7ba",
+      "stage": "youtube-transcription",
+      "provider": "soniox",
+      "model": "stt-async-v5",
+      "started_at": "2026-09-13T14:02:04.286Z",
+      "elapsed_ms": 38085,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "status": "completed",
+      "metadata": "{\"videoId\":\"DFSEQ3OGoL8\",\"audioHash\":\"15589442e71f7d1f3b25d041c999d5fe93e2c6f576b4df5c4ca3a7a795c83ac1\",\"model\":\"stt-async-v5\",\"operationId\":\"df2b38f7-e7cb-42b6-8dc0-a76bfaca0e57\",\"durationSeconds\":548,\"forecastCostUsd\":0.015222222222222224,\"attempt\":1,\"reservationUsd\":0.015222222222222224,\"transcriptionId\":\"225ae98b-3b2a-4c88-b015-33b8da3f8979\",\"providerRequestId\":null,\"providerMetadata\":{\"id\":\"225ae98b-3b2a-4c88-b015-33b8da3f8979\",\"status\":\"completed\",\"created_at\":\"2026-09-13T14:02:04.419Z\",\"model\":\"stt-async-v5\",\"audio_url\":null,\"file_id\":\"7d4f7813-7731-4652-ad32-6a7ba43ff8d4\",\"filename\":\"DFSEQ3OGoL8.m4a\",\"language_hints\":null,\"enable_speaker_diarization\":true,\"enable_language_identification\":true,\"enable_audio_event_detection\":false,\"audio_duration_ms\":547874,\"error_type\":null,\"error_message\":null,\"webhook_url\":null,\"webhook_auth_header_name\":null,\"webhook_auth_header_value\":null,\"webhook_status_code\":null,\"client_reference_id\":\"df2b38f7-e7cb-42b6-8dc0-a76bfaca0e57\"},\"actualCostUsd\":null,\"costStatus\":\"unknown_pending_provider_usage_or_billing_reconciliation\",\"usage\":null,\"price\":null,\"error\":null}"
+    },
+    {
+      "id": "7c2cfc33-31d9-4250-8784-ea510c9aeac3",
+      "run_id": "4d30c194-6637-4a84-9f94-b00842a82e05",
+      "stage": "youtube-speaker-review",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "started_at": "2026-09-13T14:02:42.375Z",
+      "elapsed_ms": 4938.951333,
+      "input_tokens": 5042,
+      "output_tokens": 1332,
+      "cost_usd": 0.0087765,
+      "status": "completed",
+      "metadata": "{\"operationId\":\"f3f256f5-39ca-41fd-88c3-ac4b28fdcf20\",\"attempt\":1,\"reservationUsd\":0.05,\"providerRequestId\":\"Aq2mau3VLsbMnsEP7s7w2AY\",\"usage\":{\"cachedInputTokens\":0,\"visibleOutputTokens\":258,\"thinkingTokens\":1074,\"raw\":{\"promptTokenCount\":5042,\"candidatesTokenCount\":258,\"totalTokenCount\":6374,\"promptTokensDetails\":[{\"modality\":\"TEXT\",\"tokenCount\":5042}],\"thoughtsTokenCount\":1074,\"serviceTier\":\"standard\"}},\"price\":{\"inputPerMillionUsd\":0.75,\"cachedInputPerMillionUsd\":0.075,\"outputPerMillionUsd\":3.75,\"source\":\"https://ai.google.dev/gemini-api/docs/pricing\",\"note\":\"Standard paid tier through 2026-12-31; output includes thinking tokens.\",\"model\":\"gemini-3.8-flash\",\"pricesAsOf\":\"2026-09-13\"},\"error\":null}"
+    },
+    {
+      "id": "a4105d6f-ce41-4ee1-82a8-856f746eab1f",
+      "run_id": "3650c9b0-cf20-439b-a223-c9bcb38460e7",
+      "stage": "youtube-transcription",
+      "provider": "soniox",
+      "model": "stt-async-v5",
+      "started_at": "2026-09-13T14:03:22.612Z",
+      "elapsed_ms": 22558,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "status": "completed",
+      "metadata": "{\"videoId\":\"V0WcDdiJAeg\",\"audioHash\":\"2c7146afcd7e39f6bfe9e69622faf2d3a8e45e6db3aa1b5ead0263e2a4b0b8f4\",\"model\":\"stt-async-v5\",\"operationId\":\"d2ad1ad6-bc29-4072-9a0b-426037474da4\",\"durationSeconds\":983,\"forecastCostUsd\":0.027305555555555555,\"attempt\":1,\"reservationUsd\":0.027305555555555555,\"transcriptionId\":\"fd2dcbad-8851-47ba-a279-9af5dd6669c6\",\"providerRequestId\":null,\"providerMetadata\":{\"id\":\"fd2dcbad-8851-47ba-a279-9af5dd6669c6\",\"status\":\"completed\",\"created_at\":\"2026-09-13T14:03:22.730Z\",\"model\":\"stt-async-v5\",\"audio_url\":null,\"file_id\":\"13821b8e-542b-4678-9ea7-15019e55a05f\",\"filename\":\"V0WcDdiJAeg.m4a\",\"language_hints\":null,\"enable_speaker_diarization\":true,\"enable_language_identification\":true,\"enable_audio_event_detection\":false,\"audio_duration_ms\":983365,\"error_type\":null,\"error_message\":null,\"webhook_url\":null,\"webhook_auth_header_name\":null,\"webhook_auth_header_value\":null,\"webhook_status_code\":null,\"client_reference_id\":\"d2ad1ad6-bc29-4072-9a0b-426037474da4\"},\"actualCostUsd\":null,\"costStatus\":\"unknown_pending_provider_usage_or_billing_reconciliation\",\"usage\":null,\"price\":null,\"error\":null}"
+    },
+    {
+      "id": "2064c190-ab81-46ce-b971-862667305901",
+      "run_id": "3650c9b0-cf20-439b-a223-c9bcb38460e7",
+      "stage": "youtube-speaker-review",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "started_at": "2026-09-13T14:03:45.175Z",
+      "elapsed_ms": 4038.312791000004,
+      "input_tokens": 7419,
+      "output_tokens": 1215,
+      "cost_usd": 0.0101205,
+      "status": "completed",
+      "metadata": "{\"operationId\":\"d1faa06c-ce1a-4311-b64d-fd336a62ba4d\",\"attempt\":1,\"reservationUsd\":0.05,\"providerRequestId\":\"Qa2masvUH5XlxN8Pl4LsWA\",\"usage\":{\"cachedInputTokens\":0,\"visibleOutputTokens\":346,\"thinkingTokens\":869,\"raw\":{\"promptTokenCount\":7419,\"candidatesTokenCount\":346,\"totalTokenCount\":8634,\"promptTokensDetails\":[{\"modality\":\"TEXT\",\"tokenCount\":7419}],\"thoughtsTokenCount\":869,\"serviceTier\":\"standard\"}},\"price\":{\"inputPerMillionUsd\":0.75,\"cachedInputPerMillionUsd\":0.075,\"outputPerMillionUsd\":3.75,\"source\":\"https://ai.google.dev/gemini-api/docs/pricing\",\"note\":\"Standard paid tier through 2026-12-31; output includes thinking tokens.\",\"model\":\"gemini-3.8-flash\",\"pricesAsOf\":\"2026-09-13\"},\"error\":null}"
+    },
+    {
+      "id": "207a6aac-7ab5-483b-b41d-6d08dcdb4dc3",
+      "run_id": "afed63aa-0f67-4a50-835e-e5934c91e438",
+      "stage": "youtube-transcription",
+      "provider": "soniox",
+      "model": "stt-async-v5",
+      "started_at": "2026-09-13T14:04:07.569Z",
+      "elapsed_ms": 5959,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "status": "completed",
+      "metadata": "{\"videoId\":\"Wz8KVaO2gWk\",\"audioHash\":\"1cf41f1788a378f7c610e1fa7065c27c8b516dda3c9e753ba6287e3ca4a02b5c\",\"model\":\"stt-async-v5\",\"operationId\":\"f2d1d160-b63c-4e73-9fe9-8488ce980f65\",\"durationSeconds\":76,\"forecastCostUsd\":0.0021111111111111113,\"attempt\":1,\"reservationUsd\":0.0021111111111111113,\"transcriptionId\":\"aca0c070-73c0-4a3b-8fa6-5088d6121f55\",\"providerRequestId\":null,\"providerMetadata\":{\"id\":\"aca0c070-73c0-4a3b-8fa6-5088d6121f55\",\"status\":\"completed\",\"created_at\":\"2026-09-13T14:04:07.684Z\",\"model\":\"stt-async-v5\",\"audio_url\":null,\"file_id\":\"becdc292-fcbf-4aed-9a8f-bb6616289bdc\",\"filename\":\"Wz8KVaO2gWk.m4a\",\"language_hints\":null,\"enable_speaker_diarization\":true,\"enable_language_identification\":true,\"enable_audio_event_detection\":false,\"audio_duration_ms\":75557,\"error_type\":null,\"error_message\":null,\"webhook_url\":null,\"webhook_auth_header_name\":null,\"webhook_auth_header_value\":null,\"webhook_status_code\":null,\"client_reference_id\":\"f2d1d160-b63c-4e73-9fe9-8488ce980f65\"},\"actualCostUsd\":null,\"costStatus\":\"unknown_pending_provider_usage_or_billing_reconciliation\",\"usage\":null,\"price\":null,\"error\":null}"
+    },
+    {
+      "id": "e4a1cc6f-e979-4d82-8d43-488aa86ad653",
+      "run_id": "afed63aa-0f67-4a50-835e-e5934c91e438",
+      "stage": "youtube-speaker-review",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "started_at": "2026-09-13T14:04:13.532Z",
+      "elapsed_ms": 4316.067999999999,
+      "input_tokens": 780,
+      "output_tokens": 433,
+      "cost_usd": 0.00220875,
+      "status": "completed",
+      "metadata": "{\"operationId\":\"2484ba34-ab95-4b51-8cfe-1e14bb01c276\",\"attempt\":1,\"reservationUsd\":0.05,\"providerRequestId\":\"Xa2mat2RMubNkdUP6ou40AY\",\"usage\":{\"cachedInputTokens\":0,\"visibleOutputTokens\":127,\"thinkingTokens\":306,\"raw\":{\"promptTokenCount\":780,\"candidatesTokenCount\":127,\"totalTokenCount\":1213,\"promptTokensDetails\":[{\"modality\":\"TEXT\",\"tokenCount\":780}],\"thoughtsTokenCount\":306,\"serviceTier\":\"standard\"}},\"price\":{\"inputPerMillionUsd\":0.75,\"cachedInputPerMillionUsd\":0.075,\"outputPerMillionUsd\":3.75,\"source\":\"https://ai.google.dev/gemini-api/docs/pricing\",\"note\":\"Standard paid tier through 2026-12-31; output includes thinking tokens.\",\"model\":\"gemini-3.8-flash\",\"pricesAsOf\":\"2026-09-13\"},\"error\":null}"
+    }
+  ],
+  "jobs": [
+    {
+      "videoId": "DFSEQ3OGoL8",
+      "status": "completed",
+      "audioHash": "15589442e71f7d1f3b25d041c999d5fe93e2c6f576b4df5c4ca3a7a795c83ac1",
+      "model": "stt-async-v5",
+      "fileId": "7d4f7813-7731-4652-ad32-6a7ba43ff8d4",
+      "transcriptionId": "225ae98b-3b2a-4c88-b015-33b8da3f8979",
+      "startedAt": "2026-09-13T14:02:02.203Z",
+      "completedAt": "2026-09-13T14:02:42.368Z",
+      "turnCount": 45,
+      "providerMetadata": {
+        "uploadRequestId": "ad545540-bb65-4223-9049-75b172f52b38",
+        "attemptId": "ee391f0e-f881-4fba-954f-3dcfee8614d0",
+        "operationId": "df2b38f7-e7cb-42b6-8dc0-a76bfaca0e57",
+        "submitRequestId": "22a26d8b-fe26-45fb-9b87-a956953a33c6",
+        "terminalStatus": {
+          "id": "225ae98b-3b2a-4c88-b015-33b8da3f8979",
+          "status": "completed",
+          "created_at": "2026-09-13T14:02:04.419Z",
+          "model": "stt-async-v5",
+          "audio_url": null,
+          "file_id": "7d4f7813-7731-4652-ad32-6a7ba43ff8d4",
+          "filename": "DFSEQ3OGoL8.m4a",
+          "language_hints": null,
+          "enable_speaker_diarization": true,
+          "enable_language_identification": true,
+          "enable_audio_event_detection": false,
+          "audio_duration_ms": 547874,
+          "error_type": null,
+          "error_message": null,
+          "webhook_url": null,
+          "webhook_auth_header_name": null,
+          "webhook_auth_header_value": null,
+          "webhook_status_code": null,
+          "client_reference_id": "df2b38f7-e7cb-42b6-8dc0-a76bfaca0e57"
+        },
+        "turnNormalizerVersion": 2
+      }
+    },
+    {
+      "videoId": "V0WcDdiJAeg",
+      "status": "completed",
+      "audioHash": "2c7146afcd7e39f6bfe9e69622faf2d3a8e45e6db3aa1b5ead0263e2a4b0b8f4",
+      "model": "stt-async-v5",
+      "fileId": "13821b8e-542b-4678-9ea7-15019e55a05f",
+      "transcriptionId": "fd2dcbad-8851-47ba-a279-9af5dd6669c6",
+      "startedAt": "2026-09-13T14:03:20.622Z",
+      "completedAt": "2026-09-13T14:03:45.165Z",
+      "turnCount": 66,
+      "providerMetadata": {
+        "uploadRequestId": "861e1efe-d397-4124-9a47-f8b63e7c3cc6",
+        "attemptId": "a4105d6f-ce41-4ee1-82a8-856f746eab1f",
+        "operationId": "d2ad1ad6-bc29-4072-9a0b-426037474da4",
+        "submitRequestId": "dceafe64-9dfd-405d-a3d0-a9189b71ff6d",
+        "terminalStatus": {
+          "id": "fd2dcbad-8851-47ba-a279-9af5dd6669c6",
+          "status": "completed",
+          "created_at": "2026-09-13T14:03:22.730Z",
+          "model": "stt-async-v5",
+          "audio_url": null,
+          "file_id": "13821b8e-542b-4678-9ea7-15019e55a05f",
+          "filename": "V0WcDdiJAeg.m4a",
+          "language_hints": null,
+          "enable_speaker_diarization": true,
+          "enable_language_identification": true,
+          "enable_audio_event_detection": false,
+          "audio_duration_ms": 983365,
+          "error_type": null,
+          "error_message": null,
+          "webhook_url": null,
+          "webhook_auth_header_name": null,
+          "webhook_auth_header_value": null,
+          "webhook_status_code": null,
+          "client_reference_id": "d2ad1ad6-bc29-4072-9a0b-426037474da4"
+        },
+        "turnNormalizerVersion": 2
+      }
+    },
+    {
+      "videoId": "Wz8KVaO2gWk",
+      "status": "completed",
+      "audioHash": "1cf41f1788a378f7c610e1fa7065c27c8b516dda3c9e753ba6287e3ca4a02b5c",
+      "model": "stt-async-v5",
+      "fileId": "becdc292-fcbf-4aed-9a8f-bb6616289bdc",
+      "transcriptionId": "aca0c070-73c0-4a3b-8fa6-5088d6121f55",
+      "startedAt": "2026-09-13T14:04:06.432Z",
+      "completedAt": "2026-09-13T14:04:13.526Z",
+      "turnCount": 1,
+      "providerMetadata": {
+        "uploadRequestId": "b56e24ff-2444-4c62-a929-54eb0c8e895b",
+        "attemptId": "207a6aac-7ab5-483b-b41d-6d08dcdb4dc3",
+        "operationId": "f2d1d160-b63c-4e73-9fe9-8488ce980f65",
+        "submitRequestId": "1da208ce-d98e-493e-8bec-c9eeed9ed799",
+        "terminalStatus": {
+          "id": "aca0c070-73c0-4a3b-8fa6-5088d6121f55",
+          "status": "completed",
+          "created_at": "2026-09-13T14:04:07.684Z",
+          "model": "stt-async-v5",
+          "audio_url": null,
+          "file_id": "becdc292-fcbf-4aed-9a8f-bb6616289bdc",
+          "filename": "Wz8KVaO2gWk.m4a",
+          "language_hints": null,
+          "enable_speaker_diarization": true,
+          "enable_language_identification": true,
+          "enable_audio_event_detection": false,
+          "audio_duration_ms": 75557,
+          "error_type": null,
+          "error_message": null,
+          "webhook_url": null,
+          "webhook_auth_header_name": null,
+          "webhook_auth_header_value": null,
+          "webhook_status_code": null,
+          "client_reference_id": "f2d1d160-b63c-4e73-9fe9-8488ce980f65"
+        },
+        "turnNormalizerVersion": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+officialChannel:
+  handle: https://www.youtube.com/@everstake7336/videos
+  id: UCMKYtasvtCCSyfPj0r6FDcQ
+screening:
+  companyTerms: [everstake]
+  topicTerms: [staking, validator, blockchain, ethereum, solana, cosmos, web3, infrastructure, consensus]
+  participationTerms: [interview, podcast, talk, speaker, with everstake, everstake joins, everstake at]
+  lookalikeTerms: [everrise, everstake solution fintech]
+  minimumDurationSeconds: 30
+pilotVideoIds: [DFSEQ3OGoL8, V0WcDdiJAeg, Wz8KVaO2gWk]
+paths:
+  inventory: artifacts/youtube/inventory.json
+  documents: artifacts/youtube/accepted-documents.json
+  audioDirectory: data/youtube/audio
+limits:
+  pilotMaximumVideos: 3
+  pilotMaximumDurationSeconds: 3600
+  pilotBudgetUsd: 1
+  totalBudgetUsd: 3
+  sonioxForecastPerHourUsd: 0.10

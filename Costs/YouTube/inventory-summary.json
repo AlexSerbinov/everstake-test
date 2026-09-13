@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-09-13T14:01:10.392Z",
+  "counts": {
+    "discovered": 186,
+    "accepted": 77,
+    "needs_review": 72,
+    "excluded": 37
+  },
+  "acceptedDurationSeconds": 62154,
+  "unknownAcceptedDurations": 0,
+  "sourceCount": 2
+}
