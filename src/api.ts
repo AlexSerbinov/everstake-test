@@ -18,7 +18,8 @@ export function createApi({db,ask,costs,refresh}:ApiDependencies) {
  app.get('/api/corpus',c=>{
   const page=Math.max(0,Math.min(Number(c.req.query('page')??0)||0,10000));
   const documents=db.prepare('SELECT snapshot FROM documents WHERE active=1 ORDER BY url LIMIT 50 OFFSET ?').all(page*50).map(r=>{const d=JSON.parse(String(r.snapshot));return {...d,text:d.text.slice(0,1200)};});
-  return c.json({version:getSetting(db,'corpus_version','unbuilt'),total:db.prepare('SELECT count(*) AS n FROM documents WHERE active=1').get()!.n,documents,events:db.prepare('SELECT * FROM crawl_events ORDER BY id DESC LIMIT 30').all()});
+  const total=Number(db.prepare('SELECT count(*) AS n FROM documents WHERE active=1').get()!.n);
+  return c.json({version:getSetting(db,'corpus_version','unbuilt'),total,pageSize:50,hasNext:(page+1)*50<total,documents,events:db.prepare('SELECT * FROM crawl_events ORDER BY id DESC LIMIT 30').all()});
  });
  app.post('/api/ask',async c=>{
   if(busy)return c.json({error:'Another request is running. Please try again shortly.'},429);
