@@ -165,8 +165,8 @@ export function extractDocument(response: SafeFetchResult, source: SourceConfig)
     text: extracted.text,
     contentHash,
     fetchedAt: response.fetchedAt,
-    publishedAt: extracted.publishedAt,
-    updatedAt: extracted.updatedAt,
+    publishedAt: plausibleDate(extracted.publishedAt, response.fetchedAt),
+    updatedAt: plausibleDate(extracted.updatedAt, response.fetchedAt),
     dateEvidence: extracted.dateEvidence,
     duplicateOf: null,
     revision: contentHash.slice(0, 12),
@@ -186,4 +186,8 @@ export function extractDocument(response: SafeFetchResult, source: SourceConfig)
     },
     links: extracted.links,
   };
+}
+
+export function plausibleDate(value:string|null, fetchedAt:string):string|null {
+ if(!value)return null;return Date.parse(value)<=Date.parse(fetchedAt)+86400000?value:null;
 }

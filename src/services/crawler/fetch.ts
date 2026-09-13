@@ -144,9 +144,9 @@ const defaultTransport: FetchTransport = async (url, options) => {
         let body = Buffer.concat(chunks);
         try {
           const encoding = headers['content-encoding']?.toLowerCase();
-          if (encoding === 'gzip') body = gunzipSync(body);
-          else if (encoding === 'deflate') body = inflateSync(body);
-          else if (encoding === 'br') body = brotliDecompressSync(body);
+          if (encoding === 'gzip') body = gunzipSync(body, { maxOutputLength: options.maxBytes });
+          else if (encoding === 'deflate') body = inflateSync(body, { maxOutputLength: options.maxBytes });
+          else if (encoding === 'br') body = brotliDecompressSync(body, { maxOutputLength: options.maxBytes });
         } catch (error) {
           reject(new CrawlFetchError('decode_error', error instanceof Error ? error.message : String(error)));
           return;

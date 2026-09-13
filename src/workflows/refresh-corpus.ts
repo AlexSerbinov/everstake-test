@@ -32,10 +32,17 @@ export async function refreshCorpus(db: Database, sources: SourceConfig[], optio
       if (options.continueOnSourceError === false) throw error;
     }
   }
-  if (successfulIds.size === 0) return { crawls, failures, retainedSourceIds: selected.map(source => source.id), index: null };
+  const gone = new Set(crawls.flatMap(r => r.exclusions.filter(e => e.reason === 'http_error' && /HTTP (404|410)\b/.test(e.detail ?? '')).map(e => e.url)));
+  if (successfulIds.size === 0 && gone.size === 0) return { crawls, failures, retainedSourceIds: selected.map(source => source.id), index: null };
   const refreshed = crawls.filter(report => successfulIds.has(report.sourceId)).flatMap(report => report.documents);
   const refreshedKeys = new Set(refreshed.flatMap(document => [document.url, document.canonicalUrl]));
-  const retained = readActiveDocuments(db).filter(document => !successfulIds.has(String(document.metadata.sourceId ?? '')) || (!refreshedKeys.has(document.url) && !refreshedKeys.has(document.canonicalUrl)));
+  const selectedIds = new Set(selected.map(s => s.id));
+  const retained = readActiveDocuments(db).filter(document => !gone.has(document.url) && !gone.has(document.canonicalUrl) && (!successfulIds.has(String(document.metadata.sourceId ?? '')) || (!refreshedKeys.has(document.url) && !refreshedKeys.has(document.canonicalUrl)))).map(document => selectedIds.has(String(document.metadata.sourceId ?? '')) ? {...document, metadata: {...document.metadata, refreshStatus: 'not_rechecked', freshnessNote: 'Retained historical snapshot; not verified by this refresh'}} : document);
+  if (!retained.length && !refreshed.length) {
+    db.exec('BEGIN IMMEDIATE');
+    try { db.prepare('UPDATE documents SET active=0 WHERE url IN ('+[...gone].map(()=>'?').join(',')+')').run(...gone); db.prepare("UPDATE settings SET value=? WHERE key='corpus_version'").run('empty-'+Date.now()); db.exec('COMMIT'); } catch(e) { db.exec('ROLLBACK'); throw e; }
+    return {crawls,failures,retainedSourceIds:[],index:null};
+  }
   const index = buildIndex(db, [...retained, ...refreshed], { version: options.version });
   return { crawls, failures, retainedSourceIds: failures.map(failure => failure.sourceId), index };
 }

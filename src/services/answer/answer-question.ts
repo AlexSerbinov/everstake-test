@@ -7,6 +7,7 @@ import { getSetting, type Database } from '../../storage/database.js';
 import { readDocument, searchCorpus } from '../search/search-corpus.js';
 import { scoreEvidence } from '../trust/score-evidence.js';
 import { calculate } from './calculate.js';
+import { verifyClaims } from './verify-claims.js';
 import { numbers, verifyAnswer } from './verify-answer.js';
 
 const claimSchema=z.object({text:z.string().min(1).max(3000),citations:z.array(z.string()).min(1).max(10),asOf:z.string().nullable()});
@@ -46,15 +47,16 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
    try { action=actionSchema.parse(JSON.parse(response.text.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,''))); }
    catch { messages.push({role:'user',text:'Invalid action schema. Return one valid JSON action; this consumes a research step.'}); continue; }
    if(action.action==='answer') {
-    answeredAction=true;
-    if(action.status==='no_reliable_answer') { result.checks=[{rule:'abstention',status:'passed',reason:'No factual claims emitted'}]; break; }
+    if(action.status==='no_reliable_answer') { answeredAction=true;result.checks=[{rule:'abstention',status:'passed',reason:'No factual claims emitted'}]; break; }
     const checks=verifyAnswer(action.claims,registry,question);
     if(!action.claims.length) checks.push({rule:'nonempty',status:'failed',reason:'Answer has no claims'});
-    send('verification','Checking citations, dates and quantities',checks);
+    if(!checks.some(c=>c.status==='failed'))checks.push(...await verifyClaims(model,runId,action.claims,registry,question));
+    send('verification','Checking citations, dates, quantities and support',checks);
     if(checks.some(c=>c.status==='failed')) {
      result.checks=checks;
      messages.push({role:'user',text:JSON.stringify({rejectedDraftChecks:checks,instruction:'Fix using actual evidence or abstain. Do not invent citations or unsupported numbers.'})});continue;
     }
+    answeredAction=true;
     const ids=new Set(action.claims.flatMap(c=>c.citations));
     const sources=[...ids].map(id=>registry.get(id)!);
     result={...result,status:action.status,claims:action.claims,checks,sources,asOf:action.claims.map(c=>c.asOf).filter(Boolean).sort().at(-1)??null,

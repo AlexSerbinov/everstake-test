@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { ModelClient, ModelRequest, ModelResponse } from '../contracts.js';
+import type { ModelClient, ModelRequest, ModelResponse, ModelMessage } from '../contracts.js';
 import { readConfig } from '../config.js';
 import type { Database } from '../storage/database.js';
 import {
@@ -214,7 +214,7 @@ async function runMeteredAttempts<T, R>(
   db: Database,
   common: ReturnType<typeof clientContext>,
   options: {
-    request: { runId: string; stage: string };
+    request: { runId: string; stage: string; system?: string; messages?: ModelMessage[]; input?: string | string[]; maxOutputTokens?: number };
     provider: string;
     model: string;
     settings: ModelsConfig['providers']['gemini'];
@@ -234,7 +234,7 @@ async function runMeteredAttempts<T, R>(
       model: options.model,
       attempt,
       operationId,
-      reservationUsd: common.config.unknownCallReserveUsd,
+      reservationUsd: reserveRequest(common.config, options.model, options.request),
     }, common.caps);
     const startedAt = performance.now();
     const controller = new AbortController();
@@ -300,4 +300,12 @@ async function responseBody(response: Response): Promise<unknown> {
   }
 }
 
-export type { ModelClient, ModelRequest, ModelResponse };
+export type { ModelClient, ModelRequest, ModelResponse, ModelMessage };
+
+/** Conservative byte-based input upper bound plus configured output limit; not billed usage. */
+function reserveRequest(config: ModelsConfig, model: string, request: {system?:string;messages?:ModelMessage[];input?:string|string[];maxOutputTokens?:number}): number {
+ const price=priceFor(config,model);if(!price)return config.unknownCallReserveUsd;
+ const bytes=Buffer.byteLength(JSON.stringify({system:request.system,messages:request.messages,input:request.input}),'utf8')+1024*(1+(request.messages?.length??0));
+ const output=request.input!==undefined?0:(request.maxOutputTokens??4096);
+ return Math.max(config.unknownCallReserveUsd,(bytes*price.inputPerMillionUsd+output*price.outputPerMillionUsd)/1e6);
+}

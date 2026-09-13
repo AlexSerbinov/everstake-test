@@ -21,8 +21,8 @@ export function sanitizeDocument(text: string): SanitizedDocument {
   const lines: string[] = [];
   for (const line of text.split('\n')) {
     const kept: string[] = [];
-    for (const match of line.matchAll(/[^.!?]+(?:[.!?]+|$)/g)) {
-      const sentence = match[0].trim();
+    for (const part of line.split(/(?<=[.!?])\s+/u)) {
+      const sentence = part.trim();
       if (!sentence) continue;
       const matched = rules.find(rule => rule.pattern.test(sentence));
       if (matched) removed.push({ text: sentence, rule: matched.name });

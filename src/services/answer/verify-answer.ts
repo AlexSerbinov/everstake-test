@@ -9,11 +9,11 @@ export function verifyAnswer(claims: Claim[], registry: Map<string,EvidencePassa
   const text=sources.filter(Boolean).map(s=>`${s!.text} ${s!.publishedAt??''} ${s!.updatedAt??''} ${s!.fetchedAt}`).join('\n');
   const known=new Set(numbers(text));
   const missing=numbers(claim.text).filter(n=>!known.has(n));
-  const date=!claim.asOf || text.includes(claim.asOf);
+  const date=!!claim.asOf && text.includes(claim.asOf);
   return [
    {rule:`claim-${index+1}:citations`,status:citations?'passed':'failed',reason:citations?'All references were returned in this run':'Missing or invented reference'},
    {rule:`claim-${index+1}:quantities`,status:missing.length?'failed':'passed',reason:missing.length?`Unsupported quantities: ${missing.join(', ')}`:'Quantities occur in cited evidence; semantic scope still requires review'},
-   {rule:`claim-${index+1}:date`,status:date?'passed':'failed',reason:date?'Date is present in evidence or explicitly unknown':'Unsupported as-of date'}
+   {rule:`claim-${index+1}:date`,status:date?'passed':'failed',reason:date?'Date is present in evidence; semantic verifier checks its meaning':'Unsupported as-of date'}
   ] satisfies CheckResult[];
  });
 }

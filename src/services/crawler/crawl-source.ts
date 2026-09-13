@@ -54,7 +54,7 @@ function finaliseSanitation(document: ReturnType<typeof extractDocument>): Docum
     text: sanitized.text,
     contentHash,
     revision: contentHash.slice(0, 12),
-    metadata: { ...document.metadata, removedInstructions: sanitized.removed },
+    metadata: { ...document.metadata, removedInstructionCount: sanitized.removed.length, removedInstructionRules: [...new Set(sanitized.removed.map(r => r.rule))] },
   };
 }
 

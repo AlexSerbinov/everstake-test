@@ -11,8 +11,11 @@ test('provider errors are errors, not abstentions',async()=>{
 });
 test('invented citations and quantities cannot pass',()=>{
  const checks=verifyAnswer([{text:'Supports 2700 networks',citations:['invented'],asOf:null}],new Map(),'');
- assert.equal(checks.filter(c=>c.status==='failed').length,2);
+ assert.equal(checks.filter(c=>c.status==='failed').length,3);
 });
 test('calculator supports bounded arithmetic and rejects executable operations',()=>{
  assert.equal(calculate('multiply',[64,32]),2048);assert.throws(()=>calculate('eval',[1,2]));assert.throws(()=>calculate('divide',[1,0]));
+});
+test('malformed final actions are infrastructure errors, not corpus absence',async()=>{
+ const db=openDatabase(':memory:');const result=await answerQuestion({db,model:{generate:async()=>({text:'invalid',model:'mock',inputTokens:0,outputTokens:0})},finish:()=>{},receipt:id=>({runId:id,calls:6,inputTokens:0,outputTokens:0,knownCostUsd:0,unknownCalls:0,elapsedMs:10})},'Anything?','bad');assert.equal(result.status,'error');db.close();
 });

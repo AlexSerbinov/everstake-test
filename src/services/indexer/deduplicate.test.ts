@@ -28,3 +28,8 @@ test('keeps revised facts on the same canonical URL separate', () => {
   assert.equal(result.groups.length, 0);
   assert.ok(result.documents.every(item => item.duplicateOf === null));
 });
+
+test('regrouping clears references to a missing previous representative', () => {
+ const retained={...document('copy','https://example.com/copy','The retained original content remains searchable.'),duplicateOf:'gone'};
+ const result=deduplicateDocuments([retained]);assert.equal(result.documents[0]!.duplicateOf,null);
+});

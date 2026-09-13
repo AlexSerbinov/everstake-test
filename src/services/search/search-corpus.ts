@@ -23,7 +23,7 @@ export function searchCorpus(db: Database, query: string, limit = 12): EvidenceP
 }
 export function passage(d: DocumentSnapshot, id: string, text: string, score = 0, reason = 'Requested document section'): EvidencePassage {
  return { id, documentId:d.id, url:d.url,title:d.title,text,authority:d.authority,publisher:d.publisher,
- publishedAt:d.publishedAt,updatedAt:d.updatedAt,fetchedAt:d.fetchedAt,duplicateGroup:d.duplicateOf??d.id,score,reason,metadata:d.metadata };
+ publishedAt:d.publishedAt,updatedAt:d.updatedAt,fetchedAt:d.fetchedAt,duplicateGroup:d.duplicateOf??d.id,score,reason,metadata:visibleMetadata(d.metadata) };
 }
 export function readDocument(db: Database, documentId: string, offset = 0): EvidencePassage[] {
  const row = db.prepare('SELECT snapshot FROM documents WHERE id=? AND active=1').get(documentId) as {snapshot:string}|undefined;
@@ -31,4 +31,10 @@ export function readDocument(db: Database, documentId: string, offset = 0): Evid
  const d = JSON.parse(row.snapshot) as DocumentSnapshot;
  const chunks = db.prepare('SELECT id,text FROM chunks WHERE document_id=? ORDER BY ordinal LIMIT 4 OFFSET ?').all(documentId,Math.max(0,Math.min(offset,500))) as {id:string;text:string}[];
  return chunks.map(c=>passage(d,c.id,c.text));
+}
+
+/** Only presentation provenance reaches the model, never raw sanitation audit text. */
+export function visibleMetadata(metadata:Record<string,unknown>):Record<string,unknown> {
+ const keys=['sourceId','videoId','startMs','endMs','speaker','speakerName','roleAtRecording','speakerStatus','reviewStatus','recordedAt','refreshStatus','freshnessNote'];
+ return Object.fromEntries(keys.filter(k=>metadata[k]!==undefined).map(k=>[k,metadata[k]]));
 }

@@ -23,7 +23,7 @@ test('discovers seeds, sitemaps, and bounded links while reporting outside hosts
   assert.equal(report.documents.length, 3);
   assert.deepEqual(report.documents.map(item => new URL(item.url).pathname).sort(), ['/from-map', '/linked', '/start']);
   assert.deepEqual(report.candidates, [{ url: 'https://outside.example/item', discoveredFrom: 'https://public.example/start' }]);
-  assert.equal((report.documents[0]!.metadata.removedInstructions as unknown[]).length, 0);
+  assert.equal(report.documents[0]!.metadata.removedInstructionCount, 0);
   assert.equal((db.prepare('SELECT count(*) AS count FROM crawl_events WHERE status=?').get('accepted') as { count: number }).count, 3);
   db.close();
 });

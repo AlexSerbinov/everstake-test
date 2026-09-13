@@ -13,3 +13,8 @@ test('preserves imperative API documentation', () => {
   assert.equal(sanitizeDocument(text).text, text);
   assert.equal(sanitizeDocument(text).removed.length, 0);
 });
+
+test('sanitation preserves decimal quantities and URL punctuation', () => {
+ const text='Minimum 0.01 ETH, previously 0.1 ETH. See https://example.com/a.html for details.';
+ assert.equal(sanitizeDocument(text).text,text);
+});

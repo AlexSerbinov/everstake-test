@@ -50,7 +50,8 @@ export function deduplicateDocuments(input: DocumentSnapshot[], nearThreshold = 
   for (const document of input) {
     const existing = byId.get(document.id);
     if (!existing) {
-      byId.set(document.id, { ...document, metadata: { ...document.metadata } });
+      const {duplicateGroup: _group, duplicateReason: _reason, duplicateSimilarity: _similarity, ...metadata}=document.metadata;
+      byId.set(document.id, { ...document, duplicateOf: null, metadata });
       continue;
     }
     const aliases = new Set<string>([
