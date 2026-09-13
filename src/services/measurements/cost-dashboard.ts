@@ -10,6 +10,8 @@ interface RunRow {
 }
 interface CallRow {
   run_id: string;
+  provider: string;
+  model: string;
   stage: string;
   started_at: string;
   cost_usd: number | null;
@@ -113,6 +115,50 @@ export function costDashboard(db: Database) {
   );
   const queryCosts = complete.map(({ receipt }) => receipt.knownCostUsd);
   const rootRuns = runs.filter((run) => roots.get(run.id) === run.id);
+  const rootCalls = new Map<string, CallRow[]>();
+  for (const call of calls) {
+    const root = roots.get(call.run_id) ?? call.run_id;
+    const rows = rootCalls.get(root) ?? [];
+    rows.push(call);
+    rootCalls.set(root, rows);
+  }
+  // Both website and incremental YouTube updates are recorded as refresh roots.
+  // A root can represent one source or a CLI multi-source refresh, not a UI batch.
+  const updateRuns = rootRuns.filter((run) => run.kind === "refresh");
+  const measuredUpdates = updateRuns
+    .map((run) => ({ run, receipt: summarize(rootCalls.get(run.id) ?? []) }))
+    .filter(
+      ({ run, receipt }) =>
+        run.status === "completed" && receipt.unknownCalls === 0,
+    );
+  const updateCosts = measuredUpdates.map(
+    ({ receipt }) => receipt.knownCostUsd,
+  );
+  const providerIds = [
+    "soniox",
+    "gemini",
+    "openai",
+    ...new Set(
+      calls
+        .map((call) => call.provider)
+        .filter(
+          (provider) => !["soniox", "gemini", "openai"].includes(provider),
+        ),
+    ),
+  ];
+  const byProvider = providerIds.map((provider) => {
+    const rows = calls.filter((call) => call.provider === provider);
+    return {
+      provider,
+      ...summarize(rows),
+      models: [...new Set(rows.map((row) => row.model))]
+        .map((model) => ({
+          model,
+          ...summarize(rows.filter((row) => row.model === model)),
+        }))
+        .sort((a, b) => b.knownCostUsd - a.knownCostUsd),
+    };
+  });
   const index = summarize(
     calls.filter((call) => {
       const kind = runMap.get(call.run_id)?.kind;
@@ -128,6 +174,21 @@ export function costDashboard(db: Database) {
     ...overview,
     ...summarize(calls),
     byPurpose,
+    byProvider,
+    update: {
+      runs: updateRuns.length,
+      measuredRuns: measuredUpdates.length,
+      excludedRuns: updateRuns.length - measuredUpdates.length,
+      meanUsd: updateCosts.length
+        ? updateCosts.reduce((sum, value) => sum + value, 0) /
+          updateCosts.length
+        : null,
+      minUsd: updateCosts.length ? Math.min(...updateCosts) : null,
+      maxUsd: updateCosts.length ? Math.max(...updateCosts) : null,
+      knownCostUsd: summarize(
+        updateRuns.flatMap((run) => rootCalls.get(run.id) ?? []),
+      ).knownCostUsd,
+    },
     byStage,
     daily,
     query: {

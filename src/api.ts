@@ -267,6 +267,10 @@ export function createApi({
       busy = false;
     }
   });
+  app.use("/*", async (c, next) => {
+    c.header("Cache-Control", "no-cache");
+    await next();
+  });
   app.use("/*", serveStatic({ root: "public" }));
   return app;
 }

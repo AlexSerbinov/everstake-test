@@ -1,5 +1,13 @@
 import type { CostDashboard } from "../../../src/services/measurements/cost-dashboard.js";
-import { badge, button, el, empty, getJson, money } from "../../shared/dom.js";
+import {
+  badge,
+  button,
+  details,
+  el,
+  empty,
+  getJson,
+  money,
+} from "../../shared/dom.js";
 import { activityLabel, activityTitle } from "./activity-label.js";
 import { costReceipt } from "./cost-receipt.js";
 
@@ -49,11 +57,11 @@ export function costOverview(): HTMLElement {
   const page = el("section", "explore-page costs-page");
   page.append(
     el("p", "eyebrow", "MEASURED, NOT GUESSED"),
-    el("h1", "", "Know the cost of knowing."),
+    el("h1", "", "What does the knowledge base cost?"),
     el(
       "p",
       "lede",
-      "Follow every dollar from source collection to the final answer. Recorded usage, transparent calculations, and a receipt for every operation.",
+      "See the average cost of one question and one update, then where the money went: Soniox transcription, Gemini answers and reviews, and OpenAI embeddings.",
     ),
   );
   const content = el("div");
@@ -65,26 +73,84 @@ export function costOverview(): HTMLElement {
       const stats = el("div", "cost-stats");
       stats.append(
         stat(
-          "Known usage cost",
+          "One question · average",
+          data.query.meanUsd === null
+            ? "No sample yet"
+            : `≈ ${money(data.query.meanUsd)}`,
+          `${data.query.measuredRuns} completed, fully priced queries · ${data.query.excludedRuns} excluded`,
+        ),
+        stat(
+          "One update run · average",
+          data.update.meanUsd === null
+            ? "No sample yet"
+            : `≈ ${money(data.update.meanUsd)}`,
+          `${data.update.measuredRuns} completed, fully priced updates · ${data.update.excludedRuns} excluded`,
+        ),
+        stat(
+          "Total recorded spending",
           money(data.knownCostUsd),
-          `${data.calls.toLocaleString()} provider calls · all time`,
+          `${data.calls.toLocaleString()} provider calls · known charges across all activity`,
         ),
         stat(
-          "Mean query cost",
-          data.query.meanUsd === null ? "No sample" : money(data.query.meanUsd),
-          `${data.query.measuredRuns} completed, fully priced queries`,
-        ),
-        stat(
-          "Index & embeddings",
-          money(data.index.knownCostUsd),
-          `${data.index.inputTokens.toLocaleString()} recorded input tokens`,
-        ),
-        stat(
-          "Unconfirmed",
+          "Costs still unknown",
           String(data.unknownCalls),
           `${data.pendingCalls} pending · ${data.unpricedFinalCalls} finished without price`,
         ),
       );
+      const sampleNote = el("p", "cost-sample-note");
+      sampleNote.textContent =
+        "Averages describe recorded successful runs, not a quote for the next request. Failed or unpriced runs are excluded from averages, but their known charges remain in total spending. One update run can check one source or several; a full Updates pass can contain many runs.";
+      const providers = el("div", "cost-provider-grid");
+      const providerNames: Record<string, { name: string; purpose: string }> = {
+        soniox: { name: "Soniox", purpose: "Video transcription" },
+        gemini: { name: "Gemini", purpose: "Answers, extraction & reviews" },
+        openai: { name: "OpenAI", purpose: "Search & index embeddings" },
+      };
+      for (const provider of data.byProvider) {
+        const description = providerNames[provider.provider] ?? {
+          name: provider.provider,
+          purpose: "Other recorded provider activity",
+        };
+        const box = panel(description.name);
+        box.classList.add("cost-provider-card");
+        const headline = el("div", "cost-provider-total");
+        headline.append(
+          el("span", "", `${description.purpose} · known cost`),
+          el(
+            "strong",
+            "",
+            provider.calls ? money(provider.knownCostUsd) : "No activity",
+          ),
+        );
+        box.append(headline);
+        for (const model of provider.models) {
+          const modelRow = el("div", "cost-provider-model");
+          const modelHeading = el("div", "cost-model-heading");
+          modelHeading.append(
+            el("strong", "", model.model),
+            el("strong", "", money(model.knownCostUsd)),
+          );
+          modelRow.append(
+            modelHeading,
+            el(
+              "p",
+              "cost-note",
+              provider.provider === "soniox"
+                ? `${model.calls} transcription attempts · ${model.unknownCalls} unpriced`
+                : `${model.calls} calls · ${model.inputTokens.toLocaleString()} in / ${model.outputTokens.toLocaleString()} out tokens`,
+            ),
+          );
+          box.append(modelRow);
+        }
+        box.append(
+          el(
+            "p",
+            "cost-provider-state",
+            `${provider.pendingCalls} pending · ${provider.unpricedFinalCalls} finished unpriced · ${provider.errorCalls} failed/cancelled`,
+          ),
+        );
+        providers.append(box);
+      }
       const ribbon = el("div", "cost-ribbon");
       ribbon.append(
         el(
@@ -103,6 +169,15 @@ export function costOverview(): HTMLElement {
           data.query.minUsd === null
             ? "Query range unavailable"
             : `Query range ${money(data.query.minUsd)}–${money(data.query.maxUsd!)} · ${data.query.excludedRuns} incomplete/unpriced excluded`,
+        ),
+      );
+      ribbon.append(
+        el(
+          "span",
+          "",
+          data.update.minUsd === null
+            ? "Update range: no completed priced sample"
+            : `Update range ${money(data.update.minUsd)}–${money(data.update.maxUsd!)} · ${money(data.update.knownCostUsd)} across all update runs`,
         ),
       );
       const columns = el("div", "cost-columns");
@@ -163,8 +238,16 @@ export function costOverview(): HTMLElement {
           `Assumes the same document mix, token volume per document, processing and prices. ${data.forecast.unknownCalls} unconfirmed index calls are excluded. This scales accumulated index/embedding work, including retries and rebuilds; it is not a clean one-build benchmark or a query-cost forecast.`,
         ),
       );
-      content.replaceChildren(stats, ribbon, columns, trends, forecast);
+      const breakdown = details(
+        "Detailed spending, daily history & 50× scenario",
+        columns,
+        trends,
+        forecast,
+      );
+      breakdown.classList.add("cost-detail-disclosure");
+      content.replaceChildren(stats, sampleNote, providers, ribbon);
       renderLedger(content, data);
+      content.append(breakdown);
       const accounting = panel("What these numbers mean");
       accounting.classList.add("cost-accounting");
       accounting.append(

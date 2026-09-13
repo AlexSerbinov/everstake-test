@@ -322,3 +322,121 @@
     font-size: 10px;
   }
 }
+
+/* Overview puts per-operation cost and real provider totals before detail. */
+.costs-page .cost-stat {
+  padding: 16px 18px;
+}
+.costs-page .cost-stat strong {
+  font-size: 25px;
+  margin: 7px 0;
+}
+.cost-sample-note {
+  margin: 10px 0 18px;
+  color: var(--cost-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  max-width: 1000px;
+}
+.cost-provider-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0 8px;
+  align-items: start;
+}
+.cost-provider-card {
+  padding: 17px 18px;
+  border-top: 3px solid #57c6a3;
+}
+.cost-provider-card:nth-child(2) {
+  border-top-color: #034638;
+}
+.cost-provider-card:nth-child(3) {
+  border-top-color: #8bbdac;
+}
+.cost-provider-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 2px 0 12px;
+  color: var(--cost-muted);
+  font-size: 11px;
+}
+.cost-provider-total strong {
+  color: var(--cost-ink);
+  font-size: 21px;
+  font-weight: 500;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.cost-provider-model {
+  padding: 10px 0;
+  border-top: 1px solid var(--cost-line);
+}
+.cost-provider-model .cost-note {
+  margin: 5px 0 0;
+  font-size: 10px;
+}
+.cost-provider-state {
+  border-top: 1px solid var(--cost-line);
+  padding-top: 10px;
+  margin: 0;
+  color: var(--cost-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.cost-detail-disclosure {
+  margin: 20px 0;
+}
+.cost-detail-disclosure > summary {
+  padding: 14px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.cost-detail-disclosure .cost-columns {
+  margin-top: 12px;
+}
+@media (max-width: 1100px) {
+  .cost-provider-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .cost-provider-card {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: start;
+    gap: 8px 16px;
+  }
+  .cost-provider-card .cost-provider-total {
+    flex-wrap: wrap;
+    padding: 0;
+  }
+  .cost-provider-card .cost-provider-model {
+    grid-column: 2;
+    border-top: 0;
+    padding: 0;
+  }
+  .cost-provider-card .cost-provider-state {
+    grid-column: 1/-1;
+  }
+}
+@media (max-width: 640px) {
+  .costs-page .cost-stat strong {
+    font-size: 21px;
+  }
+  .costs-page .cost-stat {
+    padding: 14px;
+  }
+  .cost-provider-card {
+    display: block;
+  }
+  .cost-provider-card .cost-provider-total {
+    padding: 0 0 10px;
+  }
+  .cost-provider-card .cost-provider-model {
+    border-top: 1px solid var(--cost-line);
+    padding: 10px 0;
+  }
+}

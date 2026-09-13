@@ -24,3 +24,13 @@ No confirmed P0–P2 findings remain after fixes and focused regression checks. 
 - The measurement importer is idempotent and rolls back on conflicting existing IDs, preserving serving-ledger costs.
 
 Hosted validation is recorded separately after publication. The full paid all-source refresh is not represented by the offline fixture.
+
+## Follow-up product refinement
+
+The owner requested spreadsheet-density rows and explicit provider prices after viewing an older open browser tab. Corpus now has six single-line columns and 44px rows; narrow screens scroll inside the table. Costs leads with observed query/update-run averages and separate Soniox/Gemini/OpenAI model totals. Three additional cost tests cover provider partitioning and update-run sampling. Independent review found no new P0–P2 issues. The public cost API still excludes raw visitor questions.
+
+Publication detected a shared-host build race: a separate frontend change entered the mutable Docker build directory. Rebuilt from a Git archive and verified the exact image digest, then corrected `scripts/deploy.sh` to use the same immutable flow. The failed mixed build is not treated as final UI validation.
+
+Latest local verification: typecheck and all 177 tests passed after the dense-table/provider-cost refinement. Browser recheck at 1440px and 390px confirmed 100 rows at 44px, contained horizontal table scrolling, model/provider cards, and explicit empty-average states.
+
+A real token-free source update completed on the host: job `567e73ad-4775-46d8-afee-13483ab01fc7`, Blockspace website, 34.1 seconds, three unchanged documents, 938 retained, no provider calls or charges, activated `corpus-231c8c9b17fd`. Earlier security and company-site refreshes failed incomplete collection and retained the old corpus; those failures remain visible. This is not a claim of a successful all-source/full-YouTube refresh.

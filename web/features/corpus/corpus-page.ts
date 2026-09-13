@@ -20,7 +20,7 @@ export function corpusPage(): HTMLElement {
     el(
       "p",
       "lede",
-      "Find a document, check its dates and open the saved evidence. Browse 100 documents at a time.",
+      "One document per row. Search the collection, check its dates and open the saved evidence.",
     ),
   );
   const summary = el("div", "corpus-summary");
@@ -56,6 +56,12 @@ export function corpusPage(): HTMLElement {
   const count = el("p", "small muted corpus-results-count");
   count.setAttribute("role", "status");
   const results = el("div", "corpus-results");
+  results.tabIndex = 0;
+  results.setAttribute("role", "region");
+  results.setAttribute(
+    "aria-label",
+    "Documents table; scroll horizontally to see all columns",
+  );
   let currentPage = 0;
   let generation = 0;
   let initialized = false;
@@ -139,14 +145,16 @@ export function corpusPage(): HTMLElement {
       const caption = el(
         "caption",
         "sr-only",
-        "Collected documents and source dates",
+        "Collected documents. One document per row. Scroll horizontally on narrow screens.",
       );
       const thead = el("thead");
       const head = el("tr");
       for (const label of [
         "Document",
-        "Type / authority",
-        "Source dates",
+        "Source",
+        "Type",
+        "Published",
+        "Checked",
         "Evidence",
       ]) {
         const th = el("th", "", label);
@@ -205,39 +213,43 @@ function appendDocument(
 ) {
   const row = el("tr", "corpus-row");
   const title = el("td", "corpus-document");
-  title.append(
-    link(doc.title || doc.url, doc.url),
-    el("span", "small muted", doc.publisher),
-  );
-  const sourceUrl = link(doc.url, doc.url);
-  sourceUrl.classList.add("corpus-url");
-  title.append(sourceUrl);
+  const titleLink = link(doc.title || doc.url, doc.url);
+  titleLink.title = `${doc.title || doc.url}\n${doc.url}`;
+  title.append(titleLink);
+  const publisher = el("td", "corpus-publisher", doc.publisher);
+  publisher.title = `${doc.publisher} · ${authority(doc.authority)}`;
   const type = el("td", "corpus-type");
-  type.append(
-    badge(doc.kind),
-    el("span", "small muted", authority(doc.authority)),
+  type.append(badge(doc.kind));
+  if (doc.duplicateOf) {
+    const copy = el("span", "corpus-copy", "Copy");
+    copy.title =
+      "Marked duplicate; the original is identified in the saved details";
+    type.append(copy);
+  }
+  const published = el(
+    "td",
+    "corpus-date",
+    doc.publishedAt ? doc.publishedAt.slice(0, 10) : "Unknown",
   );
-  if (doc.duplicateOf) type.append(badge("Marked copy", "warning"));
-  const dates = el("td", "corpus-dates small");
-  dates.append(
-    el(
-      "span",
-      "",
-      doc.publishedAt
-        ? `${doc.kind === "youtube" ? "Uploaded" : "Published"} ${date(doc.publishedAt)}`
-        : "Publication date unknown",
-    ),
-    el("span", "muted", `Checked ${date(doc.fetchedAt)}`),
-  );
-  if (doc.updatedAt)
-    dates.append(el("span", "muted", `Updated ${date(doc.updatedAt)}`));
+  published.title = doc.publishedAt
+    ? `${doc.kind === "youtube" ? "Uploaded" : "Published"} ${date(doc.publishedAt)}`
+    : "Publication date unknown";
+  const checked = el("td", "corpus-date", doc.fetchedAt.slice(0, 10));
+  checked.title = `Checked ${date(doc.fetchedAt)}. This is the collection date, not the fact's effective date.`;
   const action = el("td", "corpus-action");
   const expanded = el("tr", "corpus-expanded");
   expanded.id = id;
   expanded.hidden = true;
   const detail = el("td");
-  detail.colSpan = 4;
+  detail.colSpan = 6;
   detail.append(
+    el("h3", "corpus-detail-title", doc.title || doc.url),
+    link(doc.url, doc.url),
+    el(
+      "p",
+      "small muted",
+      `${doc.publisher} · ${authority(doc.authority)} · ${doc.updatedAt ? `Updated ${date(doc.updatedAt)} · ` : ""}Checked ${date(doc.fetchedAt)}`,
+    ),
     el("p", "eyebrow", "SAVED EXCERPT"),
     el("p", "document-excerpt", doc.text || "No text is available."),
     el(
@@ -256,17 +268,17 @@ function appendDocument(
     );
   expanded.append(detail);
   const toggle = button(
-    "Read excerpt",
+    "View",
     () => {
       expanded.hidden = !expanded.hidden;
       toggle.setAttribute("aria-expanded", String(!expanded.hidden));
-      toggle.textContent = expanded.hidden ? "Read excerpt" : "Close excerpt";
+      toggle.textContent = expanded.hidden ? "View" : "Close";
     },
     "text-button",
   );
   toggle.setAttribute("aria-expanded", "false");
   toggle.setAttribute("aria-controls", id);
   action.append(toggle);
-  row.append(title, type, dates, action);
+  row.append(title, publisher, type, published, checked, action);
   body.append(row, expanded);
 }
