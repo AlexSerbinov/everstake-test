@@ -34,7 +34,7 @@ Key non-negotiables from the assignment, paraphrased:
 - Record autonomous agent elapsed time and API spending separately. Parallel agents do not multiply human hours. Subscription usage is not necessarily zero resource usage.
 - Keep durations and their evidence in `docs/TIME.md`, not in this guide. Record actual session boundaries when tracking is authorized, pause when the user leaves, and merge overlapping human intervals. Do not infer absence from silence in prompt logs.
 - Keep retrospective user estimates separate from the historical event-based count; do not add both totals together. Label uncertainty. Eight hours is a budget, not a required reported result.
-- Git timestamps are real recording times, not timesheets. Do not backdate history or fabricate durations. TIME describes effort; CHANGELOG/TIMELINE describes outcomes; COST describes spending.
+- Git timestamps are real recording times, not timesheets. Do not backdate history or fabricate durations. TIME and TIMELOG describe effort; TIMELOG also lists the tasks behind it; COST describes spending.
 
 ## Git and parallel work
 
