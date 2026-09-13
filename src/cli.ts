@@ -31,6 +31,8 @@ try {
     command === "refresh-due" ||
     command === "refresh-resume"
   ) {
+    if (command === "refresh-resume" && !args[0]?.trim())
+      throw new Error("refresh-resume requires a job ID");
     console.log(
       JSON.stringify(
         await app.refresh(command === "refresh" ? args[0] : undefined, {
