@@ -8,6 +8,7 @@ npm run check
 npm run build:web
 ssh "$server" "mkdir -p '$remote_dir/data' '$remote_dir/artifacts' '$remote_dir/Costs'"
 rsync -az --exclude=.git --exclude=node_modules --exclude=data --exclude=.env --exclude=claude-work --exclude=codex-work ./ "$server:$remote_dir/"
+if [ -d data/youtube ]; then rsync -az data/youtube/ "$server:$remote_dir/data/youtube/"; fi
 rsync -az .env "$server:$remote_dir/.env"
 ssh "$server" "chmod 600 '$remote_dir/.env'"
 # Bootstrap data is transferred only when no live database exists. Subsequent deploys retain live costs/data.

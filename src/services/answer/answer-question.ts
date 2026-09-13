@@ -76,10 +76,13 @@ export async function answerQuestion(
     skills: string[];
     maxSteps: number;
   };
-  const system = [
-    readFileSync(definition.prompt, "utf8"),
-    ...definition.skills.map((p) => readFileSync(p, "utf8")),
-  ].join("\n\n");
+  const system =
+    mode === "baseline"
+      ? readFileSync("prompts/baseline.md", "utf8")
+      : [
+          readFileSync(definition.prompt, "utf8"),
+          ...definition.skills.map((p) => readFileSync(p, "utf8")),
+        ].join("\n\n");
   let answeredAction = false;
   const policy = readConfig<{ maxEvidence: number; maxOutputTokens: number }>(
     "policy",
@@ -121,17 +124,19 @@ export async function answerQuestion(
       text: JSON.stringify({ untrustedEvidence: initial }),
     });
     const steps = mode === "baseline" ? 1 : Math.min(definition.maxSteps, 8);
-    for (let step = 0; step < steps; step++) {
+    for (let step = 0; step < steps + (mode === "agent" ? 1 : 0); step++) {
       send(
         "step",
         mode === "baseline"
           ? "Generating plain-RAG baseline"
-          : `Research step ${step + 1} of ${steps}`,
+          : step >= steps
+            ? "Final answer repair"
+            : `Research step ${step + 1} of ${steps}`,
       );
       const instruction =
         mode === "baseline"
           ? "Return answer action now using only supplied initial passages."
-          : step === steps - 1
+          : step >= steps - 1
             ? "This is your final turn: return answer action using evidence collected so far."
             : "";
       const response = await model.generate({
@@ -248,7 +253,7 @@ export async function answerQuestion(
         };
         break;
       }
-      if (mode === "baseline") break;
+      if (mode === "baseline" || step >= steps) break;
       if (action.action === "search") {
         send("step", `Search: ${action.query}`);
         const sources = await search(action.query);

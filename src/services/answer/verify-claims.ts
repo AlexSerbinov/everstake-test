@@ -33,6 +33,7 @@ export async function verifyClaims(
         role: "user",
         text: JSON.stringify({
           question,
+          otherRetrievedEvidence: [...registry.values()],
           claims: claims.map((claim, claimIndex) => ({
             claimIndex,
             claim,

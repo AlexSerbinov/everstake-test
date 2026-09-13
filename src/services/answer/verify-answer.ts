@@ -43,7 +43,16 @@ export function verifyAnswer(
         status: date ? "passed" : "failed",
         reason: date
           ? "Date is present in evidence; semantic verifier checks its meaning"
-          : "Unsupported as-of date",
+          : `Unsupported as-of date. Copy a cited source date: ${sources
+              .filter(Boolean)
+              .flatMap((source) => [
+                source!.publishedAt,
+                source!.updatedAt,
+                source!.fetchedAt,
+              ])
+              .filter(Boolean)
+              .map((value) => value!.slice(0, 10))
+              .join(", ")}; qualify fetched dates as page observations`,
       },
     ] satisfies CheckResult[];
   });
