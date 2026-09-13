@@ -1,7 +1,8 @@
-import type { Receipt } from '../../contracts.js';
+import type { Receipt } from "../../contracts.js";
 
-export type RunStatus = 'running' | 'completed' | 'failed' | 'cancelled' | 'incomplete';
-export type AttemptStatus = 'pending' | 'completed' | 'error' | 'timed_out';
+export type RunStatus =
+  "running" | "completed" | "failed" | "cancelled" | "incomplete";
+export type AttemptStatus = "pending" | "completed" | "error" | "timed_out";
 
 export interface PriceEntry {
   inputPerMillionUsd: number;
@@ -37,7 +38,7 @@ export interface AttemptStart {
 }
 
 export interface AttemptFinish {
-  status: Exclude<AttemptStatus, 'pending'>;
+  status: Exclude<AttemptStatus, "pending">;
   elapsedMs: number;
   usage?: NormalizedUsage | null;
   price?: PriceSnapshot | null;
@@ -82,6 +83,17 @@ export interface CostOverview {
   knownCostUsd: number;
   unknownCalls: number;
   pendingCalls: number;
-  byModel: Array<{ provider: string; model: string; calls: number; knownCostUsd: number; unknownCalls: number }>;
-  byStatus: Array<{ status: string; calls: number; knownCostUsd: number; unknownCalls: number }>;
+  byModel: Array<{
+    provider: string;
+    model: string;
+    calls: number;
+    knownCostUsd: number;
+    unknownCalls: number;
+  }>;
+  byStatus: Array<{
+    status: string;
+    calls: number;
+    knownCostUsd: number;
+    unknownCalls: number;
+  }>;
 }

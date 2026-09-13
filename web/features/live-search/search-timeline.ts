@@ -46,8 +46,7 @@ export class SearchTimeline {
       head.append(el("span", "", event.label), elapsed);
       row.append(head);
       const data = event.data as
-        | { query?: string; title?: string; reason?: string }
-        | undefined;
+        { query?: string; title?: string; reason?: string } | undefined;
       if (data?.query || data?.title || data?.reason)
         row.append(
           el("p", "muted small", data.query || data.title || data.reason),

@@ -65,8 +65,7 @@ async function ask(question: string) {
       failed = true;
       currentTimeline.finish("Request failed");
       const data = event.data as
-        | { message?: string; error?: string }
-        | undefined;
+        { message?: string; error?: string } | undefined;
       result.replaceChildren(
         requestError(
           data?.error ||

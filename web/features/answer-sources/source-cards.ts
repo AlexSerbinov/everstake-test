@@ -25,13 +25,23 @@ export function sourceCard(
       "span",
       "",
       source.publishedAt
-        ? `Published ${date(source.publishedAt)}`
+        ? ` ${source.metadata.videoId ? "Uploaded" : "Published"} ${date(source.publishedAt)}`.trim()
         : "Publication date unknown",
     ),
   );
   if (source.updatedAt)
     dates.append(el("span", "", `Updated ${date(source.updatedAt)}`));
   dates.append(el("span", "", `Checked ${date(source.fetchedAt)}`));
+  if (source.metadata.videoId)
+    dates.append(
+      el(
+        "span",
+        "",
+        source.metadata.recordedAt
+          ? `Recorded ${date(String(source.metadata.recordedAt))}`
+          : "Recording date unknown; upload date may differ",
+      ),
+    );
   card.append(dates);
   for (const passage of passages) {
     const block = el("section", "passage");
@@ -46,6 +56,14 @@ export function sourceCard(
         ? `${passage.text.slice(0, 650)}…`
         : passage.text,
     );
+    if (typeof passage.metadata.startMs === "number")
+      block.append(
+        el(
+          "p",
+          "small muted",
+          `Video time ${Math.floor(passage.metadata.startMs / 60000)}:${String(Math.floor(passage.metadata.startMs / 1000) % 60).padStart(2, "0")} · speaker review: ${String(passage.metadata.reviewStatus ?? "unknown")}`,
+        ),
+      );
     block.append(quote);
     const original = link("Open this passage ↗", passage.url);
     original.classList.add("passage-link");
