@@ -1,0 +1,5 @@
+# Browser entry files
+
+The HTML shell and styles live here. The web build adds the generated JavaScript bundle that the server serves to the browser.
+
+Edit browser behavior in [web](../web/README.md), then rebuild using the commands in the [root README](../README.md). Generated bundles are not source files to maintain by hand.

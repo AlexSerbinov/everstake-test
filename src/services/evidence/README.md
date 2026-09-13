@@ -1,8 +1,5 @@
 # Evidence sanitation
 
-Removes document text that explicitly instructs an AI or asks for hidden prompts.
-Start with `sanitize-document.ts`.
-Input is extracted visible text and output is safe text plus an audit list of removed sentences.
-Ordinary product instructions and API commands remain available as evidence.
-The crawler stores the removal audit in snapshot metadata before indexing.
-Tests cover malicious instructions and preservation of useful imperative prose.
+Removes recognized sentences that address an AI with instructions, while preserving ordinary product instructions and API commands. The crawler stores an audit of removed text before indexing.
+
+Start with `sanitize-document.ts`. This filter reduces exposure; it does not make arbitrary source text trustworthy. The [answer module](../answer/README.md) also constrains actions and checks citations and support.
