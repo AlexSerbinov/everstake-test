@@ -49,3 +49,9 @@ The quality iteration is an observed regression, not an improvement: it changed 
 ## Untested limits
 
 No provider outage/concurrency/crash injection, reverse-proxy body-limit test, decompression-bomb fixture, malformed embedding response, sanitizer fuzzing, or live-deployment/browser test was run in this closure. The reviewer did not independently reproduce the coordinator's Linux/Node 22 test run. Final corpus provenance and gold references were audited separately in `docs/evaluation-reference-audit.md`.
+
+## Coordinator follow-up after this review
+
+The post-read body-limit and malformed-embedding observations were fixed in `5d9360d`. Hono's body-limit middleware bounds API bodies before route materialization; the new API regression covers both declared and streamed oversized bodies. The embedding provider now requires the expected batch count and finite, nonempty, equal-size vectors; malformed-response fixtures cover those failure modes. These boundary checks do not alter valid evaluation responses or establish semantic correctness. The measured repeat does not demonstrate improved truthfulness despite the additional semantic checks.
+
+Refresh recovery/fencing was subsequently hardened independently; see the separate refresh review and its closure. The original raw findings above retain their review-time status.
