@@ -331,7 +331,14 @@
       },
       "verdict": "fail",
       "inventedFacts": false,
-      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю»."
+      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю».",
+      "qualityScore": {
+        "correctness": 0,
+        "completeness": 0,
+        "grounding": 0,
+        "uncertainty": 0,
+        "reason": "Технічний збій: користувач не отримав відповіді. Це не оцінка прихованої чернетки."
+      }
     },
     {
       "question": {
@@ -649,7 +656,14 @@
       },
       "verdict": "fail",
       "inventedFacts": false,
-      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю»."
+      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю».",
+      "qualityScore": {
+        "correctness": 0,
+        "completeness": 0,
+        "grounding": 0,
+        "uncertainty": 0,
+        "reason": "Технічний збій: користувач не отримав відповіді. Це не оцінка прихованої чернетки."
+      }
     },
     {
       "question": {
@@ -1003,7 +1017,14 @@
       },
       "verdict": "fail",
       "inventedFacts": false,
-      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю»."
+      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю».",
+      "qualityScore": {
+        "correctness": 0,
+        "completeness": 0,
+        "grounding": 0,
+        "uncertainty": 0,
+        "reason": "Технічний збій: користувач не отримав відповіді. Це не оцінка прихованої чернетки."
+      }
     },
     {
       "question": {
@@ -1285,7 +1306,14 @@
       },
       "verdict": "fail",
       "inventedFacts": false,
-      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю»."
+      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю».",
+      "qualityScore": {
+        "correctness": 0,
+        "completeness": 0,
+        "grounding": 0,
+        "uncertainty": 0,
+        "reason": "Технічний збій: користувач не отримав відповіді. Це не оцінка прихованої чернетки."
+      }
     },
     {
       "question": {
@@ -1746,7 +1774,14 @@
       },
       "verdict": "pass",
       "inventedFacts": false,
-      "explanation": "20-денне обмеження повторної зміни валідатора відділено від доступних для отримання нагород. Немає твердження, що заблоковано весь гаманець."
+      "explanation": "20-денне обмеження повторної зміни валідатора відділено від доступних для отримання нагород. Немає твердження, що заблоковано весь гаманець.",
+      "qualityScore": {
+        "correctness": 40,
+        "completeness": 30,
+        "grounding": 20,
+        "uncertainty": 10,
+        "reason": "20-денне обмеження повторної зміни валідатора відділено від доступних для отримання нагород. Немає твердження, що заблоковано весь гаманець. За цими критеріями суттєвих пропусків не виявлено; це не гарантія безпомилковості."
+      }
     },
     {
       "question": {
@@ -2450,7 +2485,14 @@
       },
       "verdict": "pass",
       "inventedFacts": false,
-      "explanation": "Розрізнено старий внесок 0,5 SOL і новий окремий внесок: старий не потрібно поповнювати, новий має відповідати порогу 1 SOL. Суперечливий текст старого гайда показано окремо."
+      "explanation": "Розрізнено старий внесок 0,5 SOL і новий окремий внесок: старий не потрібно поповнювати, новий має відповідати порогу 1 SOL. Суперечливий текст старого гайда показано окремо.",
+      "qualityScore": {
+        "correctness": 40,
+        "completeness": 30,
+        "grounding": 20,
+        "uncertainty": 10,
+        "reason": "Розрізнено старий внесок 0,5 SOL і новий окремий внесок: старий не потрібно поповнювати, новий має відповідати порогу 1 SOL. Суперечливий текст старого гайда показано окремо. За цими критеріями суттєвих пропусків не виявлено; це не гарантія безпомилковості."
+      }
     },
     {
       "question": {
@@ -2716,7 +2758,14 @@
       },
       "verdict": "fail",
       "inventedFacts": false,
-      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю»."
+      "explanation": "Технічний збій перевіряльника: готової відповіді немає. Не зараховується як правильне «не знаю».",
+      "qualityScore": {
+        "correctness": 0,
+        "completeness": 0,
+        "grounding": 0,
+        "uncertainty": 0,
+        "reason": "Технічний збій: користувач не отримав відповіді. Це не оцінка прихованої чернетки."
+      }
     }
   ],
   "summary": {
@@ -2742,5 +2791,16 @@
     "method": "Offline rubric review by the coding assistant against saved references and source passages; not blind or human-certified.",
     "reviewedAt": "2026-09-13",
     "note": "All requested conclusions count; errors and material omissions fail. Unsupported combinations count separately from omissions. No answers were replaced by later retries."
+  },
+  "qualityScoring": {
+    "method": "Post-hoc coding-assistant rubric assessment; not human-certified or a probability. Binary verdicts remain unchanged.",
+    "weights": {
+      "correctness": 40,
+      "completeness": 30,
+      "grounding": 20,
+      "uncertainty": 10
+    },
+    "negativeCases": "A justified refusal can earn full credit; an error with no answer earns zero.",
+    "scope": "Scores apply to the exact saved answer, not later rechecks."
   }
 }

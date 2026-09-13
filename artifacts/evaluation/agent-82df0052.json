@@ -534,7 +534,14 @@
       },
       "verdict": "pass",
       "inventedFacts": false,
-      "explanation": "Схвалення відділено від активації, прогноз не подано як гарантію, позицію Everstake знайдено в тексті голосування."
+      "explanation": "Схвалення відділено від активації, прогноз не подано як гарантію, позицію Everstake знайдено в тексті голосування.",
+      "qualityScore": {
+        "correctness": 40,
+        "completeness": 30,
+        "grounding": 20,
+        "uncertainty": 10,
+        "reason": "Схвалення відділено від активації, прогноз не подано як гарантію, позицію Everstake знайдено в тексті голосування. За цими критеріями суттєвих пропусків не виявлено; це не гарантія безпомилковості."
+      }
     },
     {
       "question": {
@@ -1356,7 +1363,14 @@
       },
       "verdict": "pass",
       "inventedFacts": false,
-      "explanation": "Показано різні способи авторизації та строки доступу для всіх чотирьох продуктів. Єдиного ключа й миттєвого доступу не обіцяно."
+      "explanation": "Показано різні способи авторизації та строки доступу для всіх чотирьох продуктів. Єдиного ключа й миттєвого доступу не обіцяно.",
+      "qualityScore": {
+        "correctness": 40,
+        "completeness": 30,
+        "grounding": 20,
+        "uncertainty": 10,
+        "reason": "Показано різні способи авторизації та строки доступу для всіх чотирьох продуктів. Єдиного ключа й миттєвого доступу не обіцяно. За цими критеріями суттєвих пропусків не виявлено; це не гарантія безпомилковості."
+      }
     }
   ],
   "summary": {
@@ -1382,5 +1396,16 @@
   "assessment": {
     "method": "Offline rubric review against saved references and cited passages",
     "scope": "Only E21 and E12 rerun after output-schema fix; remaining 18 questions not rerun."
+  },
+  "qualityScoring": {
+    "method": "Post-hoc coding-assistant rubric assessment; not human-certified or a probability. Binary verdicts remain unchanged.",
+    "weights": {
+      "correctness": 40,
+      "completeness": 30,
+      "grounding": 20,
+      "uncertainty": 10
+    },
+    "negativeCases": "A justified refusal can earn full credit; an error with no answer earns zero.",
+    "scope": "Scores apply to the exact saved answer, not later rechecks."
   }
 }

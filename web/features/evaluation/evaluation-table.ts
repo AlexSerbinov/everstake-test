@@ -2,6 +2,26 @@ import { badge, details, el } from "../../shared/dom.js";
 import type { ResultRow } from "./question-result-card.js";
 import { answerView } from "../answer/answer-view.js";
 
+/** A rubric score is recorded separately; never infer it from a binary verdict. */
+export function qualityPercent(row: ResultRow): number | null {
+  const score = row.qualityScore;
+  if (!score) return null;
+  const limits = {
+    correctness: 40,
+    completeness: 30,
+    grounding: 20,
+    uncertainty: 10,
+  };
+  let total = 0;
+  for (const key of Object.keys(limits) as (keyof typeof limits)[]) {
+    const value = score[key];
+    if (!Number.isFinite(value) || value < 0 || value > limits[key])
+      return null;
+    total += value;
+  }
+  return total;
+}
+
 export function verdictLabel(verdict: string): string {
   if (["pass", "correct", "correct_abstention"].includes(verdict))
     return "Успішно";
@@ -66,6 +86,29 @@ export function evaluationTable(rows: ResultRow[], runId: string): HTMLElement {
       );
     } else actual.append(el("p", "muted", "Відповіді немає в цьому прогоні."));
     const verdict = el("td");
+    const percent = qualityPercent(row);
+    verdict.append(
+      el(
+        "strong",
+        "quality-score",
+        percent === null ? "Оцінка у % ще не виставлена" : `${percent}%`,
+      ),
+    );
+    if (percent !== null && row.qualityScore) {
+      const score = row.qualityScore;
+      verdict.append(
+        details(
+          "Як оцінено",
+          el(
+            "p",
+            "",
+            `Правильність фактів: ${score.correctness}/40. Повнота: ${score.completeness}/30. Опора на джерела: ${score.grounding}/20. Робота з невизначеністю: ${score.uncertainty}/10.`,
+          ),
+          el("p", "", score.reason),
+        ),
+      );
+    }
+
     const label = verdictLabel(row.verdict);
     verdict.append(
       badge(
