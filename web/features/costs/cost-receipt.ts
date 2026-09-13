@@ -10,6 +10,7 @@ import {
 import { receiptAttempts, type ReceiptAttempt } from "./receipt-attempts.js";
 export function costReceipt(
   receipt: Receipt & { attempts?: ReceiptAttempt[] },
+  title = "Answer receipt",
 ): HTMLElement {
   const content = el("div", "receipt-grid");
   content.append(
@@ -28,7 +29,7 @@ export function costReceipt(
     metric("Server time", `${(receipt.elapsedMs / 1000).toFixed(1)}s`),
   );
   const box = details(
-    `Answer receipt · ${money(receipt.knownCostUsd)}${receipt.unknownCalls ? " + unconfirmed charges" : ""}`,
+    `${title} · ${money(receipt.knownCostUsd)}${receipt.unknownCalls ? " + unconfirmed charges" : ""}`,
     content,
     el(
       "p",

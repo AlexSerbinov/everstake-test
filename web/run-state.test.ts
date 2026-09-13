@@ -12,3 +12,11 @@ test("new questions invalidate old callbacks and abort the previous connection",
   assert.equal(current.current(), false);
   assert.equal(current.signal.aborted, true);
 });
+
+test("answer anchors use distinct local scopes without requiring secure-context browser APIs", () => {
+  const state = new RunState();
+  const first = state.start();
+  const second = state.start();
+  assert.notEqual(first.scope, second.scope);
+  assert.match(second.scope, /^answer-\d+$/);
+});

@@ -42,7 +42,7 @@ async function ask(question: string) {
   const run = state.start();
   form.setBusy(true);
   status.textContent = "Your question has been sent.";
-  const scope = `answer-${crypto.randomUUID()}`;
+  const scope = run.scope;
   const heading = el("div", "question-heading");
   heading.append(el("p", "eyebrow", "YOUR QUESTION"), el("h2", "", question));
   const result = el("div");
@@ -129,6 +129,15 @@ function navigate() {
   window.scrollTo({ top: 0, behavior: "instant" });
   document.title = `${selected === "ask" ? "Ask" : selected[0].toUpperCase() + selected.slice(1)} · Everstake Knowledge`;
 }
+// The accessibility skip target is a document anchor, not an application route.
+document
+  .querySelector<HTMLAnchorElement>(".skip-link")
+  ?.addEventListener("click", (event) => {
+    event.preventDefault();
+    const main = document.getElementById("main")!;
+    main.focus({ preventScroll: true });
+    main.scrollIntoView({ behavior: "instant" });
+  });
 window.addEventListener("hashchange", navigate);
 window.addEventListener("pagehide", () => {
   state.cancel();

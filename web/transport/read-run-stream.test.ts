@@ -118,3 +118,18 @@ test("malformed event releases the reader", async () => {
   );
   assert.equal(stream.locked, false);
 });
+
+test("preserves an HTTP adapter error after run-specific events", async () => {
+  const data =
+    frame(event("step")) +
+    frame(event("error", "Request failed", "request-error"));
+  const received: RunEvent[] = [];
+  await readRunStream(response([new TextEncoder().encode(data)]), (value) =>
+    received.push(value),
+  );
+  assert.deepEqual(
+    received.map((row) => row.type),
+    ["step", "error"],
+  );
+  assert.equal(received[1].label, "Request failed");
+});
