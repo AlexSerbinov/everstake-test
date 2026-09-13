@@ -1,14 +1,15 @@
 {
-  "status": "references_pending_frozen_corpus_review",
-  "provenance": "Selected from the previous public-source evaluation banks; never used as runtime context.",
+  "status": "references_reviewed_against_frozen_corpus_2026-09-13",
+  "provenance": "References were independently checked against the 935 active documents in the frozen 2026-09-13 web corpus; they are never used as runtime context.",
   "questions": [
     {
       "id": "E01",
       "question": "Who is the CEO of Everstake?",
-      "reference": "Sergii Vasylchuk (CEO & President). David Kinitsky, announced in June 2025 as joining as CEO, is listed as CCDO (Chief Corporate Development Officer) on the company page as of 2026.",
+      "reference": "As of the frozen crawl on 13 September 2026, the company page lists Sergii Vasylchuk as CEO and David Kinitsky as CCDO. A June 2025 announcement had named Kinitsky CEO and Vasylchuk President; treat that announcement as historical and do not add President to Vasylchuk's current title because the current roster only says CEO.",
       "referenceUrls": [
         "https://everstake.com/company/about",
-        "https://everstake.com/ai-info"
+        "https://everstake.com/ai-info",
+        "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo"
       ],
       "difficulty": "basic",
       "category": "factual or temporal synthesis",
@@ -21,9 +22,13 @@
     {
       "id": "E02",
       "question": "How many Proof-of-Stake networks does Everstake support?",
-      "reference": "130+ networks (as of 2026; everstake.com states 'historically supported 130+'). Older sources say 85 (June 2025) and 70+ (2022–2024).",
+      "reference": "The newest dated, scope-qualified first-party statement says 30+ active networks and a historical footprint of 130+ networks (published July 2026, updated 10 September 2026). Other first-party pages updated on the same day still say 35+ active, while boilerplate says 130+ supported. Report the conflict and scope; do not present 130+ as an uncontested count of simultaneously active networks. Older pages reported 70+ in 2023 and 85 in June 2025.",
       "referenceUrls": [
-        "https://everstake.com/ai-info"
+        "https://everstake.com/ai-info",
+        "https://everstake.com/resources/blog/institutional-adoption-networking-vs-consensus",
+        "https://everstake.com/resources/blog/from-decision-to-live-validator-institutional-staking-integration",
+        "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+        "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo"
       ],
       "difficulty": "basic",
       "category": "factual or temporal synthesis",
@@ -51,10 +56,13 @@
     {
       "id": "E04",
       "question": "What security certifications and compliance frameworks does Everstake hold?",
-      "reference": "SOC 2 Type II, ISO/IEC 27001, NIST CSF, ITGC, GDPR, CCPA/CRPA (plus a DORA controls assessment). Auditor: Prescient Security.",
+      "reference": "Everstake states that it holds SOC 2 Type II and ISO/IEC 27001:2022 certifications, has NIST CSF 2.0 alignment, GDPR and CCPA compliance, and lists ITGC and CCPA/CRPA among its compliance labels. It separately completed an independent assessment of selected DORA controls; DORA is not a certification. Prescient Security conducted the cited assessments.",
       "referenceUrls": [
         "https://everstake.com/ai-info",
-        "https://security.everstake.com/"
+        "https://everstake.com/company/about",
+        "https://everstake.com/resources/blog/everstake-earns-soc2-type-2-iso-27001-certifications-and-gdpr-compliance",
+        "https://everstake.com/resources/blog/everstake-expands-compliance-with-nist-csf-and-ccpa",
+        "https://everstake.com/resources/blog/everstake-completes-independent-dora-controls-assessment"
       ],
       "difficulty": "basic",
       "category": "factual or temporal synthesis",
@@ -67,12 +75,15 @@
     {
       "id": "E05",
       "question": "How has Everstake's positioning changed over the last two years?",
-      "reference": "From a broad retail/multi-chain staking provider ('70+ chains', 'staking for everyone', 2022–2024) to an institution-first, certified infrastructure provider (SOC 2/ISO 27001, non-custodial, VaaS, institutional staking, new CEO/leadership announcements 2025, 'Certified Yield Infrastructure for Institutions' 2026) plus Solana blockspace/MEV products and AI-agent access (MCP). Should show the trajectory with dated sources.",
+      "reference": "Earlier material emphasized broad access, retail staking and multi-chain expansion. Everstake's December 2025 retrospective explicitly describes 2025 as a shift toward full infrastructure leadership, audited systems and institutional partnerships. Current 2026 pages foreground certified, non-custodial institutional staking and VaaS while retaining retail access, and add Solana Blockspace/MEV products and MCP access for AI agents. Show the trajectory with dated sources and identify the older baseline rather than presenting every element as a new 2026 launch.",
       "referenceUrls": [
-        "blog 2022 (nexus mutual)",
-        "2024 (turns six)",
-        "2025 (year in review)",
-        "2026 ai-info/about"
+        "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+        "https://everstake.com/resources/blog/everstake-turns-six-today",
+        "https://everstake.com/resources/blog/the-year-everstake-stepped-into-full-infrastructure-leadership",
+        "https://everstake.com/",
+        "https://everstake.com/ai-info",
+        "https://docs.blockspace.everstake.com/",
+        "https://docs.everstake.com/integrations/everstake-products/mcp-server"
       ],
       "difficulty": "basic",
       "category": "factual or temporal synthesis",
@@ -211,10 +222,10 @@
     {
       "id": "E14",
       "question": "A QUIC connection authenticates with allowlisted key A, but the submitted transaction is signed by wallet B. Does the published SWQOS API require A to sign that transaction, and is the tip optional?",
-      "reference": "The allowlisted QUIC key authenticates transport and need not sign the transaction. The product API says both paths require a tip, but its later no-tip paragraph and the official repository describe single-path forwarding; the README scopes a no-tip exception to prepaid subscription customers. Report the conflicting or plan-specific wording. Do not promise that an arbitrary account can omit the tip or invent which source supersedes the other.",
+      "reference": "The allowlisted QUIC key authenticates transport and need not sign the submitted transaction. The current product docs are internally inconsistent on tips: they say both paths require a tip of at least 1,000,000 lamports, but also say a transaction without a tip rides one SWQOS path without fanout or a priority boost. Report that conflict. The frozen corpus contains no copy of the linked repository README, so it cannot establish a prepaid-customer exception.",
       "referenceUrls": [
         "https://docs.blockspace.everstake.com/swqos/api",
-        "https://raw.githubusercontent.com/everstake/everstake-swqos-docs/main/README.md"
+        "https://docs.blockspace.everstake.com/swqos"
       ],
       "difficulty": "hard",
       "category": "identity_boundary",
@@ -227,10 +238,14 @@
     {
       "id": "E15",
       "question": "The Blockspace homepage describes seven regions, but other sections and the regions guide list six. Can we promise every product in Singapore and New York? Reconcile the product matrix without inventing update dates.",
-      "reference": "Flag the discrepancy. The homepage matrix lists ShredStream/SWQOS in both cities, Relayer live in New York but upcoming in Singapore, and Direct Shreds upcoming in both. Do not universalize coverage.",
+      "reference": "Do not promise every product in either city. The frozen homepage does not contain the claimed seven-region product matrix or the claimed upcoming statuses. Current product docs conflict by scope: ShredStream lists seven regions including New York and Singapore; Direct Shreds pricing lists six including New York but not Singapore; SWQOS supports both cities, with Singapore described as a purchasable QUIC add-on; the Relayer docs provide no city-by-city matrix. The general regions guide lists six and omits Singapore. None of these undated pages establishes which page supersedes another.",
       "referenceUrls": [
         "https://blockspace.everstake.com/",
-        "https://docs.blockspace.everstake.com/getting-started/regions"
+        "https://docs.blockspace.everstake.com/getting-started/regions",
+        "https://docs.blockspace.everstake.com/shredstream",
+        "https://docs.blockspace.everstake.com/direct-shreds/pricing",
+        "https://docs.blockspace.everstake.com/swqos/pricing",
+        "https://docs.blockspace.everstake.com/mempool"
       ],
       "difficulty": "hard",
       "category": "conflicting_coverage",
@@ -243,8 +258,9 @@
     {
       "id": "E16",
       "question": "For Everstake’s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
-      "reference": "No reliable product-specific policy establishes that guarantee in the reviewed evidence. Request the applicable policy and exclusions; market examples of insurers do not identify Everstake’s actual coverage.",
+      "reference": "No current product-specific evidence establishes all requested fields or guarantees reimbursement of the entire principal. A 2022 Everstake post names a Nexus Mutual partnership for ETH staking coverage tied to validator infrastructure or setup failures. Current 2026 sources discuss Chainproof and Nexus Mutual as market products and say Everstake slashing insurance is available on request, but provide no current policy, limit, beneficiary or whole-principal guarantee and describe material exclusions.",
       "referenceUrls": [
+        "https://everstake.com/resources/blog/everstake-and-nexus-mutual-are-to-protect-delegators-from-eth-staking-risks",
         "https://everstake.com/resources/blog/how-to-choose-staking-provider-institutions",
         "https://everstake.com/resources/blog/staking-slashing-risk-prevention-insurance",
         "https://everstake.com/terms-of-use"
@@ -276,9 +292,12 @@
     {
       "id": "E18",
       "question": "What is the exact monthly SWQOS Pro bill including London and Dublin QUIC add-ons, all transaction tips, and any minimum commitment?",
-      "reference": "No reliable all-in amount is available from the reviewed public tier description. Add-on pricing requires the dashboard quote, and transaction-tip totals require workload assumptions.",
+      "reference": "No reliable all-in amount is available. Pro is billed monthly, and London and Dublin are purchasable per-region QUIC add-ons, but live subscription and add-on prices are only in the dashboard. Each priority transaction requires a tip of at least 1,000,000 lamports under the stated submission rules, while the monthly total depends on transaction volume. Product terms describe an initial monthly term, prepaid and automatically renewed monthly unless canceled before renewal; no longer-term minimum commitment is stated. Annual contracts are available on request.",
       "referenceUrls": [
-        "https://docs.blockspace.everstake.com/swqos"
+        "https://docs.blockspace.everstake.com/swqos",
+        "https://docs.blockspace.everstake.com/swqos/api",
+        "https://docs.blockspace.everstake.com/swqos/pricing",
+        "https://everstake.com/product-terms"
       ],
       "difficulty": "hard",
       "category": "missing_addon_quote",
