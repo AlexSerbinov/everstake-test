@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { loadEnvFile } from 'node:process';
 import type { DocumentSnapshot } from '../src/contracts.js';
 import { createModelClient } from '../src/providers/model-client.js';
-import { beginApiAttempt, finishApiAttempt } from '../src/services/measurements/api-calls.js';
+import { beginApiAttempt, finishApiAttempt, sanitizeError } from '../src/services/measurements/api-calls.js';
 import { costOverview } from '../src/services/measurements/receipt.js';
 import { beginRun, finishRun } from '../src/services/measurements/runs.js';
 import {
@@ -50,11 +50,15 @@ try {
     const inventory = await ensureInventory(false);
     for (const id of ids) requiredAccepted(inventory, id);
     await processVideos(ids, inventory, config.limits.totalBudgetUsd);
+  } else if (command === 'rebuild-documents') {
+    const inventory = await ensureInventory(false);
+    rebuildDocuments(inventory);
+    print({ status: 'completed', documents: readDocuments().size });
   } else if (command === 'export' || command === 'status') {
     exportLedger(db);
     print(statusView(db));
   } else {
-    throw new Error('Usage: npx tsx scripts/youtube.ts discover|inventory|pilot|process --ids=...|status|export');
+    throw new Error('Usage: npx tsx scripts/youtube.ts discover|inventory|pilot|process --ids=...|rebuild-documents|status|export');
   }
 } finally {
   db.close();
@@ -103,6 +107,7 @@ async function processVideos(ids: string[], inventory: Inventory, capUsd: number
         writeFileSync(reviewPath, JSON.stringify(review, null, 2));
       }
       if (review.status === 'needs_review') {
+        annotateRun(db, runId, { reviewStatus: 'needs_review', documentEmitted: false });
         finishRun(db, runId, 'incomplete');
         continue;
       }
@@ -111,6 +116,7 @@ async function processVideos(ids: string[], inventory: Inventory, capUsd: number
       writeDocuments([...documents.values()]);
       finishRun(db, runId, 'completed');
     } catch (error) {
+      annotateRun(db, runId, { failureReason: sanitizeError(error), documentEmitted: false });
       finishRun(db, runId, 'failed');
       exportLedger(db);
       throw error;
@@ -153,6 +159,9 @@ function requiredAccepted(inventory: Inventory, id: string) {
   const candidate = inventory.candidates.find(item => item.id === id);
   if (!candidate) throw new Error(`Video ${id} is absent from inventory`);
   if (candidate.decision !== 'accepted') throw new Error(`Video ${id} is ${candidate.decision}: ${candidate.reason}`);
+  if (candidate.durationSeconds === null || !Number.isFinite(candidate.durationSeconds) || candidate.durationSeconds <= 0) {
+    throw new Error(`Video ${id} has no finite positive duration; refresh metadata and review it before paid processing`);
+  }
   return candidate;
 }
 
@@ -169,6 +178,24 @@ function readDocuments(): Map<string, DocumentSnapshot> {
   if (!existsSync(config.paths.documents)) return new Map();
   const documents = JSON.parse(readFileSync(config.paths.documents, 'utf8')) as DocumentSnapshot[];
   return new Map(documents.map(document => [document.url, document]));
+}
+
+function rebuildDocuments(inventory: Inventory): void {
+  const reviewDirectories = (flags['review-dirs'] ?? 'data/youtube').split(',').filter(Boolean);
+  const rows = db.prepare("SELECT video_id,data FROM youtube_jobs WHERE status='completed' ORDER BY video_id").all() as Array<{ video_id: string; data: string }>;
+  const documents: DocumentSnapshot[] = [];
+  for (const row of rows) {
+    const candidate = inventory.candidates.find(item => item.id === row.video_id);
+    if (!candidate || candidate.decision !== 'accepted') continue;
+    const reviewPath = reviewDirectories.map(directory => `${directory}/${row.video_id}.review.json`).find(existsSync);
+    if (!reviewPath) continue;
+    const review = JSON.parse(readFileSync(reviewPath, 'utf8')) as SpeakerReview;
+    const job = JSON.parse(row.data) as { turns?: Parameters<typeof buildDocument>[1] };
+    validateReview(review, job.turns ?? []);
+    if (review.status !== 'reviewed') continue;
+    documents.push(buildDocument(candidate, job.turns ?? [], review));
+  }
+  writeDocuments(documents);
 }
 
 function writeDocuments(documents: DocumentSnapshot[]): void {
@@ -222,3 +249,10 @@ function parseFlags(args: string[]): Record<string, string> {
 }
 
 function print(value: unknown): void { process.stdout.write(`${JSON.stringify(value, null, 2)}\n`); }
+
+function annotateRun(database: Database, runId: string, values: Record<string, unknown>): void {
+  const row = database.prepare('SELECT metadata FROM runs WHERE id=?').get(runId) as { metadata: string } | undefined;
+  if (!row) return;
+  const metadata = JSON.parse(row.metadata) as Record<string, unknown>;
+  database.prepare('UPDATE runs SET metadata=? WHERE id=?').run(JSON.stringify({ ...metadata, ...values }), runId);
+}

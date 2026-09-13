@@ -47,9 +47,32 @@ export async function reviewSpeakers(
     messages: [{ role: 'user', text: JSON.stringify({ publicMetadata: metadata, untrustedTimedTurns: transcript }) }],
     maxOutputTokens: 5_000,
   });
-  const review = reviewSchema.parse(parseJson(response.text));
+  const review = conservativeReview(reviewSchema.parse(parseJson(response.text)), turns);
   validateReview(review, turns);
   return review;
+}
+
+/** Downgrade unsupported model attributions to review-required data instead of promoting them or retrying a paid call. */
+export function conservativeReview(review: SpeakerReview, turns: Turn[]): SpeakerReview {
+  let downgraded = false;
+  const speakers = review.speakers.map(speaker => {
+    const evidenceTurnIndexes = speaker.evidenceTurnIndexes.filter(index => index < turns.length && turns[index]?.speaker === speaker.label);
+    const unsupportedAttribution = (speaker.name || speaker.roleAtRecording || speaker.participantType !== 'unknown') && evidenceTurnIndexes.length === 0;
+    const roleWithoutIdentity = Boolean(speaker.roleAtRecording && !speaker.name);
+    if (!unsupportedAttribution && !roleWithoutIdentity) return { ...speaker, evidenceTurnIndexes };
+    downgraded = true;
+    return {
+      ...speaker,
+      name: unsupportedAttribution ? null : speaker.name,
+      roleAtRecording: null,
+      participantType: unsupportedAttribution ? 'unknown' as const : speaker.participantType,
+      evidenceTurnIndexes,
+      reason: `${speaker.reason} Unsupported identity/role fields were removed by deterministic validation.`,
+    };
+  });
+  return downgraded
+    ? { ...review, status: 'needs_review', speakers, limitations: [...review.limitations, 'Unsupported speaker attribution was removed; manual review is required.'] }
+    : { ...review, speakers };
 }
 
 export function validateReview(review: SpeakerReview, turns: Turn[]): void {

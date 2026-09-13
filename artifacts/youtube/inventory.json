@@ -16,11 +16,11 @@
   ],
   "counts": {
     "discovered": 186,
-    "accepted": 77,
-    "needs_review": 72,
+    "accepted": 78,
+    "needs_review": 71,
     "excluded": 37
   },
-  "acceptedDurationSeconds": 62154,
+  "acceptedDurationSeconds": 65632,
   "unknownAcceptedDurations": 0,
   "candidates": [
     {
@@ -13991,8 +13991,8 @@
         "cacheOnly": true,
         "requiresFreshAudio": true
       },
-      "decision": "needs_review",
-      "reason": "Company and topic match, but metadata does not establish direct participation; inspect captions or the recording."
+      "decision": "accepted",
+      "reason": "Manual metadata review: the title explicitly names Everstake COO Bohdan Opryshko and a blockchain-validator/institutional-staking discussion; paid transcription is selected to verify participation and role at recording time."
     },
     {
       "id": "fFMwkr8z0BU",
