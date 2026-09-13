@@ -48,7 +48,7 @@ export async function gatherCounterevidence(
   claims: Claim[],
   registry: Map<string, EvidencePassage>,
   search: (query: string, limit?: number) => Promise<EvidencePassage[]>,
-  perClaim = 4,
+  perClaim = 3,
 ): Promise<ClaimCounterevidence[]> {
   const results: ClaimCounterevidence[] = [];
   // Searches run one after another: each scans the corpus vectors, and parallel scans

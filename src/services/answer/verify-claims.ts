@@ -28,7 +28,10 @@ export async function verifyClaims(
   counterevidence: ClaimCounterevidence[] = [],
 ): Promise<CheckResult[]> {
   const extra = new Map(counterevidence.map((c) => [c.claimIndex, c]));
-  const response = await model.generate({
+  // Counterevidence is compared, not cited, so the reviewer sees a bounded excerpt of each.
+  const excerpt = (sources: EvidencePassage[]) =>
+    sources.map((s) => ({ ...s, text: s.text.slice(0, 700) }));
+  const request = {
     runId,
     signal,
     stage: "claim-verification",
@@ -36,7 +39,7 @@ export async function verifyClaims(
     system: readFileSync("prompts/verify-claims.md", "utf8"),
     messages: [
       {
-        role: "user",
+        role: "user" as const,
         text: JSON.stringify({
           question,
           otherRetrievedEvidence: [...registry.values()],
@@ -44,24 +47,35 @@ export async function verifyClaims(
             claimIndex,
             claim,
             evidence: claim.citations.map((id) => registry.get(id)),
-            newerEvidence: extra.get(claimIndex)?.newer ?? [],
-            exceptionEvidence: extra.get(claimIndex)?.exceptions ?? [],
+            newerEvidence: excerpt(extra.get(claimIndex)?.newer ?? []),
+            exceptionEvidence: excerpt(extra.get(claimIndex)?.exceptions ?? []),
           })),
         }),
       },
     ],
     maxOutputTokens: 3000,
-  });
-  const result = schema.parse(
-    JSON.parse(
-      response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
-    ),
-  );
-  if (
-    result.checks.length !== claims.length ||
-    new Set(result.checks.map((c) => c.claimIndex)).size !== claims.length ||
-    result.checks.some((c) => c.claimIndex >= claims.length)
-  )
+  };
+  const complete = (result: z.infer<typeof schema>) =>
+    result.checks.length === claims.length &&
+    new Set(result.checks.map((c) => c.claimIndex)).size === claims.length &&
+    result.checks.every((c) => c.claimIndex < claims.length);
+  let result: z.infer<typeof schema> | undefined;
+  // A malformed review is a provider defect, not evidence about the answer: one metered
+  // retry before the question is reported as an error.
+  for (let attempt = 0; attempt < 2 && !result; attempt++) {
+    const response = await model.generate(request);
+    try {
+      const parsed = schema.parse(
+        JSON.parse(
+          response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
+        ),
+      );
+      if (complete(parsed)) result = parsed;
+    } catch {
+      /* Retry once; the second failure is reported below. */
+    }
+  }
+  if (!result)
     throw new Error("Verifier did not assess every claim exactly once");
   const checks: CheckResult[] = result.checks.flatMap((c) => {
     const newer = extra.get(c.claimIndex)?.newer ?? [];
