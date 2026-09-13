@@ -1,0 +1,214 @@
+# 2025-08-22 — CEO — Kinitsky David — Everstake - Staking For Everyone
+
+Original video title: Everstake - Staking For Everyone
+
+Source: https://www.youtube.com/watch?v=qv39wVUaWrs
+
+Uploaded: 2025-08-22
+
+Video ID: qv39wVUaWrs
+
+Speaker review: needs_review
+
+Speaker names and roles are contextual model attributions at the time of recording, not independently verified current employment. Evidence eligibility is a filtering decision, not a guarantee of factual truth. All dialogue is preserved, including questions and rejected claims. This export does not activate a corpus source.
+
+## Speakers
+
+| Original label | Name | Role at recording | Participant type | Attribution basis |
+| --- | --- | --- | --- | --- |
+| 1 | unknown | unknown | unknown | Host of the show, addressed as Andy by the guest in turns 1 and 30. Unsupported identity/role fields were removed by deterministic validation. |
+| 2 | David Kinitsky | CEO, Everstake | employee | Explicitly introduced by host as CEO of Everstake in turn 0, confirmed his role as CEO of Everstake in turn 3, and self-identified with full name spelling David Kinitsky in turn 28. |
+
+## Limitations
+
+- Text-only review cannot guarantee diarization identity.
+- Invalid speaker evidence or excluded-turn references were removed; manual review is required.
+
+## Transcript
+
+### [0:00](https://www.youtube.com/watch?v=qv39wVUaWrs&t=0) — Unknown person · role unknown · unknown
+
+Turn 0 · original label: 1 · evidence eligible: no
+
+My guest today is David Kinetsky. David is the CEO of Everstake, a leading global non-custodial staking provider serving both institutional and retail clients. Welcome to the show, David.
+
+### [0:13](https://www.youtube.com/watch?v=qv39wVUaWrs&t=13) — David Kinitsky · CEO, Everstake · employee
+
+Turn 1 · original label: 2 · evidence eligible: no
+
+Thanks for having me, Andy. Excited to, uh, to chat.
+
+### [0:17](https://www.youtube.com/watch?v=qv39wVUaWrs&t=17) — Unknown person · role unknown · unknown
+
+Turn 2 · original label: 1 · evidence eligible: no
+
+Excited to chat as well. David, let's do what we do at the beginning of the show. It would be super cool if you could please introduce yourself. We'd love to hear a little bit of your extensive personal and professional background.
+
+### [0:28](https://www.youtube.com/watch?v=qv39wVUaWrs&t=28) — David Kinitsky · CEO, Everstake · employee
+
+Turn 3 · original label: 2 · evidence eligible: no
+
+Yeah, I've been, uh, I've been in the crypto game for a little while now, kind of long in the tooth almost, in some circles. Recently, as you said, took over as CEO of Everstake, which is kind of one of the more under-the-radar staking providers, but one of the top five ones, about $5.5 billion of staked assets, as you say, amongst retail, institutional, B2B2C customer segments. But long history within crypto. I actually got my start at the predecessor company to Digital Currency Group, or DCG, called Second Market. Very fortuitously, we sold that business to NASDAQ around the same time Barry, myself, and a couple others started falling down the crypto rabbit hole. And I actually built one of their flagship subsidiaries, Grayscale Investments, from the ground up as the founding general manager. Hired Michael Son & Shine as the top sales guy. He obviously took over from me and took it to the next level. But I got that business off the ground and running to a nice level before it got picked off by Fidelity. And I was actually Fidelity Investments' first crypto hire, where I helped consult about their crypto innovation strategy, what they would do in terms of custody, retail, ETFs, and so on. And then also co-managed a crypto prop VC fund on the debenture investment side of crypto at Fidelity, along with the Castle Island guys, Matt and Nick. And then through there, I was up in Boston, got to know the Circle guys, and joined Circle as head of corp dev and strategy for Circle at a pretty interesting time in their history where my job ended up being selling off our legacy businesses: Polonia, Circle Invest, Circle Trade, Circle Pay, and then pivoting the business to USDC and getting our first, call it, cornerstone DeFi customers. Then the pandemic hit, and I moved out to Wy
+
+### [2:05](https://www.youtube.com/watch?v=qv39wVUaWrs&t=125) — David Kinitsky · CEO, Everstake · employee
+
+Turn 4 · original label: 2 · evidence eligible: no
+
+oming to join Kraken to build the first bank underneath a crypto company arm with the SPDI statutes out in Wyoming. Banged my head against the wall with the Fed, the OCC, the Treasury, and the FDIC, the U.S. regulatory agencies, for two years, but built out Kraken Institutional under that brand. And then took a little break and said, "Hey, what do I think the next verticals in crypto are going to be that are going to be big, monetizable, institutionally gravitating towards?" And really, there's two in my mind. We've already seen crypto exchanges and trading the casino gambling, programmable money. We've seen stablecoins, obviously, and now just, like, buy-and-hold assets, ETFs. Tokenization and staking and yield flows are the next two in my mind that are the big new narratives. And so I looked around the ecosystem and very opportunistically got connected with the Everstake team, and I fell in love with them. It's actually a pretty great story coming out of Eastern Europe and Ukraine, going into cockroach mode and now kind of, like, entering growth mode again. And so tokenization, staking, and yield flows are kind of where I see the next two years of narrative of crypto going.
+
+### [3:08](https://www.youtube.com/watch?v=qv39wVUaWrs&t=188) — Unknown person · role unknown · unknown
+
+Turn 5 · original label: 1 · evidence eligible: no
+
+Yeah, interesting. Thank you, David. That is, as I guess I hinted, a long and extensive history, so thanks for bringing us up to speed. Interesting that you mention off-the-bat year cockroach mode when it comes to Everstake. So maybe that's a way in if you just want to give us a kind of sense of the journey to date of Everstake. Obviously, you've come in slightly later in the piece, perhaps after cockroach mode, but what do you mean by that?
+
+### [3:35](https://www.youtube.com/watch?v=qv39wVUaWrs&t=215) — David Kinitsky · CEO, Everstake · employee
+
+Turn 6 · original label: 2 · evidence eligible: no
+
+Yeah, I mean, interesting business. Look, I've been in, like, as I just discussed, crypto forever. I'm pretty familiar with the ecosystem and the teams. And prior to, again, getting connected with these guys through, like, a mutual, I'd never heard of them, which is strange for such a company with such a big footprint. I mean, like, these guys make a bunch of money and, like I said, have $5.5 billion of assets plus staked on their platform. Why have I not heard of them? Well, it was built, you know, 2017, 2018, great engineering and product organization and team out in Ukraine, and then the war happened. And so a lot of their focus was relocating their employees to the Western side of the country, to Poland, to the rest of the EU, and elsewhere. And then the original founder and the outgoing CEO and COO relocating to the Northern America regions. And then, like, that's kind of been the story. And yet it's been super bootstrap, no VCs, all profitable all the time, funded by its own revenue generation, which is actually pretty unique in crypto. Most people kind of rely on the big bucks from the VCs and institutions. And so they've kind of been under the radar because of that very founder-led and organic sales process, very lean and mean, capital-efficient team. And so basically they've been doing that and then said, "Hey, look, we're ready to take the next step. We've built a cracking business in a very capital-efficient way. Let's bring on some professional management to, like, take us. We've taken it from zero to one. Let's take it to one to two."
+
+### [5:05](https://www.youtube.com/watch?v=qv39wVUaWrs&t=305) — Unknown person · role unknown · unknown
+
+Turn 7 · original label: 1 · evidence eligible: no
+
+Yeah, that makes perfect sense. Well, just, I mean, people will understand that Everstake is, yeah, a non-custodial staking provider for your clients around the world, I guess, and across kind of multiple chains and ecosystems. But just give us kind of a nutshell of what Everstake is, the kind of services and products that you provide, and I guess the different market segments that you would aim to serve, David.
+
+### [5:31](https://www.youtube.com/watch?v=qv39wVUaWrs&t=331) — David Kinitsky · CEO, Everstake · employee
+
+Turn 8 · original label: 2 · evidence eligible: no
+
+Yeah, it's interesting, and it's evolved over time a little bit. Everstake started, it's, like I said, very product and engineering-driven organization. One of its mottos is "Be useful." And so it gets in on the ground floors and has a history of this, of working with the likes of Solana and these other ecosystems pre-TestNet, during TestNet. They are a massive consultative resource for these networks who want input on validator technology stacks and tokenomics and things like that. And so we have a massive R&D team that works with these early-stage networks and protocols in helping them develop the models for their validator sets, for their staking kind of mechanisms and their tokenomics. And that obviously endears us to the community. And then we build open-source stuff for that community, you know, whether it's Explorers or other kind of tools and packages from the technology set, which basically, Everstake has an incredible reputation amongst the builder communities across crypto ecosystems, Ethereum, Solana, and down the line. And so that's kind of how it's got its start. And initially, as a result, its biggest customer sets was retail and early foundations and ecosystem projects within some of these bigger proof-of-stake ecosystems. And it's just vanilla staking, non-custodial staking. Hey, take your non-custodial wallet, either on your mobile or whatever you have it on a hardware wallet or in your browser or whatever. And look, you have Solana, you have Ethereum, you have HYPE, you have whatever token you have that's proof-of-stake eligible, come stake with us at our public validator set. That's how it started off. It's now, we still have that, but our business has grown much more so recently in the B2B2C segments. When I'm saying that, I'm saying business-to-b
+
+### [7:10](https://www.youtube.com/watch?v=qv39wVUaWrs&t=430) — David Kinitsky · CEO, Everstake · employee
+
+Turn 9 · original label: 2 · evidence eligible: no
+
+usiness-to-customer or consumer segments, which is like non-custodial wallets, fintechs, centralized exchanges, which is basically like these platforms have a ton of proof-of-stake assets on them, and they have end users who want to obviously maximize the returns and/or make use of their assets in a more productive way. And so we provide white-label validator services for these platforms for their end-user customers to stake to us. And then most recently, we've gotten into custodies and institutional platforms, which kind of want another higher level of service, but a similar white-label validator service. And so you're talking about hardware wallets, you're talking about software wallets that are non-custodial, you're talking about fintech platforms, centralized exchanges, custodians, and then you're now talking about, just for the first time, institutions and asset managers. And that's kind of like the next level of focus for us. And I have some, let's just say, we'll dive into this, but I have some particular viewpoints about what will drive kind of the next wave of staking flows.
+
+### [8:10](https://www.youtube.com/watch?v=qv39wVUaWrs&t=490) — Unknown person · role unknown · unknown
+
+Turn 10 · original label: 1 · evidence eligible: no
+
+Well, it's probably worth talking about that now, David. And I maybe part of that story is, of course, what happens with the big ETFs,right? And I'm sure you've got thoughts and feelings on that. So yeah, please.
+
+### [8:24](https://www.youtube.com/watch?v=qv39wVUaWrs&t=504) — David Kinitsky · CEO, Everstake · employee
+
+Turn 11 · original label: 2 · evidence eligible: no
+
+Yeah, yeah. So that's one of them. I got two stories on the next wave, and that's absolutely one of them. You've nailed it. And obviously, I'm pretty familiar. Look, at Grayscale Investments, I built the first U.S. ETF for crypto. And now, obviously, it's gone to more proof-of-stake assets. And the question that you're now seeing in the U.S. is, well, hey, you're having an Ethereum ETF, a Solana ETF. Maybe it'll become, you know, down the chain, next proof-of-stake chain, next proof-of-stake chain, and then maybe diversified baskets across them. That's happening now. And then what's also happening now is these ETF sponsors, which are kind of a mix of traditional finance players, the Fidelities, the BlackRocks of the world, and so on, and then kind of the upstarts, the Grayscales, the Bitwises of the world, at least in the U.S. Of course, you have ETP products in Europe and Oceania and Asia as well, all of these ones. But I'm coming from a U.S. perspective, certainly. And the biggest blockade has been regulatory clarity. Obviously, that's a common theme in crypto. But a lot of these folks, like Fidelity, BlackRock, they're not going to stake their Ethereum or Solana tokens in these ETFs until they understand that, one, like, this isn't going to, like, cause any, like, security law or regulatory issues for us. And then there's kind of, like, mechanically and operationally, how are we going to do it? Because there's kind of withdrawal times on these networks, and how can we cover the liquidity flows and the duration matches? But just recently in the U.S., the SEC, the Securities and Exchange Commission, released some guidance around two things. One, staking is not a security under these laws. And two, liquid staking and all of the ancillary services around staking, wh
+
+### [10:02](https://www.youtube.com/watch?v=qv39wVUaWrs&t=602) — David Kinitsky · CEO, Everstake · employee
+
+Turn 12 · original label: 2 · evidence eligible: no
+
+ether that means providing kind of instant withdrawals and kind of, like, matching liquidity on this stuff, none of that is a security problem. And so as a result, you're now seeing Fidelities, BlackRocks of the world starting to now take their Ethereum and Solana tokens that they hold in these wrappers and stake them. And so that's happening now, and obviously, we're in those conversations. We're in the conversations with the SEC, providing, you know, briefs for them and actually educating them on how staking works and so on and so forth. That's one big segment. The other segment that I think you're about to see explode, and in particular once this bull cycle ends, whenever it ends this year or next or whenever, is going to be staking and yield income flows on these networks and creating structured and derivative and fixed income products around them. And so what I'm talking about there is, look, Ethereum, you know, you get, yes, you have that volatility in the underlying Ethereum token, but you have this 3.5% about APY. Solana maybe more like 8%. Some of the other networks are all over the place in terms of what percentage they're offering. But the financial industry is pretty good at creating wrappers or derivatives around these products to give investors the exposure they want. And so what I'm talking about is, like, delta-neutral fixed income style products. So you take a long position on Ethereum, a short position on Ethereum, so you don't have exposure to the Ethereum token price, but you do get that fixed income of the Ethereum staking yield. Or maybe stablecoin vaults in a similar story. Or maybe you have leveraged Ethereum, Solana staking or stablecoin vaults. And I think that's the other leg that once this kind of bull market where everyone just wants to spec
+
+### [11:44](https://www.youtube.com/watch?v=qv39wVUaWrs&t=704) — David Kinitsky · CEO, Everstake · employee
+
+Turn 13 · original label: 2 · evidence eligible: no
+
+ulate on the token price, when that turns to the other side and we start moving more sideways, people want income generation and reliable productive assets. And so what you're going to see is these wrappers, not just ETFs and ETPs, but structured and derivative financial products that are based on staking flows and stablecoin yields.
+
+### [12:06](https://www.youtube.com/watch?v=qv39wVUaWrs&t=726) — Unknown person · role unknown · unknown
+
+Turn 14 · original label: 1 · evidence eligible: no
+
+Yeah, that's very well said, David. And as I understand it, you guys, maybe you specifically, but the team at Everstake as well, have been engaged directly with the, you know, the SEC, the Crypto Task Force, and so on. And it's been, yeah, really productive actually to see the Trump administration's proactiveness, shall we say, in terms of, you know, getting the SEC, who traditionally dragged their feet, to put it mildly, yeah, to get some things done, get some clarity. Just so give us from your kind of, you know, inside of baseball, if you like, how you kind of see that playing out. And maybe interesting to kind of just think about what could be the potential risks further down the line, like if there's an administration change, things like that. Are there things that people should be aware of?
+
+### [12:54](https://www.youtube.com/watch?v=qv39wVUaWrs&t=774) — David Kinitsky · CEO, Everstake · employee
+
+Turn 15 · original label: 2 · evidence eligible: no
+
+Yeah, no doubt. Look, I've been in the game for a little while, as I said, and it's kind of one of the more radicalizing experiences I've ever had in my life, I'll be honest with you. Like sitting on, like, whatever political side of the aisle you're on, just my experience with the bureaucracy and regulatory arm in D.C. and how they've treated crypto has been, let's just say, probably the most radicalized experience of my life. And what I mean by that is just it's wild how little they've known about what we're talking about, how little they've cared, but how punitive they've been in terms of how they've very ham-handedly led with enforcement efforts, have been fairly unwilling to engage with the community. I can't tell you how many times that I have spent traveling back and forth to D.C., to the SEC building outside of Union Station, on the train, to regulators in New York, all over the country, I've spent so much time. And I should mention, before I got into crypto, I'm a reformed lawyer who worked on regulatory and security and corporate issues. So I have some credence in these areas. And like I said, I was kind of always in a fintech regulated market, whether it broker dealers or fixed income areas and other things, RIAs, so on and so forth. And I've never seen a regulatory side of a government take this posture towards a segment of financial services before where they just wouldn't engage, but yet were very, very free in their enforcement actions. And they made no policy efforts, but were happy to come after you. And honestly, having, look, I was trying to get the ETF approved at Grayscale, at Kraken. We had our own issues with staking and enforcement there where they kind of led and tried to get guidance on, hey, how can we build these products in a more compliant
+
+### [14:46](https://www.youtube.com/watch?v=qv39wVUaWrs&t=886) — David Kinitsky · CEO, Everstake · employee
+
+Turn 16 · original label: 2 · evidence eligible: no
+
+way? We're happy to. We're not going to tell you that. And so, like I said, it's been challenging. Obviously, I'm kind of grieving here or, you know, telling my own problems and my own story here that I have issues with. But whatever you think about this new administration and other political areas, the one area that you would expect them to do is actually engage with the industry that they're regulating. In my mind, that's the bare minimum that you can expect from a regulatory agency. And so finally, that's happening. Now, like, how they're doing that or whatever, again, you can have your own positions on what the policies that are coming out of it and how they're treating different actors differently and whatever, but they're actually engaging and they're trying to learn about this and they're trying to find solutions to make things permissive. Of course, they still have the mandate for customer protection, for these other areas, fair and honest capital markets and so forth. And those things are their primary goals and should be their primary goals. The question is, how can we bring crypto within those umbrellas? And finally, for the first time, we are actually having productive conversations around that. So it's encouraging, no doubt, but there's still so far to go. I mean, crypto is still a drop in the bucket compared to traditional financial markets in terms of size and scale and importance. The banking industry and the derivative industry and the fixed income industry, the biggest, and the mortgage and debt industry, the biggest ones there. Crypto will achieve that size and scale and importance level soon. And by soon, I don't know if I'm talking about five years or 50 years, but in my lifetime. And the fact of the matter is that, look, if you want a lot of that
+
+### [16:30](https://www.youtube.com/watch?v=qv39wVUaWrs&t=990) — David Kinitsky · CEO, Everstake · employee
+
+Turn 17 · original label: 2 · evidence eligible: no
+
+to be based on your home turf that you actually have jurisdiction over, you should welcome it there. Because if it's not here, it's going abroad, and then you have no say over it. So I think that the U.S. regime now recognizes that, where it's actually a boon. And I think stablecoins have helped that effort, where we realize these guys are the biggest buyers of U.S. treasuries now. So it's good for business there.
+
+### [16:52](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1012) — Unknown person · role unknown · unknown
+
+Turn 18 · original label: 1 · evidence eligible: no
+
+Yeah, absolutely, David. And look, you know, you guys have, I don't know how many billion in delegated staked assets, you know, hundreds of thousands of users. I think over 85 networks, maybe that has changed now. Just give us a sense of the operational challenges in terms of managing that and, you know, adding new ecosystems change. What are the sort of the technical challenges involved?
+
+### [17:18](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1038) — David Kinitsky · CEO, Everstake · employee
+
+Turn 19 · original label: 2 · evidence eligible: no
+
+Yeah, so I think that, yeah, I think it's like 85. It's a little bit of like a, look, like I said, we have a big R&D team that gets in early with these chains. And then, of course, if like a chain kind of goes stagnant, we obviously will call it and bring a new one aboard. But you'reright, it's about 85 or maybe even like 90 now chains that we operate on. There are millions of end users that rely on us and delegate to us. We're absolutely global. So you obviously have this footprint of not only servers and cloud servers that we have in redundant regions and providers across the globe, but we run pretty close bare to the metal and created our own stacks of servers and data rooms, sorry, data servers and data centers. So we do pretty bare to the metal. So you have a pretty big DevOps footprint that we have that has to be globally redundant, that has to be 24/7, of course, because like you just cannot get slashed, you can't go offline, you can't get punished by these networks. And so that's probably the biggest one of just like that kind of table stakes of having a pretty high technical staff that's globally redundant that kind of has the infrastructure there. Then the next level up is, as I said, engineers and software folks with deep crypto and smart contract expertise who can understand how to build these services and then how the services that operate on the layer above us function,right? Because our end users are, like I said, DeFi protocols who are built on smart contracts, fintech platforms, non-custodial wallets. And so you have to understand who your customers are from a technical perspective and what stacks they're using. And so that's kind of the next level up. And then finally, you have the operational level, which is, hey, how can we meet the business needs
+
+### [19:07](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1147) — David Kinitsky · CEO, Everstake · employee
+
+Turn 20 · original label: 2 · evidence eligible: no
+
+of our customer segments, whether it's compliance or reporting, whether that's tax or otherwise? And that's that layer. And that's data is a big one because you're talking about super high latency, super high throughput networks now where these transaction flows, trying to figure out your taxes when you're getting a stream of staking rewards every, you know, couple minutes is hard. And so we try to partner with our customer segments, and in particular, the B2B2C customer segments in providing those kind of business operational services there as well. So look, it's not rocket science, but a few things are. But it's not easy to replicate that footprint. And so we probably have about 100, 110 employees across the globe. As I mentioned, we were initially like a Ukrainian company. We've had to relocate to Western Ukraine, Poland, and Western Europe. But now we have folks in North America, South America, and Asia as well who have to be stationed there to make sure that everything, all the trains run on time.
+
+### [20:08](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1208) — Unknown person · role unknown · unknown
+
+Turn 21 · original label: 1 · evidence eligible: no
+
+Yeah. Thank you, David. Look, just as we begin to finish off this part of the podcast, be interested in your thoughts, just, I guess, anything you can think of in terms of the current market cycle and where you think we are, what's happening at the moment. You know, obviously had a Bitcoin all-time high around 24 hours ago and then a bit of a market correction to follow. But, you know, it seems like there's still reasonably heavy institutional interest, maybe more subdued retail interest at the moment. What do you think is sort of happening in the markets and where we're going?
+
+### [20:46](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1246) — David Kinitsky · CEO, Everstake · employee
+
+Turn 22 · original label: 2 · evidence eligible: no
+
+Yeah, I mean, look, there are a lot of opinions you can share. Like, so take all of this with a grain of salt. Personal opinions, I don't have any oracle here into the future of crystal balls. But look, I've seen time and time again the way that, like, crypto cycles work, both in terms of, like, the four-year cycles that you traditionally see and on which side of that four-year cycle do things turn, but also the segments within it that the hot ball of money moves around to. And what I'm talking about there is usually the traditional pattern would be Bitcoin leads. It's the, like, biggest, most established asset in the space. It moves up and then money matriculates downwards into more risk-on assets down the risk curve, like altcoins, whether that's Ethereum, Solana, and beyond, and then, like, down to, like, smaller kind of utility coins and then, like, meme coins. And you go down there and then usually we, like, flatten and then the cycle repeats. But now you're kind of seeing a couple of different things. This is a little bit of a different cycle where Bitcoin kind of has been in melt-up mode for some time now, but the dynamics between Bitcoin and altcoins and meme coins and the pumped-up fund phenomenon and stuff has been a little different here. It's almost more of a, so far this cycle, been a barbell approach, meaning Bitcoin and, like, meme coin gambling casino. Just now we're starting to see the melt-up in Ethereum and Solana. Ethereum has notoriously underperformed this cycle, but I do think it's finally getting its day in the sun here and going upwards. So one, that's the kind of perspective that you're seeing within the assets segments within the industry. But the other thing is,right, like who the customer segments are and where the buying demand and inter
+
+### [22:31](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1351) — David Kinitsky · CEO, Everstake · employee
+
+Turn 23 · original label: 2 · evidence eligible: no
+
+est is coming from is a little different now. Obviously, you have the ETFs and so you're seeing the flows coming through there. But now you have these treasury companies or digital asset treasuries or DATs that you're seeing in the U.S. occur. And this happened for a bunch of different reasons. One is some of the, you know, maybe these folks are debt funds and they don't have the mandate to buy crypto assets otherwise. And because these people are issuing convertible notes, these digital asset treasuries, now you have a new, you've untapped a new source of capital. Maybe some of these folks understand that, hey, look, there's kind of a game to be played here with the MNAV or multiple on net asset value underlying. And these guys are getting premiums. So hey, look, it's great. Kind of my floor is worst-case scenario, this thing can't go below what its underlying tokens is worth, whether it's Bitcoin, Ethereum, Solana. They can always sell those off, but it could get a premium to the upside. So it's a nice asymmetric bet. And I think that's how most people are thinking about these digital asset treasury companies or DATs. And so those are kind of the two new big flows here. But I think just like across the, and those things represent kind of intermediary flows, but the end user flows of who actually owns the capital. You're seeing, I mean, recently in the U.S., we saw that Harvard's endowment after years of saying Bitcoin's the worst thing in the world now owns more Bitcoin than Google than in their portfolio. And so the pensions, the endowments, the sovereign wealth funds that historically are probably the most conservative capital allocators in the traditional financial ecosystem are now starting to put flows that way. And then there's this massive complex of where you
+
+### [24:06](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1446) — David Kinitsky · CEO, Everstake · employee
+
+Turn 24 · original label: 2 · evidence eligible: no
+
+see generational turnover where folks who are in the boomer generation are now passing their wealth on to millennials or Gen X or whoever else and lower. And they have very different perspectives around crypto assets and how they fit into a portfolio. Look, I remember in 2012 and 2013 when I was going into the offices of Citibank, JP Morgan, and the like, trying to pitch Grayscale and the GBTC Bitcoin Trust, they looked at me like I had three heads. And honestly, a lot of it's reputational risk. Nobody wants to be that 60, 70-year-old who gets egg on his or her face because they invested in a crypto asset and then all their golf buddies or whoever they fraternize with say, you're an idiot. Look how dumb you were. I knew that was a Ponzi scam, whatever. Now, and I talked to some of my folks who are in traditional finance and kind of the sentiment is this. They say, look, I like you, we're friends. Some of the best people I've ever met in my life work in crypto, but all of the worst people I've ever met in my life also work in crypto. And so there's this kind of sentiment that it's kind of still this gray or seedy ecosystem. But I do think that now when you talk to folks who kind of are younger generations, they don't have that same, I guess, you know, kind of taboo, reputational risk taboo. And so once that generational shift happens, you're going to really see the floodgates open.
+
+### [25:31](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1531) — Unknown person · role unknown · unknown
+
+Turn 25 · original label: 1 · evidence eligible: no
+
+Yeah, I think that is very well said indeed. Thank you, David. As we start to finish up the show, tell people where they can go to learn more about Everstake, what they can do to, yeah, begin staking their assets if that is what they want to do. What should they do? Where should they go, David?
+
+### [25:48](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1548) — David Kinitsky · CEO, Everstake · employee
+
+Turn 26 · original label: 2 · evidence eligible: no
+
+Yeah, so look, everstake.one, E-V-E-R-S-T-A-K-E dot O-N-E is the website. You can go to .com version of it as well, but .one is the one we preferright now. And look, you can learn all about the business there. You can also in any of the main and sizable proof-of-stake networks, if you go to whatever ecosystem resource that lists their validators and delegators, we'll be up there with your non-custodial wallets. And then, yeah, like, so if you, some of our best customers are some of the hardware wallets, the non-custodial wallets, whether it's Trezor, Exodus, and so on. If you're a customer there, you can opt into our services. If you are at Bitgo or some of these other custodians that we work with as well, you can find us. But you can always, usually if you're in an Ethereum or Solana ecosystem and you just look at, hey, where do I want to delegate? Wherever lists of those exist, we'll be on there.
+
+### [26:44](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1604) — Unknown person · role unknown · unknown
+
+Turn 27 · original label: 1 · evidence eligible: no
+
+Allright. Anything else you want to shout out? You're on X yourself, personal handle?
+
+### [26:48](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1608) — David Kinitsky · CEO, Everstake · employee
+
+Turn 28 · original label: 2 · evidence eligible: no
+
+I am, yeah. At my last name, Kinitsky, which is K-I-N-I-T-S-K-Y,@Kinitsky on Twitter. You can David Kinitsky on LinkedIn or probably the socials. I'm DBK, but spelled the Spanish or Mexican way of D-B-Q-U-E. So hit me up on any of those channels.
+
+### [27:06](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1626) — Unknown person · role unknown · unknown
+
+Turn 29 · original label: 1 · evidence eligible: no
+
+Awesome. Thank you so much, David. All the best and bye for now.
+
+### [27:10](https://www.youtube.com/watch?v=qv39wVUaWrs&t=1630) — David Kinitsky · CEO, Everstake · employee
+
+Turn 30 · original label: 2 · evidence eligible: no
+
+Awesome. Thanks, Andy. Talk soon.
+

@@ -62,7 +62,7 @@ test("readable exports preserve corrections and raw labels while only employee e
     );
     assert.match(
       result.basename,
-      /^2025-01-02-інтерв-ю-company-strategy--abcdefghijk$/,
+      /^2025-01-02-coo-guest-інтерв-ю-company-strategy--abcdefghijk$/,
     );
     const json = JSON.parse(readFileSync(result.jsonPath, "utf8"));
     assert.deepEqual(
@@ -124,4 +124,33 @@ test("unreviewed identity and suspicious turns never become eligible in exports"
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("display titles put dated role and surname before given name and topic", async () => {
+  const { reviewedVideoTitle } = await import("./transcript-title.js");
+  const named = {
+    ...review,
+    speakers: [
+      {
+        ...review.speakers[1]!,
+        name: "Bohdan Opryshko",
+        roleAtRecording: "Co-founder and COO at Everstake",
+      },
+    ],
+  };
+  assert.equal(
+    reviewedVideoTitle(
+      { title: "Company history", publishedAt: "2026-04-23" },
+      named,
+    ),
+    "2026-04-23 — COO — Opryshko Bohdan — Company history",
+  );
+  const uncertain = {
+    ...named,
+    speakers: [{ ...named.speakers[0]!, roleAtRecording: null }],
+  };
+  assert.match(
+    reviewedVideoTitle({ title: "Interview", publishedAt: null }, uncertain),
+    /role-unconfirmed — Opryshko Bohdan/,
+  );
 });

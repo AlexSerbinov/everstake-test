@@ -1,3 +1,4 @@
+import { reviewedVideoTitle } from "./transcript-title.js";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { SpeakerReview } from "./review-speakers.js";
@@ -32,12 +33,14 @@ export function exportReviewedTranscript(
     throw new Error("Invalid video ID for transcript export");
   const date =
     video.publishedAt?.match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? "date-unknown";
+  const displayTitle = reviewedVideoTitle(video, review);
   const titleSlug =
-    video.title
+    displayTitle
+      .slice(date.length + 3)
       .normalize("NFC")
       .toLowerCase()
       .replace(/[^\p{L}\p{N}]+/gu, "-")
-      .slice(0, 100)
+      .slice(0, 180)
       .replace(/^-+|-+$/g, "") || "interview";
   let slug = "";
   for (const character of titleSlug) {
@@ -60,7 +63,7 @@ export function exportReviewedTranscript(
       evidenceEligible: isEvidenceEligible(turn, index, review),
     };
   });
-  let markdown = `# ${inline(video.title)}\n\nSource: ${video.url}\n\nUploaded: ${video.publishedAt ?? "unknown"}\n\nVideo ID: ${video.id}\n\nSpeaker review: ${review.status}\n\n`;
+  let markdown = `# ${inline(displayTitle)}\n\nOriginal video title: ${inline(video.title)}\n\nSource: ${video.url}\n\nUploaded: ${video.publishedAt ?? "unknown"}\n\nVideo ID: ${video.id}\n\nSpeaker review: ${review.status}\n\n`;
   markdown +=
     "Speaker names and roles are contextual model attributions at the time of recording, not independently verified current employment. Evidence eligibility is a filtering decision, not a guarantee of factual truth. All dialogue is preserved, including questions and rejected claims. This export does not activate a corpus source.\n\n";
   markdown +=
@@ -98,7 +101,8 @@ export function exportReviewedTranscript(
     JSON.stringify(
       {
         videoId: video.id,
-        title: video.title,
+        title: displayTitle,
+        originalTitle: video.title,
         sourceUrl: video.url,
         uploadedAt: video.publishedAt,
         reviewStatus: review.status,
@@ -113,7 +117,7 @@ export function exportReviewedTranscript(
     markdownPath,
     jsonPath,
     basename,
-    title: video.title,
+    title: displayTitle,
     videoId: video.id,
     sourceUrl: video.url,
     reviewStatus: review.status,

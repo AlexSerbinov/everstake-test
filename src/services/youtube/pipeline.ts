@@ -1,3 +1,4 @@
+import { reviewedVideoTitle } from "./transcript-title.js";
 import { sanitizeDocument } from "../evidence/sanitize-document.js";
 import { isEvidenceEligible } from "./evidence-turns.js";
 import { createHash } from "node:crypto";
@@ -357,7 +358,7 @@ export function buildDocument(
     id: `youtube:${candidate.id}:${contentHash.slice(0, 16)}`,
     url: candidate.url,
     canonicalUrl: candidate.url,
-    title: candidate.title,
+    title: reviewedVideoTitle(candidate, review),
     publisher: candidate.channel || "YouTube",
     authority: officialPublisher ? 1 : interviewAuthority ? 2 : 3,
     kind: "youtube",
