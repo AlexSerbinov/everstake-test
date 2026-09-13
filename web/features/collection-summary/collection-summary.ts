@@ -1,0 +1,98 @@
+import { el, getJson, metric, money } from "../../shared/dom.js";
+import { defaultEvaluationRun } from "../evaluation/default-evaluation-run.js";
+import { evaluationMetrics } from "../evaluation/evaluation-metrics.js";
+import type { EvaluationRun } from "../evaluation/evaluation-page.js";
+
+/** Summary values retain their separate current-corpus and saved-run scopes. */
+export function collectionSummary(): HTMLElement {
+  const rail = el("aside", "knowledge-rail");
+  rail.setAttribute("aria-label", "Knowledge base statistics");
+  rail.append(el("p", "eyebrow", "KNOWLEDGE BASE STATISTICS"));
+  const corpus = metric("Collected documents", "Loading…");
+  const quality = metric("Saved evaluation", "Loading…");
+  const costs = metric("All-time known API cost", "Loading…");
+  const refresh = el("div", "rail-note");
+  refresh.append(
+    el("p", "eyebrow", "SOURCE UPDATES"),
+    el("p", "small muted", "Loading update status…"),
+  );
+  const limits = el("div", "rail-note");
+  limits.append(
+    el("p", "eyebrow", "WHAT THIS CANNOT DO"),
+    el(
+      "p",
+      "small muted",
+      "No private data or facts beyond the collected sources. If the evidence cannot support an answer, the assistant says so. A source’s checked date is not its fact date.",
+    ),
+  );
+  rail.append(corpus, quality, costs, refresh, limits);
+  void getJson<{ total: number; version: string }>("/api/corpus")
+    .then((data) => {
+      corpus.replaceWith(
+        metric(
+          "Collected documents",
+          data.total.toLocaleString(),
+          data.version,
+        ),
+      );
+    })
+    .catch(() => {
+      corpus.replaceWith(metric("Collected documents", "Unavailable"));
+    });
+  void getJson<{ runs: EvaluationRun[] }>("/api/evaluations")
+    .then(({ runs }) => {
+      const run = defaultEvaluationRun(runs);
+      if (!run) {
+        quality.replaceWith(metric("Saved evaluation", "Not measured"));
+        return;
+      }
+      const progress = evaluationMetrics(run);
+      quality.replaceWith(
+        metric(
+          "Saved evaluation accuracy",
+          progress.accuracy,
+          `${run.summary.passed}/${progress.planned} passed · ${run.mode} · ${run.corpusVersion}. Saved results, not a guarantee for new questions.`,
+        ),
+      );
+    })
+    .catch(() => {
+      quality.replaceWith(metric("Saved evaluation", "Unavailable"));
+    });
+  void getJson<{ knownCostUsd: number; unknownCalls: number }>("/api/costs")
+    .then((data) => {
+      costs.replaceWith(
+        metric(
+          "All-time known API cost",
+          money(data.knownCostUsd),
+          `${data.unknownCalls} unconfirmed charges. Includes collection, queries and evaluations.`,
+        ),
+      );
+    })
+    .catch(() => {
+      costs.replaceWith(metric("Recorded API cost", "Unavailable"));
+    });
+  void getJson<{ settings: { automatic: boolean } }>("/api/updates")
+    .then((data) => {
+      refresh.replaceChildren(
+        el("p", "eyebrow", "SOURCE UPDATES"),
+        el(
+          "p",
+          "small muted",
+          data.settings.automatic
+            ? "Automatic checks are enabled. Each source follows its saved schedule."
+            : "Automatic checks are off. Start a refresh from Updates.",
+        ),
+      );
+    })
+    .catch(() => {
+      refresh.replaceChildren(
+        el("p", "eyebrow", "SOURCE UPDATES"),
+        el(
+          "p",
+          "small muted",
+          "Update status unavailable. Check Updates for details.",
+        ),
+      );
+    });
+  return rail;
+}

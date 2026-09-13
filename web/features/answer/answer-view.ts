@@ -8,6 +8,7 @@ import { date } from "../../shared/source-date.js";
 import {
   citationSegments,
   navigateCitation,
+  groupSources,
 } from "../answer-sources/citation-navigation.js";
 import { sourceCards } from "../answer-sources/source-cards.js";
 import { costReceipt } from "../costs/cost-receipt.js";
@@ -25,7 +26,40 @@ export function answerView(answer: AnswerResult, scope: string): HTMLElement {
     );
     return grid;
   }
-  const card = el("article", "answer-card");
+  const header = el("header", "answer-header");
+  const heading = el("div", "answer-heading");
+  heading.append(
+    el("p", "eyebrow", "Corpus-grounded answer"),
+    el(
+      "h2",
+      "",
+      answer.status === "no_reliable_answer"
+        ? "No reliable answer found"
+        : answer.status === "partial"
+          ? "What the evidence supports"
+          : "What the sources say",
+    ),
+  );
+  header.append(heading);
+  left.append(header);
+  const summary = el("div", "answer-summary");
+  summary.setAttribute("aria-label", "Answer evidence summary");
+  const stats = [
+    [String(answer.claims.length), "Answer claims"],
+    [String(groupSources(answer.sources).length), "Cited pages"],
+    [
+      answer.trust ? `${answer.trust.score} / 100` : "Unavailable",
+      "Evidence score",
+    ],
+    [String(answer.receipt.calls), "Model calls"],
+  ];
+  for (const [value, label] of stats) {
+    const stat = el("div", "answer-stat");
+    stat.append(el("strong", "", value), el("span", "", label));
+    summary.append(stat);
+  }
+  left.append(summary);
+  const card = el("article", `answer-card answer-${answer.status}`);
   const meta = el("div", "answer-meta");
   meta.append(
     badge(
@@ -42,6 +76,13 @@ export function answerView(answer: AnswerResult, scope: string): HTMLElement {
         : answer.claims.length
           ? "Dates shown per claim"
           : "Fact date not established",
+    ),
+  );
+  meta.append(
+    el(
+      "span",
+      "answer-date-note",
+      "Fact dates belong to each claim; collection dates belong to the sources.",
     ),
   );
   card.append(meta);

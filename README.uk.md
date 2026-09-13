@@ -8,7 +8,7 @@
 
 **Українська** · [English](README.md) · [Відкрити демо](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Тестове завдання](docs/TEST_ASSIGNMENT_UA.md) · [Результати перевірки](EVAL.md)
 
-[![Екран актуального демо: поле питання та приклади запитів](docs/images/demo-ask.png)](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask)
+[![Екран актуального демо: поле питання та приклади запитів](artifacts/demo/redesign/ask-desktop.png)](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask)
 
 *Демо доступне за посиланням вище. Знімок інтерфейсу зроблено 13 вересня 2026 року; оформлення може змінюватися.*
 

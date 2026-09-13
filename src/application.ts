@@ -1,3 +1,4 @@
+import { costDashboard } from "./services/measurements/cost-dashboard.js";
 import { createUpdateController } from "./services/updates/controller.js";
 import { refreshVideos } from "./services/updates/refresh-videos.js";
 import { stagedRefresh, dueSources } from "./workflows/staged-refresh.js";
@@ -10,7 +11,6 @@ import {
   beginRun,
   finishRun,
   buildReceipt,
-  costOverview,
 } from "./services/measurements/index.js";
 import { answerQuestion } from "./services/answer/answer-question.js";
 import { hybridSearch } from "./services/search/hybrid-search.js";
@@ -67,20 +67,7 @@ export function createApplication(db: Database) {
       activeQuestions--;
     }
   };
-  const costs = () => ({
-    ...costOverview(db),
-    runs: db
-      .prepare("SELECT * FROM runs ORDER BY started_at DESC LIMIT 100")
-      .all()
-      .map((r) => ({
-        id: r.id,
-        kind: r.kind,
-        startedAt: r.started_at,
-        status: r.status,
-        question: null,
-        receipt: buildReceipt(db, String(r.id)),
-      })),
-  });
+  const costs = () => costDashboard(db);
   const refresh = async (
     sourceId?: string,
     options: {

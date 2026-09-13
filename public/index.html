@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#10130f" />
+    <meta name="theme-color" content="#034638" />
     <meta
       name="description"
       content="Explore Everstake’s public knowledge with dated sources, visible research and measured results."
@@ -11,31 +11,92 @@
     <title>Ask · Everstake Knowledge</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23cbf278'/%3E%3Cpath d='M20 18h28v7H27v5h17v7H27v5h21v7H20z' fill='%2310130f'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23034638'/%3E%3Cpath d='M20 18h28v7H27v5h17v7H27v5h21v7H20z' fill='%23F5FFFD'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/corpus.css" />
+    <link rel="stylesheet" href="/costs.css" />
+    <link rel="stylesheet" href="/evaluation.css" />
+    <link rel="stylesheet" href="/updates.css" />
     <script type="module" src="/app.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="#ask" aria-label="Everstake Knowledge home"
+      <a
+        class="brand"
+        href="#ask"
+        aria-label="Everstake Knowledge home"
+        data-new-question
         ><span class="brand-mark" aria-hidden="true">E</span
-        ><span>everstake<span class="brand-subtitle">KNOWLEDGE</span></span></a
+        ><span
+          >everstake<span class="brand-subtitle">KNOWLEDGE BASE</span></span
+        ></a
       >
-      <nav class="main-nav" aria-label="Main navigation">
-        <a href="#ask" data-page="ask">Ask</a
-        ><a href="#corpus" data-page="corpus">Corpus</a
-        ><a href="#updates" data-page="updates">Updates</a
-        ><a href="#costs" data-page="costs">Costs</a
-        ><a href="#evaluation" data-page="evaluation">Evaluation</a>
-      </nav>
-      <span class="header-note"
-        ><span aria-hidden="true">●</span> Public knowledge, traceable
-        answers</span
-      >
+      <div class="header-actions">
+        <span class="header-note"
+          ><span class="status-dot" aria-hidden="true"></span>Public sources.
+          Traceable answers.</span
+        >
+        <a class="button primary header-ask" href="#ask" data-new-question
+          ><span>Ask a question</span
+          ><span class="button-icon" aria-hidden="true">→</span></a
+        >
+        <button
+          class="menu-toggle button secondary"
+          type="button"
+          aria-controls="sidebar"
+          aria-expanded="false"
+          aria-label="Open navigation"
+        >
+          Menu <span aria-hidden="true">☰</span>
+        </button>
+      </div>
     </header>
-    <main id="main" tabindex="-1"><div id="app"></div></main>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <nav class="main-nav" aria-label="Main navigation">
+          <div class="nav-group">
+            <p class="nav-label">ASK</p>
+            <a href="#ask" data-page="ask"
+              ><span class="nav-icon" aria-hidden="true">↗</span>Ask a
+              question</a
+            >
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">EXPLORE</p>
+            <a href="#corpus" data-page="corpus"
+              ><span class="nav-icon" aria-hidden="true">▤</span>Corpus<span
+                class="nav-count"
+                id="corpus-count"
+              ></span
+            ></a>
+            <a href="#costs" data-page="costs"
+              ><span class="nav-icon" aria-hidden="true">$</span>Costs</a
+            >
+            <a href="#evaluation" data-page="evaluation"
+              ><span class="nav-icon" aria-hidden="true">✓</span>Evaluation</a
+            >
+          </div>
+          <div class="nav-group">
+            <p class="nav-label">OPERATOR</p>
+            <a href="#updates" data-page="updates"
+              ><span class="nav-icon" aria-hidden="true">↻</span>Updates</a
+            >
+          </div>
+        </nav>
+        <div class="sidebar-collection">
+          <p class="nav-label">COLLECTION</p>
+          <p id="collection-summary" class="small muted">
+            Loading source collection…
+          </p>
+          <p class="small muted">
+            Dated evidence.<br />Measured quality.<br />Honest limits.
+          </p>
+        </div>
+      </aside>
+      <main id="main" tabindex="-1"><div id="app"></div></main>
+    </div>
     <footer class="site-footer">
       <span
         >Everstake Knowledge

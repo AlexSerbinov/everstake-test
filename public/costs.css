@@ -1,0 +1,324 @@
+.costs-page {
+  --cost-ink: #034638;
+  --cost-muted: #527569;
+  --cost-line: #d4e8e1;
+  --cost-paper: #f5fffd;
+}
+.costs-page .cost-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--cost-line);
+  background: var(--cost-paper);
+}
+.cost-stat {
+  padding: 19px 21px;
+  border-right: 1px solid var(--cost-line);
+  min-width: 0;
+}
+.cost-stat:last-child {
+  border-right: 0;
+}
+.cost-stat strong {
+  display: block;
+  font-size: 27px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin: 8px 0;
+  color: var(--cost-ink);
+  font-variant-numeric: tabular-nums;
+}
+.cost-stat small {
+  display: block;
+  font-size: 11px;
+  color: var(--cost-muted);
+  line-height: 1.5;
+}
+.cost-stat .eyebrow {
+  font-size: 9px;
+}
+.cost-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 12px 0;
+  color: var(--cost-muted);
+  font-size: 11px;
+}
+.cost-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 18px;
+  margin: 8px 0 18px;
+  align-items: start;
+}
+.cost-panel {
+  border: 1px solid var(--cost-line);
+  background: var(--cost-paper);
+  padding: 20px;
+  min-width: 0;
+}
+.costs-page .cost-panel h2,
+.costs-page .cost-controls h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+.cost-note {
+  color: var(--cost-muted);
+  font-size: 11px;
+  line-height: 1.65;
+  margin: 5px 0 12px;
+}
+.cost-bars {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+.cost-bar-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) minmax(40px, 1.1fr) 85px;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.cost-bar-label {
+  overflow-wrap: anywhere;
+}
+.cost-bar-track {
+  height: 13px;
+  background: #e8f4ef;
+}
+.cost-bar-fill {
+  display: block;
+  height: 100%;
+  background: #57c6a3;
+}
+.cost-bar-row:nth-child(3n + 1) .cost-bar-fill {
+  background: #034638;
+}
+.cost-bar-row:nth-child(3n + 2) .cost-bar-fill {
+  background: #8bbdac;
+}
+.cost-bar-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cost-model {
+  border-bottom: 1px solid var(--cost-line);
+  padding: 13px 0;
+}
+.cost-model:last-child {
+  border-bottom: 0;
+}
+.cost-model-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+}
+.cost-model-heading strong:first-child {
+  overflow-wrap: anywhere;
+}
+.cost-model-heading strong:last-child {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.cost-model .cost-note {
+  margin-bottom: 0;
+}
+.cost-forecast {
+  padding: 17px 20px;
+  background: #fbf4e8;
+  border: 1px solid #e6d3b4;
+  color: #795923;
+  margin: 18px 0 26px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.cost-forecast strong {
+  font-size: 12px;
+}
+.cost-forecast p {
+  margin: 6px 0;
+}
+.cost-forecast .cost-note {
+  color: #795923;
+}
+.cost-controls {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+.costs-page .cost-controls h2 {
+  margin: 0 auto 0 0;
+}
+.cost-controls input,
+.cost-controls select {
+  font: inherit;
+  font-size: 12px;
+  padding: 9px 11px;
+  color: var(--cost-ink);
+  border: 1px solid var(--cost-line);
+  background: var(--cost-paper);
+  min-height: 36px;
+}
+.cost-controls input {
+  width: 270px;
+  max-width: 100%;
+}
+.cost-controls :focus-visible,
+.cost-ledger-summary:focus-visible {
+  outline: 2px solid #279b78;
+  outline-offset: 3px;
+}
+.cost-ledger {
+  border: 1px solid var(--cost-line);
+  background: var(--cost-paper);
+  margin: 10px 0 20px;
+}
+.cost-ledger-row {
+  border-bottom: 1px solid var(--cost-line);
+}
+.cost-ledger-row:last-child {
+  border-bottom: 0;
+}
+.cost-ledger-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 108px 86px 64px 94px;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 11px;
+  color: var(--cost-muted);
+}
+.cost-ledger-summary::-webkit-details-marker {
+  display: none;
+}
+.cost-ledger-summary:hover,
+.cost-ledger-row[open] > .cost-ledger-summary {
+  background: #eaf7f1;
+}
+.cost-identity {
+  min-width: 0;
+}
+.cost-identity strong {
+  display: block;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--cost-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cost-identity strong::before {
+  content: "＋";
+  margin-right: 8px;
+}
+.cost-ledger-row[open] .cost-identity strong::before {
+  content: "−";
+}
+.cost-identity small {
+  display: block;
+  margin-top: 6px;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.cost-ledger-amount {
+  text-align: right;
+  font-size: 12px;
+  color: var(--cost-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cost-ledger-body {
+  padding: 0 18px;
+}
+.cost-ledger-row[open] .cost-ledger-body {
+  padding: 12px 18px 18px;
+}
+.cost-ledger-body .receipt-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.cost-ledger-body .metric {
+  padding: 12px;
+}
+.cost-ledger-body .metric strong {
+  font-size: 17px;
+}
+.cost-accounting {
+  background: transparent;
+}
+.cost-accounting .cost-note {
+  margin-bottom: 0;
+}
+@media (max-width: 1000px) {
+  .cost-columns {
+    grid-template-columns: 1fr;
+  }
+  .cost-stats .cost-stat {
+    padding: 15px;
+  }
+  .cost-stat strong {
+    font-size: 22px;
+  }
+  .cost-ledger-summary {
+    grid-template-columns: minmax(0, 1fr) 86px 75px;
+    gap: 9px;
+  }
+  .cost-ledger-summary > time {
+    display: none;
+  }
+  .cost-ledger-summary > span:not(.badge) {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .costs-page .cost-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cost-stat:nth-child(2) {
+    border-right: 0;
+  }
+  .cost-stat:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--cost-line);
+  }
+  .cost-controls input {
+    width: 100%;
+  }
+  .cost-controls h2 {
+    width: 100%;
+  }
+  .cost-panel {
+    padding: 15px;
+  }
+  .cost-bar-row {
+    grid-template-columns: minmax(80px, 1fr) minmax(30px, 1fr) 76px;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .cost-ledger-summary {
+    padding: 13px 12px;
+    grid-template-columns: minmax(0, 1fr) 80px;
+  }
+  .cost-ledger-summary > .badge {
+    display: none;
+  }
+  .cost-ledger-body .receipt-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cost-identity strong {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .cost-stat small {
+    font-size: 10px;
+  }
+}

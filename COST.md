@@ -2,7 +2,7 @@
 
 Scope: this TypeScript rebuild, from provider probes through collection, indexing, YouTube, diagnostic questions and final evaluations. Prior Claude/Codex totals are historical and are not added to these runs. Subscription agent effort, existing server rental and bandwidth are not provider-token charges.
 
-**Known usage-priced / provider-reported total: $4.462078; 7 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).
+**Previously published ledger snapshot: $4.462078 known usage-priced / provider-reported; 7 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).
 
 | Operation | Calls | Input tokens | Output tokens | Known cost | Unknown cost calls |
 |---|---:|---:|---:|---:|---:|
@@ -42,3 +42,11 @@ Query model context and tool steps remain capped, so LLM input cost is not assum
 18 videos totaling 42,038 seconds (11.677 hours) were submitted for transcription. Gemini has 30 measured speaker-review attempts, known cost $0.672300. 0 transcription charges remain unknown. Soniox provider-reported known cost is **$1.328459**; matching uses the recorded operation and transcription IDs. The recorded transcription forecast totals **$1.167722**, using duration / 3,600 × the configured $0.10/hour assumption, not a measured invoice. 6 transcripts are active in the corpus; only eligible attributed testimony is active; uncertain attributions and recordings without qualifying testimony remain outside the index. The full inventory and outstanding work are in [Costs/YouTube](Costs/YouTube/README.md).
 
 Reserving a conservative amount before a call limits further work; it is not a guarantee of an external provider's final bill. Public demo calls have a per-run limit and a process-session ceiling. Restarting the process starts a new session budget.
+
+## Separate MCP-context measurement — 13 September 2026
+
+Run `mcp-8bcd1ef1` made **20 actual Gemini calls** for the same twenty questions using captured official MCP evidence. Recorded usage: **307,160 input tokens**, **1,583 output tokens**, **$0.23630625 known usage-priced cost**, **0 unpriced calls**. Mean per question: **$0.23630625 / 20 = $0.0118153125**.
+
+This is a separate measured addition, not a recomputed all-time total or an adjustment to the historical ledger table above. It covers answer generation, not an invoice-reconciled provider bill, MCP hosting, network/tool-access charges, subscription agent effort or independent review effort. No MCP service-access price was measured; absence of such a measurement does not establish zero operating cost. The successful calculator probe is retained in the capture but was not inserted into unrelated question contexts.
+
+[Provider attempts and usage](artifacts/mcp/measurements-2026-09-13.json) · [Question receipts](artifacts/evaluation/mcp-2026-09-13.json) · [Comparison methodology](docs/MCP_COMPARISON.md).

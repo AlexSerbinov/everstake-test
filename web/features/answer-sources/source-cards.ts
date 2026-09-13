@@ -9,16 +9,23 @@ export function sourceCard(
 ): HTMLElement {
   const source = passages[0];
   const card = el("article", `source-card authority-${source.authority}`);
+  const heading = el("div", "source-heading");
+  const icon = el(
+    "span",
+    "source-icon",
+    source.metadata.videoId ? "VIDEO" : "WEB",
+  );
+  icon.setAttribute("aria-hidden", "true");
+  const identity = el("div", "source-identity");
   const title = el("h3");
   title.append(link(source.title || source.url, source.url));
-  card.append(
+  identity.append(
+    el("p", "source-publisher", source.publisher || "Publisher not recorded"),
     title,
-    el(
-      "p",
-      "source-publisher",
-      `${source.publisher} · ${authority(source.authority)}`,
-    ),
+    badge(authority(source.authority), "source-authority"),
   );
+  heading.append(icon, identity);
+  card.append(heading);
   const dates = el("div", "source-dates");
   dates.append(
     el(
@@ -51,7 +58,7 @@ export function sourceCard(
     // Exact registered evidence is retained; a preview never invents surrounding context.
     const quote = el(
       "blockquote",
-      "",
+      "source-excerpt",
       passage.text.length > 650
         ? `${passage.text.slice(0, 650)}…`
         : passage.text,
@@ -93,7 +100,11 @@ export function sourceCards(
   const pane = el("aside", "sources-pane");
   const groups = groupSources(sources);
   const heading = el("div", "section-heading");
-  heading.append(el("h2", "", "Sources"), badge(`${groups.length} pages`));
+  heading.append(
+    el("h2", "", "Sources"),
+    badge(`${groups.length} ${groups.length === 1 ? "page" : "pages"}`),
+  );
+  pane.setAttribute("aria-label", "Cited evidence sources");
   pane.append(heading);
   pane.append(
     el(
@@ -103,7 +114,9 @@ export function sourceCards(
     ),
   );
   const numbers = new Map(sources.map((source, i) => [source.id, i + 1]));
-  for (const group of groups) pane.append(sourceCard(group, numbers, scope));
+  const list = el("div", "source-list");
+  for (const group of groups) list.append(sourceCard(group, numbers, scope));
+  pane.append(list);
   if (!sources.length) pane.append(el("p", "muted", "No sources were cited."));
   return pane;
 }

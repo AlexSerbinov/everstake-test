@@ -1,0 +1,299 @@
+{
+  "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+  "status": "answered",
+  "question": "У якому році засновано Everstake? Наведи джерело та дату.",
+  "text": "Компанію Everstake було засновано у 2018 році. [ef308524910f5d0d480dd21fa20f6c42] (Source published 2026-07-01 [ef308524910f5d0d480dd21fa20f6c42]; fact effective date not established.)\n\nОфіційна сторінка огляду Everstake (everstake.com/ai-info) опублікована 1 липня 2026 року. [ef308524910f5d0d480dd21fa20f6c42] (Source published 2026-07-01 [ef308524910f5d0d480dd21fa20f6c42]; fact effective date not established.)",
+  "asOf": null,
+  "claims": [
+    {
+      "text": "Компанію Everstake було засновано у 2018 році.",
+      "citations": [
+        "ef308524910f5d0d480dd21fa20f6c42"
+      ],
+      "asOf": "2026-07-01",
+      "asOfBasis": "published",
+      "asOfSource": "ef308524910f5d0d480dd21fa20f6c42",
+      "temporalScope": "historical"
+    },
+    {
+      "text": "Офіційна сторінка огляду Everstake (everstake.com/ai-info) опублікована 1 липня 2026 року.",
+      "citations": [
+        "ef308524910f5d0d480dd21fa20f6c42"
+      ],
+      "asOf": "2026-07-01",
+      "asOfBasis": "published",
+      "asOfSource": "ef308524910f5d0d480dd21fa20f6c42",
+      "temporalScope": "current"
+    }
+  ],
+  "sources": [
+    {
+      "id": "ef308524910f5d0d480dd21fa20f6c42",
+      "documentId": "4611b2269824fa3993cd40e3fb08b6b5",
+      "url": "https://everstake.com/ai-info",
+      "title": "Official Everstake AI Info | Structured Company Overview for LLMs",
+      "text": "### Fast facts Field | Value Official name | Everstake Legal entity | Everstake Validation Services LLC (a Cayman Islands limited liability company)7 (https://everstake.com/terms-of-use) Website | https://everstake.com/ Founded | 2018 Founder | Sergii Vasylchuk (for current leadership titles, see the company page) Registered office | Hermes Corporate Services Ltd., Fifth Floor, Zephyr House, 122 Mary Street, George Town, P.O. Box 31493, Grand Cayman KY1-1206, Cayman Islands7 (https://everstake.com/terms-of-use) Industry | Non-custodial staking and blockchain infrastructure Custody model | Non-custodial: clients retain ownership and custody of their assets3 (https://everstake.com/products/institutional-staking) Networks supported | 130+ Proof-of-Stake networks to date Staked value secured | $7B+ total staked value to date, as reported by Everstake, as of Q3 20261 (https://everstake.com/company/about) Rewards generated | $700M+ rewards generated (Everstake-reported, as of Q3 2026)1 (https://everstake.com/company/about) Users | over 1.6 million total delegators (Everstake-reported, as of Q3 2026)2 (https://everstake.com/staking) Observed infrastructure uptime | 99.98% observed infrastructure uptime (self-reported, as of Q3 2026)1 (https://everstake.com/company/about) Slashing | Zero material slashing events on major networks (Everstake's stated figure)2 (https://everstake.com/staking) Certifications (labels; legal review) | SOC 2 Type II, ISO 27001, NIST CSF, GDPR, CCPA/CRPA, ITGC1 (https://everstake.com/company/about) Wikidata | Q132776648",
+      "authority": 1,
+      "publisher": "Everstake",
+      "publishedAt": "2026-07-01T00:00:00.000Z",
+      "updatedAt": "2026-07-01T00:00:00.000Z",
+      "fetchedAt": "2026-09-13T14:01:22.792Z",
+      "duplicateGroup": "4611b2269824fa3993cd40e3fb08b6b5",
+      "score": 0.016666666666666666,
+      "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+      "metadata": {
+        "sourceId": "everstake-com"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "rule": "claim-1:citations",
+      "status": "passed",
+      "reason": "All references were returned in this run"
+    },
+    {
+      "rule": "claim-1:quantities",
+      "status": "passed",
+      "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+    },
+    {
+      "rule": "claim-1:date",
+      "status": "passed",
+      "reason": "Date matches published evidence in ef308524910f5d0d480dd21fa20f6c42; semantic verifier checks its applicability"
+    },
+    {
+      "rule": "claim-2:citations",
+      "status": "passed",
+      "reason": "All references were returned in this run"
+    },
+    {
+      "rule": "claim-2:quantities",
+      "status": "passed",
+      "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+    },
+    {
+      "rule": "claim-2:date",
+      "status": "passed",
+      "reason": "Date matches published evidence in ef308524910f5d0d480dd21fa20f6c42; semantic verifier checks its applicability"
+    },
+    {
+      "rule": "claim-1:support",
+      "status": "passed",
+      "reason": "Джерело Everstake (everstake.com/ai-info станом на 1 липня 2026 року) підтверджує, що компанію засновано у 2018 році."
+    },
+    {
+      "rule": "claim-1:currentness",
+      "status": "passed",
+      "reason": "3 newer passage(s) (2026-09-09, 2026-08-19, 2026-08-11) were compared and do not contradict this claim"
+    },
+    {
+      "rule": "claim-2:support",
+      "status": "passed",
+      "reason": "Дата публікації офіційної сторінки огляду Everstake зазначена як 1 липня 2026 року."
+    },
+    {
+      "rule": "claim-2:currentness",
+      "status": "passed",
+      "reason": "3 newer passage(s) (2026-09-10, 2026-09-10, 2026-09-09) were compared and do not contradict this claim"
+    },
+    {
+      "rule": "answer-scope",
+      "status": "passed",
+      "reason": "Passage ef308524910f5d0d480dd21fa20f6c42 explicitly states 'Founded | 2018' and has publishedAt '2026-07-01T00:00:00.000Z' (which also matches the 'Last updated: 2026-07-01' on the page). Both claims accurately represent the facts, dates, and sources provided."
+    }
+  ],
+  "trust": {
+    "score": 85,
+    "components": [
+      {
+        "name": "Authority",
+        "score": 30,
+        "maximum": 30,
+        "reason": "Publisher provenance; platform alone is not authority"
+      },
+      {
+        "name": "Temporal evidence",
+        "score": 20,
+        "maximum": 20,
+        "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+      },
+      {
+        "name": "Grounding checks",
+        "score": 30,
+        "maximum": 30,
+        "reason": "Structural gates and model-based support review passed; review can still be wrong"
+      },
+      {
+        "name": "Independent evidence",
+        "score": 5,
+        "maximum": 20,
+        "reason": "1 distinct content groups; not a majority vote or proof of agreement"
+      }
+    ],
+    "limitations": [
+      "Heuristic evidence score, not a probability of truth.",
+      "Lexical and numeric checks cannot establish semantic entailment.",
+      "Independent pages can still repeat an unsupported claim."
+    ]
+  },
+  "receipt": {
+    "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+    "calls": 8,
+    "inputTokens": 33761,
+    "outputTokens": 895,
+    "knownCostUsd": 0.02232707,
+    "unknownCalls": 0,
+    "elapsedMs": 28589,
+    "startedAt": "2026-09-13T18:17:05.365Z",
+    "finishedAt": "2026-09-13T18:17:33.954Z",
+    "status": "completed",
+    "attempts": [
+      {
+        "id": "b6b2c7ab-430e-4049-9025-d773e46c6dd2",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "query-embedding",
+        "provider": "openai",
+        "model": "text-embedding-3-small",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:18.928Z",
+        "elapsedMs": 1865.6077689999947,
+        "inputTokens": 32,
+        "outputTokens": 0,
+        "cachedInputTokens": 0,
+        "thinkingTokens": null,
+        "costUsd": 6.4e-7,
+        "status": "completed",
+        "providerRequestId": "req_02f4c38c190940a2a9b77a21a96e8d12",
+        "error": null
+      },
+      {
+        "id": "5e613172-5553-4abe-9629-87db756ceabe",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "answer",
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:20.853Z",
+        "elapsedMs": 1347.450757000006,
+        "inputTokens": 8390,
+        "outputTokens": 254,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 0,
+        "costUsd": 0.007245,
+        "status": "completed",
+        "providerRequestId": "seimapKFBL6avdIP4NHb6Qw",
+        "error": null
+      },
+      {
+        "id": "f2023645-1bbf-4e67-bba2-88069dc4f371",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "query-embedding",
+        "provider": "openai",
+        "model": "text-embedding-3-small",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:22.286Z",
+        "elapsedMs": 1378.908319000002,
+        "inputTokens": 26,
+        "outputTokens": 0,
+        "cachedInputTokens": 0,
+        "thinkingTokens": null,
+        "costUsd": 5.2e-7,
+        "status": "completed",
+        "providerRequestId": "req_12de432eb1434f46822c6f2c5e2cf4e2",
+        "error": null
+      },
+      {
+        "id": "c947bd2b-9e42-4206-9c01-8f658f0b676b",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "query-embedding",
+        "provider": "openai",
+        "model": "text-embedding-3-small",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:23.813Z",
+        "elapsedMs": 217.47491499999887,
+        "inputTokens": 48,
+        "outputTokens": 0,
+        "cachedInputTokens": 0,
+        "thinkingTokens": null,
+        "costUsd": 9.6e-7,
+        "status": "completed",
+        "providerRequestId": "req_1aea6db6379640a9a65a8e2e2a140cc9",
+        "error": null
+      },
+      {
+        "id": "4ecd3572-8025-47b5-ab0e-4edec5691017",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "claim-verification",
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:24.095Z",
+        "elapsedMs": 1212.146259000001,
+        "inputTokens": 13339,
+        "outputTokens": 216,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 0,
+        "costUsd": 0.0045417,
+        "status": "completed",
+        "providerRequestId": "tOimaq_cEcSGxN8P44rGgQs",
+        "error": null
+      },
+      {
+        "id": "50524788-3fb9-4416-bb3b-967df61822a7",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "currentness-review",
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:25.319Z",
+        "elapsedMs": 1840.4548970000033,
+        "inputTokens": 1441,
+        "outputTokens": 139,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 105,
+        "costUsd": 0.001602,
+        "status": "completed",
+        "providerRequestId": "teimavyNHqDDvdIPpvvxgAQ",
+        "error": null
+      },
+      {
+        "id": "4413946d-055f-482e-bb3e-d668bef1543f",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "currentness-review",
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:27.170Z",
+        "elapsedMs": 5602.168777999999,
+        "inputTokens": 1327,
+        "outputTokens": 163,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 123,
+        "costUsd": 0.0016065,
+        "status": "completed",
+        "providerRequestId": "t-imapzaFOWJvdIP-a-vkQs",
+        "error": null
+      },
+      {
+        "id": "f3e09a45-2932-45b4-bca0-3cf760a04463",
+        "runId": "e936b1ed-33f8-4607-884b-211b58558ef7",
+        "stage": "answer-scope-review",
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "attempt": 1,
+        "startedAt": "2026-09-13T18:17:32.780Z",
+        "elapsedMs": 1166.4731300000058,
+        "inputTokens": 9158,
+        "outputTokens": 123,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 0,
+        "costUsd": 0.00732975,
+        "status": "completed",
+        "providerRequestId": "vOimavKxOcCDxN8P6tX_8A4",
+        "error": null
+      }
+    ]
+  },
+  "corpusVersion": "corpus-664b2e73d71f"
+}

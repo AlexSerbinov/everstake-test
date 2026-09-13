@@ -8,7 +8,7 @@ Built by Oleksandr Serbinov for the **AI Automation & Agentic Systems Lead role 
 
 **English** · [Українська](README.uk.md) · [Open the demo](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Assignment](docs/TEST_ASSIGNMENT_EN.md) · [Evaluation](EVAL.md)
 
-[![Current demo: the question form and suggested questions](docs/images/demo-ask.png)](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask)
+[![Current demo: the question form and suggested questions](artifacts/demo/redesign/ask-desktop.png)](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask)
 
 *The demo is linked above. Interface captured on 13 September 2026; its design may change.*
 
@@ -21,6 +21,8 @@ Built by Oleksandr Serbinov for the **AI Automation & Agentic Systems Lead role 
 | “What exact compensation does our contract provide?” | An explanation that public material is insufficient when the contract is absent. |
 
 Research steps appear while the assistant works. Afterward, you can inspect cited passages, their dates, verification results and the request's cost.
+
+The current interface provides Corpus search with 100-document pagination, a Costs dashboard with real ledger breakdowns and expandable receipts, an Evaluation comparison view, and persistent Updates progress. The [demo navigation](https://everstate-knowledge-base.89-167-19-222.sslip.io/#corpus) links to these screens; deployment of this latest redesign is not yet claimed here.
 
 ## Where the information comes from
 
@@ -98,7 +100,7 @@ Updates are prepared separately from the serving database. New text and search d
 
 ![Prepare a separate corpus version; activate it on success and preserve the old one on failure](docs/images/07-refresh.png)
 
-The current code supports manual updates and a schedule that an operator enables explicitly. Updating the corpus does not recalculate its historical quality score: new data needs a new evaluation run. [Update controls and behavior →](docs/UPDATES.md)
+The current Updates screen starts a full pass over enabled sources without an operator-token field, restores source progress after reload, and offers retries and optional scheduling in Advanced settings. These demo update actions accept same-origin JSON requests; the separate legacy refresh endpoint remains token-protected. Updating the corpus does not recalculate its historical quality score: new data needs a new evaluation run. [Update controls and behavior →](docs/UPDATES.md)
 
 ## Run it locally
 
@@ -107,7 +109,8 @@ Use **Node.js 22.16+**. This is one TypeScript application with SQLite. Gemini g
 ```sh
 npm ci
 cp .env.example .env
-# Set GEMINI_API_KEY, OPENAI_API_KEY and a private ADMIN_TOKEN in .env.
+# Set GEMINI_API_KEY and OPENAI_API_KEY in .env.
+# ADMIN_TOKEN is optional for legacy protected operator endpoints.
 npm run cli -- crawl
 npm run cli -- index
 npm run build:web
@@ -120,7 +123,7 @@ Open **http://localhost:4318**. Data persists in `data/knowledge.sqlite`. Indexi
 
 ## The rest of the work
 
-**Compared with Everstake MCP.** This assistant is useful for history, comparing publications and dated evidence. Everstake MCP is better suited to live operational data and staking calculations without maintaining a separate corpus. Our approach adds model costs and the risk of stale or missed sources. [Full comparison →](docs/MCP_COMPARISON.md)
+**Compared with Everstake MCP.** An actual twenty-question run using captured official MCP tool responses received **7/20 (35%) confirmed by two independent rubric/source reviews**, versus the earlier corpus-agent result of 19/20. Its generation cost was **$0.23630625**. This measures a single-turn MCP-context baseline, not autonomous tool use or general superiority: MCP remains useful for live operational data and calculations. [Methodology, answers and limitations →](docs/MCP_COMPARISON.md)
 
 **Redesigning weekly reporting.** A separate one-page proposal has code collect tracker, Slack and meeting records, a model draft a source-linked report, and a department head review and approve it. It covers pilot metrics, detection of incomplete data and deliberate limits on automation. It is a process design, not implemented integrations. [PROCESS.md →](PROCESS.md)
 

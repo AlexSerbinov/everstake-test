@@ -1,3 +1,4 @@
+import { browseCorpus } from "./services/corpus/browse-corpus.js";
 import type { UpdateController } from "./services/updates/controller.js";
 import { runtimeManifest } from "./runtime-manifest.js";
 import { Hono } from "hono";
@@ -85,12 +86,32 @@ export function createApi({
       ? c.json(updates.status())
       : c.json({ error: "Updates unavailable" }, 503),
   );
+  // Updates are an intentionally public demo action. Reject browser cross-site writes.
   app.use("/api/updates/*", async (c, next) => {
     if (
-      !process.env.ADMIN_TOKEN ||
-      c.req.header("Authorization") !== `Bearer ${process.env.ADMIN_TOKEN}`
+      !c.req
+        .header("Content-Type")
+        ?.toLowerCase()
+        .startsWith("application/json")
     )
-      return c.json({ error: "Operator authorization required" }, 401);
+      return c.json({ error: "Updates require a JSON request" }, 415);
+    const origin = c.req.header("Origin");
+    if (c.req.header("Sec-Fetch-Site") === "cross-site")
+      return c.json(
+        { error: "Updates must be started from this application" },
+        403,
+      );
+    if (origin) {
+      try {
+        if (new URL(origin).host !== new URL(c.req.url).host)
+          return c.json(
+            { error: "Updates must be started from this application" },
+            403,
+          );
+      } catch {
+        return c.json({ error: "Invalid request origin" }, 403);
+      }
+    }
     await next();
   });
   app.put("/api/updates/settings", async (c) => {
@@ -117,7 +138,8 @@ export function createApi({
         })
         .strict()
         .parse(await c.req.json());
-      return c.json({ jobs: updates.enqueue(request) }, 202);
+      const batch = updates.startBatch(request);
+      return c.json({ jobs: updates.status().batchJobs, batch }, 202);
     } catch {
       return c.json(
         { error: "Invalid update request or disabled source" },
@@ -138,34 +160,16 @@ export function createApi({
         }),
     }),
   );
-  app.get("/api/corpus", (c) => {
-    const page = Math.max(
-      0,
-      Math.min(Number(c.req.query("page") ?? 0) || 0, 10000),
-    );
-    const documents = db
-      .prepare(
-        "SELECT snapshot FROM documents WHERE active=1 ORDER BY url LIMIT 50 OFFSET ?",
-      )
-      .all(page * 50)
-      .map((r) => {
-        const d = JSON.parse(String(r.snapshot));
-        return { ...d, text: d.text.slice(0, 1200) };
-      });
-    const total = Number(
-      db.prepare("SELECT count(*) AS n FROM documents WHERE active=1").get()!.n,
-    );
-    return c.json({
-      version: getSetting(db, "corpus_version", "unbuilt"),
-      total,
-      pageSize: 50,
-      hasNext: (page + 1) * 50 < total,
-      documents,
-      events: db
-        .prepare("SELECT * FROM crawl_events ORDER BY id DESC LIMIT 30")
-        .all(),
-    });
-  });
+  app.get("/api/corpus", (c) =>
+    c.json(
+      browseCorpus(db, {
+        page: c.req.query("page"),
+        q: c.req.query("q"),
+        kind: c.req.query("kind"),
+        copies: c.req.query("copies"),
+      }),
+    ),
+  );
   app.post("/api/ask", async (c) => {
     if (busy)
       return c.json(

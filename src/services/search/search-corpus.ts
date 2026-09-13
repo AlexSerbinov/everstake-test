@@ -1,5 +1,6 @@
 import type { Database } from "../../storage/database.js";
 import type { DocumentSnapshot, EvidencePassage } from "../../contracts.js";
+import { sanitizeField } from "../evidence/sanitize-document.js";
 
 /** FTS retrieves candidates; authority and dates remain visible for evidence comparison. */
 export function searchCorpus(
@@ -72,7 +73,7 @@ export function passage(
     id,
     documentId: d.id,
     url,
-    title: d.title,
+    title: safeTitle(d),
     text,
     authority: d.authority,
     publisher: d.publisher,
@@ -106,6 +107,21 @@ export function readDocument(
   return chunks.map((c) => passage(d, c.id, c.text));
 }
 
+/**
+ * A page title or a model-derived speaker label sits next to the passage in the model's
+ * context, so a directive planted there would bypass the body sanitizer. Fields pass the same
+ * rules; a title that was nothing but a directive falls back to the host name.
+ */
+export function safeTitle(d: Pick<DocumentSnapshot, "title" | "url">): string {
+  const title = sanitizeField(d.title);
+  if (title) return title;
+  try {
+    return new URL(d.url).hostname;
+  } catch {
+    return "Untitled source";
+  }
+}
+
 /** Only presentation provenance reaches the model, never raw sanitation audit text. */
 export function visibleMetadata(
   metadata: Record<string, unknown>,
@@ -126,6 +142,13 @@ export function visibleMetadata(
     "authorityScope",
   ];
   return Object.fromEntries(
-    keys.filter((k) => metadata[k] !== undefined).map((k) => [k, metadata[k]]),
+    keys
+      .filter((k) => metadata[k] !== undefined)
+      .map((k) => [
+        k,
+        typeof metadata[k] === "string"
+          ? sanitizeField(metadata[k] as string)
+          : metadata[k],
+      ]),
   );
 }
