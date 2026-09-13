@@ -1,10 +1,23 @@
 import type { Claim, CheckResult, EvidencePassage } from "../../contracts.js";
 import { resolveClaimDate } from "./claim-date.js";
 export function numbers(text: string): string[] {
-  return (
-    text.replace(/(\d)[ ,](?=\d{3}(?:\D|$))/g, "$1").match(/\d+(?:\.\d+)?/g) ??
-    []
-  ).map((n) => String(Number(n)));
+  const commaDecimal = /[\u0400-\u04ff]/u.test(text);
+  return (text.match(/\d+(?:[ ,\u00a0\u202f]\d{3})*(?:[.,]\d+)?/g) ?? [])
+    .map((token) => {
+      let normalized = token.replace(/[ \u00a0\u202f]/g, "");
+      if (normalized.includes(",")) {
+        const grouping =
+          !commaDecimal &&
+          !/^0,/.test(normalized) &&
+          /^\d{1,3}(?:,\d{3})+(?:\.\d+)?$/.test(normalized);
+        normalized = grouping
+          ? normalized.replaceAll(",", "")
+          : normalized.replace(",", ".");
+      }
+      return Number(normalized);
+    })
+    .filter(Number.isFinite)
+    .map(String);
 }
 export function verifyAnswer(
   claims: Claim[],

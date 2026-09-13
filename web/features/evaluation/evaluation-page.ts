@@ -1,9 +1,3 @@
-import { methodComparison } from "./method-comparison.js";
-import {
-  groupMetrics,
-  selectResults,
-  type QuestionGroup,
-} from "./evaluation-groups.js";
 import {
   badge,
   button,
@@ -16,7 +10,12 @@ import {
 import { defaultEvaluationRun } from "./default-evaluation-run.js";
 import { evaluationMetrics } from "./evaluation-metrics.js";
 import { date } from "../../shared/source-date.js";
-import { questionResultCard, type ResultRow } from "./question-result-card.js";
+import type { ResultRow } from "./question-result-card.js";
+import {
+  evaluationTable,
+  failureBreakdown,
+  verdictLabel,
+} from "./evaluation-table.js";
 export interface EvaluationRun {
   id: string;
   createdAt: string;
@@ -24,6 +23,9 @@ export interface EvaluationRun {
   plannedTotal?: number;
   mode: string;
   status: string;
+  questionSet?: string;
+  questionSetVersion?: string;
+  recheckOf?: string;
   rows: ResultRow[];
   summary: {
     total: number;
@@ -40,23 +42,23 @@ export interface EvaluationRun {
 export function filterRows(rows: ResultRow[], verdict: string): ResultRow[] {
   return verdict === "all"
     ? rows
-    : rows.filter((row) => row.verdict === verdict);
+    : rows.filter((row) => (row.verdict || "ungraded") === verdict);
 }
 export function evaluationPage(): HTMLElement {
-  const page = el("section", "explore-page evaluation-page");
+  const page = el("section", "explore-page");
   page.append(
-    el("p", "eyebrow", "MEASURED QUALITY"),
-    el("h1", "", "Put every answer to the test."),
+    el("p", "eyebrow", "ПЕРЕВІРКА ЯКОСТІ"),
+    el("h1", "", "Оцінювання відповідей"),
     el(
       "p",
       "lede",
-      "Real questions. Saved answers. See what passed, what failed, and the evidence behind each result.",
+      "Метрики, таблиця запитань і чесний розбір невдач одного прогону. Перегляд збережених результатів не запускає платних запитів.",
     ),
   );
   const content = el("div");
   page.append(content);
   async function load() {
-    content.replaceChildren(el("p", "muted", "Loading saved evaluations…"));
+    content.replaceChildren(el("p", "muted", "Завантажуємо результати…"));
     try {
       const { runs } = await getJson<{ runs: EvaluationRun[] }>(
         "/api/evaluations",
@@ -64,237 +66,187 @@ export function evaluationPage(): HTMLElement {
       if (!runs.length) {
         content.replaceChildren(
           empty(
-            "No saved evaluation yet",
-            "Accuracy will appear after the question set is run and assessed.",
+            "Ще немає збереженого оцінювання",
+            "Результати з’являться після запуску й оцінювання відповідей. Точність поки не визначена.",
           ),
         );
         return;
       }
-      const controls = el("div", "eval-run-controls");
-      const label = el("label", "eyebrow", "Saved evaluation");
+      const controls = el("div", "view-controls");
+      const runLabel = el("label", "", "Прогін");
       const select = el("select");
       select.id = "evaluation-run";
-      label.htmlFor = select.id;
+      runLabel.htmlFor = select.id;
       for (const run of runs) {
         const option = el(
           "option",
           "",
-          `${date(run.createdAt)} · ${run.mode} · ${run.status} · ${run.id.slice(-8)}`,
+          `${date(run.createdAt)} · ${run.recheckOf ? "Повторна перевірка" : run.questionSet === "scenarios" ? "Життєві сценарії" : "Основні 20 питань"} · ${run.questionSetVersion ?? "original"} · ${run.mode} · ${run.status}`,
         );
         option.value = run.id;
         select.append(option);
       }
       select.value = defaultEvaluationRun(runs)!.id;
-      controls.append(
-        label,
-        select,
-        el(
-          "span",
-          "muted small",
-          "Viewing saved results does not start a new run.",
-        ),
-      );
-      const overview = el("div");
-      const groups = el("div", "eval-groups");
-      const resultControls = el("div", "eval-result-controls");
-      const count = el("p", "", "Question results");
-      count.setAttribute("aria-live", "polite");
-      const filterLabel = el("label", "", "Result");
+      const filterLabel = el("label", "", "Показати в таблиці");
       const filter = el("select");
       filter.id = "evaluation-filter";
       filterLabel.htmlFor = filter.id;
-      for (const [value, text] of [
-        ["all", "All results"],
-        ["passed", "Passed"],
-        ["failed", "Failed"],
-        ["ungraded", "Not graded"],
-        ["error", "Request errors"],
-      ]) {
-        const option = el("option", "", text);
-        option.value = value;
-        filter.append(option);
-      }
-      resultControls.append(count, filterLabel, filter);
+      controls.append(runLabel, select, filterLabel, filter);
+      const overview = el("div");
       const list = el("div", "evaluation-list");
-      let activeGroup: QuestionGroup = "all";
-      const comparison = methodComparison(runs, (runId, questionIndex) => {
-        select.value = runId;
-        activeGroup = "all";
-        filter.value = "all";
-        render();
-        if (questionIndex !== undefined) {
-          const card = list.children[questionIndex] as
-            HTMLDetailsElement | undefined;
-          if (card) {
-            card.open = true;
-            const summary = card.querySelector("summary");
-            summary?.focus({ preventScroll: true });
-            card.scrollIntoView({ block: "start", behavior: "instant" });
-          }
-        } else controls.scrollIntoView({ block: "start", behavior: "instant" });
-      });
-      content.replaceChildren(
-        comparison,
-        controls,
-        overview,
-        groups,
-        el(
-          "p",
-          "eval-subset-note",
-          "Simple and hard describe difficulty. Negative cases are a subset of those questions: the correct response is to say the corpus has no reliable answer.",
-        ),
-        resultControls,
-        list,
-      );
-      function render() {
+      content.replaceChildren(controls, overview, list);
+      function render(resetFilter = false) {
         const run = runs.find((item) => item.id === select.value)!;
         const summary = run.summary;
         const progress = evaluationMetrics(run);
-        const hero = el("div", "eval-score-panel");
-        const score = el("div", "eval-score");
-        score.append(
-          el("p", "eyebrow", "Overall accuracy"),
-          el(
-            "strong",
-            progress.assessmentComplete ? "" : "eval-score-status",
-            progress.accuracy.replace(".0%", "%"),
-          ),
-          el(
-            "p",
-            "",
-            `${summary.passed} passed out of ${progress.planned} planned questions`,
-          ),
-        );
-        const outcomes = el("div", "eval-outcomes");
-        outcomes.append(
+        if (resetFilter) {
+          filter.replaceChildren();
+          for (const value of [
+            "all",
+            ...new Set(run.rows.map((row) => row.verdict || "ungraded")),
+          ]) {
+            const option = el(
+              "option",
+              "",
+              value === "all" ? "Усі результати" : verdictLabel(value),
+            );
+            option.value = value;
+            filter.append(option);
+          }
+        }
+        const stats = el("div", "metrics");
+        stats.append(
           metric(
-            "Passed",
-            String(summary.passed),
-            "Correct answers + correct abstentions",
+            "Точність цього прогону",
+            summary.accuracy === null ? "Не визначено" : progress.accuracy,
+            `${summary.passed} успішних із ${progress.planned} запланованих`,
           ),
-          metric("Failed", String(summary.failed), "Includes partial answers"),
           metric(
-            "Checked",
+            "Оцінено",
             `${summary.assessed} / ${progress.planned}`,
-            "Grading progress, not the pass rate",
+            `${summary.failed} невдач · ${progress.awaitingAssessment} ще не оцінено · ${progress.notRun} не запущено`,
           ),
-        );
-        const bar = el("div", "eval-segments");
-        bar.setAttribute("role", "img");
-        bar.setAttribute(
-          "aria-label",
-          `${summary.passed} passed, ${summary.failed} failed, ${Math.max(0, progress.planned - summary.assessed)} not graded out of ${progress.planned} planned`,
-        );
-        for (let i = 0; i < progress.planned; i++)
-          bar.append(
-            el(
-              "span",
-              i < summary.passed
-                ? "passed"
-                : i < summary.passed + summary.failed
-                  ? "failed"
-                  : "pending",
-            ),
-          );
-        const breakdown = el("div", "eval-score-breakdown");
-        breakdown.append(
-          outcomes,
-          bar,
-          el(
-            "p",
-            "small muted",
-            `${summary.passed} passed · ${summary.failed} failed · ${progress.awaitingAssessment} awaiting grading · ${progress.notRun} not run`,
-          ),
-        );
-        hero.append(score, breakdown);
-        const extras = el("div", "eval-support-stats");
-        extras.append(
           metric(
-            "Answers with invented facts",
+            "Відповіді з вигаданими фактами",
             summary.inventedFacts === null
-              ? "Not established"
+              ? "Не визначено"
               : String(summary.inventedFacts),
-            `Among ${summary.assessed} checked questions${progress.assessmentComplete ? "" : " · incomplete assessment"}`,
+            `Серед ${summary.assessed} оцінених питань`,
           ),
           metric(
-            "Known evaluation cost",
+            "Виміряна вартість прогону",
             money(summary.knownCostUsd),
             summary.unknownCalls
-              ? `${summary.unknownCalls} costs unconfirmed`
-              : "Recorded usage",
+              ? `${summary.unknownCalls} викликів із невідомою вартістю`
+              : "За використаними токенами",
           ),
-          metric(
-            "Request errors",
-            String(progress.errors),
-            "Provider errors are not abstentions",
-          ),
+        );
+        const version = el(
+          "p",
+          "muted small",
+          `Прогін ${run.id} · Корпус ${run.corpusVersion} · ${run.questionSetVersion ?? "початковий набір"}`,
+        );
+        const state = badge(
+          run.status === "completed" && !progress.assessmentComplete
+            ? "Відповіді збережено, оцінювання не завершене"
+            : run.status,
+          run.status === "completed" && progress.assessmentComplete
+            ? ""
+            : "warning",
         );
         overview.replaceChildren(
-          hero,
-          extras,
+          el("h2", "", "Метрики оцінювання"),
+          stats,
+          version,
+          state,
           el(
             "p",
-            "eval-run-meta small muted",
-            `${run.mode} · ${run.status} · Run ${run.id} · Collection ${run.corpusVersion}`,
+            "muted small",
+            `${progress.completed} запитів виконано · ${progress.errors} технічних помилок · ${progress.notRun} питань без збереженої відповіді.`,
+          ),
+          el(
+            "p",
+            "muted small",
+            "Успіх означає виконання критеріїв питання. Пропущена суттєва частина або технічний збій — невдача. Правильне «не знаю» у негативному випадку може бути успіхом. Фільтр таблиці не змінює метрик чи розбору невдач.",
           ),
         );
-        groups.replaceChildren();
-        for (const [group, title, description] of [
-          ["all", "All questions", "The full saved question set"],
-          ["simple", "Simple", "Direct facts and lookups"],
-          ["hard", "Hard", "Conflicts, calculations and synthesis"],
-          ["negative", "Negative cases", "Questions the corpus cannot answer"],
-        ] as const) {
-          const stats = groupMetrics(run.rows, group);
-          const item = button(
-            "",
-            () => {
-              activeGroup = group;
-              render();
-            },
-            `eval-group ${group === activeGroup ? "active" : ""}`,
+        const repair = runs.find(
+          (item) =>
+            item.recheckOf === run.id &&
+            item.status === "completed" &&
+            item.summary.assessed === item.rows.length,
+        );
+        if (repair) {
+          const successful = new Set(
+            run.rows
+              .filter((r) => verdictLabel(r.verdict) === "Успішно")
+              .map((r) =>
+                typeof r.question === "string" ? r.question : r.question.id,
+              ),
           );
-          item.setAttribute("aria-pressed", String(group === activeGroup));
-          item.append(
-            el("span", "eval-group-title", title),
-            el("strong", "", String(stats.total)),
-            el(
-              "span",
-              "small",
-              stats.accuracy === null
-                ? `${stats.checked} / ${stats.total} checked · accuracy pending`
-                : `${stats.passed} / ${stats.total} passed · ${(stats.accuracy * 100).toFixed(0)}%`,
+          const original = new Set(
+            run.rows.map((r) =>
+              typeof r.question === "string" ? r.question : r.question.id,
             ),
-            el("span", "muted small", description),
           );
-          groups.append(item);
+          for (const row of repair.rows) {
+            const id =
+              typeof row.question === "string" ? row.question : row.question.id;
+            if (original.has(id) && verdictLabel(row.verdict) === "Успішно")
+              successful.add(id);
+          }
+          const note = el("div", "notice");
+          note.append(
+            el(
+              "strong",
+              "",
+              `Після виправлення: ${successful.size} із ${progress.planned} питань мають успішну відповідь.`,
+            ),
+            el(
+              "p",
+              "",
+              `Повторно перевірено ${repair.rows.length} питання: ${repair.summary.passed} успішних. Решту не перезапускали. Нижче — незмінені результати повного прогону; це не новий повний результат ${successful.size}/${progress.planned}.`,
+            ),
+            button("Відкрити повторну перевірку", () => {
+              select.value = repair.id;
+              render(true);
+            }),
+          );
+          overview.prepend(note);
         }
-        const rows = selectResults(run.rows, activeGroup, filter.value);
-        count.textContent = `Question results · ${rows.length} shown of ${run.rows.length} saved`;
+        if (run.recheckOf)
+          overview.append(
+            el(
+              "p",
+              "notice",
+              `Це повторна перевірка окремих питань із прогону ${run.recheckOf}. Решта питань тут не запускалася.`,
+            ),
+          );
         list.replaceChildren(
-          ...rows.map((row) =>
-            questionResultCard(row, run.rows.indexOf(row), run.id),
+          failureBreakdown(run.rows),
+          el("h2", "", `Таблиця оцінювання: ${progress.planned} запитань`),
+          el(
+            "p",
+            "muted small",
+            run.questionSet === "scenarios"
+              ? "Додаткові життєві сценарії. Їхні результати не входять у метрики основних 20 питань."
+              : "Основний набір містить п’ять негативних випадків. Для них правильна відповідь має чесно вказати, чого джерела не встановлюють.",
           ),
         );
+        const rows = filterRows(run.rows, filter.value);
+        list.append(evaluationTable(rows, run.id));
         if (!rows.length)
           list.append(
-            empty(
-              "No results in this filter",
-              "Choose another group or result to see saved answers.",
-            ),
+            empty("Немає результатів за цим фільтром", "Оберіть інший фільтр."),
           );
       }
-      select.addEventListener("change", () => {
-        activeGroup = "all";
-        filter.value = "all";
-        render();
-      });
-      filter.addEventListener("change", render);
-      render();
+      select.addEventListener("change", () => render(true));
+      filter.addEventListener("change", () => render());
+      render(true);
     } catch (error) {
       content.replaceChildren(
-        empty("Evaluations unavailable", (error as Error).message),
-        button("Try again", () => void load()),
+        empty("Не вдалося завантажити оцінювання", (error as Error).message),
+        button("Спробувати ще раз", () => void load()),
       );
     }
   }

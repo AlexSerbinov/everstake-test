@@ -1,5 +1,10 @@
 # Everstate Knowledge Base — implementation report
 
+Latest evaluation: the full `core-v2` run scored **14/20**, with one unsupported-fact case. After a review-format fix, **E21 and E12 passed a separate 2/2 recheck**: 16 questions now have a successful observed answer across the two runs. The other 18 were not rerun. Historical 19/20 figures below describe earlier runs. See [EVAL.md](EVAL.md) for complete results and failures.
+
+
+
+
 ## What was built and why
 
 This is one TypeScript application, SQLite database and small browser interface. It combines the useful mechanisms from two earlier prototypes while retiring their folders from the active tree. The assignment, source CSV and original Git history remain visible. Logical services are folders rather than network services: a reviewer can follow `api.ts → application.ts → crawler/search/answer/measurements` without learning a framework. Agents, skills and prompts are actual runtime files. Coding agents assisted research, implementation and review; ongoing collection uses the same application code and provider APIs, not a coding-agent dependency.

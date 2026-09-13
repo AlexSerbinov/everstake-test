@@ -47,6 +47,7 @@ const actionSchema = z.discriminatedUnion("action", [
     action: z.literal("read"),
     documentId: z.string(),
     offset: z.number().int().min(0).max(500).default(0),
+    query: z.string().trim().min(1).max(500).optional(),
   }),
   z.object({
     action: z.literal("calculate"),
@@ -250,6 +251,8 @@ export async function answerQuestion(
             action.claims,
             registry,
             search,
+            3,
+            question,
           );
           const found = counterevidence.flatMap((c) => [
             ...c.newer,
@@ -328,13 +331,22 @@ export async function answerQuestion(
           });
           continue;
         }
-        const sources = readDocument(db, action.documentId, action.offset);
+        const sources = readDocument(
+          db,
+          action.documentId,
+          action.offset,
+          action.query,
+        );
         register(sources);
         messages.push({
           role: "user",
           text: JSON.stringify({
             untrustedEvidence: sources,
-            nextOffset: action.offset + sources.length,
+            nextOffset: sources[0]?.metadata.nextOffset ?? null,
+            query: action.query ?? null,
+            instruction: sources.length
+              ? "For another aspect, read with a different query and offset 0. nextOffset continues this query only."
+              : "No matching indexed passage at this offset. Try a different query or read sequentially; this does not prove the fact is absent.",
           }),
         });
       } else {

@@ -1,0 +1,1 @@
+Return exactly one JSON object matching the JSON Schema below. Include every required field, including the reason even when the decision is false. Do not return prose, Markdown fences, null, or an abbreviated decision. The schema describes output format only; continue to judge the supplied evidence independently.

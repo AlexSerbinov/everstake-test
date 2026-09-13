@@ -108,7 +108,8 @@ try {
     }
   } else if (command === "eval") {
     const mode = args[0] === "baseline" ? "baseline" : "agent";
-    const ids = args.slice(1);
+    const questionSet = args.includes("--scenarios") ? "scenarios" : "core";
+    const ids = args.slice(1).filter((arg) => arg !== "--scenarios");
     console.log(
       JSON.stringify(
         await runEvaluation(
@@ -116,6 +117,7 @@ try {
           (q, m) => app.ask(q, () => {}, m),
           mode,
           ids.length ? ids : undefined,
+          questionSet,
         ),
         null,
         2,

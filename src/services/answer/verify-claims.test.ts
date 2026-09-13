@@ -255,6 +255,9 @@ test("a focused multi-value review can reject a relationship approved by the lig
           text: JSON.stringify(
             request.stage === "answer-scope-review"
               ? {
+                  unsupportedAssumptions: [
+                    "Cumulative experience does not establish a decline",
+                  ],
                   supported: false,
                   reason: "Cumulative experience does not establish a decline",
                 }
@@ -319,5 +322,181 @@ test("an unreadable focused comparison is an error, never a silent approval", as
       new Map([[passage.id, passage]]),
       "How many sites are active?",
     ),
+  );
+});
+
+test("nonnumeric conflicting conditions receive whole-answer review", async () => {
+  const immediate = source("now", "Release is immediate.");
+  const scheduled = source(
+    "later",
+    "Release is available at the next processing boundary.",
+  );
+  const stages: string[] = [];
+  const checks = await verifyClaims(
+    {
+      generate: async (request) => {
+        stages.push(request.stage);
+        return {
+          text: JSON.stringify(
+            request.stage === "answer-scope-review"
+              ? {
+                  unsupportedAssumptions: [
+                    "No evidence resolves the timing conflict",
+                  ],
+                  supported: false,
+                  reason:
+                    "The response repeats conflicting release conditions without explaining their conflict.",
+                }
+              : {
+                  questionMode: "factual",
+                  answerScope: {
+                    supported: true,
+                    reason: "Each sentence has a citation",
+                  },
+                  checks: [0, 1].map((claimIndex) => ({
+                    claimIndex,
+                    supported: true,
+                    reason: "Literal source text",
+                  })),
+                },
+          ),
+          model: "fixture",
+          inputTokens: 0,
+          outputTokens: 0,
+        };
+      },
+    },
+    "run",
+    [
+      { text: "Release is immediate.", citations: ["now"], asOf: "2026-01-01" },
+      {
+        text: "Release occurs at the next boundary.",
+        citations: ["later"],
+        asOf: "2026-01-01",
+      },
+    ],
+    new Map([
+      ["now", immediate],
+      ["later", scheduled],
+    ]),
+    "Can I access the funds immediately?",
+  );
+  assert.deepEqual(stages, ["claim-verification", "answer-scope-review"]);
+  assert.equal(checks.find((c) => c.rule === "answer-scope")?.status, "failed");
+});
+
+test("a single dated historical fact must still answer the requested present state", async () => {
+  const old = source(
+    "old",
+    "A previous operator held this position during the old term.",
+  );
+  const stages: string[] = [];
+  const checks = await verifyClaims(
+    {
+      generate: async (request) => {
+        stages.push(request.stage);
+        return {
+          text: JSON.stringify(
+            request.stage === "answer-scope-review"
+              ? {
+                  supported: false,
+                  unsupportedAssumptions: [
+                    "A past appointment does not identify the present holder",
+                  ],
+                  reason: "The current-state question remains unanswered",
+                }
+              : {
+                  questionMode: "factual",
+                  answerScope: {
+                    supported: true,
+                    reason: "The historical fact is cited",
+                  },
+                  checks: [
+                    {
+                      claimIndex: 0,
+                      supported: true,
+                      reason: "Matches historical evidence",
+                    },
+                  ],
+                },
+          ),
+          model: "fixture",
+          inputTokens: 0,
+          outputTokens: 0,
+        };
+      },
+    },
+    "run",
+    [
+      {
+        text: "A previous operator held the position during the old term.",
+        citations: ["old"],
+        asOf: "2026-01-01",
+      },
+    ],
+    new Map([["old", old]]),
+    "Who holds the position now?",
+  );
+  assert.deepEqual(stages, ["claim-verification", "answer-scope-review"]);
+  assert.equal(checks.find((c) => c.rule === "answer-scope")?.status, "failed");
+});
+
+test("malformed exception reviews retry once instead of silently approving the claim", async () => {
+  const rule = source("rule", "Requests require credentials.");
+  const exception = source(
+    "exception",
+    "Public requests can omit credentials.",
+  );
+  let attempts = 0;
+  const checks = await verifyClaims(
+    {
+      generate: async (request) => {
+        if (request.stage === "scope-review") {
+          assert.match(request.system, /"required"/);
+          assert.match(request.system, /"unqualified"/);
+          if (attempts === 1)
+            assert.match(
+              request.messages.at(-1)!.text,
+              /previous review did not match/,
+            );
+        }
+        const text =
+          request.stage === "scope-review"
+            ? ++attempts === 1
+              ? '{"unqualified":'
+              : JSON.stringify({
+                  unqualified: true,
+                  reason: "Public requests are exempt",
+                })
+            : JSON.stringify({
+                questionMode: "factual",
+                answerScope: { supported: true, reason: "Literal rule" },
+                checks: [
+                  { claimIndex: 0, supported: true, reason: "Literal rule" },
+                ],
+              });
+        return { text, model: "fixture", inputTokens: 1, outputTokens: 1 };
+      },
+    },
+    "run",
+    [
+      {
+        text: "Every request requires credentials.",
+        citations: ["rule"],
+        asOf: "2026-01-01",
+      },
+    ],
+    new Map([
+      ["rule", rule],
+      ["exception", exception],
+    ]),
+    "Are credentials mandatory?",
+    undefined,
+    [{ claimIndex: 0, newer: [], exceptions: [exception] }],
+  );
+  assert.equal(attempts, 2);
+  assert.equal(
+    checks.find((c) => c.rule === "claim-1:scope")?.status,
+    "failed",
   );
 });

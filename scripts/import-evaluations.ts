@@ -12,7 +12,17 @@ try {
     const run = JSON.parse(
       readFileSync(`artifacts/evaluation/${file}`, "utf8"),
     ) as EvaluationRun;
-    if (run.plannedTotal !== 20 || run.rows.length !== 20) continue;
+    if (
+      !run.id ||
+      !Array.isArray(run.rows) ||
+      !run.rows.length ||
+      !Number.isInteger(run.plannedTotal) ||
+      run.rows.length !== run.plannedTotal ||
+      (run.questionSet !== "scenarios" &&
+        run.plannedTotal !== 20 &&
+        !run.recheckOf)
+    )
+      continue;
     db.prepare(
       "INSERT OR REPLACE INTO evaluations(id,created_at,result) VALUES(?,?,?)",
     ).run(run.id, run.createdAt, JSON.stringify(run));

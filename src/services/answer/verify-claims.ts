@@ -7,8 +7,6 @@ import type {
   ModelClient,
 } from "../../contracts.js";
 import { evidenceDate, type ClaimCounterevidence } from "./counterevidence.js";
-import { numbers } from "./verify-answer.js";
-import { readConfig } from "../../config.js";
 const schema = z.object({
   questionMode: z.enum(["factual", "synthesis"]),
   answerScope: z.object({ supported: z.boolean(), reason: z.string() }),
@@ -31,9 +29,6 @@ export async function verifyClaims(
   counterevidence: ClaimCounterevidence[] = [],
 ): Promise<CheckResult[]> {
   const extra = new Map(counterevidence.map((c) => [c.claimIndex, c]));
-  // Counterevidence is compared, not cited, so the reviewer sees a bounded excerpt of each.
-  const excerpt = (sources: EvidencePassage[]) =>
-    sources.map((s) => ({ ...s, text: s.text.slice(0, 700) }));
   const request = {
     runId,
     signal,
@@ -50,8 +45,9 @@ export async function verifyClaims(
             claimIndex,
             claim,
             evidence: claim.citations.map((id) => registry.get(id)),
-            newerEvidence: excerpt(extra.get(claimIndex)?.newer ?? []),
-            exceptionEvidence: excerpt(extra.get(claimIndex)?.exceptions ?? []),
+            newerEvidence: extra.get(claimIndex)?.newer ?? [],
+            exceptionEvidence: extra.get(claimIndex)?.exceptions ?? [],
+            relatedEvidence: extra.get(claimIndex)?.related ?? [],
           })),
         }),
       },
@@ -150,8 +146,7 @@ export async function verifyClaims(
   // implied by their juxtaposition. Compare multi-value answers as a whole, with only
   // their cited passages, using the answer model (the same pattern as currentness review).
   const scopeReview =
-    result.answerScope.supported &&
-    new Set(claims.flatMap((claim) => numbers(claim.text))).size > 1
+    result.answerScope.supported && !checks.some((c) => c.status === "failed")
       ? await reviewAnswerScope(
           model,
           runId,
@@ -187,6 +182,51 @@ export async function verifyClaims(
   return checks;
 }
 
+async function reviewedJson<T extends z.ZodType>(
+  model: ModelClient,
+  request: Parameters<ModelClient["generate"]>[0],
+  schema: T,
+): Promise<z.infer<T>> {
+  const formatted = {
+    ...request,
+    system:
+      request.system +
+      "\n\n" +
+      readFileSync("prompts/review-format.md", "utf8") +
+      "\n" +
+      JSON.stringify(z.toJSONSchema(schema)),
+  };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = await model.generate(
+      attempt === 0
+        ? formatted
+        : {
+            ...formatted,
+            messages: [
+              ...request.messages,
+              {
+                role: "user",
+                text: readFileSync("prompts/review-retry.md", "utf8"),
+              },
+            ],
+          },
+    );
+    try {
+      return schema.parse(
+        JSON.parse(
+          response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
+        ),
+      );
+    } catch {
+      if (attempt === 1)
+        throw new Error(
+          `${request.stage} returned an unreadable review after two metered attempts`,
+        );
+    }
+  }
+  throw new Error("Unreachable review state");
+}
+
 async function reviewAnswerScope(
   model: ModelClient,
   runId: string,
@@ -197,48 +237,51 @@ async function reviewAnswerScope(
   counterevidence: ClaimCounterevidence[],
 ): Promise<{ supported: boolean; reason: string }> {
   const ids = new Set(claims.flatMap((claim) => claim.citations));
-  const response = await model.generate({
-    runId,
-    signal,
-    stage: "answer-scope-review",
-    system: readFileSync("prompts/answer-scope.md", "utf8"),
-    thinkingLevel: readConfig<{
-      answerThinkingLevel?: "low" | "medium" | "high";
-    }>("policy").answerThinkingLevel,
-    messages: [
-      {
-        role: "user",
-        text: JSON.stringify({
-          question,
-          claims,
-          untrustedEvidence: [...ids].map((id) => registry.get(id)),
-          otherRetrievedEvidence: [
-            ...new Map(
-              [
-                ...registry.values(),
-                ...counterevidence.flatMap((c) => [
-                  ...c.newer,
-                  ...c.exceptions,
-                  ...(c.related ?? []),
-                ]),
-              ]
-                .filter((s) => !ids.has(s.id))
-                .map((s) => [s.id, s]),
-            ).values(),
-          ],
-        }),
-      },
-    ],
-    maxOutputTokens: 1500,
-  });
-  // An unreadable review is a provider error; it must not silently approve the answer.
-  return z
-    .object({ supported: z.boolean(), reason: z.string().trim().min(1) })
-    .parse(
-      JSON.parse(
-        response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
-      ),
-    );
+  const assessed = await reviewedJson(
+    model,
+    {
+      runId,
+      signal,
+      stage: "answer-scope-review",
+      system: readFileSync("prompts/answer-scope.md", "utf8"),
+      thinkingLevel: "medium",
+      messages: [
+        {
+          role: "user",
+          text: JSON.stringify({
+            question,
+            claims,
+            untrustedEvidence: [...ids].map((id) => registry.get(id)),
+            otherRetrievedEvidence: [
+              ...new Map(
+                [
+                  ...registry.values(),
+                  ...counterevidence.flatMap((c) => [
+                    ...c.newer,
+                    ...c.exceptions,
+                    ...(c.related ?? []),
+                  ]),
+                ]
+                  .filter((s) => !ids.has(s.id))
+                  .map((s) => [s.id, s]),
+              ).values(),
+            ],
+          }),
+        },
+      ],
+      maxOutputTokens: 4000,
+    },
+    z.object({
+      unsupportedAssumptions: z.array(z.string()),
+      supported: z.boolean(),
+      reason: z.string().trim().min(1),
+    }),
+  );
+  return {
+    supported:
+      assessed.supported && assessed.unsupportedAssumptions.length === 0,
+    reason: [assessed.reason, ...assessed.unsupportedAssumptions].join(" "),
+  };
 }
 
 const currentnessSchema = z.object({
@@ -253,42 +296,34 @@ async function reviewCurrentness(
   claim: Claim,
   newer: EvidencePassage[],
 ): Promise<{ superseded: boolean; reason: string }> {
-  const response = await model.generate({
-    runId,
-    signal,
-    stage: "currentness-review",
-    system: readFileSync("prompts/currentness.md", "utf8"),
-    messages: [
-      {
-        role: "user",
-        text: JSON.stringify({
-          question,
-          claim,
-          newerPassages: newer.map((s) => ({
-            id: s.id,
-            url: s.url,
-            date: evidenceDate(s),
-            authority: s.authority,
-            text: s.text,
-          })),
-        }),
-      },
-    ],
-    maxOutputTokens: 1500,
-  });
-  try {
-    return currentnessSchema.parse(
-      JSON.parse(
-        response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
-      ),
-    );
-  } catch {
-    // An unreadable focused review neither approves nor rejects; the general review stands.
-    return {
-      superseded: false,
-      reason: "Focused currentness review was unreadable",
-    };
-  }
+  return reviewedJson(
+    model,
+    {
+      runId,
+      signal,
+      stage: "currentness-review",
+      system: readFileSync("prompts/currentness.md", "utf8"),
+      messages: [
+        {
+          role: "user",
+          text: JSON.stringify({
+            question,
+            claim,
+            newerPassages: newer.map((s) => ({
+              id: s.id,
+              url: s.url,
+              date: evidenceDate(s),
+              authority: s.authority,
+              text: s.text,
+            })),
+          }),
+        },
+      ],
+      thinkingLevel: "low",
+      maxOutputTokens: 3000,
+    },
+    currentnessSchema,
+  );
 }
 
 const scopeSchema = z.object({ unqualified: z.boolean(), reason: z.string() });
@@ -300,39 +335,32 @@ async function reviewScope(
   claim: Claim,
   exceptions: EvidencePassage[],
 ): Promise<{ unqualified: boolean; reason: string }> {
-  const response = await model.generate({
-    runId,
-    signal,
-    stage: "scope-review",
-    system: readFileSync("prompts/scope.md", "utf8"),
-    messages: [
-      {
-        role: "user",
-        text: JSON.stringify({
-          question,
-          claim,
-          exceptionPassages: exceptions.map((s) => ({
-            id: s.id,
-            url: s.url,
-            date: evidenceDate(s),
-            authority: s.authority,
-            text: s.text,
-          })),
-        }),
-      },
-    ],
-    maxOutputTokens: 1500,
-  });
-  try {
-    return scopeSchema.parse(
-      JSON.parse(
-        response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
-      ),
-    );
-  } catch {
-    return {
-      unqualified: false,
-      reason: "Focused scope review was unreadable",
-    };
-  }
+  return reviewedJson(
+    model,
+    {
+      runId,
+      signal,
+      stage: "scope-review",
+      system: readFileSync("prompts/scope.md", "utf8"),
+      messages: [
+        {
+          role: "user",
+          text: JSON.stringify({
+            question,
+            claim,
+            exceptionPassages: exceptions.map((s) => ({
+              id: s.id,
+              url: s.url,
+              date: evidenceDate(s),
+              authority: s.authority,
+              text: s.text,
+            })),
+          }),
+        },
+      ],
+      thinkingLevel: "low",
+      maxOutputTokens: 3000,
+    },
+    scopeSchema,
+  );
 }

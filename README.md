@@ -1,5 +1,10 @@
 # Everstate Knowledge Base
 
+Latest evaluation: the full `core-v2` run scored **14/20**, with one unsupported-fact case. After a review-format fix, **E21 and E12 passed a separate 2/2 recheck**: 16 questions now have a successful observed answer across the two runs. The other 18 were not rerun. Historical 19/20 figures below describe earlier runs. See [EVAL.md](EVAL.md) for complete results and failures.
+
+
+
+
 **From a question about Everstake to an answer you can check.**
 
 The assistant finds information in collected public sources, compares it, and returns an answer with dates and links. When the evidence is insufficient, it should say so.

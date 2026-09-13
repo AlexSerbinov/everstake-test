@@ -1836,3 +1836,21 @@ input[type="checkbox"] {
     overscroll-behavior: contain;
   }
 }
+
+/* Evaluation report: all metrics and failure analysis use the full selected run. */
+.evaluation-table-wrap { overflow-x: auto; border: 1px solid var(--border, #dce2e9); border-radius: 12px; margin: 20px 0 36px; }
+.evaluation-table { width: 100%; min-width: 940px; border-collapse: collapse; table-layout: fixed; text-align: left; font-size: 14px; }
+.evaluation-table th, .evaluation-table td { padding: 18px; vertical-align: top; border-bottom: 1px solid var(--border, #dce2e9); overflow-wrap: anywhere; }
+.evaluation-table th { background: var(--surface, #f4f6f8); font-weight: 700; }
+.evaluation-table th:nth-child(1) { width: 23%; }
+.evaluation-table th:nth-child(2) { width: 25%; }
+.evaluation-table th:nth-child(3) { width: 29%; }
+.evaluation-table th:nth-child(4) { width: 23%; }
+.evaluation-table p { margin: 10px 0; line-height: 1.6; }
+.evaluation-table .evaluation-card { padding: 12px; border: 0; }
+.evaluation-table .comparison { display: block; }
+.evaluation-table .disclosure { margin: 12px 0; }
+.evaluation-failures { margin: 36px 0; }
+.evaluation-failure { padding: 16px 20px; margin: 14px 0; border-left: 3px solid #b75238; background: var(--surface, #f7f8fa); border-radius: 0 10px 10px 0; }
+.evaluation-failure h3 { font-size: 16px; line-height: 1.5; margin: 0 0 8px; }
+.evaluation-failure p { margin: 8px 0; }
