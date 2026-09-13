@@ -252,3 +252,40 @@ test("timeouts are separate unknown attempts and never include secrets in stored
   );
   db.close();
 });
+test("an external cancellation aborts the provider call, records it and is never retried", async () => {
+  const db = openDatabase(":memory:");
+  const runId = beginRun(db, "question");
+  const retryConfig = structuredClone(config);
+  retryConfig.providers.gemini.maxAttempts = 3;
+  const external = new AbortController();
+  let fetches = 0;
+  const client = createModelClient(db, {
+    config: retryConfig,
+    environment: { GEMINI_API_KEY: "key" },
+    sleep: async () => undefined,
+    fetch: (_input, init) =>
+      new Promise((_resolve, reject) => {
+        fetches++;
+        init?.signal?.addEventListener("abort", () =>
+          reject(Object.assign(new Error("aborted"), { name: "AbortError" })),
+        );
+        setTimeout(() => external.abort(), 1);
+      }),
+  });
+  await assert.rejects(
+    client.generate({
+      runId,
+      stage: "answer",
+      system: "",
+      messages: [{ role: "user", text: "Question" }],
+      signal: external.signal,
+    }),
+    /cancelled/,
+  );
+  assert.equal(fetches, 1);
+  assert.deepEqual(
+    buildReceipt(db, runId).attempts.map((item) => item.status),
+    ["cancelled"],
+  );
+  db.close();
+});

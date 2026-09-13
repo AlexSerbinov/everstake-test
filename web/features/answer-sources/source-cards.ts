@@ -75,11 +75,10 @@ export function sourceCard(
           el("blockquote", "full-passage", passage.text),
         ),
       );
-    const meta = el("div", "source-meta");
-    meta.append(el("p", "", `Evidence reference: ${passage.id}`));
-    if (passage.reason)
-      meta.append(el("p", "", `Selection note: ${passage.reason}`));
-    block.append(details("About this passage", meta));
+    const meta = el("p", "source-meta small muted");
+    meta.textContent = `Ref ${passage.id.slice(0, 8)}${passage.reason ? ` · ${passage.reason}` : ""}`;
+    meta.title = `Evidence reference: ${passage.id}`;
+    block.append(meta);
     card.append(block);
   }
   const url = link(source.url, source.url);

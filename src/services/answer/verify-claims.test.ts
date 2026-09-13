@@ -65,3 +65,57 @@ test("support review receives uncited counterevidence before approving a univers
   );
   assert.equal(result[0]!.status, "failed");
 });
+test("a present-tense claim superseded by newer evidence fails the currentness check", async () => {
+  const announcement = source("announcement", "Alice becomes chief executive.");
+  const about = {
+    ...source("about", "Bob, Chief Executive Officer."),
+    publishedAt: "2026-07-01",
+  };
+  const model: ModelClient = {
+    generate: async (request) => {
+      const input = JSON.parse(request.messages[0]!.text);
+      const newer = input.claims[0].newerEvidence.map(
+        (s: EvidencePassage) => s.id,
+      );
+      assert.deepEqual(newer, ["about"]);
+      return {
+        text: JSON.stringify({
+          questionMode: "factual",
+          checks: [
+            {
+              claimIndex: 0,
+              supported: false,
+              supersededByNewer: true,
+              reason:
+                "The newer company page names a different chief executive",
+            },
+          ],
+        }),
+        model: "fixture",
+        inputTokens: 0,
+        outputTokens: 0,
+      };
+    },
+  };
+  const checks = await verifyClaims(
+    model,
+    "run",
+    [
+      {
+        text: "Alice is the CEO.",
+        citations: ["announcement"],
+        asOf: "2025-06-12",
+      },
+    ],
+    new Map([
+      [announcement.id, announcement],
+      [about.id, about],
+    ]),
+    "Who is the CEO?",
+    undefined,
+    [{ claimIndex: 0, newer: [about], exceptions: [] }],
+  );
+  const currentness = checks.find((c) => c.rule === "claim-1:currentness")!;
+  assert.equal(currentness.status, "failed");
+  assert.match(currentness.reason, /2026-07-01/);
+});

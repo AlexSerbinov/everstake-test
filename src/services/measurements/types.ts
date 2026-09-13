@@ -2,7 +2,12 @@ import type { Receipt } from "../../contracts.js";
 
 export type RunStatus =
   "running" | "completed" | "failed" | "cancelled" | "incomplete";
-export type AttemptStatus = "pending" | "completed" | "error" | "timed_out";
+export type AttemptStatus =
+  | "pending"
+  | "completed"
+  | "error"
+  | "timed_out"
+  | "cancelled";
 
 export interface PriceEntry {
   inputPerMillionUsd: number;

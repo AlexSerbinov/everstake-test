@@ -11,7 +11,12 @@ import { buildReceipt } from "./services/measurements/index.js";
 import { readQuestions } from "./services/evaluation/run-evaluation.js";
 export interface ApiDependencies {
   db: Database;
-  ask: (question: string, emit: Emit) => Promise<AnswerResult>;
+  ask: (
+    question: string,
+    emit: Emit,
+    mode?: "agent" | "baseline",
+    signal?: AbortSignal,
+  ) => Promise<AnswerResult>;
   costs: () => unknown;
   refresh: (sourceId?: string) => Promise<unknown>;
 }
@@ -131,7 +136,17 @@ export function createApi({ db, ask, costs, refresh }: ApiDependencies) {
     busy = true;
     c.header("X-Accel-Buffering", "no");
     c.header("Cache-Control", "no-cache");
+    // A closed browser connection (Stop button, navigation, network loss) cancels the run
+    // so the single worker is released immediately instead of finishing unpaid-for research.
+    const cancel = new AbortController();
+    const clientLeft = () => {
+      if (cancel.signal.aborted) return;
+      console.info("Client connection closed; cancelling the running question");
+      cancel.abort();
+    };
+    c.req.raw.signal.addEventListener("abort", clientLeft, { once: true });
     return streamSSE(c, async (stream) => {
+      stream.onAbort(clientLeft);
       let sequence = 0;
       let pending = Promise.resolve();
       const emit: Emit = (event) => {
@@ -147,7 +162,7 @@ export function createApi({ db, ask, costs, refresh }: ApiDependencies) {
           .catch(() => {});
       };
       try {
-        await ask(question, emit);
+        await ask(question, emit, "agent", cancel.signal);
         await pending;
       } catch {
         await stream

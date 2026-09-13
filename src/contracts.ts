@@ -104,6 +104,8 @@ export interface ModelRequest {
   messages: ModelMessage[];
   model?: string;
   maxOutputTokens?: number;
+  /** Cancels the in-flight provider call; a cancelled attempt is recorded, never retried. */
+  signal?: AbortSignal;
 }
 export interface ModelResponse {
   text: string;

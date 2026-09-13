@@ -26,6 +26,7 @@ export function createApplication(db: Database) {
     question: string,
     emit: Emit = () => {},
     mode: "agent" | "baseline" = "agent",
+    signal?: AbortSignal,
   ) => {
     const runId = beginRun(db, mode === "agent" ? "query" : "baseline", {
       ...runtimeManifest(),
@@ -40,7 +41,16 @@ export function createApplication(db: Database) {
           hybridSearch(db, embeddings, runId, query, limit),
         receipt: (id) => buildReceipt(db, id),
         finish: (id, status) =>
-          finishRun(db, id, status === "error" ? "failed" : "completed"),
+          finishRun(
+            db,
+            id,
+            status === "cancelled"
+              ? "cancelled"
+              : status === "error"
+                ? "failed"
+                : "completed",
+          ),
+        signal,
       },
       question,
       runId,

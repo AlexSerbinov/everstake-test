@@ -78,3 +78,45 @@ test("malformed final actions are infrastructure errors, not corpus absence", as
   assert.equal(result.status, "error");
   db.close();
 });
+test("a cancelled request stops the loop, records cancellation and never becomes an abstention", async () => {
+  const db = openDatabase(":memory:");
+  const controller = new AbortController();
+  let finished = "";
+  const events: string[] = [];
+  const result = await answerQuestion(
+    {
+      db,
+      model: {
+        generate: async (request) => {
+          controller.abort();
+          assert.equal(request.signal?.aborted, true);
+          throw Object.assign(new Error("fetch aborted"), {
+            name: "AbortError",
+          });
+        },
+      },
+      search: async () => [],
+      finish: (_id, status) => {
+        finished = status;
+      },
+      receipt: (id) => ({
+        runId: id,
+        calls: 1,
+        inputTokens: 0,
+        outputTokens: 0,
+        knownCostUsd: 0,
+        unknownCalls: 1,
+        elapsedMs: 10,
+      }),
+      signal: controller.signal,
+    },
+    "Who leads the company?",
+    "cancelled-run",
+    (e) => events.push(`${e.type}:${e.label}`),
+  );
+  assert.equal(result.status, "error");
+  assert.equal(result.error, "Request cancelled by the user");
+  assert.equal(finished, "cancelled");
+  assert.equal(events.includes("error:Request stopped"), true);
+  db.close();
+});
