@@ -1,0 +1,31 @@
+{
+  "name": "everstate-knowledge-base",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "cli": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test --test-concurrency=1 src/**/*.test.ts",
+    "build:web": "esbuild web/app.ts --bundle --outfile=public/app.js --format=esm",
+    "check": "npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.1",
+    "hono": "4.13.7",
+    "cheerio": "1.2.0",
+    "robots-parser": "3.0.1",
+    "yaml": "2.9.0",
+    "zod": "4.6.2"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "tsx": "4.23.13",
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.25.0"
+  }
+}

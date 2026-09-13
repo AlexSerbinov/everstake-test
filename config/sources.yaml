@@ -1,0 +1,8 @@
+sources:
+  - id: everstake
+    url: https://everstake.com
+    publisher: Everstake
+    authority: 1
+    kind: website
+    reason: Primary company website and linked public publications
+    enabled: true

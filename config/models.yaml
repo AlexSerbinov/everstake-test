@@ -1,0 +1,5 @@
+answer: gemini-3.8-flash
+extraction: gemini-3.5-flash-lite
+embedding: text-embedding-3-small
+pricesAsOf: '2026-09-13'
+prices: {}
