@@ -170,6 +170,13 @@ export function costDashboard(db: Database) {
       );
     }),
   );
+  const documents = Number(
+    (
+      db
+        .prepare("SELECT count(*) AS n FROM documents WHERE active=1")
+        .get() as { n: number }
+    ).n,
+  );
   return {
     ...overview,
     ...summarize(calls),
@@ -204,6 +211,8 @@ export function costDashboard(db: Database) {
     index,
     forecast: {
       factor: 50,
+      documents,
+      projectedDocuments: documents * 50,
       knownIndexCostUsd: index.knownCostUsd,
       projectedIndexCostUsd: index.knownCostUsd * 50,
       inputTokens: index.inputTokens,

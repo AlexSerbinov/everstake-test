@@ -12,6 +12,8 @@ test("empty ledger has no invented query mean or dates", () => {
     assert.deepEqual(result.daily, []);
     assert.deepEqual(result.runs, []);
     assert.equal(result.forecast.projectedIndexCostUsd, 0);
+    assert.equal(result.forecast.documents, 0);
+    assert.equal(result.forecast.projectedDocuments, 0);
   } finally {
     db.close();
   }

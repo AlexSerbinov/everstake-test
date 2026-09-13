@@ -1,8 +1,30 @@
 # Measured API costs
 
+> **Easier to read on the live site:** [Costs page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#costs) shows the same ledger with provider panels, per-answer receipts and filters. This file is the committed copy for review.
+
+## §5.6 at a glance
+
+| What is asked | Measured value |
+|---|---|
+| Tokens used to build the index | **2,166,597** input tokens across 130 embedding calls |
+| Actual cost of building the index | **$0.043332** known; 5 failed attempts have no provider price |
+| Cost of one query | **$0.042121** on average: latest agent run `agent-9a157413`, $0.842412 / 20 questions. Baseline (one retrieval, one prompt): $0.012177 |
+| All API spending of this rebuild | **$4.462078** known; 7 calls with unknown cost |
+
+### 50× larger corpus: arithmetic
+
+| Item | Measured now | Factor | Expected at 50× |
+|---|---:|---:|---:|
+| Documents | 941 | × 50 | 47,050 |
+| Index tokens | 2,166,597 | × 50 | 108,329,850 |
+| Index cost | $0.043332 | × 50 | $2.166597 |
+| One query | $0.042121 | × 1 | $0.042121 |
+
+The index scales with the corpus. A query does not: context size and tool steps are capped, so the per-query cost is carried over unchanged and must be remeasured on the larger corpus. Details and limits are in the [extrapolation section](#50-extrapolation--assumptions-not-measured-production-results) below.
+
 Scope: this TypeScript rebuild, from provider probes through collection, indexing, YouTube, diagnostic questions and final evaluations. Prior Claude/Codex totals are historical and are not added to these runs. Subscription agent effort, existing server rental and bandwidth are not provider-token charges.
 
-**Previously published ledger snapshot: $4.462078 known usage-priced / provider-reported; 7 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).
+**Previously published ledger snapshot: $4.462078 known usage-priced / provider-reported; 7 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](costs/measured-ledger.json).
 
 | Operation | Calls | Input tokens | Output tokens | Known cost | Unknown cost calls |
 |---|---:|---:|---:|---:|---:|
@@ -19,7 +41,7 @@ Scope: this TypeScript rebuild, from provider probes through collection, indexin
 
 Each attempt is written before the external request. Successful, retried, timed-out and invalid-content calls retain their usage. Soniox costs are reconciled against matching provider usage logs when available; its input token count includes audio and text, with the separate counts retained in the YouTube ledger. For model calls, native provider usage supplies tokens; a dated price table in `config/models.yaml` converts usage to cost. Cached-input and thinking tokens are handled without counting them twice. Parent receipts aggregate descendant calls once. HTTP failures without usage remain unknown rather than being silently priced at zero, and so do attempts cancelled by a stopped request: the provider may still bill the interrupted call.
 
-## Index and one query
+## Index build and every evaluation run
 
 Building and repairing the index consumed **2,166,597 measured input tokens**, costing **$0.043332 known**, with 5 unpriced failed attempts. This includes the initial web build and changed/new transcript chunks; cached embeddings were reused on resume. The final corpus has 941 documents. The temporary embedding rate limit and the resumed run remain visible.
 
@@ -39,7 +61,7 @@ Query model context and tool steps remain capped, so LLM input cost is not assum
 
 ## YouTube
 
-18 videos totaling 42,038 seconds (11.677 hours) were submitted for transcription. Gemini has 30 measured speaker-review attempts, known cost $0.672300. 0 transcription charges remain unknown. Soniox provider-reported known cost is **$1.328459**; matching uses the recorded operation and transcription IDs. The recorded transcription forecast totals **$1.167722**, using duration / 3,600 × the configured $0.10/hour assumption, not a measured invoice. 6 transcripts are active in the corpus; only eligible attributed testimony is active; uncertain attributions and recordings without qualifying testimony remain outside the index. The full inventory and outstanding work are in [Costs/YouTube](Costs/YouTube/README.md).
+18 videos totaling 42,038 seconds (11.677 hours) were submitted for transcription. Gemini has 30 measured speaker-review attempts, known cost $0.672300. 0 transcription charges remain unknown. Soniox provider-reported known cost is **$1.328459**; matching uses the recorded operation and transcription IDs. The recorded transcription forecast totals **$1.167722**, using duration / 3,600 × the configured $0.10/hour assumption, not a measured invoice. 6 transcripts are active in the corpus; only eligible attributed testimony is active; uncertain attributions and recordings without qualifying testimony remain outside the index. The full inventory and outstanding work are in [costs/YouTube](costs/YouTube/README.md).
 
 Reserving a conservative amount before a call limits further work; it is not a guarantee of an external provider's final bill. Public demo calls have a per-run limit and a process-session ceiling. Restarting the process starts a new session budget.
 

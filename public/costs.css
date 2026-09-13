@@ -145,6 +145,67 @@
 .cost-forecast .cost-note {
   color: #795923;
 }
+.cost-forecast > strong {
+  font-size: 14px;
+}
+.cost-forecast-scroll {
+  overflow-x: auto;
+}
+.cost-forecast-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 6px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.cost-forecast-table th,
+.cost-forecast-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #e6d3b4;
+  text-align: right;
+  white-space: nowrap;
+}
+.cost-forecast-table th:first-child,
+.cost-forecast-table td:first-child {
+  text-align: left;
+  white-space: normal;
+}
+.cost-forecast-table th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cost-forecast-table .cost-forecast-factor {
+  color: #a88a57;
+}
+.cost-forecast-table td:last-child {
+  font-weight: 700;
+  color: #5c4210;
+}
+@media (max-width: 640px) {
+  .cost-forecast-table tr:first-child {
+    display: none;
+  }
+  .cost-forecast-table tr {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: baseline;
+    border-bottom: 1px solid #e6d3b4;
+    padding: 8px 0;
+  }
+  .cost-forecast-table td {
+    border-bottom: 0;
+    padding: 2px 4px;
+  }
+  .cost-forecast-table td:first-child {
+    grid-column: 1 / -1;
+    font-weight: 600;
+  }
+  .cost-forecast-table td:nth-child(2) {
+    text-align: left;
+  }
+}
 .cost-controls {
   display: flex;
   gap: 9px;

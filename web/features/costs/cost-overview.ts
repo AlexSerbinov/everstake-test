@@ -225,29 +225,68 @@ export function costOverview(): HTMLElement {
       stages.append(bars(data.byStage, (value) => value.replaceAll("_", " ")));
       trends.append(daily, stages);
       const forecast = el("div", "cost-forecast");
+      const scenario = el("table", "cost-forecast-table");
+      const head = el("tr");
+      for (const title of ["", "Now", "", "At 50×"])
+        head.append(el("th", "", title));
+      scenario.append(head);
+      const perQuestion = data.query.meanUsd;
+      for (const [label, now, factor, projected] of [
+        [
+          "Documents in the corpus",
+          data.forecast.documents.toLocaleString(),
+          "× 50",
+          data.forecast.projectedDocuments.toLocaleString(),
+        ],
+        [
+          "Tokens to build the index",
+          data.forecast.inputTokens.toLocaleString(),
+          "× 50",
+          data.forecast.projectedInputTokens.toLocaleString(),
+        ],
+        [
+          "Cost to build the index",
+          money(data.forecast.knownIndexCostUsd),
+          "× 50",
+          money(data.forecast.projectedIndexCostUsd),
+        ],
+        [
+          "Cost of one question",
+          perQuestion === null ? "No sample yet" : money(perQuestion),
+          "× 1",
+          perQuestion === null ? "No sample yet" : money(perQuestion),
+        ],
+      ]) {
+        const row = el("tr");
+        row.append(
+          el("td", "", label),
+          el("td", "", now),
+          el("td", "cost-forecast-factor", factor),
+          el("td", "", projected),
+        );
+        scenario.append(row);
+      }
+      const scroll = el("div", "cost-forecast-scroll");
+      scroll.append(scenario);
       forecast.append(
-        el("strong", "", "50× corpus · forecast, not a charge"),
-        el(
-          "p",
-          "",
-          `${money(data.forecast.knownIndexCostUsd)} recorded index/embedding cost × 50 = ${money(data.forecast.projectedIndexCostUsd)}. ${data.forecast.inputTokens.toLocaleString()} input tokens × 50 = ${data.forecast.projectedInputTokens.toLocaleString()}.`,
-        ),
+        el("strong", "", "What a 50× larger corpus would cost"),
+        scroll,
         el(
           "p",
           "cost-note",
-          `Assumes the same document mix, token volume per document, processing and prices. ${data.forecast.unknownCalls} unconfirmed index calls are excluded. This scales accumulated index/embedding work, including retries and rebuilds; it is not a clean one-build benchmark or a query-cost forecast.`,
+          `The index grows with the corpus, so it is multiplied by 50. A question does not: each answer reads a capped number of passages and tool steps, so its cost stays about the same. This is a forecast from recorded runs, not a charge; ${data.forecast.unknownCalls} unconfirmed index calls are excluded.`,
         ),
       );
       const breakdown = details(
-        "Detailed spending, daily history & 50× scenario",
+        "Where the money went, day by day & 50× scenario",
+        forecast,
         columns,
         trends,
-        forecast,
       );
       breakdown.classList.add("cost-detail-disclosure");
-      content.replaceChildren(stats, sampleNote, providers, ribbon);
+      breakdown.open = true;
+      content.replaceChildren(stats, sampleNote, providers, ribbon, breakdown);
       renderLedger(content, data);
-      content.append(breakdown);
       const accounting = panel("What these numbers mean");
       accounting.classList.add("cost-accounting");
       accounting.append(
