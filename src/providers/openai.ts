@@ -56,6 +56,7 @@ export function parseOpenAiGeneration(
 export function parseOpenAiEmbeddings(
   body: unknown,
   requestedModel: string,
+  expectedCount: number,
 ): OpenAiEmbeddings {
   const value = record(body);
   const data = Array.isArray(value.data) ? value.data : [];
@@ -63,9 +64,16 @@ export function parseOpenAiEmbeddings(
     .map((item) => record(item).embedding)
     .filter(Array.isArray) as number[][];
   if (
+    embeddings.length !== expectedCount ||
+    embeddings.length === 0 ||
     embeddings.length !== data.length ||
-    embeddings.some((vector) =>
-      vector.some((number) => typeof number !== "number"),
+    embeddings.some(
+      (vector) =>
+        vector.length === 0 ||
+        vector.length !== embeddings[0]!.length ||
+        vector.some(
+          (number) => typeof number !== "number" || !Number.isFinite(number),
+        ),
     )
   ) {
     throw new Error("Provider returned invalid embeddings");

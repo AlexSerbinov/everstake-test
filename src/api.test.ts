@@ -26,3 +26,32 @@ test("invalid input and unauthorized refresh do not invoke expensive operations"
   assert.equal(calls, 0);
   db.close();
 });
+
+test("oversized declared and streamed bodies are rejected before provider work", async () => {
+  const db = openDatabase(":memory:");
+  let calls = 0;
+  const app = createApi({
+    db,
+    ask: async () => {
+      calls++;
+      throw new Error("unexpected");
+    },
+    costs: () => ({}),
+    refresh: async () => {
+      calls++;
+    },
+  });
+  for (const headers of [
+    new Headers(),
+    new Headers({ "content-length": "17000" }),
+  ]) {
+    const response = await app.request("/api/ask", {
+      method: "POST",
+      headers,
+      body: "x".repeat(17000),
+    });
+    assert.equal(response.status, 413);
+  }
+  assert.equal(calls, 0);
+  db.close();
+});

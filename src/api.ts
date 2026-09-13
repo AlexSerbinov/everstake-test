@@ -1,5 +1,6 @@
 import { runtimeManifest } from "./runtime-manifest.js";
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { streamSSE } from "hono/streaming";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { z } from "zod";
@@ -16,6 +17,7 @@ export interface ApiDependencies {
 }
 export function createApi({ db, ask, costs, refresh }: ApiDependencies) {
   const app = new Hono();
+  app.use("/api/*", bodyLimit({ maxSize: 16 * 1024 }));
   let busy = false;
   const manifest = runtimeManifest();
   app.get("/health", (c) =>

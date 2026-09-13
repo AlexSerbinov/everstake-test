@@ -232,7 +232,11 @@ export function createEmbeddingClient(
           }
           let parsed;
           try {
-            parsed = parseOpenAiEmbeddings(body, model);
+            parsed = parseOpenAiEmbeddings(
+              body,
+              model,
+              Array.isArray(request.input) ? request.input.length : 1,
+            );
           } catch (error) {
             throw new MeteredResponseError(
               error instanceof Error ? error.message : String(error),
