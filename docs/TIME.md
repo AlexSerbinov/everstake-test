@@ -53,3 +53,11 @@ Sunday 2026-09-13 has an approximate user-reported start recorded below, but no 
 ## Sunday planning start (user-reported)
 
 On 2026-09-13 the author reported starting planning at approximately 14:40 Europe/Madrid. This is a retrospective approximate start, not an instrumented timestamp. The end and active intervals are not yet established; no duration is asserted. Subsequent autonomous implementation time is recorded separately from human effort.
+
+## README and diagram task — 2026-09-13
+
+The user explicitly requested timing this documentation task. Instrumented agent interval: **2026-09-13 17:32:40 UTC → 2026-09-13 17:40:46 UTC**, **486 seconds (8m 6s)**. Boundaries come from the session clock tool; the interval includes reference/code inspection, README and runbook writing, OpenCV layout iterations and artifact validation. Final bookkeeping follows this measured interval. This is elapsed agent-task time, not measured human active effort; no human duration is inferred from silence and nothing is added to the historical human total.
+
+Delivered: rewritten README, three 1600 × 940 PNG diagrams, an editable OpenCV/Pillow renderer, an operator guide and diagram maintenance notes. The final documented-command render reported **0.759 seconds** inside the rendering timer, excluding dependency resolution, interpreter startup and imports; an earlier successful render reported 1.137 seconds. The first isolated `uv run` also spent roughly 30 seconds starting/importing dependencies. File sizes: 120,279 + 139,977 + 138,877 = **399,133 bytes**. Early layout attempts failed text-width assertions; labels were shortened and all three final outputs passed.
+
+Validation: 82 local document links, README section anchors, the frozen 939-document manifest and evaluation run IDs/costs checked; diagrams inspected at full size and 960 px width; documented rendering command rerun successfully; scoped `git diff --check` passed. No application code changed, so application tests, a new crawl and paid evaluation were not run. No image-generation/provider API calls were made for this task; coding-agent subscription usage is not priced here. Existing demo screenshots were reused and labeled as saved captures.

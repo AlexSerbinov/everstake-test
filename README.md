@@ -1,109 +1,126 @@
 # Everstate Knowledge Base
 
-An Everstake take-home assignment: one readable TypeScript application that answers from a crawled public corpus, shows dated evidence, and measures quality and API spending.
+Ask a question about Everstake. Get an answer grounded in collected public sources, with dates, citations, visible research steps and a cost receipt.
 
-Start with the **[assignment](docs/TEST_ASSIGNMENT_EN.md)** and **[supplied source list](docs/corpus_sources.csv)**. The implementation uses general source, date, scope and citation rules; it has no CEO-specific answer route.
+**[Demo](https://everstate-knowledge-base.89-167-19-222.sslip.io)** · **[Assignment](docs/TEST_ASSIGNMENT_EN.md)** · **[Seed sources](docs/corpus_sources.csv)** · **[Evaluation](EVAL.md)** · **[Costs](COST.md)** · **[Part B](PROCESS.md)**
 
-**[Open the live demo](https://everstate-knowledge-base.89-167-19-222.sslip.io)** · 939 documents · 101 offline tests. The final twenty-question agent run passed 95% (19/20) with no unsupported-fact case, versus 55% for the one-pass baseline. Full answers, failures and costs are in [EVAL.md](EVAL.md), [COST.md](COST.md) and [REPORT.md](REPORT.md). The three earlier complete runs (75%, 70%, 80%) are retained; the last two iterations added counterevidence retrieval and focused currentness/scope reviews before a claim is accepted.
+Built for the AI Automation & Agentic Systems Lead take-home assignment. One TypeScript application, one SQLite database, explicit research tools. Gemini generates and reviews answers; OpenAI supplies embeddings. Model IDs and prices live in [config/models.yaml](config/models.yaml).
 
-![A live answer with dated source cards](artifacts/demo/answer-desktop.png)
+**Measured on 13 September 2026:** the frozen 939-document corpus produced **19/20 passing answers**, versus **11/20** for the one-pass baseline. The agent run had **one incomplete answer and zero cases marked as invented facts**. These are saved evaluation results, not a claim about every future question or the latest working tree.
+
+![Saved demo capture: an answer alongside its dated source cards](artifacts/demo/answer-desktop.png)
+
+*Saved demo capture. Follow a citation to its supporting passage; inspect the research trail, evidence checks and receipt.*
+
+[Run locally](#run-locally) · [Build the corpus](#1-build-the-corpus) · [Answer a question](#2-research-and-check-an-answer) · [Refresh](#3-update-the-corpus) · [Measurements](#quality-and-cost) · [Code map](#find-it-in-the-code)
 
 ## Run locally
 
-Node.js 22.16 or newer is required (`node:sqlite` and FTS5). Provider API calls cost money; browsing saved results does not.
+Use Node.js **22.16+** with `node:sqlite` / FTS5 support. From this repository:
 
 ```sh
 npm ci
 cp .env.example .env
-# Fill GEMINI_API_KEY, OPENAI_API_KEY and a private ADMIN_TOKEN.
+# Set GEMINI_API_KEY, OPENAI_API_KEY and a private ADMIN_TOKEN in .env.
 npm run cli -- crawl
 npm run cli -- index
 npm run build:web
 npm start
 ```
 
-Open `http://localhost:4318`. The corpus and ledger persist in `data/knowledge.sqlite`; credentials and runtime databases are excluded from Git. `npm run check` runs typechecking and offline fixture tests. YouTube additionally requires `yt-dlp`, `ffmpeg` and `SONIOX_API_KEY`; the Docker image installs its download dependencies.
+Open **http://localhost:4318**. SQLite creates `data/knowledge.sqlite`; `DB_PATH` and `PORT` are configurable in `.env`. The first crawl collects current pages, so your corpus and answers may differ from the frozen evaluation. Watch the crawl report for exclusions and failures.
 
-## Find each block in the code
+`crawl` prepares text and the lexical index; `index` makes paid embedding calls. Asking questions also uses paid APIs. Check the configured model availability and prices for your account before building. Reading the committed reports needs no keys. `npm run check` runs typechecking and offline fixture tests.
 
-```text
-src/
-  contracts.ts          shared document, evidence, answer and receipt shapes
-  api.ts                HTTP and live event transport
-  application.ts        connects the independent blocks
-  providers/            Gemini/OpenAI transport and measured attempts
-  services/
-    crawler/            discover URLs, robots, download, extract dates/text
-    evidence/           remove instructions addressed to AI
-    youtube/            relevance, timed speakers, Soniox and Gemini review
-    indexer/            chunks and exact/near-duplicate groups
-    search/             lexical + embedding search, bounded source reading
-    answer/             research actions, arithmetic, citation/support checks
-    trust/              explainable evidence score, not truth probability
-    measurements/       per-call ledger, costs, retries and receipts
-    evaluation/         the same runtime against frozen reference questions
-  workflows/            corpus build, refresh staging, activation and resume
-  storage/              SQLite schema and small access helpers
-web/features/
-  live-search/          actual search progress and elapsed timer
-  answer-sources/       right-side citations, dates and video time links
-  answer/               final result and limitations
-  trust/                evidence score and checks
-  corpus/               collection status and operator refresh controls
-  costs/                every run and its itemized receipt
-  evaluation/           questions, difficulty, expected/actual and verdicts
-config/                 sources, models, prices and bounded policy
-agents/ skills/ prompts/ real runtime instructions
-scripts/                operational commands; no hidden runtime dependencies
-artifacts/              reproducible manifests and measured evaluation outputs
-Costs/YouTube/          video inventory and separate known/unknown charges
-```
+YouTube is optional and separate: it needs `yt-dlp`, `ffmpeg` and `SONIOX_API_KEY`. Follow the [video guide](docs/youtube/README.md) for selected-video processing and activation.
 
-These are modules in one process, not separately deployed microservices. Each API request follows `api → application → service`; the frontend displays the resulting events rather than inventing progress.
+## 1. Build the corpus
 
-## Collect new data and repeat measurements
+![Corpus flow: configured sources pass through robots-aware crawling, extraction, instruction removal and duplicate grouping; text chunks and embeddings enter SQLite. Selected videos join after transcription and review.](docs/images/01-corpus.png)
+
+1. **Choose sources.** [config/sources.yaml](config/sources.yaml) records roots, publisher, authority, inclusion reasons and limits. The crawler expands through permitted sitemaps and same-origin links. External links remain candidates until configured.
+2. **Fetch and extract.** Respect `robots.txt`, throttle requests, retain readable text and source dates, and record exclusion reasons. Publication, update and fetch dates stay separate: downloading an old announcement today does not make its claim current.
+3. **Remove instructions addressed to AI.** The sanitizer removes matching sentences before indexing and retains an audit. Useful product instructions remain evidence. Search and document reading expose sanitized text with bounded metadata.
+4. **Group copies, then index.** Normalized hashes detect exact copies; word-shingle similarity detects near copies, with a numeric-signature guard to preserve changed quantities. Exact copies share indexed text; near-duplicate variants remain searchable because their wording may matter. Source identities and duplicate provenance remain inspectable.
+
+The [web collection report](docs/CORPUS.md) records **935 documents**, **12 extra copies across 6 groups**, and **32 exclusion events**. Four accepted video documents brought the evaluation snapshot to **939**. Later video imports are accounted for separately; they do not retroactively change that evaluation.
+
+**Video is its own evidence path.** Screen relevance and publisher identity, transcribe timed speaker turns with Soniox, then review names, roles and evidence scope with Gemini. Eligible testimony can enter the corpus; interviewer questions do not become company claims. A text-based speaker review cannot authenticate a voice. See [accepted transcripts and processing details](docs/youtube/README.md).
+
+## 2. Research and check an answer
+
+![Answer flow: a question retrieves lexical and semantic evidence; a bounded agent searches, reads and calculates; structural and model-based reviews accept or reject the draft. Missing evidence and runtime errors have separate outcomes.](docs/images/02-answer.png)
+
+**Find, read, calculate, answer.** Hybrid search combines lexical and embedding matches. The agent can reformulate a query, read more of a retrieved document or calculate from supported operands. Its tools operate on the stored corpus; the answering loop does not browse arbitrary websites or execute shell commands.
+
+**Compare the claim, not just the search rank.** Publisher authority, dates, subject, units and scope matter. For example, a historical network footprint and an active-network count are different metrics. Counterevidence retrieval looks for newer statements and exceptions; model-based reviews check support, currentness and scope. An unresolved conflict should remain visible rather than be settled by counting copies.
+
+**Check before returning.** Code requires citation IDs from the request's evidence registry, checks quantities against cited text and validates the claim's as-of date. Semantic review checks whether the passage actually supports the statement. A rejected draft can be repaired within the step budget. Model-based review can still miss a qualification or accept a mistaken interpretation.
+
+**Make uncertainty visible.** A supported answer carries a value, date and source. A synthesis needs several sources and an actual trajectory over time. Missing evidence produces `no_reliable_answer`; provider failures and exhausted limits produce `error`. A partial answer may be useful but still fail evaluation for omitting a requested conclusion.
+
+**Trust Score comes after the checks.** It explains authority, temporal evidence, grounding checks and distinct content groups. It is a heuristic, not a probability of truth, and cannot override a failed gate. The UI shows actual server events and an itemized API receipt alongside the answer.
+
+## 3. Update the corpus
+
+![Refresh flow: an operator starts or resumes a durable staging job; collection and embeddings complete before guarded atomic activation. Failed or stale jobs preserve the serving corpus and can be resumed.](docs/images/03-refresh.png)
 
 ```sh
-npm run cli -- refresh everstake-com   # force one configured source
-npm run cli -- refresh                # all configured sources
-npm run cli -- refresh-due            # first-party daily, other sources weekly
-npm run cli -- refresh-resume JOB_ID  # reuse a failed job's staged corpus/vectors
-npm run cli -- ask "Your question"
-npm run cli -- eval agent             # all 20, costs API usage
-npm run cli -- eval baseline          # same 20, initial retrieval only
-npm run cli -- costs
-npx tsx scripts/youtube.ts discover
-npx tsx scripts/youtube.ts inventory
-npx tsx scripts/youtube.ts transcribe --db=data/youtube-batch.sqlite --ids=REVIEWED_VIDEO_ID
-npx tsx scripts/youtube.ts reconcile-costs --db=data/youtube-batch.sqlite
-npx tsx scripts/youtube.ts process --ids=REVIEWED_VIDEO_ID
-npx tsx scripts/publish-evaluation.ts grades.json   # independent verdicts → EVAL.md
-npx tsx scripts/publish-costs.ts                    # ledger → COST.md
-npx tsx scripts/import-evaluations.ts               # graded runs → this host's Evaluation screen
+npm run cli -- refresh everstake-com  # one configured source
+npm run cli -- refresh               # all configured sources
+npm run cli -- refresh-due           # only sources due under the policy
+npm run cli -- refresh-resume JOB_ID # reuse a failed job's staged work
 ```
 
-New pages on a configured site are discovered by the crawler. A new domain needs an entry in `config/sources.yaml`: URL, publisher, authority, inclusion reason and discovery limits. A new format needs an extraction adapter and a fixture test. Refresh builds a staging database and activates text/vectors/version together only after success; its durable job can resume after failure. Only one refresh worker should run. The demo serializes paid questions and refresh requests.
+Refresh prepares a staging database using the same collection rules, then builds missing embeddings. Validation and a baseline check precede the transaction that activates text, vectors and corpus version together. Failed work stays staged; the last activated corpus remains available. Run only one refresh worker. The demo serializes paid questions and refresh requests; it has **no unattended refresh scheduler enabled**.
 
-Video discovery is separate from paid processing. Unknown duration or uncertain speaker identity requires review; existing successful jobs are reused. The submitted inventory has pending videos, explicitly counted in [YouTube costs](Costs/YouTube/README.md). Review and import the accepted snapshots before freezing an evaluation corpus; never add evaluation reference answers to that corpus.
+New pages on a configured site need a refresh. A new domain needs a source entry and inclusion rationale. A new format needs an extraction adapter and fixture. The [operator guide](docs/OPERATIONS.md) covers repeatable commands, video processing and publishing measurements.
 
-The evaluation runner first saves **pending** verdicts. A successful HTTP response is not accuracy: the independent rubric review supplies pass/fail and separately marks cases containing invented facts. Keep all 20 rows, failures and unknown costs. Diagnostic subsets are marked incomplete and are not the final result.
+## Quality and cost
 
-## Submission documents
+Both modes used the same twenty questions, including five negatives, on `corpus-eae2b2b23116`. The baseline gets six initial passages and one answer turn with the same verification gates; the agent can research and repair.
 
-| Requirement | Evidence |
+| Saved run | Passed | Failed | Invented-fact cases | Known API cost | Mean per question |
+|---|---:|---:|---:|---:|---:|
+| Agent `agent-9a157413` | 19/20 | 1 | 0 | $0.842412 | $0.042121 |
+| Baseline `baseline-c656c369` | 11/20 | 9 | 0 | $0.243542 | $0.012177 |
+
+The agent's remaining failure, **E05**, omits parts of the requested two-year trajectory. Earlier complete runs scored 75%, 70% and 80% and retain their unsupported-fact cases. The review is a separate coding-agent rubric audit, not human-certified ground truth or a blind benchmark. Read every answer and qualification in [EVAL.md](EVAL.md).
+
+Every provider attempt has a ledger entry: usage, retries, errors and known or unknown cost. Unknown is not zero. [COST.md](COST.md) contains index tokens, actual usage-priced costs, provider-reported transcription charges and the **50× arithmetic**. Its later collection totals cover more data than the frozen evaluation; query cost does not automatically grow 50× because context and steps are bounded, but retrieval performance must be remeasured.
+
+**Compared with Everstake MCP:** this assistant is designed for dated evidence, conflicting sources and historical synthesis. Everstake's service is better suited to live operational values and staking calculations without maintaining this crawl/index pipeline. This assistant pays for model calls and can miss evidence or serve stale snapshots. The [pinned MCP source comparison](docs/MCP_COMPARISON.md) explains both sides; the baseline above is plain RAG, not an MCP benchmark.
+
+## Find it in the code
+
+These are feature modules in one process. Requests follow `api → application → service`; the browser renders returned events and data.
+
+| Block | Start here | Relevant check |
+|---|---|---|
+| Source collection | [crawler](src/services/crawler/README.md) | [crawler fixtures](src/services/crawler/) |
+| Instruction removal | [sanitize-document.ts](src/services/evidence/sanitize-document.ts) | [sanitizer tests](src/services/evidence/) |
+| Copies and chunks | [indexer](src/services/indexer/README.md) | [indexer tests](src/services/indexer/) |
+| Search | [hybrid-search.ts](src/services/search/hybrid-search.ts) | [hybrid-search.test.ts](src/services/search/hybrid-search.test.ts) |
+| Agent and answer checks | [answer-question.ts](src/services/answer/answer-question.ts) | [answer-question.test.ts](src/services/answer/answer-question.test.ts) |
+| Safe refresh | [staged-refresh.ts](src/workflows/staged-refresh.ts) | [staged-refresh.test.ts](src/workflows/staged-refresh.test.ts) |
+| Live progress and citations | [live-search](web/features/live-search/README.md), [answer-sources](web/features/answer-sources/README.md) | [frontend fixtures](web/features/) |
+| Trust and receipts | [trust-score](web/features/trust-score/README.md), [measurements](src/services/measurements/) | [measurement tests](src/services/measurements/) |
+
+[agents/](agents/), [skills/](skills/) and [prompts/](prompts/) contain actual runtime instruction files. [config/](config/) contains source, model and policy settings. For a live change, start at the relevant module and its adjacent tests.
+
+## Deliverables and limits
+
+| Reviewer needs | Document |
 |---|---|
-| Architecture, decisions, scope and limitations | [REPORT.md](REPORT.md) |
-| Corpus, dates, duplicates and exclusions | [docs/CORPUS.md](docs/CORPUS.md), [frozen manifest](artifacts/corpus/frozen-manifest.json) |
-| 20 questions, five negatives, actual answers and verdicts | [EVAL.md](EVAL.md), [reference audit](docs/evaluation-reference-audit.md) |
-| Actual API costs and arithmetic for 50× scale | [COST.md](COST.md), Costs screen |
-| Comparison with Everstake's static MCP | [docs/MCP_COMPARISON.md](docs/MCP_COMPARISON.md) |
-| One-page process redesign | [PROCESS.md](PROCESS.md) |
-| Defence walkthrough and live change | [docs/DEFENCE.md](docs/DEFENCE.md) |
-| Requirement-by-requirement audit | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) |
-| Working history and effort methodology | `git log`, [docs/TIME.md](docs/TIME.md), [transition](docs/REBUILD.md) |
+| Architecture, decisions, deliberate cuts, one-month priorities | [REPORT.md](REPORT.md) |
+| Corpus composition, duplicates, dates and exclusions | [docs/CORPUS.md](docs/CORPUS.md), [frozen manifest](artifacts/corpus/frozen-manifest.json) |
+| All 20 answers, reference answers, verdicts and failures | [EVAL.md](EVAL.md), [reference audit](docs/evaluation-reference-audit.md) |
+| Measured spending and 50× extrapolation | [COST.md](COST.md) |
+| One-page weekly-report redesign, metrics and human approval | [PROCESS.md](PROCESS.md) |
+| Ukrainian defence notes and requirement audit | [docs/DEFENCE.md](docs/DEFENCE.md), [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) |
+| Runbook and editable diagram sources | [docs/OPERATIONS.md](docs/OPERATIONS.md), [diagram guide](docs/images/README.md) |
+| Plan, implementation status and effort accounting | [plan](docs/plan/README.md), [execution](docs/EXECUTION.md), [time](docs/TIME.md) |
 
-The earlier Claude and Codex prototypes remain in Git history before this branch's retirement commit. They are not dependencies of this implementation. Their local uncommitted work was not included or discarded. New commits preserve real timestamps and the worktree integration history.
+Known limits: incomplete video coverage, no OCR of image-only facts, no universal prompt-injection defence, and model reviews that can be wrong. Exact vector search and simple duplicate comparisons need reworking at larger scale. The proposed [video topic-note index](docs/YOUTUBE_KNOWLEDGE.md) is not an active retrieval layer.
 
-Deployment uses `scripts/deploy.sh` and the independent container/port 4318 on the personal server. Existing prototype demos are outside this deployment's scope. Source authority and model-based support checks can still be wrong; the report and evaluation describe observed failures rather than promising perfect factuality.
-
-Video transcripts can be saved before named-speaker review. They remain unreviewed acquisition artifacts until accepted. The proposed source-linked topic-note layer for history and positioning is described in [docs/YOUTUBE_KNOWLEDGE.md](docs/YOUTUBE_KNOWLEDGE.md); it is not yet a second retrieval index.
+Earlier prototypes remain in Git history; the active runtime is `src/` and `web/`. Commits retain real timestamps. Human effort, autonomous elapsed time and API spending are recorded separately.
