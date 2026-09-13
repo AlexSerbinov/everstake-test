@@ -1,0 +1,5 @@
+# Metadata-only discovery. Search results are candidates, never answer evidence.
+youtubeSearches:
+  - ytsearchdate20:Everstake interview
+  - ytsearchdate20:Everstake podcast
+maximumEntriesPerLocation: 100

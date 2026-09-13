@@ -1,3 +1,7 @@
+import {
+  readUpdateSettings,
+  nextSourceCheck,
+} from "../services/updates/settings.js";
 import { randomUUID } from "node:crypto";
 import {
   existsSync,
@@ -37,6 +41,14 @@ export interface RefreshJob {
   startedAt: string;
   updatedAt: string;
   error?: string;
+  counts?: {
+    added: number;
+    changed: number;
+    unchanged: number;
+    retained: number;
+    excluded: number;
+    pending: number;
+  };
 }
 
 export interface RefreshLease {
@@ -280,11 +292,19 @@ export function activateStagedCorpus(
       assertDatabaseIntegrity(db, "incoming");
       assertCorpusState(corpusState(db, "incoming"), expected);
       assertEmbeddingCoverage(db, "incoming", model);
-      db.exec(`DELETE FROM chunks_fts; DELETE FROM chunks; DELETE FROM embeddings; DELETE FROM documents;
-    INSERT INTO documents SELECT * FROM incoming.documents;
-    INSERT INTO chunks SELECT * FROM incoming.chunks;
-    INSERT INTO chunks_fts SELECT * FROM incoming.chunks_fts;
-    INSERT INTO embeddings SELECT * FROM incoming.embeddings;
+      db.exec(`UPDATE documents SET active=0;
+    INSERT INTO documents SELECT * FROM incoming.documents WHERE true
+      ON CONFLICT(id) DO UPDATE SET active=excluded.active,
+        snapshot=CASE WHEN excluded.active=1 THEN excluded.snapshot ELSE documents.snapshot END;
+    DELETE FROM chunks_fts WHERE id IN (
+      SELECT id FROM chunks WHERE document_id IN (SELECT id FROM incoming.documents WHERE active=1)
+    );
+    DELETE FROM chunks WHERE document_id IN (SELECT id FROM incoming.documents WHERE active=1);
+    INSERT INTO chunks SELECT * FROM incoming.chunks WHERE true ON CONFLICT(id) DO NOTHING;
+    INSERT INTO chunks_fts SELECT * FROM incoming.chunks_fts
+      WHERE id NOT IN (SELECT id FROM main.chunks_fts);
+    INSERT INTO embeddings SELECT * FROM incoming.embeddings WHERE true
+      ON CONFLICT(chunk_id,model) DO NOTHING;
     INSERT INTO settings(key,value) SELECT key,value FROM incoming.settings WHERE key='corpus_version'
       ON CONFLICT(key) DO UPDATE SET value=excluded.value;`);
       db.exec("COMMIT");
@@ -302,11 +322,21 @@ export function dueSources(
   sources: SourceConfig[],
   now = Date.now(),
 ): SourceConfig[] {
+  const settings = readUpdateSettings(
+    db,
+    sources.map((s) => ({
+      id: s.id,
+      label: s.publisher,
+      kind: s.kind,
+      intervalHours: s.authority === 1 ? 24 : 168,
+    })),
+  );
   return sources.filter((source) => {
-    const checked = Date.parse(getSetting(db, `source_checked:${source.id}`));
-    const intervalHours = source.authority === 1 ? 24 : 168;
+    const next = nextSourceCheck(db, source.id, settings);
     return (
-      !Number.isFinite(checked) || now - checked >= intervalHours * 3600_000
+      source.enabled &&
+      settings.sources[source.id].enabled &&
+      (!next || Date.parse(next) <= now)
     );
   });
 }
@@ -317,7 +347,12 @@ export async function stagedRefresh(
   sources: SourceConfig[],
   client: EmbeddingClient,
   runId: string,
-  options: { resumeJobId?: string; collect?: typeof refreshCorpus } = {},
+  options: {
+    resumeJobId?: string;
+    collect?: typeof refreshCorpus;
+    stagingDirectory?: string;
+    onPhase?: (phase: string) => void;
+  } = {},
 ) {
   const previous = options.resumeJobId
     ? (JSON.parse(
@@ -335,7 +370,7 @@ export async function stagedRefresh(
 
   const id = previous?.id ?? randomUUID();
   const lease = claimRefreshLease(db, id);
-  const directory = resolve("data/staging");
+  const directory = resolve(options.stagingDirectory ?? "data/staging");
   const job: RefreshJob = previous ?? {
     id,
     status: "running",
@@ -352,6 +387,7 @@ export async function stagedRefresh(
   let leaseLost = false;
   let partialStagePath: string | undefined;
   const save = () => {
+    options.onPhase?.(job.phase);
     job.updatedAt = new Date().toISOString();
     setSetting(db, `refresh_job:${id}`, JSON.stringify(job));
   };
@@ -433,6 +469,15 @@ export async function stagedRefresh(
         },
       });
       ensureLease();
+      job.counts = report.counts;
+      writeJsonAtomic(jobReportPath, report);
+      if (
+        report.failures.length ||
+        report.crawls.some((crawl) => crawl.pending.length > 0)
+      )
+        throw new Error(
+          "Refresh is incomplete; previous corpus retained. Inspect exclusions and retry the source.",
+        );
       if (!report.index && getSetting(staged, "corpus_version") === oldVersion)
         throw new Error(
           "Refresh collected no usable documents; previous corpus retained",

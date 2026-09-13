@@ -102,3 +102,7 @@ assumption is labelled as an assumption rather than given an invented justificat
 
 - PROCESS.md (Part B) — written by the candidate, not the agent.
 - Eval re-run on Claude Opus 5 once a funded key is available.
+
+## 2026-09-13 — Claim dates and quantity scope (local)
+
+Investigated the active-versus-lifetime coverage question against public sources and assignment §3.1–3.2/5.1/5.3. Preserved explicit claim date provenance and cumulative scope in API/UI output; retained same-date subject evidence for whole-answer comparison. Added focused scope review, bounded repair coverage and configurable low thinking for constrained JSON calls. Recorded successful and failed paid diagnostics plus desktop/mobile replay in docs/research/network-scope-and-dates. No deployment or Git publication performed for this task.

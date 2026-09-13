@@ -128,6 +128,27 @@ test("plain claims run only the subject search", async () => {
   assert.equal(calls, 1);
   assert.deepEqual(result!.exceptions, []);
 });
+
+test("same-date scope evidence survives even though it cannot supersede a claim by date", async () => {
+  const cited = source("lifetime", "96 sites over our lifetime.", "2026-01-01");
+  const active = source("active", "24 active sites.", "2026-01-01");
+  const [result] = await gatherCounterevidence(
+    [
+      {
+        text: "96 sites supported over our lifetime.",
+        citations: [cited.id],
+        asOf: "2026-01-01",
+      },
+    ],
+    new Map([[cited.id, cited]]),
+    async () => [cited, active],
+  );
+  assert.deepEqual(result!.newer, []);
+  assert.deepEqual(
+    result!.related?.map((s) => s.id),
+    [active.id],
+  );
+});
 test("the exception query names the subject next to the absolute term, not the whole claim", () => {
   const query = exceptionQuery(
     "According to documentation on the page checked on 2026-09-13, the tip is not optional, and the submitted transaction must include a tip-transfer instruction.",

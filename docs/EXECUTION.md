@@ -29,3 +29,7 @@ Workers used separate registered worktrees. Normal implementation/review tasks u
 Host: https://everstate-knowledge-base.89-167-19-222.sslip.io. Container `everstate-knowledge-base`, port 4318, corpus `corpus-eae2b2b23116`. The live browser smoke at code `b9ddd2f` took 29.1 seconds and $0.039480, showed actual research events, three dated citations, and no browser runtime errors or mobile horizontal overflow. Saved response/screenshots: [artifacts/demo](../artifacts/demo/). The full Linux image check passed 92/92 on Node 22.
 
 The first startup curl encountered a connection reset while Node started; subsequent local/HTTPS health checks succeeded. The deploy script now retries transient startup transport errors. Existing prototype containers stayed up throughout. Later documentation/boundary maintenance does not change the frozen evaluation inputs; each measured run retains its actual code/config manifest.
+
+## Updates extension
+
+Local implementation adds the Updates menu, persisted per-source schedules, a serial durable worker and metadata-only discovery of new YouTube IDs. Existing transcripts are skipped; incomplete web collection cannot activate, and historical documents are merged without deleting unrelated concurrent imports. The hosted deployment evidence above predates this extension. Automatic execution remains off until enabled by an operator; no paid refresh or evaluation was run for this change. Operating contract: [UPDATES.md](UPDATES.md).

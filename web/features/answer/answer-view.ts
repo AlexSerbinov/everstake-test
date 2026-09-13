@@ -1,4 +1,8 @@
 import type { AnswerResult } from "../../../src/contracts.js";
+import {
+  commonEffectiveDate,
+  renderDatedClaims,
+} from "../../../src/services/answer/claim-date.js";
 import { badge, el } from "../../shared/dom.js";
 import { date } from "../../shared/source-date.js";
 import {
@@ -33,7 +37,11 @@ export function answerView(answer: AnswerResult, scope: string): HTMLElement {
       answer.status === "answered" ? "success" : "warning",
     ),
     badge(
-      answer.asOf ? `As of ${date(answer.asOf)}` : "Fact date not established",
+      commonEffectiveDate(answer.claims)
+        ? `As of ${date(commonEffectiveDate(answer.claims))}`
+        : answer.claims.length
+          ? "Dates shown per claim"
+          : "Fact date not established",
     ),
   );
   card.append(meta);
@@ -41,7 +49,10 @@ export function answerView(answer: AnswerResult, scope: string): HTMLElement {
     answer.sources.map((source, i) => [source.id, i + 1]),
   );
   const content = el("div", "answer-prose");
-  for (const paragraph of answer.text.split(/\n\s*\n/)) {
+  const datedText = answer.claims.length
+    ? renderDatedClaims(answer.claims, answer.sources)
+    : answer.text;
+  for (const paragraph of datedText.split(/\n\s*\n/)) {
     const p = el("p");
     for (const segment of citationSegments(paragraph, [...numbers.keys()])) {
       if (segment.id !== undefined) {

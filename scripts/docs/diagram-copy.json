@@ -1,0 +1,78 @@
+{
+  "en": [
+    {
+      "file": "01-corpus",
+      "title": "First, build a library of sources",
+      "subtitle": "The assistant looks for answers in this library.",
+      "cards": [
+        {"title": "Public sources", "lines": ["Websites, articles, docs", "and selected videos"]},
+        {"title": "Prepare the material", "lines": ["Keep useful text and dates.", "Find repeated content."]},
+        {"title": "Searchable library", "lines": ["Saved passages, each with", "its date and source link"]}
+      ],
+      "takeaway": "Every passage keeps a path back to its source.",
+      "note": "Collection respects robots.txt. Skipped pages have recorded reasons."
+    },
+    {
+      "file": "02-answer",
+      "title": "Then, answer with evidence",
+      "subtitle": "The first search result is only the starting point.",
+      "cards": [
+        {"title": "Your question", "lines": ["A specific fact or", "a story of what changed"]},
+        {"title": "Find and compare", "lines": ["Read relevant passages.", "Check dates and meaning."]},
+        {"title": "Answer + sources", "lines": ["What we found, as of when", "and where it was stated"]}
+      ],
+      "takeaway": "Not enough evidence? Say that no reliable answer was found.",
+      "note": "A request failure is shown as an error, not as a successful answer."
+    },
+    {
+      "file": "03-protection",
+      "title": "A web page is evidence, not an instruction",
+      "subtitle": "Protection happens before reading and before returning an answer.",
+      "cards": [
+        {"title": "A page may contain", "lines": ["Useful facts mixed with", "commands aimed at AI"]},
+        {"title": "Before reading", "lines": ["Code removes detected", "AI-directed commands."]},
+        {"title": "Before answering", "lines": ["Check claims, dates", "and cited passages."]}
+      ],
+      "takeaway": "The agent can search, read and calculate. It cannot run shell commands.",
+      "note": "Several layers reduce risk; neither filters nor model reviews are perfect."
+    }
+  ],
+  "uk": [
+    {
+      "file": "01-corpus",
+      "title": "Спочатку збираємо бібліотеку джерел",
+      "subtitle": "Саме в цій бібліотеці асистент шукає відповіді.",
+      "cards": [
+        {"title": "Публічні джерела", "lines": ["Сайти, статті, документація", "та відібрані відео"]},
+        {"title": "Підготовка даних", "lines": ["Зберігаємо текст і дати.", "Знаходимо повтори."]},
+        {"title": "Бібліотека для пошуку", "lines": ["Уривки тексту з датами", "й посиланнями на джерела"]}
+      ],
+      "takeaway": "Від кожного уривка можна повернутися до його джерела.",
+      "note": "Під час збору дотримуємося robots.txt і записуємо причини пропусків."
+    },
+    {
+      "file": "02-answer",
+      "title": "Потім відповідаємо з доказами",
+      "subtitle": "Перший результат пошуку — лише початок роботи.",
+      "cards": [
+        {"title": "Ваше питання", "lines": ["Конкретний факт або", "історія змін із часом"]},
+        {"title": "Пошук і порівняння", "lines": ["Читаємо потрібні уривки.", "Зіставляємо дати та зміст."]},
+        {"title": "Відповідь і джерела", "lines": ["Що відомо, станом на коли", "та звідки ця інформація"]}
+      ],
+      "takeaway": "Доказів недостатньо? Кажемо, що надійної відповіді не знайдено.",
+      "note": "Збій запиту показуємо як помилку, а не як успішну відповідь."
+    },
+    {
+      "file": "03-protection",
+      "title": "Сторінка — це джерело, а не команда",
+      "subtitle": "Захист працює до читання і перед видачею відповіді.",
+      "cards": [
+        {"title": "На сторінці бувають", "lines": ["Корисні факти разом", "із командами для AI"]},
+        {"title": "Перед читанням", "lines": ["Код прибирає виявлені", "команди для AI."]},
+        {"title": "Перед відповіддю", "lines": ["Перевіряємо твердження,", "дати й цитовані уривки."]}
+      ],
+      "takeaway": "Агент може шукати, читати й рахувати. Запускати команди ОС — ні.",
+      "note": "Кілька шарів знижують ризик; фільтри й модельні перевірки можуть помилятися."
+    }
+  ]
+}

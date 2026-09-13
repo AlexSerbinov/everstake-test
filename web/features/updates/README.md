@@ -1,0 +1,3 @@
+# Updates page
+
+`updates-page.ts` renders the separate Updates navigation entry. It reads settings, source schedules and durable job history from `/api/updates`, and sends authorized settings changes or queue requests to the server. The operator token stays in page memory and is cleared when leaving the page. The browser polls only status; closing or reloading it does not cancel server jobs or start new paid work. Frequency and priority are per-source settings, while automatic execution is controlled by one global switch. The source list includes YouTube; already known video IDs are skipped by the server. All source labels, phases and errors render as text, and page disposal stops polling. Browser verification uses an isolated fixture server without provider calls.

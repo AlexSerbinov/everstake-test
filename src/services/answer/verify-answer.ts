@@ -1,4 +1,5 @@
 import type { Claim, CheckResult, EvidencePassage } from "../../contracts.js";
+import { resolveClaimDate } from "./claim-date.js";
 export function numbers(text: string): string[] {
   return (
     text.replace(/(\d)[ ,](?=\d{3}(?:\D|$))/g, "$1").match(/\d+(?:\.\d+)?/g) ??
@@ -22,7 +23,7 @@ export function verifyAnswer(
       .join("\n");
     const known = new Set(numbers(text));
     const missing = numbers(claim.text).filter((n) => !known.has(n));
-    const date = !!claim.asOf && text.includes(claim.asOf);
+    const date = resolveClaimDate(claim, registry);
     return [
       {
         rule: `claim-${index + 1}:citations`,
@@ -42,7 +43,7 @@ export function verifyAnswer(
         rule: `claim-${index + 1}:date`,
         status: date ? "passed" : "failed",
         reason: date
-          ? "Date is present in evidence; semantic verifier checks its meaning"
+          ? `Date matches ${date.basis} evidence in ${date.sourceId}; semantic verifier checks its applicability`
           : `Unsupported as-of date. Copy a cited source date: ${sources
               .filter(Boolean)
               .flatMap((source) => [
