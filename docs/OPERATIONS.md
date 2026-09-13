@@ -1,6 +1,6 @@
 # Operator guide
 
-For initial setup and the three system diagrams, start with the [README](../README.md). Run these commands from the repository root. Runtime state belongs in ignored `data/`; do not commit credentials or mutable databases.
+For initial setup and the visual system explanations, start with the [README](../README.md). Run these commands from the repository root. Runtime state belongs in ignored `data/`; do not commit credentials or mutable databases.
 
 ## Ask and inspect
 

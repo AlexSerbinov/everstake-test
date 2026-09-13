@@ -1,29 +1,36 @@
-# README visuals
+# Visual explanations
 
-The [English README](../../README.md) and [Ukrainian README](../../README.uk.md) tell the same story. Each diagram has three large steps, short labels and one takeaway. Implementation detail stays in the surrounding prose and linked guides.
+The [English README](../../README.md) and [Ukrainian README](../../README.uk.md) use eight explanations with different visual structures. The shared style uses a quiet dot grid, rounded components, document shapes, database cylinders, decision diamonds, curved return paths and note cards. Shape and placement explain a relationship; they are not different deployed services.
 
-| Story | English | Ukrainian |
-|---|---|---|
-| Build the source library | [Corpus](01-corpus.png) | [Бібліотека джерел](01-corpus-uk.png) |
-| Find an answer with evidence | [Answer](02-answer.png) | [Відповідь із доказами](02-answer-uk.png) |
-| Handle instructions inside sources | [Protection](03-protection.png) | [Захист](03-protection-uk.png) |
+| Idea | Visual structure | English | Ukrainian |
+|---|---|---|---|
+| Where evidence comes from | Web/video branches converge on a library | [Corpus](01-corpus.png) | [Джерела](01-corpus-uk.png) |
+| Why copies are not independent evidence | Stacked publications become one group | [Copies](04-copies.png) | [Копії](04-copies-uk.png) |
+| How an answer is researched | Research loop, evidence store and decision | [Answer](02-answer.png) | [Відповідь](02-answer-uk.png) |
+| How dates differ | Timeline and observation note | [Dates](05-dates.png) | [Дати](05-dates-uk.png) |
+| How source instructions are handled | Removal branch and tool/output boundaries | [Protection](03-protection.png) | [Захист](03-protection-uk.png) |
+| What the evaluation measured | Twenty outcome squares for each mode | [Evaluation](06-evaluation.png) | [Оцінювання](06-evaluation-uk.png) |
+| How an update can fail safely | Staging, activation decision and retry | [Refresh](07-refresh.png) | [Оновлення](07-refresh-uk.png) |
+| Where a person stays responsible | Code/model/person lanes, then code delivery | [Reporting](08-reporting.png) | [Звітність](08-reporting-uk.png) |
+
+The date and attack examples are explicitly illustrative. Evaluation numbers come from the saved runs identified in EVAL.md; squares show aggregate counts, not question order. Part B is a proposal with pilot targets, not implemented connectors or measured productivity gains. The one-page PROCESS.md deliverable remains prose.
 
 ## Regenerate
-
-From the repository root:
 
 ```sh
 uv run --with opencv-python-headless==5.0.0.93 --with pillow==12.3.0 scripts/docs/render-diagrams.py
 ```
 
-The command writes six **1600 × 660** PNGs. It needs Python and `uv`, uses no model API and is not part of the TypeScript runtime. [diagram-copy.json](../../scripts/docs/diagram-copy.json) holds both languages; [render-diagrams.py](../../scripts/docs/render-diagrams.py) holds the shared layout. OpenCV draws shapes and arrows; Pillow draws text.
+Run from the repository root. The command writes 16 PNGs, 1600 px wide, with heights adapted to the subject. [render-diagrams.py](../../scripts/docs/render-diagrams.py) contains the drawing primitives, eight named layouts and English/Ukrainian text pairs. OpenCV draws geometry; Pillow renders text. No model API is involved and Python is not an application dependency.
 
-The three colors indicate position in the story: input, processing and result. They do not label entire boxes as code-only or model-only. Every diagram has matching prose and descriptive alt text in both READMEs.
+Fonts are Arial on macOS or DejaVu Sans on Linux; Latin and Cyrillic glyphs are required. Override with `DIAGRAM_FONT` and `DIAGRAM_FONT_BOLD`. Text-width/image-bound assertions fail on overflow. Inspect labels and connector routes at README width after changes; assertions cannot judge meaning or every overlap.
 
-Text-width and image-bound assertions stop rendering on overflow. The renderer uses Arial on macOS or DejaVu Sans on Linux; both need Latin and Cyrillic glyphs. Set `DIAGRAM_FONT` and `DIAGRAM_FONT_BOLD` to explicit font paths for consistent typography. Inspect output after changing a font. The opaque light background preserves contrast in GitHub dark mode.
+Blue usually marks evidence/data, purple agent/model work, green accepted processing/results, yellow decisions/qualifications and red removed text/failure. Explicit role labels take precedence over colors. Arrows show the main flow; labeled curved paths show return/retry. A dashed path is a conditional alternative. Colors alone do not encode a critical distinction.
+
+The old three-card template and its separate copy JSON were replaced by per-subject layouts. Keep explanatory prose next to each diagram and update both language versions together.
 
 ## Demo screenshot
 
-[demo-ask.png](demo-ask.png) is a real 1440 × 1000 capture of the [hosted Ask page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask), taken on 13 September 2026. It shows the question form, not a newly measured answer. The image renderer does not overwrite this screenshot. Both READMEs link it to the live page so readers can see later design changes.
+[demo-ask.png](demo-ask.png) is a real 1440 × 1000 capture of the [hosted Ask page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask), taken on 13 September 2026. It shows the form, not a newly measured answer. The renderer does not overwrite it. Both READMEs link the capture to the live page.
 
-The visual style was inspired by the author's [LiquidityScan README](https://github.com/AlexSerbinov/LiquidityScan). Content was simplified for a first-time reader; diagrams describe the actual application rather than the old prototype plans.
+Visual reference: the author's [LiquidityScan README](https://github.com/AlexSerbinov/LiquidityScan) and supplied Miro examples. These illustrations explain this application's behavior, rather than importing the reference system's architecture.
