@@ -43,11 +43,7 @@ export function corpusPage(): HTMLElement {
     void load();
   });
   controls.append(previous, label, next);
-  page.append(
-    results,
-    controls,
-    operatorRefresh(() => void load()),
-  );
+  page.append(results, controls, updateNavigation());
   async function load() {
     const request = ++generation;
     results.replaceChildren(el("p", "muted", "Loading collected pages…"));
@@ -145,70 +141,10 @@ export function corpusPage(): HTMLElement {
   void load();
   return page;
 }
-function operatorRefresh(refreshed: () => void): HTMLElement {
-  const form = el("form", "operator-form");
-  const token = el("input");
-  token.type = "password";
-  token.autocomplete = "off";
-  token.id = "operator-token";
-  token.required = true;
-  const tokenLabel = el("label", "", "Operator access token");
-  tokenLabel.htmlFor = token.id;
-  const source = el("input");
-  source.id = "refresh-source";
-  source.placeholder = "Leave blank to check all sources";
-  const sourceLabel = el("label", "", "Source ID (optional)");
-  sourceLabel.htmlFor = source.id;
-  const submit = el("button", "button secondary", "Check sources for updates");
-  submit.type = "submit";
-  const feedback = el("p", "small");
-  feedback.setAttribute("role", "status");
-  form.append(
-    el(
-      "p",
-      "muted small",
-      "For the collection operator. Checking sources can use paid services. Your token is sent with this request and is not saved.",
-    ),
-    tokenLabel,
-    token,
-    sourceLabel,
-    source,
-    submit,
-    feedback,
-  );
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    submit.disabled = true;
-    feedback.textContent = "Checking sources…";
-    const credential = token.value.trim();
-    token.value = "";
-    try {
-      const response = await fetch("/api/refresh", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${credential}`,
-        },
-        body: JSON.stringify(
-          source.value.trim() ? { sourceId: source.value.trim() } : {},
-        ),
-      });
-      if (!response.ok) {
-        const body = (await response.json().catch(() => ({}))) as {
-          error?: string;
-        };
-        throw new Error(
-          body.error || `Update request failed (${response.status}).`,
-        );
-      }
-      feedback.textContent =
-        "The source check has finished. The collection view is being refreshed.";
-      refreshed();
-    } catch (error) {
-      feedback.textContent = (error as Error).message;
-    } finally {
-      submit.disabled = false;
-    }
-  });
-  return details("Operator · update the collection", form);
+function updateNavigation(): HTMLElement {
+  const navigation = el("p", "notice");
+  const link = el("a", "", "Manage manual and automatic updates →");
+  link.href = "#updates";
+  navigation.append(link);
+  return navigation;
 }

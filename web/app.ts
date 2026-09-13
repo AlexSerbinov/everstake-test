@@ -1,3 +1,4 @@
+import { updatesPage } from "./features/updates/updates-page.js";
 import type { AnswerResult, RunEvent } from "../src/contracts.js";
 import { el } from "./shared/dom.js";
 import { questionForm } from "./features/question/question-form.js";
@@ -117,9 +118,14 @@ async function ask(question: string) {
     if (run.current()) form.setBusy(false);
   }
 }
+let disposePage: (() => void) | undefined;
 function navigate() {
+  disposePage?.();
+  disposePage = undefined;
   const route = location.hash.slice(1) || "ask";
-  const selected = ["ask", "corpus", "costs", "evaluation"].includes(route)
+  const selected = ["ask", "corpus", "updates", "costs", "evaluation"].includes(
+    route,
+  )
     ? route
     : "ask";
   document
@@ -129,14 +135,18 @@ function navigate() {
         link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
+  const updates = selected === "updates" ? updatesPage() : undefined;
+  disposePage = updates?.destroy;
   root.replaceChildren(
-    selected === "corpus"
-      ? corpusPage()
-      : selected === "costs"
-        ? costOverview()
-        : selected === "evaluation"
-          ? evaluationPage()
-          : questionPage,
+    updates
+      ? updates.node
+      : selected === "corpus"
+        ? corpusPage()
+        : selected === "costs"
+          ? costOverview()
+          : selected === "evaluation"
+            ? evaluationPage()
+            : questionPage,
   );
   window.scrollTo({ top: 0, behavior: "instant" });
   document.title = `${selected === "ask" ? "Ask" : selected[0].toUpperCase() + selected.slice(1)} · Everstake Knowledge`;
@@ -152,6 +162,7 @@ document
   });
 window.addEventListener("hashchange", navigate);
 window.addEventListener("pagehide", () => {
+  disposePage?.();
   state.cancel();
   timeline?.finish("Stopped");
 });

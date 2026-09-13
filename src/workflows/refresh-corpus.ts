@@ -23,6 +23,14 @@ export interface CorpusRefreshReport {
   failures: Array<{ sourceId: string; reason: string }>;
   retainedSourceIds: string[];
   index: BuildIndexReport | null;
+  counts?: {
+    added: number;
+    changed: number;
+    unchanged: number;
+    retained: number;
+    excluded: number;
+    pending: number;
+  };
 }
 
 /** Refreshes selected sources and retains their active snapshots when collection fails. */
@@ -31,6 +39,7 @@ export async function refreshCorpus(
   sources: SourceConfig[],
   options: RefreshCorpusOptions = {},
 ): Promise<CorpusRefreshReport> {
+  const previous = readActiveDocuments(db);
   const selected = sources.filter(
     (source) =>
       source.enabled &&
@@ -50,6 +59,21 @@ export async function refreshCorpus(
       if (report.documents.length === 0)
         failures.push({ sourceId: source.id, reason: "no_accepted_documents" });
       else successfulIds.add(source.id);
+      if (
+        report.exclusions.some(
+          (e) =>
+            ![
+              "path_excluded",
+              "robots_disallowed",
+              "insufficient_content",
+              "unsupported_content_type",
+            ].includes(e.reason),
+        )
+      )
+        failures.push({
+          sourceId: source.id,
+          reason: "collection_has_exclusions_requiring_review",
+        });
     } catch (error) {
       failures.push({
         sourceId: source.id,
@@ -58,18 +82,7 @@ export async function refreshCorpus(
       if (options.continueOnSourceError === false) throw error;
     }
   }
-  const gone = new Set(
-    crawls.flatMap((r) =>
-      r.exclusions
-        .filter(
-          (e) =>
-            e.reason === "http_error" &&
-            /HTTP (404|410)\b/.test(e.detail ?? ""),
-        )
-        .map((e) => e.url),
-    ),
-  );
-  if (successfulIds.size === 0 && gone.size === 0)
+  if (successfulIds.size === 0)
     return {
       crawls,
       failures,
@@ -83,14 +96,12 @@ export async function refreshCorpus(
     refreshed.flatMap((document) => [document.url, document.canonicalUrl]),
   );
   const selectedIds = new Set(selected.map((s) => s.id));
-  const retained = readActiveDocuments(db)
+  const retained = previous
     .filter(
       (document) =>
-        !gone.has(document.url) &&
-        !gone.has(document.canonicalUrl) &&
-        (!successfulIds.has(String(document.metadata.sourceId ?? "")) ||
-          (!refreshedKeys.has(document.url) &&
-            !refreshedKeys.has(document.canonicalUrl))),
+        !successfulIds.has(String(document.metadata.sourceId ?? "")) ||
+        (!refreshedKeys.has(document.url) &&
+          !refreshedKeys.has(document.canonicalUrl)),
     )
     .map((document) =>
       selectedIds.has(String(document.metadata.sourceId ?? ""))
@@ -105,28 +116,26 @@ export async function refreshCorpus(
           }
         : document,
     );
-  if (!retained.length && !refreshed.length) {
-    db.exec("BEGIN IMMEDIATE");
-    try {
-      db.prepare(
-        "UPDATE documents SET active=0 WHERE url IN (" +
-          [...gone].map(() => "?").join(",") +
-          ")",
-      ).run(...gone);
-      db.prepare("UPDATE settings SET value=? WHERE key='corpus_version'").run(
-        "empty-" + Date.now(),
-      );
-      db.exec("COMMIT");
-    } catch (e) {
-      db.exec("ROLLBACK");
-      throw e;
-    }
-    return { crawls, failures, retainedSourceIds: [], index: null };
-  }
   const index = buildIndex(db, [...retained, ...refreshed], {
     version: options.version,
   });
+  const priorByUrl = new Map(previous.map((d) => [d.canonicalUrl, d]));
+  const counts = {
+    added: refreshed.filter((d) => !priorByUrl.has(d.canonicalUrl)).length,
+    changed: refreshed.filter(
+      (d) =>
+        priorByUrl.has(d.canonicalUrl) &&
+        priorByUrl.get(d.canonicalUrl)!.contentHash !== d.contentHash,
+    ).length,
+    unchanged: refreshed.filter(
+      (d) => priorByUrl.get(d.canonicalUrl)?.contentHash === d.contentHash,
+    ).length,
+    retained: retained.length,
+    excluded: crawls.reduce((n, c) => n + c.exclusions.length, 0),
+    pending: crawls.reduce((n, c) => n + c.pending.length, 0),
+  };
   return {
+    counts,
     crawls,
     failures,
     retainedSourceIds: failures.map((failure) => failure.sourceId),

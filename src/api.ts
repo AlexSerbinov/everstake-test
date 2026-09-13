@@ -1,3 +1,4 @@
+import type { UpdateController } from "./services/updates/controller.js";
 import { runtimeManifest } from "./runtime-manifest.js";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
@@ -18,9 +19,16 @@ export interface ApiDependencies {
     signal?: AbortSignal,
   ) => Promise<AnswerResult>;
   costs: () => unknown;
+  updates?: UpdateController;
   refresh: (sourceId?: string) => Promise<unknown>;
 }
-export function createApi({ db, ask, costs, refresh }: ApiDependencies) {
+export function createApi({
+  db,
+  ask,
+  costs,
+  refresh,
+  updates,
+}: ApiDependencies) {
   const app = new Hono();
   app.use("/api/*", bodyLimit({ maxSize: 16 * 1024 }));
   let busy = false;
@@ -71,6 +79,51 @@ export function createApi({ db, ask, costs, refresh }: ApiDependencies) {
     return row
       ? c.json(JSON.parse(String(row.result)))
       : c.json({ error: "Run not found" }, 404);
+  });
+  app.get("/api/updates", (c) =>
+    updates
+      ? c.json(updates.status())
+      : c.json({ error: "Updates unavailable" }, 503),
+  );
+  app.use("/api/updates/*", async (c, next) => {
+    if (
+      !process.env.ADMIN_TOKEN ||
+      c.req.header("Authorization") !== `Bearer ${process.env.ADMIN_TOKEN}`
+    )
+      return c.json({ error: "Operator authorization required" }, 401);
+    await next();
+  });
+  app.put("/api/updates/settings", async (c) => {
+    if (!updates) return c.json({ error: "Updates unavailable" }, 503);
+    try {
+      return c.json(updates.configure(await c.req.json()));
+    } catch {
+      return c.json(
+        {
+          error:
+            "Invalid settings. Use configured sources, intervals of 1–8760 hours and priorities of 0–100.",
+        },
+        400,
+      );
+    }
+  });
+  app.post("/api/updates/run", async (c) => {
+    if (!updates) return c.json({ error: "Updates unavailable" }, 503);
+    try {
+      const request = z
+        .object({
+          sourceId: z.string().min(1).max(100).optional(),
+          due: z.boolean().optional(),
+        })
+        .strict()
+        .parse(await c.req.json());
+      return c.json({ jobs: updates.enqueue(request) }, 202);
+    } catch {
+      return c.json(
+        { error: "Invalid update request or disabled source" },
+        400,
+      );
+    }
   });
   app.get("/api/refresh-jobs", (c) =>
     c.json({

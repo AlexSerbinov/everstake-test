@@ -1323,3 +1323,108 @@ input {
 .collection-event p {
   margin-bottom: 5px;
 }
+
+/* Source update controls share the existing page typography and button styles. */
+.updates-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 36px 0;
+}
+.update-panel,
+.update-source,
+.update-job {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+}
+.update-sources {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.update-source {
+  margin: 0;
+}
+.update-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.update-field input,
+.update-field select {
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  font: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+.update-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+.update-check input {
+  width: 18px;
+  height: 18px;
+}
+.update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+.update-result {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.update-history {
+  margin-top: 40px;
+}
+.updates-page .metric strong {
+  overflow-wrap: anywhere;
+  font-size: 22px;
+}
+.update-job.failed,
+.update-job.interrupted {
+  border-color: #bc775a;
+}
+.update-job.running {
+  border-color: #6a8d40;
+}
+@media (max-width: 700px) {
+  .update-sources {
+    grid-template-columns: 1fr;
+  }
+  .update-panel,
+  .update-source,
+  .update-job {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 440px) {
+  .main-nav a {
+    padding: 7px 8px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 360px) {
+  .main-nav {
+    gap: 0;
+  }
+  .main-nav a {
+    padding: 7px 5px;
+    font-size: 12px;
+  }
+  .update-source h3 {
+    overflow-wrap: anywhere;
+  }
+}
