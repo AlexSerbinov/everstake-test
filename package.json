@@ -10,7 +10,7 @@
     "start": "tsx src/main.ts",
     "cli": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test --test-concurrency=1 src/**/*.test.ts",
+    "test": "tsx --test --test-concurrency=1 \"src/**/*.test.ts\"",
     "build:web": "esbuild web/app.ts --bundle --outfile=public/app.js --format=esm",
     "check": "npm run typecheck && npm test"
   },
