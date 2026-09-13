@@ -1,3 +1,4 @@
+import { findingsPage } from "./features/findings/findings-page.js";
 import { collectionSummary } from "./features/collection-summary/collection-summary.js";
 import { updatesPage } from "./features/updates/updates-page.js";
 import type { AnswerResult, RunEvent } from "../src/contracts.js";
@@ -208,11 +209,12 @@ function navigate() {
   disposePage?.();
   disposePage = undefined;
   const route = location.hash.slice(1) || "ask";
-  const selected = ["ask", "corpus", "updates", "costs", "evaluation"].includes(
-    route,
-  )
-    ? route
-    : "ask";
+  const selected =
+    route === "findings" || route.startsWith("findings/")
+      ? "findings"
+      : ["ask", "corpus", "updates", "costs", "evaluation"].includes(route)
+        ? route
+        : "ask";
   document.querySelector(".knowledge-rail")?.remove();
   if (selected === "ask")
     document.querySelector(".app-shell")!.append(collectionSummary());
@@ -234,7 +236,11 @@ function navigate() {
           ? costOverview()
           : selected === "evaluation"
             ? evaluationPage()
-            : questionPage,
+            : selected === "findings"
+              ? findingsPage(
+                  route.startsWith("findings/") ? route.slice(9) : undefined,
+                )
+              : questionPage,
   );
   window.scrollTo({ top: 0, behavior: "instant" });
   if (selected === "ask" && focusQuestionAfterNavigation) {
