@@ -1,0 +1,10 @@
+name: corpus-researcher
+prompt: prompts/answer.md
+skills:
+  - skills/evidence.md
+maxSteps: 6
+tools:
+  - search
+  - read
+  - calculate
+  - answer

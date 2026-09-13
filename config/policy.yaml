@@ -1,0 +1,12 @@
+maxToolSteps: 6
+maxEvidence: 14
+maxOutputTokens: 4000
+maxRunCostUsd: 0.30
+maxSessionCostUsd: 8
+crawlConcurrency: 3
+maxPagesPerRun: 1500
+trust:
+  authority: 30
+  temporal: 20
+  grounding: 30
+  agreement: 20

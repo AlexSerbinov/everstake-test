@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+node_modules
+data
+claude-work
+codex-work
+raw
+reference
+everstake-mcp
+mcp-test
+artifacts

@@ -1,0 +1,217 @@
+{
+  "id": "baseline-91119440",
+  "createdAt": "2026-09-13T14:44:45.260Z",
+  "manifest": {
+    "codeVersion": "b18a6c6e341aa273d4e31ada024e5f2e1f64b680",
+    "dirtyDiffHash": "9e38ebea78ffc31e65607fe7ed8c18e74fcb97fa8c6e28a41f1be2efa717758c",
+    "configHash": "b81bf8669cb56dda9c40847645a52e94b5f171093359242eea2ffe51029d267d",
+    "parserVersion": "typescript-extractor-v1",
+    "recordedAt": "2026-09-13T14:44:45.306Z"
+  },
+  "corpusVersion": "corpus-eae2b2b23116",
+  "plannedTotal": 1,
+  "mode": "baseline",
+  "status": "incomplete",
+  "rows": [
+    {
+      "question": {
+        "id": "E03",
+        "question": "In what year was Everstake founded?",
+        "reference": "2018",
+        "referenceUrls": [
+          "https://everstake.com/company/about"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "567c341f-149a-4011-9bc8-0bb5ef983e59",
+        "status": "answered",
+        "question": "In what year was Everstake founded?",
+        "text": "Everstake was founded in 2018 [df57db7ac82c4bb5783757ef2712630f]",
+        "asOf": "2026-07-01",
+        "claims": [
+          {
+            "text": "Everstake was founded in 2018",
+            "citations": [
+              "df57db7ac82c4bb5783757ef2712630f"
+            ],
+            "asOf": "2026-07-01"
+          }
+        ],
+        "sources": [
+          {
+            "id": "df57db7ac82c4bb5783757ef2712630f",
+            "documentId": "4611b2269824fa3993cd40e3fb08b6b5",
+            "url": "https://everstake.com/ai-info",
+            "title": "Official Everstake AI Info | Structured Company Overview for LLMs",
+            "text": "ge the gap between traditional and decentralized finance.\"1 (https://everstake.com/company/about) Slogan: \"Secure staking made institutional.\"7 (https://everstake.com/terms-of-use)\n\n### What is Everstake's background and structure?\nEverstake was founded in 2018 by Sergii Vasylchuk and a team of engineers, with the mission to bridge the gap between traditional and decentralized finance by making institutional-grade staking accessible. To date, over 75% of the company consists of engineers and technical specialists.1 (https://everstake.com/company/about) Its legal entity is Everstake Validation Services LLC, a Cayman Islands limited liability company registered in George Town, Grand Cayman.7 (https://everstake.com/terms-of-use) Everstake describes itself as a global provider.1 (https://everstake.com/company/about)\nLeadership titles change over time and the company page may lag: as of a June 2025 Everstake announcement (https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo), David Kinitsky is CCDO and Sergii Vasylchuk is CEO & President.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-07-01T00:00:00.000Z",
+            "updatedAt": "2026-07-01T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:22.792Z",
+            "duplicateGroup": "4611b2269824fa3993cd40e3fb08b6b5",
+            "score": 0.027242401779095628,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The text explicitly states that Everstake was founded in 2018."
+          }
+        ],
+        "trust": {
+          "score": 85,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 5,
+              "maximum": 20,
+              "reason": "1 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "567c341f-149a-4011-9bc8-0bb5ef983e59",
+          "calls": 3,
+          "inputTokens": 4456,
+          "outputTokens": 773,
+          "knownCostUsd": 0.00573043,
+          "unknownCalls": 0,
+          "elapsedMs": 5117,
+          "startedAt": "2026-09-13T14:44:45.348Z",
+          "finishedAt": "2026-09-13T14:44:50.465Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "76080cbb-13c5-47fc-aee0-e088adab8c48",
+              "runId": "567c341f-149a-4011-9bc8-0bb5ef983e59",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:44:46.144Z",
+              "elapsedMs": 442.424,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_5cf156504e4f4e638cf22bbe65049766",
+              "error": null
+            },
+            {
+              "id": "3e07cc52-2caa-4a74-abc8-cb1285d71cbf",
+              "runId": "567c341f-149a-4011-9bc8-0bb5ef983e59",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:44:47.210Z",
+              "elapsedMs": 2514.720792,
+              "inputTokens": 3522,
+              "outputTokens": 703,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 634,
+              "costUsd": 0.00527775,
+              "status": "completed",
+              "providerRequestId": "37amaqzXH7SW3boPidfoiA4",
+              "error": null
+            },
+            {
+              "id": "5aa780e0-7f8d-4496-a8aa-ceb212fc0b8e",
+              "runId": "567c341f-149a-4011-9bc8-0bb5ef983e59",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:44:49.729Z",
+              "elapsedMs": 732.6921670000002,
+              "inputTokens": 925,
+              "outputTokens": 70,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0004525,
+              "status": "completed",
+              "providerRequestId": "4ramapFf8YOR1Q-bx8-pBg",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "completed": 1,
+    "assessed": 0,
+    "passed": 0,
+    "failed": 0,
+    "accuracy": null,
+    "inventedFacts": null,
+    "knownCostUsd": 0.00573043,
+    "unknownCalls": 0
+  },
+  "measurements": {
+    "elapsedMs": 5207.5833330000005,
+    "cpuUserMs": 938.645,
+    "cpuSystemMs": 345.195,
+    "maxRssKiB": 560704,
+    "platform": "darwin",
+    "node": "v26.7.0"
+  }
+}

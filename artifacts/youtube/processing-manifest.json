@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-09-13T14:23:05.429Z",
+  "inventory": {
+    "discovered": 186,
+    "needsReview": 71,
+    "excluded": 37,
+    "screeningAcceptedAfterPromotion": 78
+  },
+  "selected": {
+    "videoIds": [
+      "DFSEQ3OGoL8",
+      "V0WcDdiJAeg",
+      "Wz8KVaO2gWk",
+      "CDmKMHaTtSQ",
+      "beakNs8F3pQ",
+      "rIFtUSKa-fQ"
+    ],
+    "durationSeconds": 9868,
+    "durationHours": 2.741111111111111
+  },
+  "results": {
+    "transcriptionJobsCompleted": 6,
+    "sanitizedDocumentsEmitted": 4,
+    "quarantined": [
+      {
+        "videoId": "CDmKMHaTtSQ",
+        "status": "speaker_review_failed",
+        "documentEmitted": false
+      },
+      {
+        "videoId": "rIFtUSKa-fQ",
+        "status": "needs_review",
+        "documentEmitted": false
+      }
+    ],
+    "acceptedUnprocessed": 72,
+    "authorityTiers": {
+      "1": 1,
+      "2": 3
+    },
+    "documentVideoIds": [
+      "beakNs8F3pQ",
+      "DFSEQ3OGoL8",
+      "V0WcDdiJAeg",
+      "Wz8KVaO2gWk"
+    ],
+    "inventoryNeedsReviewUnprocessed": 71,
+    "processedButQuarantined": 2,
+    "pendingCandidates": 145
+  },
+  "costs": {
+    "geminiKnownUsd": 0.067074,
+    "sonioxActualUsd": null,
+    "sonioxUnknownCalls": 6,
+    "sonioxForecastReservedUsd": 0.2741111111111111,
+    "knownPlusReservedUsd": 0.34118511111111105,
+    "totalBudgetUsd": 3
+  }
+}

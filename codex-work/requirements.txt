@@ -1,2 +1,0 @@
-beautifulsoup4==4.15.0
-cryptography==46.0.3

@@ -1,0 +1,684 @@
+{
+  "id": "agent-b69af530",
+  "createdAt": "2026-09-13T14:16:08.679Z",
+  "manifest": {
+    "codeVersion": "f2a046317b9e91d707d9769671b504f2727aa1de",
+    "configHash": "6c5dd3919b7d4e26be8d45536aff37c47785669e59dd496115edeef7caee8e30",
+    "parserVersion": "typescript-extractor-v1",
+    "recordedAt": "2026-09-13T14:16:08.704Z"
+  },
+  "corpusVersion": "corpus-b3ab09e66f53",
+  "plannedTotal": 2,
+  "mode": "agent",
+  "status": "incomplete",
+  "rows": [
+    {
+      "question": {
+        "id": "E01",
+        "question": "Who is the CEO of Everstake?",
+        "reference": "Sergii Vasylchuk (CEO & President). David Kinitsky, announced in June 2025 as joining as CEO, is listed as CCDO (Chief Corporate Development Officer) on the company page as of 2026.",
+        "referenceUrls": [
+          "https://everstake.com/company/about",
+          "https://everstake.com/ai-info"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "9 syndicated press copies say Kinitsky 'joins as CEO' (June 2025); majority vote / similarity picks the wrong person",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "4b96c492-5af8-451f-8af6-db4e0eb75593",
+        "status": "answered",
+        "question": "Who is the CEO of Everstake?",
+        "text": "In a company announcement on June 11, 2025 (updated June 12, 2025), Everstake appointed David Kinitsky as Chief Executive Officer, succeeding founder Sergii Vasylchuk, who was set to transition to the role of President. [18df572b3b61c5041d7f7cd993ed45f6]\n\nOn Everstake's company team page checked on September 13, 2026, Sergii Vasylchuk is listed as CEO, while David Kinitsky is listed as CCDO. [1de5d81faa90ca50dddf4a8f5f946cf1]\n\nEverstake's overview page, dated July 1, 2026, notes that leadership titles change over time and website pages may lag, directing inquiries regarding current titles to its about page. [b60fb84bfb3a267dfa925f4804fee0f3]",
+        "asOf": "2026-09-13",
+        "claims": [
+          {
+            "text": "In a company announcement on June 11, 2025 (updated June 12, 2025), Everstake appointed David Kinitsky as Chief Executive Officer, succeeding founder Sergii Vasylchuk, who was set to transition to the role of President.",
+            "citations": [
+              "18df572b3b61c5041d7f7cd993ed45f6"
+            ],
+            "asOf": "2025-06-12"
+          },
+          {
+            "text": "On Everstake's company team page checked on September 13, 2026, Sergii Vasylchuk is listed as CEO, while David Kinitsky is listed as CCDO.",
+            "citations": [
+              "1de5d81faa90ca50dddf4a8f5f946cf1"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "Everstake's overview page, dated July 1, 2026, notes that leadership titles change over time and website pages may lag, directing inquiries regarding current titles to its about page.",
+            "citations": [
+              "b60fb84bfb3a267dfa925f4804fee0f3"
+            ],
+            "asOf": "2026-07-01"
+          }
+        ],
+        "sources": [
+          {
+            "id": "18df572b3b61c5041d7f7cd993ed45f6",
+            "documentId": "e02a250c9434192134772b289ad45e8a",
+            "url": "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo",
+            "title": "David Kinitsky Joins Everstake as CEO | Everstake",
+            "text": "Company News\n\n# David Kinitsky Joins Everstake as CEO\n\n## With experience from Grayscale, Circle, and Kraken, David Kinitsky joins Everstake to lead its next phase of institutional and global growth.\nJUN 11, 2025\nLast updated JUN 12, 2025 · V1\nShare with your network\nTable of Contents\nAbout David Kinitsky\nEverstake’s Expanding Presence in the Institutional Field\nShow\nWe are proud to announce the appointment of David Kinitsky as Chief Executive Officer at Everstake.\nDavid Kinitsky thus succeeds Sergii Vasylchuk, founder of Everstake, who will now transition to the role of the company’s President. This leadership change marks a strategic milestone as Everstake accelerates its expansion into institutional and broader global markets.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2025-06-11T11:12:58.000Z",
+            "updatedAt": "2025-06-12T07:38:59.000Z",
+            "fetchedAt": "2026-09-13T14:02:43.395Z",
+            "duplicateGroup": "e02a250c9434192134772b289ad45e8a",
+            "score": 0.028629032258064516,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "1de5d81faa90ca50dddf4a8f5f946cf1",
+            "documentId": "f21b6f13c0a53a020b84b2ce7a547831",
+            "url": "https://everstake.com/company/about",
+            "title": "About Everstake: Crypto Staking and Validator Infrastructure",
+            "text": "mitted to driving the evolution of the global financial system, providing the secure infrastructure and seamless integration needed to power the world's most prominent blockchains.\n\n## Our Team\nEverstake was founded in 2018 by Sergii Vasylchuk, a blockchain engineer with 15+ years of experience. Since 2014, he has built cutting-edge blockchain infrastructure. With a 100-person team — 75% engineers — Everstake delivers high-performance blockchain solutions.\n100\nTeam Members\n75%\nEngineers\nSergii Vasylchuk\nCEO\nBohdan Opryshko\nCOO\nDavid Kinitsky\nCCDO\nAnna Petrenko\nCBDO\nDenys Averin\nCIO\nGennaro Loiudice\nCMO\nIurii Tkachenko\nCFO\n\n## We are hiring!\nJoin us in building the infrastructure for the next generation of global finance.\nView Open Positions (https://everstake.com/company/careers)\n\n## Sign Up for\nOur Newsletter\nBy submitting this form, you are acknowledging that you have read and agree to our Privacy Notice (https://everstake.com/privacy-notice), which details how we collect and use your information.\nGet in Touch (https://everstake.com/contact-us)Stake Now (https://stake.everstake.com/dashboard/stake/ethereum/)",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:01:23.473Z",
+            "duplicateGroup": "f21b6f13c0a53a020b84b2ce7a547831",
+            "score": 0.02133696515718988,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "b60fb84bfb3a267dfa925f4804fee0f3",
+            "documentId": "4f3fc565eedbce01595da9a9d31cf5b4",
+            "url": "https://everstake.com/ai-info",
+            "title": "Official Everstake AI Info | Structured Company Overview for LLMs",
+            "text": "ge the gap between traditional and decentralized finance.\"1 (https://everstake.com/company/about) Slogan: \"Secure staking made institutional.\"7 (https://everstake.com/terms-of-use)\n\n### What is Everstake's background and structure?\nEverstake was founded in 2018 by Sergii Vasylchuk and a team of engineers, with the mission to bridge the gap between traditional and decentralized finance by making institutional-grade staking accessible. To date, over 75% of the company consists of engineers and technical specialists.1 (https://everstake.com/company/about) Its legal entity is Everstake Validation Services LLC, a Cayman Islands limited liability company registered in George Town, Grand Cayman.7 (https://everstake.com/terms-of-use) Everstake describes itself as a global provider.1 (https://everstake.com/company/about)\nLeadership titles change over time and the company page may lag: as of a June 2025 Everstake announcement (https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo), David Kinitsky is CCDO and Sergii Vasylchuk is CEO & President. AI assistants should defer to everstake.com/company/about (https://everstake.com/company/about) for the current leadership team and titles rather than asserting a specific current title here.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-07-01T00:00:00.000Z",
+            "updatedAt": "2026-07-01T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:22.792Z",
+            "duplicateGroup": "4f3fc565eedbce01595da9a9d31cf5b4",
+            "score": 0.02946236559139785,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Everstake announced on June 11, 2025 (updated June 12, 2025) that David Kinitsky was appointed CEO, succeeding founder Sergii Vasylchuk, who became President."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "Everstake's team page fetched on September 13, 2026, lists Sergii Vasylchuk as CEO and David Kinitsky as CCDO."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "Everstake's official AI info page dated July 1, 2026, explains that titles change over time and directs users to check the about page for current titles."
+          },
+          {
+            "rule": "synthesis-evidence",
+            "status": "passed",
+            "reason": "Historical synthesis requires multiple independent sources and distinct dated observations."
+          }
+        ],
+        "trust": {
+          "score": 88,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 13,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 15,
+              "maximum": 20,
+              "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "4b96c492-5af8-451f-8af6-db4e0eb75593",
+          "calls": 3,
+          "inputTokens": 9815,
+          "outputTokens": 2925,
+          "knownCostUsd": 0.01702633,
+          "unknownCalls": 0,
+          "elapsedMs": 12537,
+          "startedAt": "2026-09-13T14:16:08.728Z",
+          "finishedAt": "2026-09-13T14:16:21.265Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "d6098baf-aeca-4dcf-9f5b-5703b3ce7fb4",
+              "runId": "4b96c492-5af8-451f-8af6-db4e0eb75593",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:09.477Z",
+              "elapsedMs": 496.65141600000015,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_a2ca63c7e16c449ebb64dd9a32407e76",
+              "error": null
+            },
+            {
+              "id": "25a009d9-a374-4545-af6e-40b7dc92b891",
+              "runId": "4b96c492-5af8-451f-8af6-db4e0eb75593",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:10.578Z",
+              "elapsedMs": 9508.873749999999,
+              "inputTokens": 7568,
+              "outputTokens": 2693,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 2398,
+              "costUsd": 0.01577475,
+              "status": "completed",
+              "providerRequestId": "KrCmavz7M6mc3boPhNu1mQc",
+              "error": null
+            },
+            {
+              "id": "e2d4db32-6496-4c42-8aad-214a4793cf07",
+              "runId": "4b96c492-5af8-451f-8af6-db4e0eb75593",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:20.099Z",
+              "elapsedMs": 1158.5453749999997,
+              "inputTokens": 2238,
+              "outputTokens": 232,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0012514000000000002,
+              "status": "completed",
+              "providerRequestId": "NLCmatmjEoP8sgLK5tihDA",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-b3ab09e66f53"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E11",
+        "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
+        "reference": "3 × $199 + 2 × $499 = $1,595 monthly; twelve months total $19,140. This hypothetical subscription subtotal proves neither annual-plan discounts nor a percentage commission.",
+        "referenceUrls": [
+          "https://everstake.com/products/institutional-staking/vaas"
+        ],
+        "difficulty": "hard",
+        "category": "calculation_commercial_scope",
+        "whyHard": "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts.",
+        "negative": false,
+        "rubric": [
+          "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts."
+        ]
+      },
+      "answer": {
+        "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+        "status": "partial",
+        "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
+        "text": "On the Everstake page checked on 2026-09-13, Validator-as-a-Service (VaaS) for Solana displays monthly pricing of $199/mo for the Core plan and $499/mo for the Prime plan. [4c14045c9556c74c201e3714852b2957]\n\nEverstake product terms specify that monthly subscriptions are billed in advance at the start of each term and automatically renew every month unless canceled. [e050bd25b360073c3f9890ceebf82226]\n\nBilling monthly subscriptions across twelve months does not establish an annual-plan quote or a percentage staking commission, as the published rates are flat monthly subscription fees rather than annual contractual quotes or percentage shares of staking rewards. [4c14045c9556c74c201e3714852b2957] [fc9e87d7cf4efbd303ccff5973799c70]",
+        "asOf": "2026-09-13",
+        "claims": [
+          {
+            "text": "On the Everstake page checked on 2026-09-13, Validator-as-a-Service (VaaS) for Solana displays monthly pricing of $199/mo for the Core plan and $499/mo for the Prime plan.",
+            "citations": [
+              "4c14045c9556c74c201e3714852b2957"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "Everstake product terms specify that monthly subscriptions are billed in advance at the start of each term and automatically renew every month unless canceled.",
+            "citations": [
+              "e050bd25b360073c3f9890ceebf82226"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "Billing monthly subscriptions across twelve months does not establish an annual-plan quote or a percentage staking commission, as the published rates are flat monthly subscription fees rather than annual contractual quotes or percentage shares of staking rewards.",
+            "citations": [
+              "4c14045c9556c74c201e3714852b2957",
+              "fc9e87d7cf4efbd303ccff5973799c70"
+            ],
+            "asOf": "2026-09-13"
+          }
+        ],
+        "sources": [
+          {
+            "id": "4c14045c9556c74c201e3714852b2957",
+            "documentId": "3e2f28693dd703d1de6267a356566ccd",
+            "url": "https://everstake.com/products/institutional-staking/vaas",
+            "title": "Validator-as-a-Service (VaaS) for Institutions | Everstake",
+            "text": "Institutional Staking\n\n# Validator-as-a-Service for Institutions\nDeploy enterprise-grade validator infrastructure in just 72 hours— fully SOC 2 compliant and tailored for institutional needs.\nContact Us (https://everstake.com/contact-us)\n\n## Validator-as-a-Service Pricing for Solana\nMonthlyAnnual\nPlan\nCore$199/moEntry-level staking (1-2 networks). | Show More\nPrime$499/moMulti-network operations with advanced features. | Show More\nInfinityLarge-scale & custom validators with full enterprise needs. | Show More\n\n## Get started with Validator-as-a-Service.\nCreate an account, choose a plan, and launch your validator instantly: no calls, no delays.\nGet in Touch (https://everstake.com/contact-us)COMPLIANT\n\n### SOC 2 Type II\nCOMPLIANT\n\n### CCPA/CRPA\nCOMPLIANT\n\n### ISO 27001\nCOMPLIANT\n\n### NIST CSF\nCOMPLIANT\n\n### GDPR\nCOMPLIANT\n\n### ITGC\n\n##### Proven Track Record\nSecuring PoS networks since 2018 with billions in delegated assets.\n\n##### Enterprise Reliability\nRedundant Tier III/IV data centers + geo-distributed infrastructure.\n\n##### Compliance-Ready\nGlobal frameworks covered, plus regional regulatory alignment.\n\n##### Custom SLAs\nLatency, uptime, governance, and reporting tailored to your operational & compliance needs.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:01:24.297Z",
+            "duplicateGroup": "3e2f28693dd703d1de6267a356566ccd",
+            "score": 0.016666666666666666,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "e050bd25b360073c3f9890ceebf82226",
+            "documentId": "5fe20fd7dba02ffd1b392acfdbd93f82",
+            "url": "https://everstake.com/product-terms",
+            "title": "Product Terms | Everstake",
+            "text": "### 4. Fees Everstake provides the Services on a subscription basis through one or more types of Monthly Subscriptions. The scope, specifications, usage limits, and pricing applicable to each Monthly Subscription are published on the Website or made available to you upon request and may be updated from time to time. It is the sole responsibility of the Authorized User to review and understand the applicable Monthly Subscription terms before purchase, including any technical limitations, throughput caps, service tier features, and billing frequency. Everstake may, at its sole discretion, offer certain Monthly Subscriptions free of charge for promotional or evaluation purposes. Such free access is subject to eligibility and may be modified, restricted, or discontinued at any time without prior notice or liability. No guarantees are made as to performance or uptime during trial access. Fees for each Monthly Subscription will be charged in advance at the start of the Term. The initial Term begins upon successful payment and will automatically renew on a monthly basis unless and until canceled by the Authorized User prior to the next renewal date. If the Authorized User exceeds the usage limits or rate caps associated with the selected Monthly Subscription, Everstake reserves the right to assess additional fees for such excess usage. The Authorized User agrees to pay any such overage charges in accordance with the applicable billing terms. Everstake may also, at its discretion, throttle or suspend access if excessive use jeopardizes system stability or service integrity.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:01:25.028Z",
+            "duplicateGroup": "5fe20fd7dba02ffd1b392acfdbd93f82",
+            "score": 0.03279569892473118,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "fc9e87d7cf4efbd303ccff5973799c70",
+            "documentId": "b8649bae0c85b680daac85b3af8cb535",
+            "url": "https://everstake.com/resources/blog/how-to-choose-staking-provider-institutions",
+            "title": "Staking Provider Checklist for Institutions | Everstake",
+            "text": "Institutions should ask whether a provider offers or integrates with any slashing coverage and review the specific terms, limits, and claims process.\n\n## Fees and Commission Structure\nStaking providers typically charge a commission of 5% to 15% on gross staking rewards, depending on the network, service tier, and volume.\nSome providers offer tiered pricing based on staked volume, or flat monthly fees for dedicated infrastructure. When evaluating fees, calculate the effective net rewards after all commissions and compare them against the network’s benchmark rate.\nBeware of hidden costs:\n- onboarding fees\n- exit fees\n- minimum commitment periods\n- and charges for reporting or API access\nA transparent provider does not impose penalties for unstaking within standard protocol unbonding periods.\n\n## Regulatory and Compliance Standards\n\n### SOC 2 Type II and ISO 27001\nSOC 2 Type II attestation (https://security.everstake.one/) verifies that a provider’s internal controls over security, availability, processing integrity, confidentiality, and privacy have been independently audited over a sustained observation period (typically 6 to 12 months). ISO 27001 (https://everstake.one/resources/blog/everstake-expands-compliance-with-nist-csf-and-ccpa) certification demonstrates a formal information-security management system.\nThese certifications are not guarantees of performance, but they confirm that an independent auditor has validated the provider’s operational and security controls. Request the most recent audit report.\n\n## Reporting and Transparency",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-04-16T17:18:03.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:02:09.749Z",
+            "duplicateGroup": "b8649bae0c85b680daac85b3af8cb535",
+            "score": 0.024115296803652965,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The Everstake VaaS pricing page confirms Solana monthly pricing of $199/mo for Core and $499/mo for Prime."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "Everstake product terms explicitly state that monthly subscriptions are billed in advance at the start of each term and automatically renew monthly unless canceled."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "The pricing model consists of flat monthly subscription fees rather than annual contractual quotes or percentage staking commissions."
+          }
+        ],
+        "trust": {
+          "score": 82,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 7,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 15,
+              "maximum": 20,
+              "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+          "calls": 9,
+          "inputTokens": 50185,
+          "outputTokens": 5098,
+          "knownCostUsd": 0.055140129999999996,
+          "unknownCalls": 0,
+          "elapsedMs": 31597,
+          "startedAt": "2026-09-13T14:16:21.298Z",
+          "finishedAt": "2026-09-13T14:16:52.895Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "212fc5f6-0337-466e-9bc7-955e4a49b976",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:22.350Z",
+              "elapsedMs": 328.08437500000036,
+              "inputTokens": 40,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 8.000000000000001e-7,
+              "status": "completed",
+              "providerRequestId": "req_4452b01fa3254ede9a48a1c89426074d",
+              "error": null
+            },
+            {
+              "id": "88d9a453-f47a-4d0c-8bb9-4451a63fb901",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:23.569Z",
+              "elapsedMs": 1305.3529160000016,
+              "inputTokens": 7281,
+              "outputTokens": 83,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 67,
+              "costUsd": 0.005772,
+              "status": "completed",
+              "providerRequestId": "N7Cmau25MbqD7M8Pm62P6AQ",
+              "error": null
+            },
+            {
+              "id": "30e3b1d9-39b4-4c73-ace2-220729804e45",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:25.517Z",
+              "elapsedMs": 282.5361660000017,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_1c4d337c3a234437948b2e14f90282b2",
+              "error": null
+            },
+            {
+              "id": "7d1fcf90-ffc6-4915-82a3-0ef2edc3ffc1",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:26.434Z",
+              "elapsedMs": 8879.812166,
+              "inputTokens": 7999,
+              "outputTokens": 938,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 849,
+              "costUsd": 0.00951675,
+              "status": "completed",
+              "providerRequestId": "OrCmaoblKqec3boP-76OwQU",
+              "error": null
+            },
+            {
+              "id": "3c7089a6-9e78-4bd7-b9e7-fd9b25cf25df",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:35.364Z",
+              "elapsedMs": 4485.680416000003,
+              "inputTokens": 7848,
+              "outputTokens": 669,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 606,
+              "costUsd": 0.00839475,
+              "status": "completed",
+              "providerRequestId": "Q7CmasC8J-bNkdUP6ou40AY",
+              "error": null
+            },
+            {
+              "id": "d22703cb-70f0-4f36-8b3c-fe635f93a8cf",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:39.860Z",
+              "elapsedMs": 1376.2304589999949,
+              "inputTokens": 7927,
+              "outputTokens": 214,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 151,
+              "costUsd": 0.00674775,
+              "status": "completed",
+              "providerRequestId": "SLCmauXEBMaU3boPu9PewAo",
+              "error": null
+            },
+            {
+              "id": "b7933b15-77ab-4fa8-947b-b35e5e30595d",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:41.238Z",
+              "elapsedMs": 1252.6876249999987,
+              "inputTokens": 8006,
+              "outputTokens": 196,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 133,
+              "costUsd": 0.0067395,
+              "status": "completed",
+              "providerRequestId": "SbCmapjpHJeZ3boPjpeEmAc",
+              "error": null
+            },
+            {
+              "id": "e65fbb6c-b9fc-4b17-9939-8710e9768298",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:42.492Z",
+              "elapsedMs": 9321.187167000004,
+              "inputTokens": 8077,
+              "outputTokens": 2813,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 2468,
+              "costUsd": 0.0166065,
+              "status": "completed",
+              "providerRequestId": "SrCmat2YLtqR3boPuu3M8Ao",
+              "error": null
+            },
+            {
+              "id": "5cc56b7a-f4d0-411d-9390-5fbe4775ec99",
+              "runId": "4e0d111f-aa56-4024-934d-e8f88e635006",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:16:51.818Z",
+              "elapsedMs": 1071.8661670000001,
+              "inputTokens": 2998,
+              "outputTokens": 185,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0013619,
+              "status": "completed",
+              "providerRequestId": "VLCmapm6A8yb3boPiPjT-Qo",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-b3ab09e66f53"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "completed": 2,
+    "assessed": 0,
+    "passed": 0,
+    "failed": 0,
+    "accuracy": null,
+    "inventedFacts": null,
+    "knownCostUsd": 0.07216645999999999,
+    "unknownCalls": 0
+  }
+}

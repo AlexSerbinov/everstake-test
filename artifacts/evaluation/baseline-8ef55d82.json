@@ -1,0 +1,1546 @@
+{
+  "id": "baseline-8ef55d82",
+  "createdAt": "2026-09-13T14:42:23.587Z",
+  "manifest": {
+    "codeVersion": "b18a6c6e341aa273d4e31ada024e5f2e1f64b680",
+    "dirtyDiffHash": "1a37488d9cc0743bc2135810833b34fe0956dc10b870480b22915ee850db1fb7",
+    "configHash": "0f9b6d69c1f1e3312b5d680c1483e1499e6a5a0149c62487648f5f3a52a21634",
+    "parserVersion": "typescript-extractor-v1",
+    "recordedAt": "2026-09-13T14:42:23.630Z"
+  },
+  "corpusVersion": "corpus-eae2b2b23116",
+  "plannedTotal": 20,
+  "mode": "baseline",
+  "status": "incomplete",
+  "rows": [
+    {
+      "question": {
+        "id": "E01",
+        "question": "Who is the CEO of Everstake?",
+        "reference": "As of the frozen crawl on 13 September 2026, the company page lists Sergii Vasylchuk as CEO and David Kinitsky as CCDO. A June 2025 announcement had named Kinitsky CEO and Vasylchuk President; treat that announcement as historical and do not add President to Vasylchuk's current title because the current roster only says CEO.",
+        "referenceUrls": [
+          "https://everstake.com/company/about",
+          "https://everstake.com/ai-info",
+          "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "9 syndicated press copies say Kinitsky 'joins as CEO' (June 2025); majority vote / similarity picks the wrong person",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "c2dc3571-eb49-40bc-857c-da8acb735318",
+        "status": "error",
+        "question": "Who is the CEO of Everstake?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [],
+        "trust": null,
+        "receipt": {
+          "runId": "c2dc3571-eb49-40bc-857c-da8acb735318",
+          "calls": 2,
+          "inputTokens": 4330,
+          "outputTokens": 1451,
+          "knownCostUsd": 0.008682180000000001,
+          "unknownCalls": 0,
+          "elapsedMs": 8240,
+          "startedAt": "2026-09-13T14:42:23.672Z",
+          "finishedAt": "2026-09-13T14:42:31.912Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "ec35508f-56c4-474c-9163-005504265b9c",
+              "runId": "c2dc3571-eb49-40bc-857c-da8acb735318",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:24.318Z",
+              "elapsedMs": 293.1181250000002,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_74f89e094d1e4a2ab639938e197a68ad",
+              "error": null
+            },
+            {
+              "id": "f614b97d-3ca9-4200-952d-03cc8813b971",
+              "runId": "c2dc3571-eb49-40bc-857c-da8acb735318",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:25.180Z",
+              "elapsedMs": 6726.43,
+              "inputTokens": 4321,
+              "outputTokens": 1451,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1235,
+              "costUsd": 0.008682,
+              "status": "completed",
+              "providerRequestId": "UbamauLUHrWb3boPn5S7gAs",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E02",
+        "question": "How many Proof-of-Stake networks does Everstake support?",
+        "reference": "The newest dated, scope-qualified first-party statement says 30+ active networks and a historical footprint of 130+ networks (published July 2026, updated 10 September 2026). Other first-party pages updated on the same day still say 35+ active, while boilerplate says 130+ supported. Report the conflict and scope; do not present 130+ as an uncontested count of simultaneously active networks. Older pages reported 70+ in 2023 and 85 in June 2025.",
+        "referenceUrls": [
+          "https://everstake.com/ai-info",
+          "https://everstake.com/resources/blog/institutional-adoption-networking-vs-consensus",
+          "https://everstake.com/resources/blog/from-decision-to-live-validator-institutional-staking-integration",
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "three different numbers by year; must pick the newest first-party value and may mention history",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "3d3c0905-cca9-44ba-897a-5593d2cdf124",
+        "status": "error",
+        "question": "How many Proof-of-Stake networks does Everstake support?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "3d3c0905-cca9-44ba-897a-5593d2cdf124",
+          "calls": 2,
+          "inputTokens": 4279,
+          "outputTokens": 1642,
+          "knownCostUsd": 0.009357260000000001,
+          "unknownCalls": 0,
+          "elapsedMs": 9666,
+          "startedAt": "2026-09-13T14:42:31.959Z",
+          "finishedAt": "2026-09-13T14:42:41.625Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "b2655885-7a54-4483-9104-2b36199cafe6",
+              "runId": "3d3c0905-cca9-44ba-897a-5593d2cdf124",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:32.651Z",
+              "elapsedMs": 321.85662500000035,
+              "inputTokens": 13,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_f81b618592fd4ff8bad7772ec4852b40",
+              "error": null
+            },
+            {
+              "id": "28bc7dd6-ad4c-4fc6-ba65-79e053439e31",
+              "runId": "3d3c0905-cca9-44ba-897a-5593d2cdf124",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:33.510Z",
+              "elapsedMs": 8111.468125000001,
+              "inputTokens": 4266,
+              "outputTokens": 1642,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1417,
+              "costUsd": 0.009357,
+              "status": "completed",
+              "providerRequestId": "WbamarelLPmT3boP74WOwQo",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E03",
+        "question": "In what year was Everstake founded?",
+        "reference": "2018",
+        "referenceUrls": [
+          "https://everstake.com/company/about"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "f05f094e-91ff-457e-a5a6-d0c3ffafd12f",
+        "status": "error",
+        "question": "In what year was Everstake founded?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [],
+        "trust": null,
+        "receipt": {
+          "runId": "f05f094e-91ff-457e-a5a6-d0c3ffafd12f",
+          "calls": 2,
+          "inputTokens": 4007,
+          "outputTokens": 439,
+          "knownCostUsd": 0.004644929999999999,
+          "unknownCalls": 0,
+          "elapsedMs": 3282,
+          "startedAt": "2026-09-13T14:42:41.682Z",
+          "finishedAt": "2026-09-13T14:42:44.964Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "f6dc15c6-7fb1-4ecc-afab-036607c1f228",
+              "runId": "f05f094e-91ff-457e-a5a6-d0c3ffafd12f",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:42.435Z",
+              "elapsedMs": 284.2101250000014,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_5e38303091ca479c92c4a1beb745b5a3",
+              "error": null
+            },
+            {
+              "id": "ffb2e34c-b565-4ac9-9403-33a4fd83922a",
+              "runId": "f05f094e-91ff-457e-a5a6-d0c3ffafd12f",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:43.240Z",
+              "elapsedMs": 1722.1368329999968,
+              "inputTokens": 3998,
+              "outputTokens": 439,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 337,
+              "costUsd": 0.00464475,
+              "status": "completed",
+              "providerRequestId": "Y7amapTAGY6Q3boPzM6M-QY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E04",
+        "question": "What security certifications and compliance frameworks does Everstake hold?",
+        "reference": "Everstake states that it holds SOC 2 Type II and ISO/IEC 27001:2022 certifications, has NIST CSF 2.0 alignment, GDPR and CCPA compliance, and lists ITGC and CCPA/CRPA among its compliance labels. It separately completed an independent assessment of selected DORA controls; DORA is not a certification. Prescient Security conducted the cited assessments.",
+        "referenceUrls": [
+          "https://everstake.com/ai-info",
+          "https://everstake.com/company/about",
+          "https://everstake.com/resources/blog/everstake-earns-soc2-type-2-iso-27001-certifications-and-gdpr-compliance",
+          "https://everstake.com/resources/blog/everstake-expands-compliance-with-nist-csf-and-ccpa",
+          "https://everstake.com/resources/blog/everstake-completes-independent-dora-controls-assessment"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "28c1ae71-28e1-4cc6-a09c-9172338732f5",
+        "status": "error",
+        "question": "What security certifications and compliance frameworks does Everstake hold?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [],
+        "trust": null,
+        "receipt": {
+          "runId": "28c1ae71-28e1-4cc6-a09c-9172338732f5",
+          "calls": 2,
+          "inputTokens": 4043,
+          "outputTokens": 521,
+          "knownCostUsd": 0.00497724,
+          "unknownCalls": 0,
+          "elapsedMs": 3517,
+          "startedAt": "2026-09-13T14:42:45.006Z",
+          "finishedAt": "2026-09-13T14:42:48.523Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "6f461524-a415-437f-b3b9-498e426ba995",
+              "runId": "28c1ae71-28e1-4cc6-a09c-9172338732f5",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:45.456Z",
+              "elapsedMs": 219.35925000000134,
+              "inputTokens": 12,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_dc7b773415b44e61b70d4f5202667444",
+              "error": null
+            },
+            {
+              "id": "68ce8601-f32c-40a4-811c-b1718f3ea4b7",
+              "runId": "28c1ae71-28e1-4cc6-a09c-9172338732f5",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:46.182Z",
+              "elapsedMs": 2338.8718750000007,
+              "inputTokens": 4031,
+              "outputTokens": 521,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.004977,
+              "status": "completed",
+              "providerRequestId": "Zramaqu-GNuFkdUPsPqd8Aw",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E05",
+        "question": "How has Everstake's positioning changed over the last two years?",
+        "reference": "Earlier material emphasized broad access, retail staking and multi-chain expansion. Everstake's December 2025 retrospective explicitly describes 2025 as a shift toward full infrastructure leadership, audited systems and institutional partnerships. Current 2026 pages foreground certified, non-custodial institutional staking and VaaS while retaining retail access, and add Solana Blockspace/MEV products and MCP access for AI agents. Show the trajectory with dated sources and identify the older baseline rather than presenting every element as a new 2026 launch.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/resources/blog/everstake-turns-six-today",
+          "https://everstake.com/resources/blog/the-year-everstake-stepped-into-full-infrastructure-leadership",
+          "https://everstake.com/",
+          "https://everstake.com/ai-info",
+          "https://docs.blockspace.everstake.com/",
+          "https://docs.everstake.com/integrations/everstake-products/mcp-server"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "0de67d30-87f3-4b81-9fe9-340a73495810",
+        "status": "answered",
+        "question": "How has Everstake's positioning changed over the last two years?",
+        "text": "In 2025, Everstake transitioned toward full infrastructure leadership, pairing audited systems and ecosystem responsibility with an expanded focus on institutional partnerships. [57e6b4ed7487e60c1ab28c6152cd786c]\n\nAfter spending its prior seven years working largely behind the scenes out of the spotlight, the company shifted its posture to speak, plan, and operate with public confidence regarding its role in the blockchain ecosystem. [57e6b4ed7487e60c1ab28c6152cd786c]\n\nEverstake strengthened its institutional presence and leadership by appointing David Kinitsky as CEO in June 2025 to advance institutional adoption and non-custodial staking. [319f11a02efbb9ec8736825adfa2c635]\n\nThe company took a proactive role in shaping regulatory dialogue around staking and digital assets, including direct engagement with the SEC's Crypto Task Force. [319f11a02efbb9ec8736825adfa2c635]\n\nEverstake positioned its non-custodial infrastructure around compliance and institutional standards, obtaining certifications such as SOC 2 Type II, ISO 27001, and NIST CSF. [b0a5ec8758796ba16d18abff505e8e82]",
+        "asOf": "2025-12-24",
+        "claims": [
+          {
+            "text": "In 2025, Everstake transitioned toward full infrastructure leadership, pairing audited systems and ecosystem responsibility with an expanded focus on institutional partnerships.",
+            "citations": [
+              "57e6b4ed7487e60c1ab28c6152cd786c"
+            ],
+            "asOf": "2025-12-24"
+          },
+          {
+            "text": "After spending its prior seven years working largely behind the scenes out of the spotlight, the company shifted its posture to speak, plan, and operate with public confidence regarding its role in the blockchain ecosystem.",
+            "citations": [
+              "57e6b4ed7487e60c1ab28c6152cd786c"
+            ],
+            "asOf": "2025-12-24"
+          },
+          {
+            "text": "Everstake strengthened its institutional presence and leadership by appointing David Kinitsky as CEO in June 2025 to advance institutional adoption and non-custodial staking.",
+            "citations": [
+              "319f11a02efbb9ec8736825adfa2c635"
+            ],
+            "asOf": "2025-06-11"
+          },
+          {
+            "text": "The company took a proactive role in shaping regulatory dialogue around staking and digital assets, including direct engagement with the SEC's Crypto Task Force.",
+            "citations": [
+              "319f11a02efbb9ec8736825adfa2c635"
+            ],
+            "asOf": "2025-06-11"
+          },
+          {
+            "text": "Everstake positioned its non-custodial infrastructure around compliance and institutional standards, obtaining certifications such as SOC 2 Type II, ISO 27001, and NIST CSF.",
+            "citations": [
+              "b0a5ec8758796ba16d18abff505e8e82"
+            ],
+            "asOf": "2025-11-06"
+          }
+        ],
+        "sources": [
+          {
+            "id": "57e6b4ed7487e60c1ab28c6152cd786c",
+            "documentId": "de9c9701ceb6dd08ef490d0f1ed95bb0",
+            "url": "https://everstake.com/resources/blog/the-year-everstake-stepped-into-full-infrastructure-leadership",
+            "title": "The Year Everstake Stepped Into Full Infrastructure Leadership | Everstake",
+            "text": "Company News\nInstitutional\n\n# The Year Everstake Stepped Into Full Infrastructure Leadership\n\n## 2025 marked a shift for Everstake toward full infrastructure leadership, combining audited systems, institutional partnerships, and ecosystem responsibility.\nDEC 24, 2025\nLast updated APR 15, 2026 · V1\nShare with your network\nTable of Contents\nLeadership, Vision, and Organizational Evolution\nInstitutional Breakthrough\nRegulatory Clarity and Compliance Leadership\nUpgrades, Records, and Innovation\nEcosystem Growth: Partnerships, Integrations, and Institutional Expansion\nCampaigns of the Year: Bringing Staking Closer to Users\nCommunity Expansion and New Formats\nEverstake in 2026\nShow\nOn paper, 2025 for Everstake reads like a sequence of milestones: a new CEO, more networks, institutional presence, new certifications, and another year of strong validator performance. But from inside the company, the year felt different.\nIt felt like a moment when years of steady, behind-the-scenes work aligned with a clearer sense of purpose. The foundations remained the same, with the same teams, the same discipline around reliability, and the same commitment to infrastructure that simply works, but the posture changed. Everstake began speaking, planning, and operating with the confidence of a company whose role in the ecosystem had become unmistakable.\nFor the past seven years, Everstake has done what infrastructure companies are supposed to do: stay out of the spotlight, allowing builders and users to move forward without friction.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2025-12-24T12:28:13.000Z",
+            "updatedAt": "2026-04-15T16:09:49.000Z",
+            "fetchedAt": "2026-09-13T14:02:23.033Z",
+            "duplicateGroup": "de9c9701ceb6dd08ef490d0f1ed95bb0",
+            "score": 0.028629032258064516,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "319f11a02efbb9ec8736825adfa2c635",
+            "documentId": "e02a250c9434192134772b289ad45e8a",
+            "url": "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo",
+            "title": "David Kinitsky Joins Everstake as CEO | Everstake",
+            "text": "## Everstake’s Expanding Presence in the Institutional Field Over the years, Everstake has supported over 85 blockchain networks, onboarded over 735,000 users into staking, and secured $6.5 billion in delegated assets without compromising decentralization. David Kinitsky’s appointment further strengthens Everstake’s leadership in advancing the future of non-custodial staking and driving institutional blockchain adoption. The leadership transition comes as regulators, including the SEC, begin to issue more definitive guidelines for digital assets, including staking. Everstake has taken a leading role in shaping the regulatory dialogue, including directly engaging with the SEC’s Crypto Task Force. As clearer rules emerge, the company remains committed to helping shape policy that reflects the realities of blockchain technology while continuing to educate and collaborate with global regulators. “With growing regulatory clarity, Everstake is uniquely positioned to lead the industry with a compliant, scalable, and transparent approach to staking and crypto network infrastructure,” concluded David Kinitsky. *** Everstake is a software platform that provides infrastructure tools and resources for users but does not offer investment advice or investment opportunities, manage funds, facilitate collective investment schemes, provide financial services, or take custody of or otherwise hold or manage customer assets. Everstake does not conduct independent diligence or substantive review of any blockchain asset, digital currency, cryptocurrency, or associated funds.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2025-06-11T11:12:58.000Z",
+            "updatedAt": "2025-06-12T07:38:59.000Z",
+            "fetchedAt": "2026-09-13T14:02:43.395Z",
+            "duplicateGroup": "e02a250c9434192134772b289ad45e8a",
+            "score": 0.01639344262295082,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "b0a5ec8758796ba16d18abff505e8e82",
+            "documentId": "7a66c09ceec5e796bd01f3d6d495c2db",
+            "url": "https://everstake.com/resources/blog/everstake-partners-with-utila-to-bring-institutional-grade-staking-to-the-forefront",
+            "title": "Everstake Partners with Utila For Institutional Staking | Everstake",
+            "text": "### About Everstake\nEverstake (https://everstake.one/) is a leading global non-custodial staking provider serving institutional and retail clients, trusted by over 1,600,000 users across 130+ Proof-of-Stake networks to date. Founded in 2018 by blockchain engineers, the company has supported $7 billion in staked assets, delivering institutional-grade infrastructure with 99.98% uptime and zero material slashing events since inception.\nSupporting asset managers, custodians, wallets, exchanges, and protocols, Everstake offers API-first, compliant infrastructure backed by SOC 2 Type II, ISO 27001:2022, and NIST CSF certifications, as well as GDPR and CCPA compliance, and regular smart contract audits. Its globally distributed team of 100+ professionals is committed to making staking accessible to everyone while strengthening the foundations of decentralized finance.\nDisclaimer: The information provided is not intended for recipients residing in the United Kingdom.\n***\n***\nAll metrics displayed on the website, including without limitations value of staked assets, total number of active users, rewards rates, and networks supported, are historical figures and may not represent the actual real-time data.\nShare with your network\nEverstake\nContent Manager\nEverstake is the leading non-custodial staking provider, delivering audited, globally distributed infrastructure aligned with SOC 2 Type II, ISO 27001, and NIST CSF 2.0 for institutional and retail clients.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2025-11-06T15:18:07.000Z",
+            "updatedAt": "2026-05-11T16:26:42.000Z",
+            "fetchedAt": "2026-09-13T14:02:28.275Z",
+            "duplicateGroup": "7a66c09ceec5e796bd01f3d6d495c2db",
+            "score": 0.016129032258064516,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-4:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-4:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-4:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-5:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-5:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-5:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The source explicitly states that 2025 marked a shift for Everstake toward full infrastructure leadership combining audited systems, institutional partnerships, and ecosystem responsibility."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "The source notes that for the prior seven years Everstake stayed out of the spotlight behind the scenes, but in 2025 its posture changed to speak, plan, and operate with public confidence."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "The source confirms David Kinitsky was appointed as CEO in June 2025 to strengthen leadership in advancing non-custodial staking and institutional adoption."
+          },
+          {
+            "rule": "claim-4:support",
+            "status": "passed",
+            "reason": "The source states that Everstake took a leading role in shaping regulatory dialogue, including direct engagement with the SEC's Crypto Task Force."
+          },
+          {
+            "rule": "claim-5:support",
+            "status": "passed",
+            "reason": "The source confirms Everstake's infrastructure is backed by SOC 2 Type II, ISO 27001, and NIST CSF certifications."
+          },
+          {
+            "rule": "synthesis-evidence",
+            "status": "passed",
+            "reason": "Historical synthesis requires multiple independent sources and distinct dated observations."
+          }
+        ],
+        "trust": {
+          "score": 95,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 15,
+              "maximum": 20,
+              "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "0de67d30-87f3-4b81-9fe9-340a73495810",
+          "calls": 3,
+          "inputTokens": 8255,
+          "outputTokens": 1917,
+          "knownCostUsd": 0.011251929999999999,
+          "unknownCalls": 0,
+          "elapsedMs": 7370,
+          "startedAt": "2026-09-13T14:42:48.566Z",
+          "finishedAt": "2026-09-13T14:42:55.936Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "3a7bbad0-6b4f-4f90-aa21-8db35d3c2b52",
+              "runId": "0de67d30-87f3-4b81-9fe9-340a73495810",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:49.246Z",
+              "elapsedMs": 210.95774999999776,
+              "inputTokens": 14,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_bd8cee58abee4d56b5c16f8b2413cdd6",
+              "error": null
+            },
+            {
+              "id": "dd4c7778-861c-4947-b815-1902cca0f89f",
+              "runId": "0de67d30-87f3-4b81-9fe9-340a73495810",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:49.974Z",
+              "elapsedMs": 4807.149084000001,
+              "inputTokens": 4443,
+              "outputTokens": 1590,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1173,
+              "costUsd": 0.00929475,
+              "status": "completed",
+              "providerRequestId": "aramarjECYaT3boPqICUkQg",
+              "error": null
+            },
+            {
+              "id": "0c3754f6-5066-493b-93c6-b4598340b75b",
+              "runId": "0de67d30-87f3-4b81-9fe9-340a73495810",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:54.783Z",
+              "elapsedMs": 1149.584208999997,
+              "inputTokens": 3798,
+              "outputTokens": 327,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0019568999999999997,
+              "status": "completed",
+              "providerRequestId": "bramavLxOaec3boP-76OwQU",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E06",
+        "question": "The ETH guide is dated 2023 but now says both 0.1 and 0.01 ETH. What minimum applies to a new stake on 12 September 2026, since when, and what does 32 ETH refer to?",
+        "reference": "New stakes use 0.01 ETH from June 2026. The older 0.1 text remains. 32 ETH is the pooled validator activation threshold, not the retail minimum.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "temporal_conflict",
+        "whyHard": "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum.",
+        "negative": false,
+        "rubric": [
+          "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum."
+        ]
+      },
+      "answer": {
+        "runId": "98732968-379e-43e7-85c1-78ff3ca17b30",
+        "status": "error",
+        "question": "The ETH guide is dated 2023 but now says both 0.1 and 0.01 ETH. What minimum applies to a new stake on 12 September 2026, since when, and what does 32 ETH refer to?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "failed",
+            "reason": "Unsupported quantities: 12"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "98732968-379e-43e7-85c1-78ff3ca17b30",
+          "calls": 2,
+          "inputTokens": 4791,
+          "outputTokens": 1656,
+          "knownCostUsd": 0.00976675,
+          "unknownCalls": 0,
+          "elapsedMs": 9548,
+          "startedAt": "2026-09-13T14:42:55.979Z",
+          "finishedAt": "2026-09-13T14:43:05.527Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "c6cf53ef-5bb8-4ed7-938c-f8d8812e719c",
+              "runId": "98732968-379e-43e7-85c1-78ff3ca17b30",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:56.657Z",
+              "elapsedMs": 280.3525840000002,
+              "inputTokens": 50,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 0.000001,
+              "status": "completed",
+              "providerRequestId": "req_043581da362d44ee9f4aaf026e1819cc",
+              "error": null
+            },
+            {
+              "id": "4dcfeeb6-77e2-4bdd-8c8d-78662740bca3",
+              "runId": "98732968-379e-43e7-85c1-78ff3ca17b30",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:42:57.459Z",
+              "elapsedMs": 8065.868083000001,
+              "inputTokens": 4741,
+              "outputTokens": 1656,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1323,
+              "costUsd": 0.00976575,
+              "status": "completed",
+              "providerRequestId": "cbamatWVKYHynsEPg-ekgAY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E07",
+        "question": "A pooled ETH deposit is confirmed but its validator is not active. Another customer has requested an exit. Explain when Instant Stake helps and whether confirmation alone establishes reward accrual.",
+        "reference": "Confirmation is not validator activation. Matching an existing unstake request can enable Instant Stake; regular entry depends on pool funding and activation. Do not guarantee an activation deadline.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "conditional_process",
+        "whyHard": "Do not equate transaction confirmation with immediate rewards.",
+        "negative": false,
+        "rubric": [
+          "Do not equate transaction confirmation with immediate rewards."
+        ]
+      },
+      "answer": {
+        "runId": "99480385-0722-4297-ab3a-397a88b65269",
+        "status": "error",
+        "question": "A pooled ETH deposit is confirmed but its validator is not active. Another customer has requested an exit. Explain when Instant Stake helps and whether confirmation alone establishes reward accrual.",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [],
+        "trust": null,
+        "receipt": {
+          "runId": "99480385-0722-4297-ab3a-397a88b65269",
+          "calls": 2,
+          "inputTokens": 4588,
+          "outputTokens": 3996,
+          "knownCostUsd": 0.01840118,
+          "unknownCalls": 0,
+          "elapsedMs": 15617,
+          "startedAt": "2026-09-13T14:43:05.579Z",
+          "finishedAt": "2026-09-13T14:43:21.196Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "68da1e39-d79e-435c-9b4e-a531856948c8",
+              "runId": "99480385-0722-4297-ab3a-397a88b65269",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:06.471Z",
+              "elapsedMs": 305.39316600000166,
+              "inputTokens": 34,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 6.800000000000001e-7,
+              "status": "completed",
+              "providerRequestId": "req_b479ed6e9f77404f96b31c7d801a9bda",
+              "error": null
+            },
+            {
+              "id": "bf50abc5-93df-4de4-bd99-ec202d4695b7",
+              "runId": "99480385-0722-4297-ab3a-397a88b65269",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:07.285Z",
+              "elapsedMs": 13909.108375000003,
+              "inputTokens": 4554,
+              "outputTokens": 3996,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 3843,
+              "costUsd": 0.0184005,
+              "status": "completed",
+              "providerRequestId": "e7amavfqHLGDkdUPnqvvuA4",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E08",
+        "question": "An operator has 64 validators with 32 ETH each. Using Everstake’s Pectra explanation, what consolidation fits the new effective-balance cap, and did the minimum validator stake rise to that cap?",
+        "reference": "64 × 32 = 2,048 ETH, fitting one validator at the new effective-balance cap. This changes the maximum, not the 32 ETH validator minimum.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/pectra-and-fusaka-what-they-bring-to-institutional-stakers",
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "calculation_scope",
+        "whyHard": "Do not infer that every operator must stake 2,048 ETH or that consolidation is automatically completed.",
+        "negative": false,
+        "rubric": [
+          "Do not infer that every operator must stake 2,048 ETH or that consolidation is automatically completed."
+        ]
+      },
+      "answer": {
+        "runId": "e1e40730-1f1b-4396-9ffa-5c49291af622",
+        "status": "error",
+        "question": "An operator has 64 validators with 32 ETH each. Using Everstake’s Pectra explanation, what consolidation fits the new effective-balance cap, and did the minimum validator stake rise to that cap?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "failed",
+            "reason": "Unsupported quantities: 64"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "e1e40730-1f1b-4396-9ffa-5c49291af622",
+          "calls": 2,
+          "inputTokens": 4697,
+          "outputTokens": 3798,
+          "knownCostUsd": 0.017733859999999997,
+          "unknownCalls": 0,
+          "elapsedMs": 13537,
+          "startedAt": "2026-09-13T14:43:21.247Z",
+          "finishedAt": "2026-09-13T14:43:34.784Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "f5abeadc-ca3b-4e87-b746-4284b7c7d39a",
+              "runId": "e1e40730-1f1b-4396-9ffa-5c49291af622",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:21.944Z",
+              "elapsedMs": 306.747292,
+              "inputTokens": 43,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 8.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_67d971007c8e48a48df657b0ef41547a",
+              "error": null
+            },
+            {
+              "id": "cfacda07-fa0c-49d0-976d-8a1d7fb29b3d",
+              "runId": "e1e40730-1f1b-4396-9ffa-5c49291af622",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:22.780Z",
+              "elapsedMs": 12001.759041999998,
+              "inputTokens": 4654,
+              "outputTokens": 3798,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 3455,
+              "costUsd": 0.017733,
+              "status": "completed",
+              "providerRequestId": "i7amav0V8J3dug-9j4LwCg",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E09",
+        "question": "Everstake’s CFO guide limits operator-failure loss to missed rewards, yet also describes slashing of principal. Can a treasury conclude that retaining withdrawal control makes its principal immune to operator mistakes?",
+        "reference": "No. The guide contains a material qualification: non-custodial control and validator-signing risk differ. Slashing can affect principal. Public terms disclose risk; private indemnities require their own evidence.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/non-custodial-vs-managed-staking-risk-framework-cfos",
+          "https://everstake.com/terms-of-use"
+        ],
+        "difficulty": "hard",
+        "category": "same_source_contradiction",
+        "whyHard": "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement.",
+        "negative": false,
+        "rubric": [
+          "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement."
+        ]
+      },
+      "answer": {
+        "runId": "0edb9a88-ab01-488e-a3a5-621067aabf7c",
+        "status": "answered",
+        "question": "Everstake’s CFO guide limits operator-failure loss to missed rewards, yet also describes slashing of principal. Can a treasury conclude that retaining withdrawal control makes its principal immune to operator mistakes?",
+        "text": "A treasury cannot conclude that retaining private key or withdrawal control makes its principal immune to operator mistakes. [ddb57647704a123c96f0c1e2661fb840]\n\nIn Everstake's CFO framework, non-custodial staking eliminates counterparty risk to principal because no asset transfer occurs and key custody is retained by the institution, limiting direct provider counterparty loss to missed rewards. [ddb57647704a123c96f0c1e2661fb840] [86ff6b7790ba0c6797cbb064a0e1eb37]\n\nEverstake explicitly states that non-custodial staking does not eliminate slashing risk, and slashing penalties hit the institution's capital rather than being absorbed by a custodian. [ddb57647704a123c96f0c1e2661fb840] [86ff6b7790ba0c6797cbb064a0e1eb37]\n\nProtocol slashing directly destroys a portion of staked assets if a delegated validator node commits protocol faults such as equivocation or downtime misbehavior. [994ba5f0a83e99d85819d6f217d93f1d] [cd726f92996ad10031adb4b8e1bc52d6]",
+        "asOf": "2026-09-10",
+        "claims": [
+          {
+            "text": "A treasury cannot conclude that retaining private key or withdrawal control makes its principal immune to operator mistakes.",
+            "citations": [
+              "ddb57647704a123c96f0c1e2661fb840"
+            ],
+            "asOf": "2026-09-10"
+          },
+          {
+            "text": "In Everstake's CFO framework, non-custodial staking eliminates counterparty risk to principal because no asset transfer occurs and key custody is retained by the institution, limiting direct provider counterparty loss to missed rewards.",
+            "citations": [
+              "ddb57647704a123c96f0c1e2661fb840",
+              "86ff6b7790ba0c6797cbb064a0e1eb37"
+            ],
+            "asOf": "2026-09-10"
+          },
+          {
+            "text": "Everstake explicitly states that non-custodial staking does not eliminate slashing risk, and slashing penalties hit the institution's capital rather than being absorbed by a custodian.",
+            "citations": [
+              "ddb57647704a123c96f0c1e2661fb840",
+              "86ff6b7790ba0c6797cbb064a0e1eb37"
+            ],
+            "asOf": "2026-09-10"
+          },
+          {
+            "text": "Protocol slashing directly destroys a portion of staked assets if a delegated validator node commits protocol faults such as equivocation or downtime misbehavior.",
+            "citations": [
+              "994ba5f0a83e99d85819d6f217d93f1d",
+              "cd726f92996ad10031adb4b8e1bc52d6"
+            ],
+            "asOf": "2026-09-10"
+          }
+        ],
+        "sources": [
+          {
+            "id": "ddb57647704a123c96f0c1e2661fb840",
+            "documentId": "7dab6509eea00d112b0baff6958a6cfa",
+            "url": "https://everstake.com/resources/blog/non-custodial-vs-managed-staking-risk-framework-cfos",
+            "title": "Non-Custodial vs Managed Staking 2026 | CFO Risk Framework | Everstake",
+            "text": "The institution retains private key control and delegates only validator operations to a third party. No asset transfer occurs; operator exposure is limited to missed rewards.\n\n### Which model is safer for institutional treasuries: non-custodial vs managed staking?\nNon-custodial eliminates counterparty risk to principal. Managed staking is simpler operationally but exposes the institution to custodian solvency, security, and integrity risk.\n\n### Does non-custodial staking eliminate slashing risk?\nNo. Slashing exists in both models. Liability allocation differs: non-custodial penalties hit institution capital (SLA indemnification may apply); managed custodians nominally absorb losses, though contract terms vary.\n\n### What certifications should a staking provider have?\nSOC 2 Type II, ISO 27001:2022, NIST CSF, OFAC-compliant MEV relay usage, and GDPR/CCPA data policies represent the institutional (https://everstake.one/products/institutional-staking) baseline.\n\n### What reporting data should a CFO demand?\nValidator-level CL and EL reward data with timestamps. FMV snapshots at receipt, slashing event logs, deposit/withdrawal audit trails, SOC 2 Type II report, OFAC attestation.\nHow does Everstake support institutional compliance?\nSOC 2 Type II, ISO 27001:2022, NIST CSF certifications; zero material slashing events across the main PoS networks; reward data APIs.\n\n### What is the biggest risk in managed staking?\nCounterparty risk. Custodian insolvency, breach, or mismanagement can result in loss of both principal and accrued rewards — as demonstrated by Celsius, FTX, and BlockFi.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-03-19T16:36:36.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:02:15.927Z",
+            "duplicateGroup": "7dab6509eea00d112b0baff6958a6cfa",
+            "score": 0.03229166666666666,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "86ff6b7790ba0c6797cbb064a0e1eb37",
+            "documentId": "7dab6509eea00d112b0baff6958a6cfa",
+            "url": "https://everstake.com/resources/blog/non-custodial-vs-managed-staking-risk-framework-cfos",
+            "title": "Non-Custodial vs Managed Staking 2026 | CFO Risk Framework | Everstake",
+            "text": "Proc. 2024-28.\nEverstake provides reward data via API, exportable for leading crypto tax platforms.\nBook a Call with Everstake Professional (https://everstake.one/contact-us)\n\n### Risk Decision Matrix Non-custodial vs Managed Staking\nRisk Dimension | Non-Custodial Staking | Managed (Custodial) Staking\nKey Custody | Institution retains keys (HSM/MPC) | Custodian controls keys\nCounterparty Exposure | Operator failure – missed rewards only | Custodian failure – potential loss of principal + rewards\nSlashing Liability | Borne by institution; SLA may include indemnification | Borne by custodian (contractual clauses may shift back)\nMax Loss from Provider Failure | Rewards only | Principal + rewards\nFee Structure | Lower (commission on rewards only) | Higher % of rewards\nReporting Granularity | Institution owns data; operator APIs supplement | Custodian aggregates; granularity varies\nAudit Readiness | SOC 2 / ISO 27001 from operator + institution’s controls | Depends on custodian’s compliance stack\nRegulatory Class (MiCAR) | Not classified as custody service | Triggers custody/admin authorization\nOperational Complexity | Higher (requires key management infra) | Lower (custodian handles all)\nDeFi Composability | High | Limited (assets locked with custodian)\nBest For | Risk-conscious treasuries, DeFi (https://everstake.one/)-active funds | Small teams prioritizing operational simplicity\nNote: Reflects general market patterns as of Q1 2026.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-03-19T16:36:36.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:02:15.927Z",
+            "duplicateGroup": "7dab6509eea00d112b0baff6958a6cfa",
+            "score": 0.032266458495966696,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "994ba5f0a83e99d85819d6f217d93f1d",
+            "documentId": "0d69c37db61aa9f3500892ad31130c16",
+            "url": "https://everstake.com/resources/blog/staking-etfs-validator-demand",
+            "title": "Staking ETFs and the Demand for Validator Infrastructure in 2026 | Everstake",
+            "text": "Contact Enterprise Staking Professionals (https://everstake.one/contact-us)\n\n## Slashing and operational risk\nSlashing is a network penalty that destroys a portion of staked assets when a validator misbehaves or goes offline in specific ways. An ETF issuer cannot tolerate it, because a slashing event directly reduces shareholder assets and creates a reportable loss.\nThe penalty has two flavors. Minor downtime can produce small inactivity penalties, while equivocation faults such as double-signing trigger larger slashing and forced exit.\nNon-custodial validators mitigate slashing through layered controls:\n- Key management: MPC and HSM setups prevent a single point of compromise and block double-signing across redundant systems.\n- Client diversity: running varied client software limits the blast radius of any single client bug.\n- Monitoring: continuous 24/7 observation catches downtime and anomalies before they escalate.\n- Insurance and backstops: financial coverage and operator backing address residual exposure.\nEverstake reports zero material slashing events since its 2018 founding on major networks. That track record is the kind of evidence an ETF risk committee treats as a precondition.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-06-24T11:49:57.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:55.659Z",
+            "duplicateGroup": "0d69c37db61aa9f3500892ad31130c16",
+            "score": 0.030017921146953404,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "cd726f92996ad10031adb4b8e1bc52d6",
+            "documentId": "3e5b2216b8efc17152a5259185cb45d9",
+            "url": "https://everstake.com/terms-of-use",
+            "title": "Terms of Use | Everstake",
+            "text": "### 5. Risk Disclosure By using the Services, you acknowledge and accept that Staking involves inherent risks. Everstake does not guarantee the profitability, security, or uninterrupted availability of Staking Rewards. The performance and outcome of Staking are influenced by Blockchain Network rules, governance decisions, security vulnerabilities, and other external factors beyond Everstake’s control. Slashing Risk – Blockchain Networks may impose penalties (slashing) on Validator Nodes for misbehavior, downtime, or security breaches, which may result in the partial or total loss of staked Digital Assets. Everstake operates its Validator Nodes in good faith and takes all reasonable measures to minimize the risk of slashing, but it cannot eliminate these risks entirely. Everstake shall not be held liable for any losses incurred due to slashing penalties imposed by a Blockchain Network. Unbonding and Withdrawal - Your Digital Assets are subject to the Unbonding Period set by the respective Blockchain Network. The duration of the Unbonding Period varies by Blockchain Network and is entirely determined by Blockchain Networkrules. Everstake has no control over the time required to complete the un-staking process and shall not be liable for any delays in the withdrawal of Staked Digital Assets. Network and Protocol Risks – Blockchain Networks operate independently of Everstake. Users acknowledge that: Blockchain Networks may experience downtime, congestion, or security vulnerabilities that impact Staking performance.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": "2025-05-26T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:25.527Z",
+            "duplicateGroup": "3e5b2216b8efc17152a5259185cb45d9",
+            "score": 0.028006267136701922,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-4:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-4:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-4:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Retaining withdrawal control does not make principal immune to operator mistakes, because non-custodial staking is still subject to protocol slashing penalties that hit institution capital."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "Everstake's CFO framework indicates that non-custodial staking eliminates counterparty risk to principal because no asset transfer occurs and key custody is retained, limiting direct provider counterparty loss to missed rewards."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "Everstake explicitly states that non-custodial staking does not eliminate slashing risk, and penalties hit institution capital rather than being absorbed by a custodian."
+          },
+          {
+            "rule": "claim-4:support",
+            "status": "passed",
+            "reason": "Protocol slashing destroys a portion of staked assets if a validator commits protocol faults such as equivocation or downtime misbehavior."
+          }
+        ],
+        "trust": {
+          "score": 95,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 15,
+              "maximum": 20,
+              "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "0edb9a88-ab01-488e-a3a5-621067aabf7c",
+          "calls": 3,
+          "inputTokens": 9405,
+          "outputTokens": 1338,
+          "knownCostUsd": 0.009436209999999999,
+          "unknownCalls": 0,
+          "elapsedMs": 6618,
+          "startedAt": "2026-09-13T14:43:34.832Z",
+          "finishedAt": "2026-09-13T14:43:41.450Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "f64034a3-b633-44be-8470-e23f40151186",
+              "runId": "0edb9a88-ab01-488e-a3a5-621067aabf7c",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:35.674Z",
+              "elapsedMs": 362.14233299999614,
+              "inputTokens": 38,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 7.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_c7ffe60fa3374da3b927ae07d9229106",
+              "error": null
+            },
+            {
+              "id": "828bfdc8-0e8e-4b1c-9695-7c4f13913865",
+              "runId": "0edb9a88-ab01-488e-a3a5-621067aabf7c",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:36.641Z",
+              "elapsedMs": 3589.1205829999963,
+              "inputTokens": 4298,
+              "outputTokens": 1077,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 657,
+              "costUsd": 0.00726225,
+              "status": "completed",
+              "providerRequestId": "mLamarzKMYngnsEP1aq4cA",
+              "error": null
+            },
+            {
+              "id": "8de6cfa9-18f8-4b7d-966e-4b77bb97afc8",
+              "runId": "0edb9a88-ab01-488e-a3a5-621067aabf7c",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:40.233Z",
+              "elapsedMs": 1213.047040999998,
+              "inputTokens": 5069,
+              "outputTokens": 261,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0021731999999999997,
+              "status": "completed",
+              "providerRequestId": "nLamarnbHJeS3boPiM-KgAU",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E10",
+        "question": "The Ethereum page lists two Ackee reviews. Which concerns institutional batch deposits and which retail staking? Is one review evidence that both flows were examined?",
+        "reference": "The ETH2 Batch Deposit Contract review concerns B2B deposits; the Ethereum Staking Protocol review concerns retail mechanics. Their scopes differ; a listing is not an independent audit of deployed code.",
+        "referenceUrls": [
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "audit_scope",
+        "whyHard": "Do not treat one report as covering both contracts or certify an unseen deployed version.",
+        "negative": false,
+        "rubric": [
+          "Do not treat one report as covering both contracts or certify an unseen deployed version."
+        ]
+      },
+      "answer": {
+        "runId": "f04623d8-7a23-4e91-a935-bf6d088e55f4",
+        "status": "error",
+        "question": "The Ethereum page lists two Ackee reviews. Which concerns institutional batch deposits and which retail staking? Is one review evidence that both flows were examined?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "f04623d8-7a23-4e91-a935-bf6d088e55f4",
+          "calls": 2,
+          "inputTokens": 4185,
+          "outputTokens": 1499,
+          "knownCostUsd": 0.0087381,
+          "unknownCalls": 0,
+          "elapsedMs": 6138,
+          "startedAt": "2026-09-13T14:43:41.506Z",
+          "finishedAt": "2026-09-13T14:43:47.644Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "240d6e5a-d30c-4692-9fd9-b8cba8da8057",
+              "runId": "f04623d8-7a23-4e91-a935-bf6d088e55f4",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:42.268Z",
+              "elapsedMs": 326.20141700000386,
+              "inputTokens": 30,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 6e-7,
+              "status": "completed",
+              "providerRequestId": "req_3a9e10fbac5a4500ba5bea60c449ca9e",
+              "error": null
+            },
+            {
+              "id": "e67d96d9-3623-4730-8306-8febadacf2ca",
+              "runId": "f04623d8-7a23-4e91-a935-bf6d088e55f4",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:43:43.114Z",
+              "elapsedMs": 4524.638540999993,
+              "inputTokens": 4155,
+              "outputTokens": 1499,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1246,
+              "costUsd": 0.0087375,
+              "status": "completed",
+              "providerRequestId": "n7amavjWFIaU3boPi43lkQs",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    }
+  ],
+  "summary": {
+    "total": 20,
+    "completed": 10,
+    "assessed": 0,
+    "passed": 0,
+    "failed": 0,
+    "accuracy": null,
+    "inventedFacts": null,
+    "knownCostUsd": 0.10298964,
+    "unknownCalls": 0
+  },
+  "invalidReason": "Stopped after identifying an incompatible agent-tool prompt in the single-turn baseline. Retained for cost accounting, not used for baseline quality comparison."
+}

@@ -1,0 +1,83 @@
+export interface RemovedInstruction {
+  text: string;
+  rule: string;
+}
+
+export interface SanitizedDocument {
+  text: string;
+  removed: RemovedInstruction[];
+}
+
+const rules: Array<{ name: string; pattern: RegExp }> = [
+  {
+    name: "prompt_override",
+    pattern:
+      /\b(?:ignore|disregard|forget|override)\b.{0,120}\b(?:previous|prior|above|system|developer|instructions?|prompt|rules?)\b/i,
+  },
+  {
+    name: "ai_directive",
+    pattern:
+      /\b(?:chatgpt|assistants?|language models?|llms?|ai models?|artificial intelligence|the ai)\b.{0,140}\b(?:must|should|shall|ignore|respond|answer|say|mention|reveal|follow|obey|output)\b/i,
+  },
+  {
+    name: "answer_directive",
+    pattern:
+      /\b(?:when|before)\s+(?:you|the (?:ai|assistant|model))\s+(?:answer|respond|reply)\b/i,
+  },
+  {
+    name: "prompt_exfiltration",
+    pattern:
+      /\b(?:reveal|repeat|print|show|return)\b.{0,100}\b(?:system|developer)\s+(?:message|prompt|instructions?)\b/i,
+  },
+];
+
+const aiAddressee =
+  /\b(?:you\s+are|act\s+as|behave\s+as)\b.{0,100}\b(?:chatgpt|(?:ai|virtual|helpful)\s+assistant|language model|llm|ai model|artificial intelligence)\b/i;
+const contextualDirective =
+  /^(?:always\s+|never\s+|only\s+|please\s+)?(?:answer|respond|reply|say|state|mention|output|return|write|ignore|follow|obey|reveal|repeat|print|show)\b|^(?:your\s+answer|your\s+response|the\s+answer)\b.{0,80}\b(?:must|should|shall)\b/i;
+
+/** Removes explicit instructions aimed at an AI while preserving ordinary imperative prose. */
+export function sanitizeDocument(text: string): SanitizedDocument {
+  const removed: RemovedInstruction[] = [];
+  const lines: string[] = [];
+  const aiGuidanceDocument =
+    /\b(?:AI assistants?|LLMs?|language models?)\s+(?:must|should|shall)\b|(?:instructions|guidelines|information) for (?:AI assistants?|LLMs?)/i.test(
+      text,
+    );
+  const editorialDirective =
+    /^(?:use|reuse|defer|prefer|avoid|ensure|present|refer|describe|keep|do not|never|always)\b/i;
+  let addressedToAi = false;
+  for (const line of text.split("\n")) {
+    const kept: string[] = [];
+    for (const part of line.split(/(?<=[.!?])\s+/u)) {
+      const sentence = part.trim();
+      if (!sentence) continue;
+      if (aiAddressee.test(sentence)) {
+        removed.push({ text: sentence, rule: "ai_addressee" });
+        addressedToAi = true;
+        continue;
+      }
+      if (
+        (addressedToAi && contextualDirective.test(sentence)) ||
+        (aiGuidanceDocument && editorialDirective.test(sentence))
+      ) {
+        removed.push({ text: sentence, rule: "contextual_ai_directive" });
+        continue;
+      }
+      const matched = rules.find((rule) => rule.pattern.test(sentence));
+      if (matched) removed.push({ text: sentence, rule: matched.name });
+      else {
+        kept.push(sentence);
+        addressedToAi = false;
+      }
+    }
+    lines.push(kept.join(" "));
+  }
+  return {
+    text: lines
+      .join("\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim(),
+    removed,
+  };
+}

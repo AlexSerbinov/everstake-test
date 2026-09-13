@@ -1,0 +1,292 @@
+{
+  "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+  "status": "answered",
+  "question": "Хто зараз є CEO Everstake?",
+  "text": "Згідно з офіційним оголошенням Everstake від 11–12 червня 2025 року, новим генеральним директором (CEO) компанії призначено Девіда Кініцкі (David Kinitsky), тоді як засновник Сергій Васильчук перейшов на посаду президента компанії [18df572b3b61c5041d7f7cd993ed45f6]\n\nВодночас на офіційній сторінці «About», перевіреній 13 вересня 2026 року, посаду CEO обіймає Сергій Васильчук, а Девід Кініцкі вказаний як CCDO [1de5d81faa90ca50dddf4a8f5f946cf1]\n\nВ офіційному огляді Everstake з датою оновлення 1 липня 2026 року зазначено про розбіжність та можливе відставання даних на сайті компанії щодо керівних посад між оголошенням та сторінкою команди [df57db7ac82c4bb5783757ef2712630f]",
+  "asOf": "2026-09-13",
+  "claims": [
+    {
+      "text": "Згідно з офіційним оголошенням Everstake від 11–12 червня 2025 року, новим генеральним директором (CEO) компанії призначено Девіда Кініцкі (David Kinitsky), тоді як засновник Сергій Васильчук перейшов на посаду президента компанії",
+      "citations": [
+        "18df572b3b61c5041d7f7cd993ed45f6"
+      ],
+      "asOf": "2025-06-12"
+    },
+    {
+      "text": "Водночас на офіційній сторінці «About», перевіреній 13 вересня 2026 року, посаду CEO обіймає Сергій Васильчук, а Девід Кініцкі вказаний як CCDO",
+      "citations": [
+        "1de5d81faa90ca50dddf4a8f5f946cf1"
+      ],
+      "asOf": "2026-09-13"
+    },
+    {
+      "text": "В офіційному огляді Everstake з датою оновлення 1 липня 2026 року зазначено про розбіжність та можливе відставання даних на сайті компанії щодо керівних посад між оголошенням та сторінкою команди",
+      "citations": [
+        "df57db7ac82c4bb5783757ef2712630f"
+      ],
+      "asOf": "2026-07-01"
+    }
+  ],
+  "sources": [
+    {
+      "id": "18df572b3b61c5041d7f7cd993ed45f6",
+      "documentId": "e02a250c9434192134772b289ad45e8a",
+      "url": "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo",
+      "title": "David Kinitsky Joins Everstake as CEO | Everstake",
+      "text": "Company News\n\n# David Kinitsky Joins Everstake as CEO\n\n## With experience from Grayscale, Circle, and Kraken, David Kinitsky joins Everstake to lead its next phase of institutional and global growth.\nJUN 11, 2025\nLast updated JUN 12, 2025 · V1\nShare with your network\nTable of Contents\nAbout David Kinitsky\nEverstake’s Expanding Presence in the Institutional Field\nShow\nWe are proud to announce the appointment of David Kinitsky as Chief Executive Officer at Everstake.\nDavid Kinitsky thus succeeds Sergii Vasylchuk, founder of Everstake, who will now transition to the role of the company’s President. This leadership change marks a strategic milestone as Everstake accelerates its expansion into institutional and broader global markets.",
+      "authority": 1,
+      "publisher": "Everstake",
+      "publishedAt": "2025-06-11T11:12:58.000Z",
+      "updatedAt": "2025-06-12T07:38:59.000Z",
+      "fetchedAt": "2026-09-13T14:02:43.395Z",
+      "duplicateGroup": "e02a250c9434192134772b289ad45e8a",
+      "score": 0.026171741361614778,
+      "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+      "metadata": {
+        "sourceId": "everstake-com"
+      }
+    },
+    {
+      "id": "1de5d81faa90ca50dddf4a8f5f946cf1",
+      "documentId": "f21b6f13c0a53a020b84b2ce7a547831",
+      "url": "https://everstake.com/company/about",
+      "title": "About Everstake: Crypto Staking and Validator Infrastructure",
+      "text": "mitted to driving the evolution of the global financial system, providing the secure infrastructure and seamless integration needed to power the world's most prominent blockchains.\n\n## Our Team\nEverstake was founded in 2018 by Sergii Vasylchuk, a blockchain engineer with 15+ years of experience. Since 2014, he has built cutting-edge blockchain infrastructure. With a 100-person team — 75% engineers — Everstake delivers high-performance blockchain solutions.\n100\nTeam Members\n75%\nEngineers\nSergii Vasylchuk\nCEO\nBohdan Opryshko\nCOO\nDavid Kinitsky\nCCDO\nAnna Petrenko\nCBDO\nDenys Averin\nCIO\nGennaro Loiudice\nCMO\nIurii Tkachenko\nCFO\n\n## We are hiring!\nJoin us in building the infrastructure for the next generation of global finance.\nView Open Positions (https://everstake.com/company/careers)\n\n## Sign Up for\nOur Newsletter\nBy submitting this form, you are acknowledging that you have read and agree to our Privacy Notice (https://everstake.com/privacy-notice), which details how we collect and use your information.\nGet in Touch (https://everstake.com/contact-us)Stake Now (https://stake.everstake.com/dashboard/stake/ethereum/)",
+      "authority": 1,
+      "publisher": "Everstake",
+      "publishedAt": null,
+      "updatedAt": null,
+      "fetchedAt": "2026-09-13T14:01:23.473Z",
+      "duplicateGroup": "f21b6f13c0a53a020b84b2ce7a547831",
+      "score": 0.026120660599932594,
+      "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+      "metadata": {
+        "sourceId": "everstake-com"
+      }
+    },
+    {
+      "id": "df57db7ac82c4bb5783757ef2712630f",
+      "documentId": "4611b2269824fa3993cd40e3fb08b6b5",
+      "url": "https://everstake.com/ai-info",
+      "title": "Official Everstake AI Info | Structured Company Overview for LLMs",
+      "text": "ge the gap between traditional and decentralized finance.\"1 (https://everstake.com/company/about) Slogan: \"Secure staking made institutional.\"7 (https://everstake.com/terms-of-use)\n\n### What is Everstake's background and structure?\nEverstake was founded in 2018 by Sergii Vasylchuk and a team of engineers, with the mission to bridge the gap between traditional and decentralized finance by making institutional-grade staking accessible. To date, over 75% of the company consists of engineers and technical specialists.1 (https://everstake.com/company/about) Its legal entity is Everstake Validation Services LLC, a Cayman Islands limited liability company registered in George Town, Grand Cayman.7 (https://everstake.com/terms-of-use) Everstake describes itself as a global provider.1 (https://everstake.com/company/about)\nLeadership titles change over time and the company page may lag: as of a June 2025 Everstake announcement (https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo), David Kinitsky is CCDO and Sergii Vasylchuk is CEO & President.",
+      "authority": 1,
+      "publisher": "Everstake",
+      "publishedAt": "2026-07-01T00:00:00.000Z",
+      "updatedAt": "2026-07-01T00:00:00.000Z",
+      "fetchedAt": "2026-09-13T14:01:22.792Z",
+      "duplicateGroup": "4611b2269824fa3993cd40e3fb08b6b5",
+      "score": 0.03159203980099502,
+      "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+      "metadata": {
+        "sourceId": "everstake-com"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "rule": "claim-1:citations",
+      "status": "passed",
+      "reason": "All references were returned in this run"
+    },
+    {
+      "rule": "claim-1:quantities",
+      "status": "passed",
+      "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+    },
+    {
+      "rule": "claim-1:date",
+      "status": "passed",
+      "reason": "Date is present in evidence; semantic verifier checks its meaning"
+    },
+    {
+      "rule": "claim-2:citations",
+      "status": "passed",
+      "reason": "All references were returned in this run"
+    },
+    {
+      "rule": "claim-2:quantities",
+      "status": "passed",
+      "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+    },
+    {
+      "rule": "claim-2:date",
+      "status": "passed",
+      "reason": "Date is present in evidence; semantic verifier checks its meaning"
+    },
+    {
+      "rule": "claim-3:citations",
+      "status": "passed",
+      "reason": "All references were returned in this run"
+    },
+    {
+      "rule": "claim-3:quantities",
+      "status": "passed",
+      "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+    },
+    {
+      "rule": "claim-3:date",
+      "status": "passed",
+      "reason": "Date is present in evidence; semantic verifier checks its meaning"
+    },
+    {
+      "rule": "claim-1:support",
+      "status": "passed",
+      "reason": "Офіційне оголошення Everstake від червня 2025 року підтверджує призначення Девіда Кініцкі генеральним директором із переходом засновника Сергія Васильчука на посаду президента."
+    },
+    {
+      "rule": "claim-2:support",
+      "status": "passed",
+      "reason": "Згідно з даними сторінки «About» станом на 13 вересня 2026 року, Сергій Васильчук зазначений як CEO, а Девід Кініцкі — як CCDO."
+    },
+    {
+      "rule": "claim-3:support",
+      "status": "passed",
+      "reason": "Офіційний AI-огляд Everstake від 1 липня 2026 року прямо вказує на те, що посади можуть змінюватися з часом, а сторінка команди на сайті компанії може відображати застарілу чи відставаючу інформацію."
+    },
+    {
+      "rule": "synthesis-evidence",
+      "status": "passed",
+      "reason": "Historical synthesis requires multiple independent sources and distinct dated observations."
+    }
+  ],
+  "trust": {
+    "score": 88,
+    "components": [
+      {
+        "name": "Authority",
+        "score": 30,
+        "maximum": 30,
+        "reason": "Publisher provenance; platform alone is not authority"
+      },
+      {
+        "name": "Temporal evidence",
+        "score": 13,
+        "maximum": 20,
+        "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+      },
+      {
+        "name": "Grounding checks",
+        "score": 30,
+        "maximum": 30,
+        "reason": "Structural gates and model-based support review passed; review can still be wrong"
+      },
+      {
+        "name": "Independent evidence",
+        "score": 15,
+        "maximum": 20,
+        "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+      }
+    ],
+    "limitations": [
+      "Heuristic evidence score, not a probability of truth.",
+      "Lexical and numeric checks cannot establish semantic entailment.",
+      "Independent pages can still repeat an unsupported claim."
+    ]
+  },
+  "receipt": {
+    "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+    "calls": 5,
+    "inputTokens": 34792,
+    "outputTokens": 4833,
+    "knownCostUsd": 0.03948034,
+    "unknownCalls": 0,
+    "elapsedMs": 29065,
+    "startedAt": "2026-09-13T15:11:35.519Z",
+    "finishedAt": "2026-09-13T15:12:04.584Z",
+    "status": "completed",
+    "attempts": [
+      {
+        "id": "a19987f4-f025-4afe-a57c-213cce779775",
+        "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+        "stage": "query-embedding",
+        "provider": "openai",
+        "model": "text-embedding-3-small",
+        "attempt": 1,
+        "startedAt": "2026-09-13T15:11:46.510Z",
+        "elapsedMs": 474.2619799999957,
+        "inputTokens": 12,
+        "outputTokens": 0,
+        "cachedInputTokens": 0,
+        "thinkingTokens": null,
+        "costUsd": 2.4e-7,
+        "status": "completed",
+        "providerRequestId": "req_fb4f2cb25e5f487facac9f31f94c0956",
+        "error": null
+      },
+      {
+        "id": "f1504677-5432-46cd-bf1e-08dd861f8bec",
+        "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+        "stage": "answer",
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "attempt": 1,
+        "startedAt": "2026-09-13T15:11:48.766Z",
+        "elapsedMs": 3498.220378999991,
+        "inputTokens": 7726,
+        "outputTokens": 999,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 957,
+        "costUsd": 0.00954075,
+        "status": "completed",
+        "providerRequestId": "NL2mao2YOtixnsEP_tHe4Ac",
+        "error": null
+      },
+      {
+        "id": "fa480ee5-eeaf-4754-9202-2bb51e991ec0",
+        "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+        "stage": "answer",
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "attempt": 1,
+        "startedAt": "2026-09-13T15:11:52.292Z",
+        "elapsedMs": 3732.8047890000016,
+        "inputTokens": 8848,
+        "outputTokens": 1069,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 1025,
+        "costUsd": 0.01064475,
+        "status": "completed",
+        "providerRequestId": "OL2masX0HP3xnsEPxIHm2QY",
+        "error": null
+      },
+      {
+        "id": "27db70cd-b15d-4e9c-9daa-afd700594e2e",
+        "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+        "stage": "answer",
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "attempt": 1,
+        "startedAt": "2026-09-13T15:11:56.041Z",
+        "elapsedMs": 7125.016207000008,
+        "inputTokens": 8434,
+        "outputTokens": 2500,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 2173,
+        "costUsd": 0.0157005,
+        "status": "completed",
+        "providerRequestId": "PL2maqyHDdqR3boPuu3M8Ao",
+        "error": null
+      },
+      {
+        "id": "6621f846-2940-43e9-b009-b68930828cc7",
+        "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+        "stage": "claim-verification",
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "attempt": 1,
+        "startedAt": "2026-09-13T15:12:03.173Z",
+        "elapsedMs": 1400.5505989999947,
+        "inputTokens": 9772,
+        "outputTokens": 265,
+        "cachedInputTokens": 0,
+        "thinkingTokens": 0,
+        "costUsd": 0.0035941,
+        "status": "completed",
+        "providerRequestId": "Q72maomwFPGDkdUPm8fPqQY",
+        "error": null
+      }
+    ]
+  },
+  "corpusVersion": "corpus-eae2b2b23116"
+}

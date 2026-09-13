@@ -1,0 +1,3465 @@
+{
+  "id": "baseline-895efc77",
+  "createdAt": "2026-09-13T14:56:01.440Z",
+  "manifest": {
+    "codeVersion": "89ebb6c58bcd888f47b921615aaa88b9854d517e",
+    "dirtyDiffHash": null,
+    "configHash": "1b9e0de574e8b1089d2515f617ea55e311e12605c413670e6fce64369b5e77ec",
+    "parserVersion": "typescript-extractor-v1",
+    "recordedAt": "2026-09-13T14:56:01.488Z"
+  },
+  "corpusVersion": "corpus-eae2b2b23116",
+  "plannedTotal": 20,
+  "mode": "baseline",
+  "status": "completed",
+  "rows": [
+    {
+      "question": {
+        "id": "E01",
+        "question": "Who is the CEO of Everstake?",
+        "reference": "As of the frozen crawl on 13 September 2026, the company page lists Sergii Vasylchuk as CEO and David Kinitsky as CCDO. A June 2025 announcement had named Kinitsky CEO and Vasylchuk President; treat that announcement as historical and do not add President to Vasylchuk's current title because the current roster only says CEO.",
+        "referenceUrls": [
+          "https://everstake.com/company/about",
+          "https://everstake.com/ai-info",
+          "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "9 syndicated press copies say Kinitsky 'joins as CEO' (June 2025); majority vote / similarity picks the wrong person",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "634b2dc5-35b9-4c54-a44d-5df4a4b5bac5",
+        "status": "no_reliable_answer",
+        "question": "Who is the CEO of Everstake?",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "634b2dc5-35b9-4c54-a44d-5df4a4b5bac5",
+          "calls": 2,
+          "inputTokens": 3854,
+          "outputTokens": 2541,
+          "knownCostUsd": 0.01241268,
+          "unknownCalls": 0,
+          "elapsedMs": 19238,
+          "startedAt": "2026-09-13T14:56:01.530Z",
+          "finishedAt": "2026-09-13T14:56:20.768Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "ec2ae293-105d-4970-8d2a-cab314a73114",
+              "runId": "634b2dc5-35b9-4c54-a44d-5df4a4b5bac5",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:02.360Z",
+              "elapsedMs": 381.9229170000001,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_495b795f9eb944719d7ca4ef22ac8b6a",
+              "error": null
+            },
+            {
+              "id": "7d406223-7a25-4874-96b3-2643e6270489",
+              "runId": "634b2dc5-35b9-4c54-a44d-5df4a4b5bac5",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:03.356Z",
+              "elapsedMs": 17407.032916999997,
+              "inputTokens": 3845,
+              "outputTokens": 2541,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 2519,
+              "costUsd": 0.0124125,
+              "status": "completed",
+              "providerRequestId": "g7mmarbgJ5-Z3boPh9L3wAU",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "fail",
+      "inventedFacts": false,
+      "explanation": "The baseline abstains despite active first-party roster evidence identifying the current CEO. This is a false abstention on a positive question."
+    },
+    {
+      "question": {
+        "id": "E02",
+        "question": "How many Proof-of-Stake networks does Everstake support?",
+        "reference": "The newest dated, scope-qualified first-party statement says 30+ active networks and a historical footprint of 130+ networks (published July 2026, updated 10 September 2026). Other first-party pages updated on the same day still say 35+ active, while boilerplate says 130+ supported. Report the conflict and scope; do not present 130+ as an uncontested count of simultaneously active networks. Older pages reported 70+ in 2023 and 85 in June 2025.",
+        "referenceUrls": [
+          "https://everstake.com/ai-info",
+          "https://everstake.com/resources/blog/institutional-adoption-networking-vs-consensus",
+          "https://everstake.com/resources/blog/from-decision-to-live-validator-institutional-staking-integration",
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "three different numbers by year; must pick the newest first-party value and may mention history",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "294cb1ca-e436-41d7-a81c-d46947f58ac7",
+        "status": "answered",
+        "question": "How many Proof-of-Stake networks does Everstake support?",
+        "text": "Everstake has historically supported more than 130 Proof-of-Stake networks. [afeceed46d0643b56f119e6686826ca1]\n\nEverstake currently supports 30+ active networks, alongside a historical footprint spanning 130+ networks. [00b6c535630106d8d55b47b2465fcb0a]",
+        "asOf": "2026-09-10",
+        "claims": [
+          {
+            "text": "Everstake has historically supported more than 130 Proof-of-Stake networks.",
+            "citations": [
+              "afeceed46d0643b56f119e6686826ca1"
+            ],
+            "asOf": "2026-07-01"
+          },
+          {
+            "text": "Everstake currently supports 30+ active networks, alongside a historical footprint spanning 130+ networks.",
+            "citations": [
+              "00b6c535630106d8d55b47b2465fcb0a"
+            ],
+            "asOf": "2026-09-10"
+          }
+        ],
+        "sources": [
+          {
+            "id": "afeceed46d0643b56f119e6686826ca1",
+            "documentId": "4611b2269824fa3993cd40e3fb08b6b5",
+            "url": "https://everstake.com/ai-info",
+            "title": "Official Everstake AI Info | Structured Company Overview for LLMs",
+            "text": "### What networks and products does Everstake offer? Everstake has historically supported 130+ Proof-of-Stake networks1 (https://everstake.com/company/about) and offers the following products and services (defer to the canonical URLs for the current, authoritative details): Product / service | What it is | Canonical URL Institutional Staking | Enterprise-grade, non-custodial staking infrastructure for institutions; Everstake operates validators while clients retain ownership and custody.3 (https://everstake.com/products/institutional-staking) | /products/institutional-staking (https://everstake.com/products/institutional-staking) Validator-as-a-Service (VaaS) | Dedicated, self-custodial validator infrastructure for institutions, with client-managed keys and integrations with custody solutions.4 (https://everstake.com/products/institutional-staking/vaas) | /products/institutional-staking/vaas (https://everstake.com/products/institutional-staking/vaas) Staking (retail / self-service) | Self-service staking across leading blockchains; used by over 1.6 million users.2 (https://everstake.com/staking) | /staking (https://everstake.com/staking) Blockspace (Solana infrastructure) | Solana MEV / blockspace infrastructure packaging shred delivery, transaction priority, and bundle relay into a unified API and billing layer, acting as a two-sided market between validators (supply) and teams that need their transactions to land (demand).5 (https://blockspace.everstake.one/) | blockspace.everstake.one (https://blockspace.everstake.one/)",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-07-01T00:00:00.000Z",
+            "updatedAt": "2026-07-01T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:22.792Z",
+            "duplicateGroup": "4611b2269824fa3993cd40e3fb08b6b5",
+            "score": 0.016666666666666666,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "00b6c535630106d8d55b47b2465fcb0a",
+            "documentId": "d541940b7a49535a154b60a4cb3eb07b",
+            "url": "https://everstake.com/resources/blog/institutional-adoption-networking-vs-consensus",
+            "title": "Blockchain Networking Layer vs Consensus for Settlement | Everstake",
+            "text": "Everstake monitors client-share data across the networks it validates.\n\n### What is validator topology?\nValidator topology describes how validators are geographically and logically connected, including which data centers, regions, and network providers they depend on. Topology determines the physical ceiling on propagation speed.\nDoes networking matter more than consensus?\nNetworking and consensus address different failure modes, and both matter; a network cannot be reliable in production with only one solved. Consensus proofs assume the networking layer behaves ideally, so networking-layer degradation can cause a provably safe consensus mechanism to fail in practice. Everstake treats both layers as required diligence areas.\n\n### What is QUIC in blockchain?\nQUIC is a transport-layer protocol built on top of UDP that adds connection handshakes, flow control, and congestion control without TCP‘s head-of-line blocking. Solana adopted QUIC for transaction ingestion to replace an earlier raw UDP approach that allowed connectionless, unaccountable traffic flooding.\n\n### How many networks does Everstake operate on?\nEverstake currently supports 30+ active networks, with a historical footprint spanning 130+ networks. Coverage detail is available viathe networking and validator layer across 130+ networks (https://everstake.one/).",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-07-14T17:03:04.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:51.996Z",
+            "duplicateGroup": "d541940b7a49535a154b60a4cb3eb07b",
+            "score": 0.021295089091699262,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Everstake has historically supported over 130 Proof-of-Stake networks according to the official documentation."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "Everstake currently supports 30+ active networks with a historical footprint of 130+ networks."
+          }
+        ],
+        "trust": {
+          "score": 90,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 10,
+              "maximum": 20,
+              "reason": "2 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "294cb1ca-e436-41d7-a81c-d46947f58ac7",
+          "calls": 3,
+          "inputTokens": 8991,
+          "outputTokens": 1509,
+          "knownCostUsd": 0.00990041,
+          "unknownCalls": 0,
+          "elapsedMs": 7844,
+          "startedAt": "2026-09-13T14:56:20.817Z",
+          "finishedAt": "2026-09-13T14:56:28.661Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "79f84d66-fc12-4112-8925-bb1e2563694f",
+              "runId": "294cb1ca-e436-41d7-a81c-d46947f58ac7",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:21.629Z",
+              "elapsedMs": 293.2885830000014,
+              "inputTokens": 13,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_56662f3801a84eb6b206b0b68f861db2",
+              "error": null
+            },
+            {
+              "id": "bec34cf7-4388-42ee-ab56-7b78c1c45c97",
+              "runId": "294cb1ca-e436-41d7-a81c-d46947f58ac7",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:22.501Z",
+              "elapsedMs": 5305.588499999998,
+              "inputTokens": 3790,
+              "outputTokens": 1383,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1233,
+              "costUsd": 0.00802875,
+              "status": "completed",
+              "providerRequestId": "lrmmaqnPLZia3boP1r3j8Qo",
+              "error": null
+            },
+            {
+              "id": "31545995-5ccb-4a1e-9c8b-1312da2c11cd",
+              "runId": "294cb1ca-e436-41d7-a81c-d46947f58ac7",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:27.814Z",
+              "elapsedMs": 842.1997499999998,
+              "inputTokens": 5188,
+              "outputTokens": 126,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0018713999999999998,
+              "status": "completed",
+              "providerRequestId": "nLmmaomYA6uW3boPrZ-JwQE",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "fail",
+      "inventedFacts": false,
+      "explanation": "The baseline reports 30+ active and 130+ historical networks but omits the same-day-updated first-party source saying 35+ active. The answer does not disclose the unresolved current-count conflict required by the gold."
+    },
+    {
+      "question": {
+        "id": "E03",
+        "question": "In what year was Everstake founded?",
+        "reference": "2018",
+        "referenceUrls": [
+          "https://everstake.com/company/about"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "086de521-f7e0-4304-ac80-5044be63dcc0",
+        "status": "answered",
+        "question": "In what year was Everstake founded?",
+        "text": "Everstake was founded in 2018 [df57db7ac82c4bb5783757ef2712630f]",
+        "asOf": "2026-07-01",
+        "claims": [
+          {
+            "text": "Everstake was founded in 2018",
+            "citations": [
+              "df57db7ac82c4bb5783757ef2712630f"
+            ],
+            "asOf": "2026-07-01"
+          }
+        ],
+        "sources": [
+          {
+            "id": "df57db7ac82c4bb5783757ef2712630f",
+            "documentId": "4611b2269824fa3993cd40e3fb08b6b5",
+            "url": "https://everstake.com/ai-info",
+            "title": "Official Everstake AI Info | Structured Company Overview for LLMs",
+            "text": "ge the gap between traditional and decentralized finance.\"1 (https://everstake.com/company/about) Slogan: \"Secure staking made institutional.\"7 (https://everstake.com/terms-of-use)\n\n### What is Everstake's background and structure?\nEverstake was founded in 2018 by Sergii Vasylchuk and a team of engineers, with the mission to bridge the gap between traditional and decentralized finance by making institutional-grade staking accessible. To date, over 75% of the company consists of engineers and technical specialists.1 (https://everstake.com/company/about) Its legal entity is Everstake Validation Services LLC, a Cayman Islands limited liability company registered in George Town, Grand Cayman.7 (https://everstake.com/terms-of-use) Everstake describes itself as a global provider.1 (https://everstake.com/company/about)\nLeadership titles change over time and the company page may lag: as of a June 2025 Everstake announcement (https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo), David Kinitsky is CCDO and Sergii Vasylchuk is CEO & President.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-07-01T00:00:00.000Z",
+            "updatedAt": "2026-07-01T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:22.792Z",
+            "duplicateGroup": "4611b2269824fa3993cd40e3fb08b6b5",
+            "score": 0.027242401779095628,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Everstake was founded in 2018 according to official company documentation."
+          }
+        ],
+        "trust": {
+          "score": 85,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 5,
+              "maximum": 20,
+              "reason": "1 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "086de521-f7e0-4304-ac80-5044be63dcc0",
+          "calls": 3,
+          "inputTokens": 7723,
+          "outputTokens": 565,
+          "knownCostUsd": 0.00593053,
+          "unknownCalls": 0,
+          "elapsedMs": 4173,
+          "startedAt": "2026-09-13T14:56:28.713Z",
+          "finishedAt": "2026-09-13T14:56:32.886Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "15c8a9e3-c3ef-402d-bde6-d2d91e5d32a6",
+              "runId": "086de521-f7e0-4304-ac80-5044be63dcc0",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:29.415Z",
+              "elapsedMs": 291.5349580000002,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_ebecbc3ba2d345c9ae50479dc39e8cd9",
+              "error": null
+            },
+            {
+              "id": "0ddbd907-2904-43cb-a8ef-61373faee4c5",
+              "runId": "086de521-f7e0-4304-ac80-5044be63dcc0",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:30.230Z",
+              "elapsedMs": 1961.0229169999984,
+              "inputTokens": 3522,
+              "outputTokens": 495,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 426,
+              "costUsd": 0.00449775,
+              "status": "completed",
+              "providerRequestId": "nrmmasD7GrCB3boP3pebwAc",
+              "error": null
+            },
+            {
+              "id": "9a91c4d7-99be-45e0-a342-76fa3cd99156",
+              "runId": "086de521-f7e0-4304-ac80-5044be63dcc0",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:32.193Z",
+              "elapsedMs": 692.0772079999988,
+              "inputTokens": 4192,
+              "outputTokens": 70,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0014325999999999998,
+              "status": "completed",
+              "providerRequestId": "oLmmavvkGLqUkdUPrfDE4AY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The answer correctly states the 2018 founding year from a cited first-party passage."
+    },
+    {
+      "question": {
+        "id": "E04",
+        "question": "What security certifications and compliance frameworks does Everstake hold?",
+        "reference": "Everstake states that it holds SOC 2 Type II and ISO/IEC 27001:2022 certifications, has NIST CSF 2.0 alignment, GDPR and CCPA compliance, and lists ITGC and CCPA/CRPA among its compliance labels. It separately completed an independent assessment of selected DORA controls; DORA is not a certification. Prescient Security conducted the cited assessments.",
+        "referenceUrls": [
+          "https://everstake.com/ai-info",
+          "https://everstake.com/company/about",
+          "https://everstake.com/resources/blog/everstake-earns-soc2-type-2-iso-27001-certifications-and-gdpr-compliance",
+          "https://everstake.com/resources/blog/everstake-expands-compliance-with-nist-csf-and-ccpa",
+          "https://everstake.com/resources/blog/everstake-completes-independent-dora-controls-assessment"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "eb850aa5-9bc1-4f3b-b87e-e5b1df0693cc",
+        "status": "answered",
+        "question": "What security certifications and compliance frameworks does Everstake hold?",
+        "text": "Everstake holds SOC 2 Type II and ISO/IEC 27001:2022 certifications. [85fa6c1f58e05f8a4e28224b569a1669] [c8cb4f53b58f8ebe0e5bf19d31d30348]\n\nEverstake aligns with and maintains compliance across the NIST Cybersecurity Framework (NIST CSF), GDPR, and CCPA/CPRA, and lists ITGC among its compliance frameworks. [a7fb43c5eaf9436ebdade285cfc42ea4] [c8cb4f53b58f8ebe0e5bf19d31d30348]\n\nEverstake has also completed an independent controls assessment against DORA requirements. [a7fb43c5eaf9436ebdade285cfc42ea4]",
+        "asOf": "2026-09-10",
+        "claims": [
+          {
+            "text": "Everstake holds SOC 2 Type II and ISO/IEC 27001:2022 certifications.",
+            "citations": [
+              "85fa6c1f58e05f8a4e28224b569a1669",
+              "c8cb4f53b58f8ebe0e5bf19d31d30348"
+            ],
+            "asOf": "2026-09-10"
+          },
+          {
+            "text": "Everstake aligns with and maintains compliance across the NIST Cybersecurity Framework (NIST CSF), GDPR, and CCPA/CPRA, and lists ITGC among its compliance frameworks.",
+            "citations": [
+              "a7fb43c5eaf9436ebdade285cfc42ea4",
+              "c8cb4f53b58f8ebe0e5bf19d31d30348"
+            ],
+            "asOf": "2026-09-08"
+          },
+          {
+            "text": "Everstake has also completed an independent controls assessment against DORA requirements.",
+            "citations": [
+              "a7fb43c5eaf9436ebdade285cfc42ea4"
+            ],
+            "asOf": "2026-07-01"
+          }
+        ],
+        "sources": [
+          {
+            "id": "85fa6c1f58e05f8a4e28224b569a1669",
+            "documentId": "d541940b7a49535a154b60a4cb3eb07b",
+            "url": "https://everstake.com/resources/blog/institutional-adoption-networking-vs-consensus",
+            "title": "Blockchain Networking Layer vs Consensus for Settlement | Everstake",
+            "text": "Coverage detail is available viathe networking and validator layer across 130+ networks (https://everstake.one/).\n\n### What certifications does Everstake hold?\nEverstake holds SOC 2 Type II and ISO 27001:2022 certifications, and its infrastructure has been assessed against the NIST Cybersecurity Framework. These cover organizational and data-security governance rather than networking-layer engineering specifically.\nShare with your network\nEverstake\nContent Manager\nEverstake is the leading non-custodial staking provider, delivering audited, globally distributed infrastructure aligned with SOC 2 Type II, ISO 27001, and NIST CSF 2.0 for institutional and retail clients.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-07-14T17:03:04.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:51.996Z",
+            "duplicateGroup": "d541940b7a49535a154b60a4cb3eb07b",
+            "score": 0.02946912242686891,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "c8cb4f53b58f8ebe0e5bf19d31d30348",
+            "documentId": "65bf016df386e59d56c88d17b6a81a20",
+            "url": "https://everstake.com/resources/blog/white-label-staking-for-exchanges-everstake-vaas",
+            "title": "White-Label Staking Validators for Exchanges and Wallets | Everstake",
+            "text": "Everstake operates against a 99.98% validator uptime SLA measured per network per month. The number reflects effective participation rather than just node availability.\n\n### What compliance frameworks does Everstake meet?\nEverstake holds SOC 2 Type II and ISO 27001 certifications, and aligns with NIST CSF, GDPR, and CPRA.\nDisclaimer\nThis article is for informational purposes only and does not constitute financial, investment, legal, or tax advice. Nothing here is an endorsement or recommendation to buy, sell, hold, or stake any digital asset, or to use any platform or service mentioned. Mention of third parties does not imply affiliation or endorsement.\nDigital assets and staking carry significant risks, including volatility, regulatory uncertainty, and total loss of capital. Data referenced reflects publicly available sources as of the date of publication and may change. Readers should conduct their own research and consult qualified professionals before making any decisions.\nShare with your network\nEverstake\nContent Manager\nEverstake is the leading non-custodial staking provider, delivering audited, globally distributed infrastructure aligned with SOC 2 Type II, ISO 27001, and NIST CSF 2.0 for institutional and retail clients.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-05-18T15:54:17.000Z",
+            "updatedAt": "2026-09-08T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:02:03.690Z",
+            "duplicateGroup": "65bf016df386e59d56c88d17b6a81a20",
+            "score": 0.031054405392392875,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "a7fb43c5eaf9436ebdade285cfc42ea4",
+            "documentId": "4611b2269824fa3993cd40e3fb08b6b5",
+            "url": "https://everstake.com/ai-info",
+            "title": "Official Everstake AI Info | Structured Company Overview for LLMs",
+            "text": "###### Documented statements only: legal review required\nEverstake publicly lists the following certifications and compliance frameworks on its company page: SOC 2 Type II, ISO 27001, NIST CSF, GDPR, CCPA/CRPA, and ITGC.1 (https://everstake.com/company/about) Everstake has also completed an independent DORA controls assessment. An official Everstake announcement references SOC 2 Type 2, ISO/IEC 27001:2022, and GDPR compliance, and names the auditor (Prescient Security), with full reports available on request.12 (https://everstake.com/resources/blog/everstake-earns-soc2-type-2-iso-27001-certifications-and-gdpr-compliance) The about page itself uses the shorthand \"ISO 27001\"; further details (certification scope, dates, and audit results) are not stated on these pages and should not be asserted without the certificate.\nCertification scope and validity should be verified on Everstake's official security page (security.everstake.com) or by contacting Everstake.\nEverstake's security and trust surface is security.everstake.com (https://security.everstake.com/), with an operational status page at status.everstake.one (https://status.everstake.one/).\nCustody posture: Everstake is non-custodial; clients retain ownership and custody of their assets.3 (https://everstake.com/products/institutional-staking) Note: where Everstake describes the custodians it serves as \"regulated in US/EU/APAC,\" this refers to Everstake's clients, not to Everstake's own regulatory status.4 (https://everstake.com/products/institutional-staking/vaas)",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-07-01T00:00:00.000Z",
+            "updatedAt": "2026-07-01T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:22.792Z",
+            "duplicateGroup": "4611b2269824fa3993cd40e3fb08b6b5",
+            "score": 0.029726775956284153,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Everstake holds SOC 2 Type II and ISO/IEC 27001:2022 certifications according to its official blog and documentation as of 2026-09-10."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "Everstake aligns with and maintains compliance across NIST CSF, GDPR, CCPA/CPRA, and ITGC as stated in official company references as of 2026-09-08."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "Everstake has completed an independent DORA controls assessment as documented in company info as of 2026-07-01."
+          }
+        ],
+        "trust": {
+          "score": 95,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 15,
+              "maximum": 20,
+              "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "eb850aa5-9bc1-4f3b-b87e-e5b1df0693cc",
+          "calls": 3,
+          "inputTokens": 10357,
+          "outputTokens": 1030,
+          "knownCostUsd": 0.008283490000000001,
+          "unknownCalls": 0,
+          "elapsedMs": 5394,
+          "startedAt": "2026-09-13T14:56:32.934Z",
+          "finishedAt": "2026-09-13T14:56:38.328Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "88b7f12a-d214-4db3-b038-50428a88d47b",
+              "runId": "eb850aa5-9bc1-4f3b-b87e-e5b1df0693cc",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:33.522Z",
+              "elapsedMs": 206.07191700000112,
+              "inputTokens": 12,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_ac1834d167f5466e8ce9216e00ef5aff",
+              "error": null
+            },
+            {
+              "id": "caf517ba-57fb-401b-ae49-e03e8b39e12b",
+              "runId": "eb850aa5-9bc1-4f3b-b87e-e5b1df0693cc",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:34.323Z",
+              "elapsedMs": 2870.9822919999933,
+              "inputTokens": 3555,
+              "outputTokens": 804,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 521,
+              "costUsd": 0.00568125,
+              "status": "completed",
+              "providerRequestId": "ormmasmKIfvj7M8PlsPK6Ao",
+              "error": null
+            },
+            {
+              "id": "d45f047e-590a-4304-b9f7-e11dca36357b",
+              "runId": "eb850aa5-9bc1-4f3b-b87e-e5b1df0693cc",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:37.197Z",
+              "elapsedMs": 1122.229542000001,
+              "inputTokens": 6790,
+              "outputTokens": 226,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.002602,
+              "status": "completed",
+              "providerRequestId": "pbmmaoLsG-KT3boP-pKs0AU",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The answer covers SOC 2 Type II, ISO/IEC 27001, NIST alignment, privacy compliance, ITGC, and the independent DORA controls assessment with appropriate category wording and first-party citations."
+    },
+    {
+      "question": {
+        "id": "E05",
+        "question": "How has Everstake's positioning changed over the last two years?",
+        "reference": "Earlier material emphasized broad access, retail staking and multi-chain expansion. Everstake's December 2025 retrospective explicitly describes 2025 as a shift toward full infrastructure leadership, audited systems and institutional partnerships. Current 2026 pages foreground certified, non-custodial institutional staking and VaaS while retaining retail access, and add Solana Blockspace/MEV products and MCP access for AI agents. Show the trajectory with dated sources and identify the older baseline rather than presenting every element as a new 2026 launch.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/resources/blog/everstake-turns-six-today",
+          "https://everstake.com/resources/blog/the-year-everstake-stepped-into-full-infrastructure-leadership",
+          "https://everstake.com/",
+          "https://everstake.com/ai-info",
+          "https://docs.blockspace.everstake.com/",
+          "https://docs.everstake.com/integrations/everstake-products/mcp-server"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "7001e086-73ba-4ec3-9690-f23e0164dda5",
+        "status": "answered",
+        "question": "How has Everstake's positioning changed over the last two years?",
+        "text": "In 2025, Everstake shifted its posture from operating out of the spotlight as a behind-the-scenes infrastructure provider toward full infrastructure leadership, combining audited systems, institutional partnerships, and ecosystem responsibility. [57e6b4ed7487e60c1ab28c6152cd786c]\n\nAs part of its organizational evolution and institutional focus, Everstake appointed David Kinitsky as CEO to advance institutional adoption and took an active role in regulatory engagement, including discussions with the SEC's Crypto Task Force. [319f11a02efbb9ec8736825adfa2c635]",
+        "asOf": "2026-04-15",
+        "claims": [
+          {
+            "text": "In 2025, Everstake shifted its posture from operating out of the spotlight as a behind-the-scenes infrastructure provider toward full infrastructure leadership, combining audited systems, institutional partnerships, and ecosystem responsibility.",
+            "citations": [
+              "57e6b4ed7487e60c1ab28c6152cd786c"
+            ],
+            "asOf": "2026-04-15"
+          },
+          {
+            "text": "As part of its organizational evolution and institutional focus, Everstake appointed David Kinitsky as CEO to advance institutional adoption and took an active role in regulatory engagement, including discussions with the SEC's Crypto Task Force.",
+            "citations": [
+              "319f11a02efbb9ec8736825adfa2c635"
+            ],
+            "asOf": "2025-06-12"
+          }
+        ],
+        "sources": [
+          {
+            "id": "57e6b4ed7487e60c1ab28c6152cd786c",
+            "documentId": "de9c9701ceb6dd08ef490d0f1ed95bb0",
+            "url": "https://everstake.com/resources/blog/the-year-everstake-stepped-into-full-infrastructure-leadership",
+            "title": "The Year Everstake Stepped Into Full Infrastructure Leadership | Everstake",
+            "text": "Company News\nInstitutional\n\n# The Year Everstake Stepped Into Full Infrastructure Leadership\n\n## 2025 marked a shift for Everstake toward full infrastructure leadership, combining audited systems, institutional partnerships, and ecosystem responsibility.\nDEC 24, 2025\nLast updated APR 15, 2026 · V1\nShare with your network\nTable of Contents\nLeadership, Vision, and Organizational Evolution\nInstitutional Breakthrough\nRegulatory Clarity and Compliance Leadership\nUpgrades, Records, and Innovation\nEcosystem Growth: Partnerships, Integrations, and Institutional Expansion\nCampaigns of the Year: Bringing Staking Closer to Users\nCommunity Expansion and New Formats\nEverstake in 2026\nShow\nOn paper, 2025 for Everstake reads like a sequence of milestones: a new CEO, more networks, institutional presence, new certifications, and another year of strong validator performance. But from inside the company, the year felt different.\nIt felt like a moment when years of steady, behind-the-scenes work aligned with a clearer sense of purpose. The foundations remained the same, with the same teams, the same discipline around reliability, and the same commitment to infrastructure that simply works, but the posture changed. Everstake began speaking, planning, and operating with the confidence of a company whose role in the ecosystem had become unmistakable.\nFor the past seven years, Everstake has done what infrastructure companies are supposed to do: stay out of the spotlight, allowing builders and users to move forward without friction.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2025-12-24T12:28:13.000Z",
+            "updatedAt": "2026-04-15T16:09:49.000Z",
+            "fetchedAt": "2026-09-13T14:02:23.033Z",
+            "duplicateGroup": "de9c9701ceb6dd08ef490d0f1ed95bb0",
+            "score": 0.028629032258064516,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "319f11a02efbb9ec8736825adfa2c635",
+            "documentId": "e02a250c9434192134772b289ad45e8a",
+            "url": "https://everstake.com/resources/blog/david-kinitsky-joins-everstake-as-ceo",
+            "title": "David Kinitsky Joins Everstake as CEO | Everstake",
+            "text": "## Everstake’s Expanding Presence in the Institutional Field Over the years, Everstake has supported over 85 blockchain networks, onboarded over 735,000 users into staking, and secured $6.5 billion in delegated assets without compromising decentralization. David Kinitsky’s appointment further strengthens Everstake’s leadership in advancing the future of non-custodial staking and driving institutional blockchain adoption. The leadership transition comes as regulators, including the SEC, begin to issue more definitive guidelines for digital assets, including staking. Everstake has taken a leading role in shaping the regulatory dialogue, including directly engaging with the SEC’s Crypto Task Force. As clearer rules emerge, the company remains committed to helping shape policy that reflects the realities of blockchain technology while continuing to educate and collaborate with global regulators. “With growing regulatory clarity, Everstake is uniquely positioned to lead the industry with a compliant, scalable, and transparent approach to staking and crypto network infrastructure,” concluded David Kinitsky. *** Everstake is a software platform that provides infrastructure tools and resources for users but does not offer investment advice or investment opportunities, manage funds, facilitate collective investment schemes, provide financial services, or take custody of or otherwise hold or manage customer assets. Everstake does not conduct independent diligence or substantive review of any blockchain asset, digital currency, cryptocurrency, or associated funds.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2025-06-11T11:12:58.000Z",
+            "updatedAt": "2025-06-12T07:38:59.000Z",
+            "fetchedAt": "2026-09-13T14:02:43.395Z",
+            "duplicateGroup": "e02a250c9434192134772b289ad45e8a",
+            "score": 0.01639344262295082,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The blog post explicitly states that 2025 marked a shift for Everstake toward full infrastructure leadership, combining audited systems, institutional partnerships, and ecosystem responsibility, moving away from just staying out of the spotlight."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "The source confirms David Kinitsky's appointment as CEO to advance institutional adoption and notes Everstake's direct engagement with the SEC's Crypto Task Force."
+          },
+          {
+            "rule": "synthesis-evidence",
+            "status": "passed",
+            "reason": "Historical synthesis requires multiple independent sources and distinct dated observations."
+          }
+        ],
+        "trust": {
+          "score": 90,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 10,
+              "maximum": 20,
+              "reason": "2 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "7001e086-73ba-4ec3-9690-f23e0164dda5",
+          "calls": 3,
+          "inputTokens": 9406,
+          "outputTokens": 1475,
+          "knownCostUsd": 0.00993678,
+          "unknownCalls": 0,
+          "elapsedMs": 8566,
+          "startedAt": "2026-09-13T14:56:38.433Z",
+          "finishedAt": "2026-09-13T14:56:46.999Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "00413985-c205-4f70-b954-a02fa22a431f",
+              "runId": "7001e086-73ba-4ec3-9690-f23e0164dda5",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:39.684Z",
+              "elapsedMs": 271.47699999999895,
+              "inputTokens": 14,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_352a380fb1f049808b96f5eb5b6750d3",
+              "error": null
+            },
+            {
+              "id": "4939564e-fdd8-4616-bb4d-d9f87c8e9d40",
+              "runId": "7001e086-73ba-4ec3-9690-f23e0164dda5",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:40.837Z",
+              "elapsedMs": 5157.881125,
+              "inputTokens": 3967,
+              "outputTokens": 1317,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1125,
+              "costUsd": 0.007914,
+              "status": "completed",
+              "providerRequestId": "qbmmavKUBoP8sgLK5tihDA",
+              "error": null
+            },
+            {
+              "id": "2f629687-23f0-47ad-b1e9-e06aa7e5633c",
+              "runId": "7001e086-73ba-4ec3-9690-f23e0164dda5",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:45.999Z",
+              "elapsedMs": 997.7325419999979,
+              "inputTokens": 5425,
+              "outputTokens": 158,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0020225,
+              "status": "completed",
+              "providerRequestId": "rrmmav7IDqec3boP-76OwQU",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The baseline provides a concise but real supported shift from background infrastructure operation to visible institutional leadership, including leadership and regulatory changes from two dated sources."
+    },
+    {
+      "question": {
+        "id": "E06",
+        "question": "The ETH guide is dated 2023 but now says both 0.1 and 0.01 ETH. What minimum applies to a new stake on 12 September 2026, since when, and what does 32 ETH refer to?",
+        "reference": "New stakes use 0.01 ETH from June 2026. The older 0.1 text remains. 32 ETH is the pooled validator activation threshold, not the retail minimum.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "temporal_conflict",
+        "whyHard": "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum.",
+        "negative": false,
+        "rubric": [
+          "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum."
+        ]
+      },
+      "answer": {
+        "runId": "5f887046-27e8-4642-b84c-8c269f8968a8",
+        "status": "error",
+        "question": "The ETH guide is dated 2023 but now says both 0.1 and 0.01 ETH. What minimum applies to a new stake on 12 September 2026, since when, and what does 32 ETH refer to?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "failed",
+            "reason": "Unsupported quantities: 12"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "5f887046-27e8-4642-b84c-8c269f8968a8",
+          "calls": 2,
+          "inputTokens": 4315,
+          "outputTokens": 357,
+          "knownCostUsd": 0.0045385,
+          "unknownCalls": 0,
+          "elapsedMs": 3443,
+          "startedAt": "2026-09-13T14:56:47.059Z",
+          "finishedAt": "2026-09-13T14:56:50.502Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "d1663391-2adf-4756-8692-9822b22604e6",
+              "runId": "5f887046-27e8-4642-b84c-8c269f8968a8",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:47.925Z",
+              "elapsedMs": 278.5926249999975,
+              "inputTokens": 50,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 0.000001,
+              "status": "completed",
+              "providerRequestId": "req_bbae7affec9d4f548ae8f2551991008d",
+              "error": null
+            },
+            {
+              "id": "b9196958-b6dc-486a-9292-e0da8f12bab8",
+              "runId": "5f887046-27e8-4642-b84c-8c269f8968a8",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:48.716Z",
+              "elapsedMs": 1784.4827500000029,
+              "inputTokens": 4265,
+              "outputTokens": 357,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0045375,
+              "status": "completed",
+              "providerRequestId": "sLmmavnlO46Q3boPzM6M-QY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "fail",
+      "inventedFacts": false,
+      "explanation": "The run ends in a research-step exhaustion error and supplies none of the requested 0.01, June 2026, stale 0.1, or 32 ETH scope distinctions."
+    },
+    {
+      "question": {
+        "id": "E07",
+        "question": "A pooled ETH deposit is confirmed but its validator is not active. Another customer has requested an exit. Explain when Instant Stake helps and whether confirmation alone establishes reward accrual.",
+        "reference": "Confirmation is not validator activation. Matching an existing unstake request can enable Instant Stake; regular entry depends on pool funding and activation. Do not guarantee an activation deadline.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "conditional_process",
+        "whyHard": "Do not equate transaction confirmation with immediate rewards.",
+        "negative": false,
+        "rubric": [
+          "Do not equate transaction confirmation with immediate rewards."
+        ]
+      },
+      "answer": {
+        "runId": "849cfe8b-16e4-4fa9-9f8b-7f67689ac0a1",
+        "status": "partial",
+        "question": "A pooled ETH deposit is confirmed but its validator is not active. Another customer has requested an exit. Explain when Instant Stake helps and whether confirmation alone establishes reward accrual.",
+        "text": "Transaction confirmation alone does not establish reward accrual, as staking rewards only begin to accrue after the activation queue completes and the delegation status changes to active. [e5d9f77c959abb5e8fce6eba4ae19277]",
+        "asOf": "2026-07-06",
+        "claims": [
+          {
+            "text": "Transaction confirmation alone does not establish reward accrual, as staking rewards only begin to accrue after the activation queue completes and the delegation status changes to active.",
+            "citations": [
+              "e5d9f77c959abb5e8fce6eba4ae19277"
+            ],
+            "asOf": "2026-07-06"
+          }
+        ],
+        "sources": [
+          {
+            "id": "e5d9f77c959abb5e8fce6eba4ae19277",
+            "documentId": "d6432c2420a48051e3f5abf08faa0d68",
+            "url": "https://everstake.com/resources/blog/how-to-stake-eth-369-wallet-step-by-step-guide",
+            "title": "How to Stake ETH in 369 Wallet: Step-by-Step Guide | Everstake",
+            "text": "The app does not allow amounts below 0.1 ETH. A small ETH balance must remain in the wallet to cover the network fee for the transaction.\nTap Stake to proceed.\n\n### Step 5. Confirm the Transaction\nA transaction confirmation screen appears, summarizing:\n- Staked amount\n- The user’s wallet address\n- Validator: Everstake\n- Commission: 10% of rewards\n- Network fee\nReview these details carefully. The pay address must match the 369 Wallet account, and the validator must be Everstake.\nTap Confirm. The transaction is signed locally on the device and broadcast to the Ethereum network.\n\n### Step 6. Activation Period\nOnce the transaction is broadcast, the delegation enters an Activating state.\nThe ETH staking screen displays:\n- Total Staked: the full committed amount\n- Activating: the same amount, with an estimated time of about 2 hours\n- An info card titled Your ETH is safe and activating explaining the activation queue after which it is automatically changed to Active and the displayed staking rewards start to accrue.\nThe validator (Everstake) and commission (10% of rewards) are listed at the bottom of the screen for reference.\n\n### Step 7. Staking Active\nOnce the activation epoch completes, the ETH is fully delegated and starts earning rewards at the displayed staking rate.\nFrom the same screen, the user can:\n- tap Stake more ETH to add to the existing position,\n- tap Claim when accrued staking rewards become available,\n- initiate a withdrawal to exit the position.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-05-25T11:53:00.000Z",
+            "updatedAt": "2026-07-06T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:02:02.830Z",
+            "duplicateGroup": "d6432c2420a48051e3f5abf08faa0d68",
+            "score": 0.03125763125763126,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The source states that rewards start to accrue only after the activation period/epoch completes and the status changes to Active."
+          }
+        ],
+        "trust": {
+          "score": 85,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 5,
+              "maximum": 20,
+              "reason": "1 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "849cfe8b-16e4-4fa9-9f8b-7f67689ac0a1",
+          "calls": 3,
+          "inputTokens": 8982,
+          "outputTokens": 4032,
+          "knownCostUsd": 0.019543929999999998,
+          "unknownCalls": 0,
+          "elapsedMs": 17175,
+          "startedAt": "2026-09-13T14:56:50.545Z",
+          "finishedAt": "2026-09-13T14:57:07.720Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "7c6ca36d-fb7e-447f-bc3d-7f2f6c6c7e86",
+              "runId": "849cfe8b-16e4-4fa9-9f8b-7f67689ac0a1",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:51.060Z",
+              "elapsedMs": 241.88470799999777,
+              "inputTokens": 34,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 6.800000000000001e-7,
+              "status": "completed",
+              "providerRequestId": "req_bfa3a74d6ad04b8a9d622f6e8d9f71a4",
+              "error": null
+            },
+            {
+              "id": "c3828328-9fa8-49b6-9452-b3d71402927b",
+              "runId": "849cfe8b-16e4-4fa9-9f8b-7f67689ac0a1",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:56:51.810Z",
+              "elapsedMs": 15108.563749999994,
+              "inputTokens": 4078,
+              "outputTokens": 3955,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 3839,
+              "costUsd": 0.01788975,
+              "status": "completed",
+              "providerRequestId": "tLmmarvhAe6X3boP7c7DoQs",
+              "error": null
+            },
+            {
+              "id": "60aac554-2771-4e3b-aa79-fa35280e3e32",
+              "runId": "849cfe8b-16e4-4fa9-9f8b-7f67689ac0a1",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:06.922Z",
+              "elapsedMs": 771.7145829999936,
+              "inputTokens": 4870,
+              "outputTokens": 77,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0016535,
+              "status": "completed",
+              "providerRequestId": "w7mmapfDC8binsEPxuutwAo",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "fail",
+      "inventedFacts": false,
+      "explanation": "The answer correctly separates confirmation from activation and reward accrual, but completely omits when Instant Stake helps: matching another user's pending unstake request. The required two-part process answer is incomplete."
+    },
+    {
+      "question": {
+        "id": "E08",
+        "question": "An operator has 64 validators with 32 ETH each. Using Everstake’s Pectra explanation, what consolidation fits the new effective-balance cap, and did the minimum validator stake rise to that cap?",
+        "reference": "64 × 32 = 2,048 ETH, fitting one validator at the new effective-balance cap. This changes the maximum, not the 32 ETH validator minimum.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/pectra-and-fusaka-what-they-bring-to-institutional-stakers",
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "calculation_scope",
+        "whyHard": "Do not infer that every operator must stake 2,048 ETH or that consolidation is automatically completed.",
+        "negative": false,
+        "rubric": [
+          "Do not infer that every operator must stake 2,048 ETH or that consolidation is automatically completed."
+        ]
+      },
+      "answer": {
+        "runId": "19fe2f11-34d2-4c44-8a67-c87ee8fff754",
+        "status": "error",
+        "question": "An operator has 64 validators with 32 ETH each. Using Everstake’s Pectra explanation, what consolidation fits the new effective-balance cap, and did the minimum validator stake rise to that cap?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "failed",
+            "reason": "Unsupported quantities: 64"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "19fe2f11-34d2-4c44-8a67-c87ee8fff754",
+          "calls": 2,
+          "inputTokens": 4221,
+          "outputTokens": 1509,
+          "knownCostUsd": 0.00879311,
+          "unknownCalls": 0,
+          "elapsedMs": 5996,
+          "startedAt": "2026-09-13T14:57:07.769Z",
+          "finishedAt": "2026-09-13T14:57:13.765Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "8f80bb09-fe0e-401e-9511-e9484f39fe01",
+              "runId": "19fe2f11-34d2-4c44-8a67-c87ee8fff754",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:08.346Z",
+              "elapsedMs": 390.6280839999963,
+              "inputTokens": 43,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 8.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_6bc276bd5cc548eab2ccb54d5a58adb7",
+              "error": null
+            },
+            {
+              "id": "cc137205-aa69-48f8-9ed5-d8dfb3382355",
+              "runId": "19fe2f11-34d2-4c44-8a67-c87ee8fff754",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:09.252Z",
+              "elapsedMs": 4510.921749999994,
+              "inputTokens": 4178,
+              "outputTokens": 1509,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1310,
+              "costUsd": 0.00879225,
+              "status": "completed",
+              "providerRequestId": "xbmmavCRHI-nnsEPzIyN-As",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "fail",
+      "inventedFacts": false,
+      "explanation": "The run ends in a research-step exhaustion error without the required 2,048 ETH calculation or minimum-versus-maximum distinction."
+    },
+    {
+      "question": {
+        "id": "E09",
+        "question": "Everstake’s CFO guide limits operator-failure loss to missed rewards, yet also describes slashing of principal. Can a treasury conclude that retaining withdrawal control makes its principal immune to operator mistakes?",
+        "reference": "No. The guide contains a material qualification: non-custodial control and validator-signing risk differ. Slashing can affect principal. Public terms disclose risk; private indemnities require their own evidence.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/non-custodial-vs-managed-staking-risk-framework-cfos",
+          "https://everstake.com/terms-of-use"
+        ],
+        "difficulty": "hard",
+        "category": "same_source_contradiction",
+        "whyHard": "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement.",
+        "negative": false,
+        "rubric": [
+          "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement."
+        ]
+      },
+      "answer": {
+        "runId": "3252b0f7-496c-4407-acdc-3dcef4c2984c",
+        "status": "answered",
+        "question": "Everstake’s CFO guide limits operator-failure loss to missed rewards, yet also describes slashing of principal. Can a treasury conclude that retaining withdrawal control makes its principal immune to operator mistakes?",
+        "text": "A treasury cannot conclude that retaining private key control makes its principal immune to operator mistakes, because non-custodial staking does not eliminate slashing risk and penalties hit institutional capital directly. [ddb57647704a123c96f0c1e2661fb840]\n\nSlashing is a blockchain network penalty that destroys a portion of staked assets when a validator misbehaves, such as through equivocation or double-signing faults. [994ba5f0a83e99d85819d6f217d93f1d]",
+        "asOf": "2026-09-10",
+        "claims": [
+          {
+            "text": "A treasury cannot conclude that retaining private key control makes its principal immune to operator mistakes, because non-custodial staking does not eliminate slashing risk and penalties hit institutional capital directly.",
+            "citations": [
+              "ddb57647704a123c96f0c1e2661fb840"
+            ],
+            "asOf": "2026-09-10"
+          },
+          {
+            "text": "Slashing is a blockchain network penalty that destroys a portion of staked assets when a validator misbehaves, such as through equivocation or double-signing faults.",
+            "citations": [
+              "994ba5f0a83e99d85819d6f217d93f1d"
+            ],
+            "asOf": "2026-09-10"
+          }
+        ],
+        "sources": [
+          {
+            "id": "ddb57647704a123c96f0c1e2661fb840",
+            "documentId": "7dab6509eea00d112b0baff6958a6cfa",
+            "url": "https://everstake.com/resources/blog/non-custodial-vs-managed-staking-risk-framework-cfos",
+            "title": "Non-Custodial vs Managed Staking 2026 | CFO Risk Framework | Everstake",
+            "text": "The institution retains private key control and delegates only validator operations to a third party. No asset transfer occurs; operator exposure is limited to missed rewards.\n\n### Which model is safer for institutional treasuries: non-custodial vs managed staking?\nNon-custodial eliminates counterparty risk to principal. Managed staking is simpler operationally but exposes the institution to custodian solvency, security, and integrity risk.\n\n### Does non-custodial staking eliminate slashing risk?\nNo. Slashing exists in both models. Liability allocation differs: non-custodial penalties hit institution capital (SLA indemnification may apply); managed custodians nominally absorb losses, though contract terms vary.\n\n### What certifications should a staking provider have?\nSOC 2 Type II, ISO 27001:2022, NIST CSF, OFAC-compliant MEV relay usage, and GDPR/CCPA data policies represent the institutional (https://everstake.one/products/institutional-staking) baseline.\n\n### What reporting data should a CFO demand?\nValidator-level CL and EL reward data with timestamps. FMV snapshots at receipt, slashing event logs, deposit/withdrawal audit trails, SOC 2 Type II report, OFAC attestation.\nHow does Everstake support institutional compliance?\nSOC 2 Type II, ISO 27001:2022, NIST CSF certifications; zero material slashing events across the main PoS networks; reward data APIs.\n\n### What is the biggest risk in managed staking?\nCounterparty risk. Custodian insolvency, breach, or mismanagement can result in loss of both principal and accrued rewards — as demonstrated by Celsius, FTX, and BlockFi.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-03-19T16:36:36.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:02:15.927Z",
+            "duplicateGroup": "7dab6509eea00d112b0baff6958a6cfa",
+            "score": 0.03229166666666666,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "994ba5f0a83e99d85819d6f217d93f1d",
+            "documentId": "0d69c37db61aa9f3500892ad31130c16",
+            "url": "https://everstake.com/resources/blog/staking-etfs-validator-demand",
+            "title": "Staking ETFs and the Demand for Validator Infrastructure in 2026 | Everstake",
+            "text": "Contact Enterprise Staking Professionals (https://everstake.one/contact-us)\n\n## Slashing and operational risk\nSlashing is a network penalty that destroys a portion of staked assets when a validator misbehaves or goes offline in specific ways. An ETF issuer cannot tolerate it, because a slashing event directly reduces shareholder assets and creates a reportable loss.\nThe penalty has two flavors. Minor downtime can produce small inactivity penalties, while equivocation faults such as double-signing trigger larger slashing and forced exit.\nNon-custodial validators mitigate slashing through layered controls:\n- Key management: MPC and HSM setups prevent a single point of compromise and block double-signing across redundant systems.\n- Client diversity: running varied client software limits the blast radius of any single client bug.\n- Monitoring: continuous 24/7 observation catches downtime and anomalies before they escalate.\n- Insurance and backstops: financial coverage and operator backing address residual exposure.\nEverstake reports zero material slashing events since its 2018 founding on major networks. That track record is the kind of evidence an ETF risk committee treats as a precondition.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-06-24T11:49:57.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:55.659Z",
+            "duplicateGroup": "0d69c37db61aa9f3500892ad31130c16",
+            "score": 0.030017921146953404,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Everstake's CFO guide explicitly states that non-custodial staking does not eliminate slashing risk and that slashing penalties hit institutional capital directly."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "Everstake's documentation confirms that slashing destroys a portion of staked assets when a validator misbehaves, including through equivocation or double-signing faults."
+          }
+        ],
+        "trust": {
+          "score": 90,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 10,
+              "maximum": 20,
+              "reason": "2 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "3252b0f7-496c-4407-acdc-3dcef4c2984c",
+          "calls": 3,
+          "inputTokens": 9112,
+          "outputTokens": 1242,
+          "knownCostUsd": 0.008924109999999999,
+          "unknownCalls": 0,
+          "elapsedMs": 5918,
+          "startedAt": "2026-09-13T14:57:13.813Z",
+          "finishedAt": "2026-09-13T14:57:19.731Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "62289cba-0bd5-4e23-b02e-aab1a60c12f6",
+              "runId": "3252b0f7-496c-4407-acdc-3dcef4c2984c",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:14.410Z",
+              "elapsedMs": 259.5336249999964,
+              "inputTokens": 38,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 7.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_739bd7dcf8db4db7a2a91c4e1b800160",
+              "error": null
+            },
+            {
+              "id": "7014bab6-d52c-49fa-9635-d81b817b5c95",
+              "runId": "3252b0f7-496c-4407-acdc-3dcef4c2984c",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:15.192Z",
+              "elapsedMs": 3630.790500000003,
+              "inputTokens": 3822,
+              "outputTokens": 1101,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 921,
+              "costUsd": 0.00699525,
+              "status": "completed",
+              "providerRequestId": "y7mmaub7Gsac3boPzM-eiQs",
+              "error": null
+            },
+            {
+              "id": "16dd36a7-cb63-41c1-b6f0-2b88d4f6a42f",
+              "runId": "3252b0f7-496c-4407-acdc-3dcef4c2984c",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:18.824Z",
+              "elapsedMs": 904.8648749999993,
+              "inputTokens": 5252,
+              "outputTokens": 141,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0019280999999999999,
+              "status": "completed",
+              "providerRequestId": "z7mmavXSBMuU3boPj9PM2QY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The answer correctly rejects principal immunity and grounds the non-custodial-versus-slashing distinction in the CFO and slashing passages."
+    },
+    {
+      "question": {
+        "id": "E10",
+        "question": "The Ethereum page lists two Ackee reviews. Which concerns institutional batch deposits and which retail staking? Is one review evidence that both flows were examined?",
+        "reference": "The ETH2 Batch Deposit Contract review concerns B2B deposits; the Ethereum Staking Protocol review concerns retail mechanics. Their scopes differ; a listing is not an independent audit of deployed code.",
+        "referenceUrls": [
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "audit_scope",
+        "whyHard": "Do not treat one report as covering both contracts or certify an unseen deployed version.",
+        "negative": false,
+        "rubric": [
+          "Do not treat one report as covering both contracts or certify an unseen deployed version."
+        ]
+      },
+      "answer": {
+        "runId": "16e72c52-6026-4186-be84-9599f99c9085",
+        "status": "answered",
+        "question": "The Ethereum page lists two Ackee reviews. Which concerns institutional batch deposits and which retail staking? Is one review evidence that both flows were examined?",
+        "text": "On Everstake's Ethereum staking page when checked, Ackee's audit of the ETH2 Batch Deposit Contract evaluated the B2B deposit flow and integrations for large-scale validators and institutional partners. [0dba7418ad7c6ad2958b496351d05fb2]\n\nOn Everstake's Ethereum staking page when checked, Ackee's audit of the Ethereum Staking Protocol focused on retail-facing staking mechanics and smart-contract logic for individual users. [0dba7418ad7c6ad2958b496351d05fb2]\n\nThe page presents these as two separate audits of distinct contracts and mechanics rather than a single review that examined both flows together. [0dba7418ad7c6ad2958b496351d05fb2]",
+        "asOf": "2026-09-13",
+        "claims": [
+          {
+            "text": "On Everstake's Ethereum staking page when checked, Ackee's audit of the ETH2 Batch Deposit Contract evaluated the B2B deposit flow and integrations for large-scale validators and institutional partners.",
+            "citations": [
+              "0dba7418ad7c6ad2958b496351d05fb2"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "On Everstake's Ethereum staking page when checked, Ackee's audit of the Ethereum Staking Protocol focused on retail-facing staking mechanics and smart-contract logic for individual users.",
+            "citations": [
+              "0dba7418ad7c6ad2958b496351d05fb2"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "The page presents these as two separate audits of distinct contracts and mechanics rather than a single review that examined both flows together.",
+            "citations": [
+              "0dba7418ad7c6ad2958b496351d05fb2"
+            ],
+            "asOf": "2026-09-13"
+          }
+        ],
+        "sources": [
+          {
+            "id": "0dba7418ad7c6ad2958b496351d05fb2",
+            "documentId": "fce60100f15732bbc760d2efef3a6bdc",
+            "url": "https://everstake.com/staking/protocols/ethereum",
+            "title": "Ethereum (ETH) Staking with Everstake: Non-Custodial",
+            "text": "## Audit Reports\nOur 0.01+ ETH staking solution has been audited by ChainSecurity, ensuring it meets industry standards for safety and reliability. This adds an extra layer of confidence for our users. (https://chainsecurity.com/security-audit/everstake-eth-b2c-staking/)Ackee audited our ETH2 Batch Deposit Contract, assessing the B2B deposit flow and integrations for large-scale validators. The review confirms correct contract behavior, robust access controls, and secure handling of funds—providing institutional partners confidence in our validator onboarding and large-deposit processes. (https://blog-api.everstake.com/assets/e4bb01b6-7728-4bb4-96bc-1a9a3be6f185.pdf)Ackee audited our Ethereum Staking Protocol, focusing on the retail-facing staking mechanics and smart-contract logic. The report verifies the protocol's correctness, safety of user funds, and adherence to best practices, enhancing trust for individual users participating in Everstake's staking services. (https://ackeeblockchain.com/blog/everstake-ethereum-staking-protocol-audit-summary/)The 0.01+ ETH solution has undergone a rigorous audit by the Trail of Bits, which fully confirmed its high reliability and impeccable security. Continuous audits conducted by the world's leading cyber security companies ensure that the platform always remains a trusted choice for ETH staking. (https://github.com/trailofbits/publications/blob/master/reviews/2025-1-everstake-ethereum-staking-protocol-securityreview.pdf)\n\n## Staking ETH with Everstake",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:01:32.955Z",
+            "duplicateGroup": "fce60100f15732bbc760d2efef3a6bdc",
+            "score": 0.03252247488101534,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The page states that Ackee audited the ETH2 Batch Deposit Contract, assessing the B2B deposit flow and integrations for large-scale validators and institutional partners."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "The page states that Ackee audited the Ethereum Staking Protocol, focusing on retail-facing staking mechanics and smart-contract logic for individual users."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "The page describes these as two distinct audits (the ETH2 Batch Deposit Contract and the Ethereum Staking Protocol) rather than indicating a single review that examined both flows together."
+          }
+        ],
+        "trust": {
+          "score": 65,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 0,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 5,
+              "maximum": 20,
+              "reason": "1 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "16e72c52-6026-4186-be84-9599f99c9085",
+          "calls": 3,
+          "inputTokens": 9484,
+          "outputTokens": 934,
+          "knownCostUsd": 0.0077386,
+          "unknownCalls": 0,
+          "elapsedMs": 6734,
+          "startedAt": "2026-09-13T14:57:19.780Z",
+          "finishedAt": "2026-09-13T14:57:26.514Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "647aecec-9fce-4232-a216-18c582c92fde",
+              "runId": "16e72c52-6026-4186-be84-9599f99c9085",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:20.275Z",
+              "elapsedMs": 269.55395800000406,
+              "inputTokens": 30,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 6e-7,
+              "status": "completed",
+              "providerRequestId": "req_143ffc1bd2754e16a2f9264b29d81650",
+              "error": null
+            },
+            {
+              "id": "00753ed3-34a2-4b2f-af7b-6c60d1cf4218",
+              "runId": "16e72c52-6026-4186-be84-9599f99c9085",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:21.057Z",
+              "elapsedMs": 4368.526207999996,
+              "inputTokens": 3679,
+              "outputTokens": 729,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 473,
+              "costUsd": 0.005493,
+              "status": "completed",
+              "providerRequestId": "0bmmauPAEJiV3boPrKzE8Qo",
+              "error": null
+            },
+            {
+              "id": "fe831917-54da-44da-b33c-e13863a8f954",
+              "runId": "16e72c52-6026-4186-be84-9599f99c9085",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:25.429Z",
+              "elapsedMs": 1083.5277080000087,
+              "inputTokens": 5775,
+              "outputTokens": 205,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.002245,
+              "status": "completed",
+              "providerRequestId": "1bmmaty7KryXkdUPmoKjqAs",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The answer correctly maps the B2B and retail review scopes and explicitly rejects treating one review as coverage of both flows."
+    },
+    {
+      "question": {
+        "id": "E11",
+        "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
+        "reference": "3 × $199 + 2 × $499 = $1,595 monthly; twelve months total $19,140. This hypothetical subscription subtotal proves neither annual-plan discounts nor a percentage commission.",
+        "referenceUrls": [
+          "https://everstake.com/products/institutional-staking/vaas"
+        ],
+        "difficulty": "hard",
+        "category": "calculation_commercial_scope",
+        "whyHard": "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts.",
+        "negative": false,
+        "rubric": [
+          "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts."
+        ]
+      },
+      "answer": {
+        "runId": "177d24f2-0d3f-46f1-8205-124f973863ed",
+        "status": "no_reliable_answer",
+        "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "177d24f2-0d3f-46f1-8205-124f973863ed",
+          "calls": 2,
+          "inputTokens": 3425,
+          "outputTokens": 503,
+          "knownCostUsd": 0.0044258,
+          "unknownCalls": 0,
+          "elapsedMs": 4114,
+          "startedAt": "2026-09-13T14:57:26.578Z",
+          "finishedAt": "2026-09-13T14:57:30.692Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "15aad5c1-c8d7-4aef-a0c8-a33b786f3708",
+              "runId": "177d24f2-0d3f-46f1-8205-124f973863ed",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:27.189Z",
+              "elapsedMs": 291.0615829999879,
+              "inputTokens": 40,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 8.000000000000001e-7,
+              "status": "completed",
+              "providerRequestId": "req_1838a8f1d29b471d8361c0481a1d447c",
+              "error": null
+            },
+            {
+              "id": "813130f3-d68f-4008-b21a-6892c82a13e2",
+              "runId": "177d24f2-0d3f-46f1-8205-124f973863ed",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:27.999Z",
+              "elapsedMs": 2691.993875,
+              "inputTokens": 3385,
+              "outputTokens": 503,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 481,
+              "costUsd": 0.004425,
+              "status": "completed",
+              "providerRequestId": "2Lmmau68DNa1kdUPqvSW2Qo",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "fail",
+      "inventedFacts": false,
+      "explanation": "The baseline abstains even though the initial evidence contains the displayed Core and Prime prices needed for the requested deterministic budget."
+    },
+    {
+      "question": {
+        "id": "E12",
+        "question": "A team wants one API key and immediate access to all four Blockspace products. What must change in its onboarding and authentication plan?",
+        "reference": "Access is product-specific: ShredStream token, Direct Shreds IP-based provisioning, SWQOS HTTP/QUIC-specific access, and application-gated Relayer/TPU. Provisioning timelines differ; there is no universal account key.",
+        "referenceUrls": [
+          "https://docs.blockspace.everstake.com/getting-started/first-request",
+          "https://docs.blockspace.everstake.com/getting-started/authentication"
+        ],
+        "difficulty": "hard",
+        "category": "access_model_comparison",
+        "whyHard": "Do not invent reusable credentials or call every product immediately self-serve.",
+        "negative": false,
+        "rubric": [
+          "Do not invent reusable credentials or call every product immediately self-serve."
+        ]
+      },
+      "answer": {
+        "runId": "871dfc8f-60ca-4fdb-b2a6-6f58c9f365ee",
+        "status": "answered",
+        "question": "A team wants one API key and immediate access to all four Blockspace products. What must change in its onboarding and authentication plan?",
+        "text": "Blockspace does not provide a single account-level API key that unlocks every product, requiring teams to adopt product-specific authentication models instead of one unified key. [bb743996e8a04edfec68f0e6066542d8]\n\nAuthentication must be split per product: ShredStream uses gRPC x-token metadata, Direct Shreds uses a source-IP allowlist, SWQOS uses an open endpoint with an on-chain tip transfer (HTTP) or a QUIC keypair allowlist, and Relayer/TPU requires a token and signing-pubkey allowlist. [bb743996e8a04edfec68f0e6066542d8]\n\nImmediate access to all four products is not supported because onboarding and provisioning timelines vary: ShredStream and SWQOS take minutes, Direct Shreds takes approximately 30 minutes to provision, and Relayer/TPU requires an application review taking days. [bb743996e8a04edfec68f0e6066542d8] [db260e89df2fd0992c31ebeef942cd65]\n\nOnboarding cannot be completed through a single self-serve entry point because Relayer/TPU is application-gated and requires applying via email, whereas the other products are configured self-serve in the dashboard. [bb743996e8a04edfec68f0e6066542d8] [db260e89df2fd0992c31ebeef942cd65]",
+        "asOf": "2026-09-13",
+        "claims": [
+          {
+            "text": "Blockspace does not provide a single account-level API key that unlocks every product, requiring teams to adopt product-specific authentication models instead of one unified key.",
+            "citations": [
+              "bb743996e8a04edfec68f0e6066542d8"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "Authentication must be split per product: ShredStream uses gRPC x-token metadata, Direct Shreds uses a source-IP allowlist, SWQOS uses an open endpoint with an on-chain tip transfer (HTTP) or a QUIC keypair allowlist, and Relayer/TPU requires a token and signing-pubkey allowlist.",
+            "citations": [
+              "bb743996e8a04edfec68f0e6066542d8"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "Immediate access to all four products is not supported because onboarding and provisioning timelines vary: ShredStream and SWQOS take minutes, Direct Shreds takes approximately 30 minutes to provision, and Relayer/TPU requires an application review taking days.",
+            "citations": [
+              "bb743996e8a04edfec68f0e6066542d8",
+              "db260e89df2fd0992c31ebeef942cd65"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "Onboarding cannot be completed through a single self-serve entry point because Relayer/TPU is application-gated and requires applying via email, whereas the other products are configured self-serve in the dashboard.",
+            "citations": [
+              "bb743996e8a04edfec68f0e6066542d8",
+              "db260e89df2fd0992c31ebeef942cd65"
+            ],
+            "asOf": "2026-09-13"
+          }
+        ],
+        "sources": [
+          {
+            "id": "bb743996e8a04edfec68f0e6066542d8",
+            "documentId": "fba58d81d8a4cac2f75b591a309246de",
+            "url": "https://docs.blockspace.everstake.com/getting-started/authentication",
+            "title": "Authentication | Blockspace Docs",
+            "text": "On this page\n\n# Authentication\nBlockspace is not a single-key gateway. Each product has its own access model — pick the one you're using and follow that quickstart.\nProduct | How you authenticate | Provisioned in\nShredStream (https://docs.blockspace.everstake.com/shredstream/quickstart) | gRPC x-token metadata, per subscription | Dashboard, self-serve\nDirect Shreds (https://docs.blockspace.everstake.com/direct-shreds/quickstart) | Source-IP allowlist on a dedicated link | Dashboard, ~30 min provisioning\nSWQOS (https://docs.blockspace.everstake.com/swqos/quickstart) | No token — open endpoint; tip transfer in the tx (HTTP) or QUIC keypair allowlist | Dashboard, self-serve (both HTTP and QUIC)\nRelayer/TPU (https://docs.blockspace.everstake.com/mempool/quickstart) | Token + signing-pubkey allowlist, application-based | Application review\nThere is no single account-level \"API key\" that unlocks every product. Tokens and allowlists live next to the product they govern.\n\n## Where to get credentials​\n- Sign in to the dashboard (https://app.blockspace.everstake.one/).\n- Subscribe (or apply, for application-gated products).\n- Open the product page — the connection details (endpoint, token, region, allowlist form) are on that page.\n\n## Rotating credentials​\nEach product page has its own rotate flow. For token-based products, generate a new token, deploy it, then revoke the old one — both remain valid during the swap so there's no downtime.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:49.127Z",
+            "duplicateGroup": "fba58d81d8a4cac2f75b591a309246de",
+            "score": 0.03279569892473118,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          },
+          {
+            "id": "db260e89df2fd0992c31ebeef942cd65",
+            "documentId": "8787d5a11ef47e1748cc23d09ecc0055",
+            "url": "https://docs.blockspace.everstake.com/getting-started/first-request",
+            "title": "Your First Request | Blockspace Docs",
+            "text": "On this page\n\n# Your First Request\nBlockspace isn't a single subscription. Each product has its own access model, timeline, and entry point. Pick the row that matches your situation.\nProduct | What it is | How to start | Time to first call\nShredStream (https://docs.blockspace.everstake.com/shredstream/quickstart) | Stream Solana shreds before slot confirmation | Start free → (https://app.blockspace.everstake.one/) self-serve | minutes\nDirect Shreds (https://docs.blockspace.everstake.com/direct-shreds/quickstart) | Dedicated IP, your bandwidth alone | Provision → (https://app.blockspace.everstake.one/) — provisioning ~30 min | ~30 min\nSWQOS (https://docs.blockspace.everstake.com/swqos/quickstart) | Stake-weighted priority lane (HTTP RPC) | Enable → (https://app.blockspace.everstake.one/) — public endpoint, no key | minutes\nSWQOS QUIC (https://docs.blockspace.everstake.com/swqos/quickstart) | Stake-weighted priority lane (QUIC, signed) | Subscribe or trial → (https://app.blockspace.everstake.one/) — self-serve, add pubkey in dashboard | minutes\nRelayer/TPU (https://docs.blockspace.everstake.com/mempool/quickstart) | MEV mempool + bundle relay, pay-on-profit | Apply → (mailto:support-blockspace@everstake.one?subject=Relayer%20%2B%20TPU) | days (application review)\nSelf-serve products (ShredStream, SWQOS HTTP, SWQOS QUIC, Direct Shreds onboarding) provision in the dashboard (https://app.blockspace.everstake.one/). Application-gated products start with an email to support-blockspace@everstake.one.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:49.606Z",
+            "duplicateGroup": "8787d5a11ef47e1748cc23d09ecc0055",
+            "score": 0.031754032258064516,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-4:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-4:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-4:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The source documentation states that Blockspace is not a single-key gateway and that there is no single account-level API key unlocking every product."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "The documentation specifies distinct authentication methods per product: gRPC x-token for ShredStream, source-IP allowlist for Direct Shreds, open endpoint with tip transfer or QUIC keypair for SWQOS, and token plus signing-pubkey allowlist for Relayer/TPU."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "The sources show varying provisioning timelines, with ShredStream and SWQOS taking minutes, Direct Shreds taking around 30 minutes, and Relayer/TPU requiring days for application review."
+          },
+          {
+            "rule": "claim-4:support",
+            "status": "passed",
+            "reason": "The sources indicate that Relayer/TPU is application-gated via email, whereas the other products use self-serve dashboard provisioning."
+          }
+        ],
+        "trust": {
+          "score": 70,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 0,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 10,
+              "maximum": 20,
+              "reason": "2 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "871dfc8f-60ca-4fdb-b2a6-6f58c9f365ee",
+          "calls": 3,
+          "inputTokens": 12734,
+          "outputTokens": 1398,
+          "knownCostUsd": 0.010558640000000001,
+          "unknownCalls": 0,
+          "elapsedMs": 6973,
+          "startedAt": "2026-09-13T14:57:30.738Z",
+          "finishedAt": "2026-09-13T14:57:37.711Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "e57c9c45-9b0b-453d-9fac-fff6d3942fb5",
+              "runId": "871dfc8f-60ca-4fdb-b2a6-6f58c9f365ee",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:31.290Z",
+              "elapsedMs": 229.15037499999744,
+              "inputTokens": 27,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_82b0fdec75e2400b84287604256ac690",
+              "error": null
+            },
+            {
+              "id": "b89abf4b-a989-4fe8-bba8-fb166284e3ba",
+              "runId": "871dfc8f-60ca-4fdb-b2a6-6f58c9f365ee",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:32.086Z",
+              "elapsedMs": 4301.053874999998,
+              "inputTokens": 4155,
+              "outputTokens": 1105,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 653,
+              "costUsd": 0.00726,
+              "status": "completed",
+              "providerRequestId": "3LmmavnEE9yonsEPhOi5kQE",
+              "error": null
+            },
+            {
+              "id": "4a0fd987-578a-48f2-91fa-f65a6df6b1ef",
+              "runId": "871dfc8f-60ca-4fdb-b2a6-6f58c9f365ee",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:36.388Z",
+              "elapsedMs": 1320.8062090000021,
+              "inputTokens": 8552,
+              "outputTokens": 293,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0032981,
+              "status": "completed",
+              "providerRequestId": "4LmmatHzJpaEkdUPh-ja0QY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The answer fully and accurately replaces the universal-key plan with the four documented authentication and onboarding paths."
+    },
+    {
+      "question": {
+        "id": "E13",
+        "question": "Direct Shreds advertises 3ms p50 in-region. A client runs far from the validator and requires every message within 3ms. Does the advertised measurement establish that guarantee?",
+        "reference": "No. The stated figure is an in-region median, not an all-message upper bound or cross-region SLA. Listener placement and network distance matter.",
+        "referenceUrls": [
+          "https://docs.blockspace.everstake.com/direct-shreds",
+          "https://docs.blockspace.everstake.com/getting-started/troubleshooting"
+        ],
+        "difficulty": "hard",
+        "category": "metric_scope",
+        "whyHard": "Do not invent a p99, cross-region latency, or contractual maximum.",
+        "negative": false,
+        "rubric": [
+          "Do not invent a p99, cross-region latency, or contractual maximum."
+        ]
+      },
+      "answer": {
+        "runId": "5c239388-aa42-4c14-b098-97f9b93bb8d2",
+        "status": "answered",
+        "question": "Direct Shreds advertises 3ms p50 in-region. A client runs far from the validator and requires every message within 3ms. Does the advertised measurement establish that guarantee?",
+        "text": "The advertised 3ms measurement does not establish that guarantee because it is a p50 (median) metric rather than a guarantee for every message, applies only in-region, and documentation specifies that achieving lowest latency requires a listener in the same region as the validator host. [cc7e4d99c96780fd70e5dfe6eae6fb21] [79f0d815116271bf02d34843a895af5b]",
+        "asOf": "2026-09-10",
+        "claims": [
+          {
+            "text": "The advertised 3ms measurement does not establish that guarantee because it is a p50 (median) metric rather than a guarantee for every message, applies only in-region, and documentation specifies that achieving lowest latency requires a listener in the same region as the validator host.",
+            "citations": [
+              "cc7e4d99c96780fd70e5dfe6eae6fb21",
+              "79f0d815116271bf02d34843a895af5b"
+            ],
+            "asOf": "2026-09-10"
+          }
+        ],
+        "sources": [
+          {
+            "id": "cc7e4d99c96780fd70e5dfe6eae6fb21",
+            "documentId": "6869cc86ed3884af9c4d26bdb5300eb3",
+            "url": "https://everstake.com/resources/blog/blockspace-by-everstake-the-solana-inbound-path-sold-as-products",
+            "title": "Blockspace by Everstake: Solana Inbound Path MEV Products | Everstake",
+            "text": "Direct Shreds delivers raw shreds over UDP straight from Everstake validator nodes on a dedicated link, at 3ms p50 in-region with zero co-tenant variance.\n\n### Who is it for\nIt is built for proprietary trading desks, large MEV operators, validators and market makers that need dedicated capacity in order not to share infrastructure with other customers.\nThe feed delivers both retransmitted shreds received from other nodes and leader shreds from blocks the Everstake validator produced. Operators can split the two streams onto separate ports for distinct processing pipelines.\nDirect Shreds is region-locked to the validator host, so lowest latency requires a listener in the same region. The self-serve provisioning typically takes roughly 30 minutes.\nTry Direct Shreds on Blockspace (https://blockspace.everstake.one/)\n\n## SWQOS: Stake-Weighted Priority Routing\nSWQOS (https://everstake.one/products/swqos) routes transactions through Everstake’s validator so they can benefit from priority routing in block-building on the validator’s stake weight, the lane unstaked RPCs queue behind.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-06-19T10:54:56.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:56.925Z",
+            "duplicateGroup": "6869cc86ed3884af9c4d26bdb5300eb3",
+            "score": 0.03306010928961749,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "79f0d815116271bf02d34843a895af5b",
+            "documentId": "18c48d6352beabfc7967c01d4500a964",
+            "url": "https://docs.blockspace.everstake.com/direct-shreds",
+            "title": "Direct Shreds | Blockspace Docs",
+            "text": "You can choose to split retransmitted shreds and leader shreds into two separate streams on different ports — useful when you want different processing pipelines for them.\n\n## Region locking​\nThis service is region-locked to where the validator is hosted. Shreds can technically be streamed anywhere, but lowest latency is only achievable when your listener is in the same region as the validator. Plan your listener accordingly.\n\n## How it differs from ShredStream​\n| ShredStream | Direct Shreds\nSource | Multi-region proxy network | Direct from Everstake validator\nTenancy | Multi-tenant or dedicated lane | Always dedicated\nNetwork path | Shared frontend | Per-customer link\nProvisioning | Self-serve, instant | Self-serve, ~30 minutes\nPricing | Tiered, per-region | Per-IP / per-link\nLatency p50 (in-region) | Single-digit ms | 3 ms\nStream split | Single stream | Optional retransmit/leader split\n\n## Provisioning​\n- Subscribe in the dashboard (https://app.blockspace.everstake.one/).\n- Provide the destination IP(s) and UDP port(s) you want shreds delivered to.\n- (Optional) Configure split — separate ports for retransmitted vs leader shreds.\n- Pay by card or crypto. Stream is live in ~30 minutes.\nIf your firewall filters incoming traffic on the listener port, allow Blockspace validator-node IPs on that port. Node IPs are provided in the dashboard and can change during maintenance or migration — you'll be notified with the updated list.\nNo sales call required. No legal review.\n\n## Pricing​\n$4,000 / month per destination IP. Multi-IP and multi-region setups quoted in the dashboard.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:48.104Z",
+            "duplicateGroup": "18c48d6352beabfc7967c01d4500a964",
+            "score": 0.02819138376017471,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The advertised 3ms measurement is a p50 in-region metric, not a worst-case guarantee for every message. Furthermore, the service is region-locked, and documentation explicitly states that lowest latency requires a listener in the same region as the validator, conflicting with a client running far from the validator."
+          }
+        ],
+        "trust": {
+          "score": 80,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 10,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 10,
+              "maximum": 20,
+              "reason": "2 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "5c239388-aa42-4c14-b098-97f9b93bb8d2",
+          "calls": 3,
+          "inputTokens": 9251,
+          "outputTokens": 1095,
+          "knownCostUsd": 0.00849119,
+          "unknownCalls": 0,
+          "elapsedMs": 6285,
+          "startedAt": "2026-09-13T14:57:37.754Z",
+          "finishedAt": "2026-09-13T14:57:44.039Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "86246f7d-ac19-46f8-b86a-b9eb3df71545",
+              "runId": "5c239388-aa42-4c14-b098-97f9b93bb8d2",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:38.577Z",
+              "elapsedMs": 404.51183400000446,
+              "inputTokens": 37,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 7.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_7a518fc3a0fb4be28c7ed84c96976d09",
+              "error": null
+            },
+            {
+              "id": "3f60b3f9-82ff-40a6-8024-1571105a7e8a",
+              "runId": "5c239388-aa42-4c14-b098-97f9b93bb8d2",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:39.536Z",
+              "elapsedMs": 3526.564499999993,
+              "inputTokens": 3925,
+              "outputTokens": 978,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 835,
+              "costUsd": 0.00661125,
+              "status": "completed",
+              "providerRequestId": "47mmaqTGLYzNnsEP2dOQsQU",
+              "error": null
+            },
+            {
+              "id": "eefda2a0-bfa3-460a-a974-5f5d6731b354",
+              "runId": "5c239388-aa42-4c14-b098-97f9b93bb8d2",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:43.064Z",
+              "elapsedMs": 973.6140840000007,
+              "inputTokens": 5289,
+              "outputTokens": 117,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0018792000000000001,
+              "status": "completed",
+              "providerRequestId": "57mmapSzGongnsEP1aq4cA",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The answer correctly explains that an in-region p50 measurement is a median rather than an every-message or remote-client guarantee."
+    },
+    {
+      "question": {
+        "id": "E14",
+        "question": "A QUIC connection authenticates with allowlisted key A, but the submitted transaction is signed by wallet B. Does the published SWQOS API require A to sign that transaction, and is the tip optional?",
+        "reference": "The allowlisted QUIC key authenticates transport and need not sign the submitted transaction. The current product docs are internally inconsistent on tips: they say both paths require a tip of at least 1,000,000 lamports, but also say a transaction without a tip rides one SWQOS path without fanout or a priority boost. Report that conflict. The frozen corpus contains no copy of the linked repository README, so it cannot establish a prepaid-customer exception.",
+        "referenceUrls": [
+          "https://docs.blockspace.everstake.com/swqos/api",
+          "https://docs.blockspace.everstake.com/swqos"
+        ],
+        "difficulty": "hard",
+        "category": "identity_boundary",
+        "whyHard": "Do not treat the tip as universally optional or universally mandatory across all plans; do not require the transport key to sign the transaction.",
+        "negative": false,
+        "rubric": [
+          "Do not treat the tip as universally optional or universally mandatory across all plans; do not require the transport key to sign the transaction."
+        ]
+      },
+      "answer": {
+        "runId": "91c93810-d231-4b35-afc0-67df8dba0c4d",
+        "status": "answered",
+        "question": "A QUIC connection authenticates with allowlisted key A, but the submitted transaction is signed by wallet B. Does the published SWQOS API require A to sign that transaction, and is the tip optional?",
+        "text": "According to SWQOS API reference documentation when checked on September 13, 2026, the allowlisted pubkey used for QUIC connection authentication is strictly for transport authentication and does not need to be a signer on the submitted transaction. [7f3be57ab85567e4f7591c305b136f58]\n\nThe SWQOS API documentation stated on September 13, 2026, that the tip is not optional for QUIC submissions, requiring each transaction to include a tip-transfer instruction paying at least 1,000,000 lamports. [7f3be57ab85567e4f7591c305b136f58] [4196d1b6e7ec8c3eb115e83f437920ce]",
+        "asOf": "2026-09-13",
+        "claims": [
+          {
+            "text": "According to SWQOS API reference documentation when checked on September 13, 2026, the allowlisted pubkey used for QUIC connection authentication is strictly for transport authentication and does not need to be a signer on the submitted transaction.",
+            "citations": [
+              "7f3be57ab85567e4f7591c305b136f58"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "The SWQOS API documentation stated on September 13, 2026, that the tip is not optional for QUIC submissions, requiring each transaction to include a tip-transfer instruction paying at least 1,000,000 lamports.",
+            "citations": [
+              "7f3be57ab85567e4f7591c305b136f58",
+              "4196d1b6e7ec8c3eb115e83f437920ce"
+            ],
+            "asOf": "2026-09-13"
+          }
+        ],
+        "sources": [
+          {
+            "id": "7f3be57ab85567e4f7591c305b136f58",
+            "documentId": "242e096bbf964f42e7f5b2e2202318e2",
+            "url": "https://docs.blockspace.everstake.com/swqos/api",
+            "title": "SWQOS API Reference | Blockspace Docs",
+            "text": "### Rate limit​\n10 transactions per second per client by default. Higher rates available on Pro/custom tiers.\n\n## QUIC endpoints​\nTo access QUIC endpoints, log in to your Blockspace account (https://app.blockspace.everstake.one/), purchase a subscription or activate a trial, and add your QUIC pubkey to the desired location in the dashboard under SWQOS → QUIC pubkeys.\n6 locations are available: Frankfurt, Amsterdam, New York, Tokyo, London, Singapore.\n\n### Authentication​\nQUIC connections are authenticated by a Solana keypair. The pubkey of that keypair must be on the SWQOS allowlist (configurable in the dashboard).\nThis pubkey is for transport authentication only — it does not need to be a signer on the transactions you submit, and it has no effect on which instructions are included.\n\n### Wire shape​\nOpen a QUIC stream, write the bytes of a signed serialized transaction, close the stream. The transaction itself must include the same tip-transfer instruction as the HTTP path (≥1,000,000 lamports).\n\n### Limits​\n- Keep-alive — 10 seconds.\n- Connections per minute — 8 per authorized pubkey.\n\n## Tip accounts​\nThe full list of valid tip recipient pubkeys is published in the open-source SWQOS docs at github.com/everstake/everstake-swqos-docs (https://github.com/everstake/everstake-swqos-docs). The list is rotated occasionally — pull the current list from there.\nYou can also find the current tip accounts in your Blockspace account (https://app.blockspace.everstake.one/) on the Pay-as-you-go page.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:54.116Z",
+            "duplicateGroup": "242e096bbf964f42e7f5b2e2202318e2",
+            "score": 0.03128054740957967,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          },
+          {
+            "id": "4196d1b6e7ec8c3eb115e83f437920ce",
+            "documentId": "10000b0c9ee46385ca370c7580b7c45f",
+            "url": "https://docs.blockspace.everstake.com/swqos",
+            "title": "SWQOS — Stake-Weighted QoS | Blockspace Docs",
+            "text": "## Two submission flows​\nSWQOS exposes two distinct paths. They have different authentication models and trade-offs.\n\n### HTTP / RPC endpoint​\n- No API key, no allowlist — public endpoint\n- Tip-instruction required — each transaction must include a SystemProgram::transfer paying ≥1,000,000 lamports to a designated Everstake tip account\n- Standard sendTransaction JSON-RPC — but no preflight, and only the submission method is exposed (you fetch blockhash from elsewhere)\n- HTTP/1.1 and HTTP/2 with persistent connections; for lowest latency use h2c (HTTP/2 prior knowledge)\n- Default rate limit: 10 TPS per client\n\n### QUIC endpoint​\n- Pubkey allowlist — you provide a Solana pubkey at subscribe time; only QUIC connections authenticated with that keypair are accepted\n- Tip-instruction still required — same 1,000,000-lamport tip-transfer rule applies inside the transaction\n- Raw serialized transactions over QUIC stream — not Solana SDK compatible; you build your own QUIC client\n- 10s keep-alive, 8 connections / minute per authorized client\n- Lower latency than the HTTP path\nYou typically pick one based on infrastructure: HTTP if you want to use a standard SDK and accept fetching blockhash separately; QUIC if you can build a custom client and need lowest latency.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:53.895Z",
+            "duplicateGroup": "10000b0c9ee46385ca370c7580b7c45f",
+            "score": 0.0315136476426799,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "The SWQOS API documentation explicitly states that the allowlisted pubkey is for transport authentication only and does not need to be a signer on the submitted transactions."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "The documentation states that a tip-transfer instruction paying at least 1,000,000 lamports is required inside each transaction, meaning the tip is not optional."
+          }
+        ],
+        "trust": {
+          "score": 70,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 0,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 10,
+              "maximum": 20,
+              "reason": "2 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "91c93810-d231-4b35-afc0-67df8dba0c4d",
+          "calls": 3,
+          "inputTokens": 10470,
+          "outputTokens": 1208,
+          "knownCostUsd": 0.009335739999999999,
+          "unknownCalls": 0,
+          "elapsedMs": 5310,
+          "startedAt": "2026-09-13T14:57:44.084Z",
+          "finishedAt": "2026-09-13T14:57:49.394Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "0b31528e-cbd3-4067-a937-0b88c6211627",
+              "runId": "91c93810-d231-4b35-afc0-67df8dba0c4d",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:44.624Z",
+              "elapsedMs": 254.89570800001093,
+              "inputTokens": 42,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 8.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_beebbc7207e54f23be39405616d0a67a",
+              "error": null
+            },
+            {
+              "id": "1909046a-1b04-42c5-8c82-bbd945b26ab5",
+              "runId": "91c93810-d231-4b35-afc0-67df8dba0c4d",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:45.399Z",
+              "elapsedMs": 3073.822749999992,
+              "inputTokens": 4145,
+              "outputTokens": 1057,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 808,
+              "costUsd": 0.0070725,
+              "status": "completed",
+              "providerRequestId": "6bmmarbxJIaU3boP2OmD-AY",
+              "error": null
+            },
+            {
+              "id": "34605c6f-6f84-4aa9-b364-15025cb7c0df",
+              "runId": "91c93810-d231-4b35-afc0-67df8dba0c4d",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:48.475Z",
+              "elapsedMs": 917.544624999995,
+              "inputTokens": 6283,
+              "outputTokens": 151,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0022623999999999995,
+              "status": "completed",
+              "providerRequestId": "7LmmaoaELKSikdUPuKf1kAc",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "fail",
+      "inventedFacts": true,
+      "explanation": "The transport-key conclusion is supported, but the baseline asserts that tips are unconditionally mandatory and ignores the active no-tip single-path statement. The universal scope is unsupported by the corpus as a whole."
+    },
+    {
+      "question": {
+        "id": "E15",
+        "question": "The Blockspace homepage describes seven regions, but other sections and the regions guide list six. Can we promise every product in Singapore and New York? Reconcile the product matrix without inventing update dates.",
+        "reference": "Do not promise every product in either city. The frozen homepage does not contain the claimed seven-region product matrix or the claimed upcoming statuses. Current product docs conflict by scope: ShredStream lists seven regions including New York and Singapore; Direct Shreds pricing lists six including New York but not Singapore; SWQOS supports both cities, with Singapore described as a purchasable QUIC add-on; the Relayer docs provide no city-by-city matrix. The general regions guide lists six and omits Singapore. None of these undated pages establishes which page supersedes another.",
+        "referenceUrls": [
+          "https://blockspace.everstake.com/",
+          "https://docs.blockspace.everstake.com/getting-started/regions",
+          "https://docs.blockspace.everstake.com/shredstream",
+          "https://docs.blockspace.everstake.com/direct-shreds/pricing",
+          "https://docs.blockspace.everstake.com/swqos/pricing",
+          "https://docs.blockspace.everstake.com/mempool"
+        ],
+        "difficulty": "hard",
+        "category": "conflicting_coverage",
+        "whyHard": "Do not infer a rollout date or silently treat all undated pages as synchronized.",
+        "negative": false,
+        "rubric": [
+          "Do not infer a rollout date or silently treat all undated pages as synchronized."
+        ]
+      },
+      "answer": {
+        "runId": "f4887eec-ca8a-47f4-8835-0203c83814af",
+        "status": "answered",
+        "question": "The Blockspace homepage describes seven regions, but other sections and the regions guide list six. Can we promise every product in Singapore and New York? Reconcile the product matrix without inventing update dates.",
+        "text": "Every product cannot be promised in Singapore and New York because product coverage varies by region, with Frankfurt being the only region running all four products live while the remaining regions phase in over the rollout. [043394e64894726b8b4c7403ef486144]\n\nWhen checked on 2026-09-13, the general Blockspace Regions & Endpoints documentation listed only six regions (Frankfurt, Amsterdam, Tokyo, New York, London, and Dublin) for latency-sensitive products, with no listing for Singapore. [ee2f7d5d73d8d97f5734ac19f8429b2a]\n\nWhen checked on 2026-09-13, the ShredStream documentation specifically listed seven regions, which include Singapore (SGP) and New York (NY) alongside Frankfurt, Amsterdam, Tokyo, London, and Dublin. [6de2cb925d2a1715a15449314fd11acb]",
+        "asOf": "2026-09-13",
+        "claims": [
+          {
+            "text": "Every product cannot be promised in Singapore and New York because product coverage varies by region, with Frankfurt being the only region running all four products live while the remaining regions phase in over the rollout.",
+            "citations": [
+              "043394e64894726b8b4c7403ef486144"
+            ],
+            "asOf": "2026-09-10"
+          },
+          {
+            "text": "When checked on 2026-09-13, the general Blockspace Regions & Endpoints documentation listed only six regions (Frankfurt, Amsterdam, Tokyo, New York, London, and Dublin) for latency-sensitive products, with no listing for Singapore.",
+            "citations": [
+              "ee2f7d5d73d8d97f5734ac19f8429b2a"
+            ],
+            "asOf": "2026-09-13"
+          },
+          {
+            "text": "When checked on 2026-09-13, the ShredStream documentation specifically listed seven regions, which include Singapore (SGP) and New York (NY) alongside Frankfurt, Amsterdam, Tokyo, London, and Dublin.",
+            "citations": [
+              "6de2cb925d2a1715a15449314fd11acb"
+            ],
+            "asOf": "2026-09-13"
+          }
+        ],
+        "sources": [
+          {
+            "id": "043394e64894726b8b4c7403ef486144",
+            "documentId": "6869cc86ed3884af9c4d26bdb5300eb3",
+            "url": "https://everstake.com/resources/blog/blockspace-by-everstake-the-solana-inbound-path-sold-as-products",
+            "title": "Blockspace by Everstake: Solana Inbound Path MEV Products | Everstake",
+            "text": "Blockspace launches across 6 regions, with product coverage varying by region. Frankfurt runs all four products live, while the remaining regions phase in over the rollout.\n\n## The Operating Record Behind It\nOn Solana specifically, Everstake directly operates ~7.5M SOL in stake on Solana and has operated a validator since the network’s earliest testnet days. The Frankfurt deployment posts a 20.6% slot win rate and a sub-10ms shred lead in-region.\nOnboarding is self-serve with no card required to start, and invoicing is on demand by wire or USDC. Each product carries its own access model, billed per product in the dashboard.\nThe landing page is live at blockspace.everstake.one and the documentation is at docs.blockspace.everstake.one.\nReach the Blockspace team at:\n[email protected] (https://everstake.com/cdn-cgi/l/email-protection#5b282e2b2b34292f763937343830282b3a383e1b3e2d3e29282f3a303e7534353e)\nShare with your network\nEverstake\nContent Manager\nEverstake is the leading non-custodial staking provider, delivering audited, globally distributed infrastructure aligned with SOC 2 Type II, ISO 27001, and NIST CSF 2.0 for institutional and retail clients.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-06-19T10:54:56.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:56.925Z",
+            "duplicateGroup": "6869cc86ed3884af9c4d26bdb5300eb3",
+            "score": 0.029906956136464335,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "ee2f7d5d73d8d97f5734ac19f8429b2a",
+            "documentId": "185cbabb3d59ba1819df740a99e0396b",
+            "url": "https://docs.blockspace.everstake.com/getting-started/regions",
+            "title": "Regions & Endpoints | Blockspace Docs",
+            "text": "On this page\n\n# Regions & Endpoints\n\n## Endpoints​\nEvery endpoint URL — HTTPS, gRPC, or UDP target — is shown on the service page in the dashboard (https://app.blockspace.everstake.one/). Open the service you've subscribed to, copy the endpoint, and authenticate as described in the per-product quickstart (the auth method varies — see Authentication (https://docs.blockspace.everstake.com/getting-started/authentication)).\n\n## Regions​\nThe latency-sensitive products (ShredStream, Direct Shreds) are region-pinned. Choose your region at subscribe time:\n- FRA — Frankfurt. Default; Everstake's strongest position (ranked #2 globally in FRA shred latency).\n- AMS — Amsterdam. Secondary EU.\n- TYO — Tokyo. Asia.\n- NYC — New York. North-America trading desks.\n- LDN — London. UK.\n- DUB — Dublin. Ireland / EU.\nDirect Shreds is region-locked to the validator's hosting region — choose accordingly when subscribing.\nFor SWQOS, the priority lane is also region-scoped — pick the region closest to your bot.\n\n## Status​\nLive status, incidents, and uptime history: status.blockspace.everstake.one (https://status.blockspace.everstake.one/).",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:50.363Z",
+            "duplicateGroup": "185cbabb3d59ba1819df740a99e0396b",
+            "score": 0.03229166666666666,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          },
+          {
+            "id": "6de2cb925d2a1715a15449314fd11acb",
+            "documentId": "2dc2fc301d8ddd0c4bdfcb3d184ff84f",
+            "url": "https://docs.blockspace.everstake.com/shredstream",
+            "title": "ShredStream | Blockspace Docs",
+            "text": "In practice you get a lead of single-digit milliseconds over the same data flowing through public RPC, which is the difference between profitable and not for tight strategies.\n\n## How it works​\nShreds are streamed in raw format over UDP from sources in multiple regions. They're meant to be received and further processed by your client software. A reference receiver implementation is Jito's shredstream-proxy (https://github.com/jito-labs/shredstream-proxy) — point it at your listener and start consuming.\nYou provide a destination IP and UDP port for every region you subscribe to.\n\n## Regions​\nRegion | Code\nFrankfurt | FRA\nAmsterdam | AMS\nTokyo | TYO\nNew York | NY\nLondon | LON\nDublin | DUB\nSingapore | SGP\n\n## Tiers​\nTier | What you get\nConnect | Shared shred lane, one region of your choice\nUltra | Dedicated lowest-latency lane, FRA + AMS + TYO + NY\nA 1-hour preview is available before you commit — ask in the dashboard (https://app.blockspace.everstake.one/).\n\n## Next​\n- Quickstart (https://docs.blockspace.everstake.com/shredstream/quickstart) — set up your UDP listener and start receiving shreds.\n- API Reference (https://docs.blockspace.everstake.com/shredstream/api) — wire format and operational notes.\n- Pricing & Limits (https://docs.blockspace.everstake.com/shredstream/pricing) — tier specifics and SLAs.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:53.058Z",
+            "duplicateGroup": "2dc2fc301d8ddd0c4bdfcb3d184ff84f",
+            "score": 0.026625704045058884,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Blog source states Blockspace launches across 6 regions with product coverage varying by region, where Frankfurt runs all four products live while other regions phase in."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "Regions & Endpoints documentation fetched on 2026-09-13 lists six regions for latency-sensitive products without mentioning Singapore."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "ShredStream documentation fetched on 2026-09-13 lists seven regions including Singapore (SGP) and New York (NY)."
+          }
+        ],
+        "trust": {
+          "score": 82,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 7,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 15,
+              "maximum": 20,
+              "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "f4887eec-ca8a-47f4-8835-0203c83814af",
+          "calls": 3,
+          "inputTokens": 9754,
+          "outputTokens": 2103,
+          "knownCostUsd": 0.01225172,
+          "unknownCalls": 0,
+          "elapsedMs": 7896,
+          "startedAt": "2026-09-13T14:57:49.444Z",
+          "finishedAt": "2026-09-13T14:57:57.340Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "8d31f81d-5819-4ac2-95b3-e838f0d5168d",
+              "runId": "f4887eec-ca8a-47f4-8835-0203c83814af",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:49.968Z",
+              "elapsedMs": 288.44829099999333,
+              "inputTokens": 41,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 8.200000000000001e-7,
+              "status": "completed",
+              "providerRequestId": "req_eb37dbb2ba7e45688ef3a7a6afdcc4cf",
+              "error": null
+            },
+            {
+              "id": "6af43b84-70c2-4c04-8c8a-795ccdd13249",
+              "runId": "f4887eec-ca8a-47f4-8835-0203c83814af",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:50.785Z",
+              "elapsedMs": 5500.909625,
+              "inputTokens": 3785,
+              "outputTokens": 1901,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1597,
+              "costUsd": 0.0099675,
+              "status": "completed",
+              "providerRequestId": "77mmaqJF7Jzdug-ul7CACw",
+              "error": null
+            },
+            {
+              "id": "fc688baa-7700-473c-8dd2-0eeecfd5cb84",
+              "runId": "f4887eec-ca8a-47f4-8835-0203c83814af",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:56.293Z",
+              "elapsedMs": 1045.0095000000001,
+              "inputTokens": 5928,
+              "outputTokens": 202,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0022833999999999997,
+              "status": "completed",
+              "providerRequestId": "9Lmmauq8IaCckdUP5YiFyQY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "fail",
+      "inventedFacts": false,
+      "explanation": "The answer recognizes six-versus-seven regional evidence and refuses a universal promise, but it does not reconcile availability for Direct Shreds, SWQOS, and Relayer as requested. It relies on a rollout-era blog for all-four-product coverage without resolving the current per-product pages."
+    },
+    {
+      "question": {
+        "id": "E16",
+        "question": "For Everstake’s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
+        "reference": "No current product-specific evidence establishes all requested fields or guarantees reimbursement of the entire principal. A 2022 Everstake post names a Nexus Mutual partnership for ETH staking coverage tied to validator infrastructure or setup failures. Current 2026 sources discuss Chainproof and Nexus Mutual as market products and say Everstake slashing insurance is available on request, but provide no current policy, limit, beneficiary or whole-principal guarantee and describe material exclusions.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/everstake-and-nexus-mutual-are-to-protect-delegators-from-eth-staking-risks",
+          "https://everstake.com/resources/blog/how-to-choose-staking-provider-institutions",
+          "https://everstake.com/resources/blog/staking-slashing-risk-prevention-insurance",
+          "https://everstake.com/terms-of-use"
+        ],
+        "difficulty": "hard",
+        "category": "missing_policy",
+        "whyHard": "Do not infer either universal insurance coverage or absence of insurance.",
+        "negative": true,
+        "rubric": [
+          "Do not infer either universal insurance coverage or absence of insurance."
+        ]
+      },
+      "answer": {
+        "runId": "4f8e4482-3a3f-4bff-b769-84d956c1c654",
+        "status": "no_reliable_answer",
+        "question": "For Everstake’s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "4f8e4482-3a3f-4bff-b769-84d956c1c654",
+          "calls": 2,
+          "inputTokens": 3946,
+          "outputTokens": 651,
+          "knownCostUsd": 0.00537958,
+          "unknownCalls": 0,
+          "elapsedMs": 7184,
+          "startedAt": "2026-09-13T14:57:57.394Z",
+          "finishedAt": "2026-09-13T14:58:04.578Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "a7ac2bb1-f9c8-4793-8a46-32e676641ee8",
+              "runId": "4f8e4482-3a3f-4bff-b769-84d956c1c654",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:58.103Z",
+              "elapsedMs": 209.49041700000816,
+              "inputTokens": 29,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_8ca0cb1c30e04b6d9cbf5a1f2ef9124c",
+              "error": null
+            },
+            {
+              "id": "902dde43-ccdc-4f78-9cc7-c2b139571f2e",
+              "runId": "4f8e4482-3a3f-4bff-b769-84d956c1c654",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:57:58.864Z",
+              "elapsedMs": 5712.024832999989,
+              "inputTokens": 3917,
+              "outputTokens": 651,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 629,
+              "costUsd": 0.005379,
+              "status": "completed",
+              "providerRequestId": "97mmaoSQDe6VkdUPouyM6AY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The abstention correctly declines to provide the requested exact current insurer, policy limit, beneficiary, and whole-principal guarantee, and emits no unsupported replacement fact."
+    },
+    {
+      "question": {
+        "id": "E17",
+        "question": "The VaaS page says both instant launch and deployment within 72 hours. What exact compensation is contractually owed if our validator is not operational after 72 hours?",
+        "reference": "No reliable compensation amount or credit schedule is established by the reviewed product page. Marketing timing and custom-SLA availability do not supply the customer’s contract.",
+        "referenceUrls": [
+          "https://everstake.com/products/institutional-staking/vaas",
+          "https://everstake.com/terms-of-use"
+        ],
+        "difficulty": "hard",
+        "category": "missing_contract",
+        "whyHard": "Do not manufacture a refund percentage, assume zero entitlement, or treat uptime statistics as an SLA.",
+        "negative": true,
+        "rubric": [
+          "Do not manufacture a refund percentage, assume zero entitlement, or treat uptime statistics as an SLA."
+        ]
+      },
+      "answer": {
+        "runId": "edbc44a0-80ac-4460-a2d4-c10f0954369d",
+        "status": "no_reliable_answer",
+        "question": "The VaaS page says both instant launch and deployment within 72 hours. What exact compensation is contractually owed if our validator is not operational after 72 hours?",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "edbc44a0-80ac-4460-a2d4-c10f0954369d",
+          "calls": 2,
+          "inputTokens": 3634,
+          "outputTokens": 537,
+          "knownCostUsd": 0.00471516,
+          "unknownCalls": 0,
+          "elapsedMs": 3755,
+          "startedAt": "2026-09-13T14:58:04.635Z",
+          "finishedAt": "2026-09-13T14:58:08.390Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "69f02253-3dc0-4529-8afd-d86b06cce875",
+              "runId": "edbc44a0-80ac-4460-a2d4-c10f0954369d",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:05.326Z",
+              "elapsedMs": 287.80745800001023,
+              "inputTokens": 33,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 6.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_5ef9fc9ffb0740a2a99c49b4bbbfad8d",
+              "error": null
+            },
+            {
+              "id": "c6db23d5-c718-4b12-ae98-89a859933a77",
+              "runId": "edbc44a0-80ac-4460-a2d4-c10f0954369d",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:06.191Z",
+              "elapsedMs": 2198.268333,
+              "inputTokens": 3601,
+              "outputTokens": 537,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 515,
+              "costUsd": 0.0047145,
+              "status": "completed",
+              "providerRequestId": "_rmmavmgHrSW3boPidfoiA4",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The abstention correctly declines to manufacture an exact compensation amount or service-credit schedule from marketing timing."
+    },
+    {
+      "question": {
+        "id": "E18",
+        "question": "What is the exact monthly SWQOS Pro bill including London and Dublin QUIC add-ons, all transaction tips, and any minimum commitment?",
+        "reference": "No reliable all-in amount is available. Pro is billed monthly, and London and Dublin are purchasable per-region QUIC add-ons, but live subscription and add-on prices are only in the dashboard. Each priority transaction requires a tip of at least 1,000,000 lamports under the stated submission rules, while the monthly total depends on transaction volume. Product terms describe an initial monthly term, prepaid and automatically renewed monthly unless canceled before renewal; no longer-term minimum commitment is stated. Annual contracts are available on request.",
+        "referenceUrls": [
+          "https://docs.blockspace.everstake.com/swqos",
+          "https://docs.blockspace.everstake.com/swqos/api",
+          "https://docs.blockspace.everstake.com/swqos/pricing",
+          "https://everstake.com/product-terms"
+        ],
+        "difficulty": "hard",
+        "category": "missing_addon_quote",
+        "whyHard": "Do not invent add-on prices, traffic volumes, or a commitment period.",
+        "negative": true,
+        "rubric": [
+          "Do not invent add-on prices, traffic volumes, or a commitment period."
+        ]
+      },
+      "answer": {
+        "runId": "5a2d552f-e090-4e64-85b5-2f89445c7071",
+        "status": "no_reliable_answer",
+        "question": "What is the exact monthly SWQOS Pro bill including London and Dublin QUIC add-ons, all transaction tips, and any minimum commitment?",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "5a2d552f-e090-4e64-85b5-2f89445c7071",
+          "calls": 2,
+          "inputTokens": 4048,
+          "outputTokens": 633,
+          "knownCostUsd": 0.0053893100000000005,
+          "unknownCalls": 0,
+          "elapsedMs": 3694,
+          "startedAt": "2026-09-13T14:58:08.437Z",
+          "finishedAt": "2026-09-13T14:58:12.131Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "eb119670-b807-4343-b1a1-45de7371f4a3",
+              "runId": "5a2d552f-e090-4e64-85b5-2f89445c7071",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:09.003Z",
+              "elapsedMs": 255.0185419999907,
+              "inputTokens": 28,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_d44d0a2033724657afd78f4eaad684e4",
+              "error": null
+            },
+            {
+              "id": "4810db8b-4260-4bf0-9b0d-78aafd8c1468",
+              "runId": "5a2d552f-e090-4e64-85b5-2f89445c7071",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:09.801Z",
+              "elapsedMs": 2328.2353330000187,
+              "inputTokens": 4020,
+              "outputTokens": 633,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 611,
+              "costUsd": 0.00538875,
+              "status": "completed",
+              "providerRequestId": "ArqmaqixAduFkdUPsPqd8Aw",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The abstention correctly declines an exact all-in bill whose dashboard prices and transaction volume are unavailable, without inventing an add-on price or commitment."
+    },
+    {
+      "question": {
+        "id": "E19",
+        "question": "What exact percentage of all pending Solana transactions does the Blockspace Relayer expose today? Derive it from the number of regions or validators described on the site.",
+        "reference": "No reliable percentage or denominator is supplied. Coverage depends on participating validator traffic; region or validator counts do not establish network-wide transaction share.",
+        "referenceUrls": [
+          "https://docs.blockspace.everstake.com/mempool",
+          "https://blockspace.everstake.com/"
+        ],
+        "difficulty": "hard",
+        "category": "missing_denominator",
+        "whyHard": "Do not report 100% or manufacture a share from unrelated counts.",
+        "negative": true,
+        "rubric": [
+          "Do not report 100% or manufacture a share from unrelated counts."
+        ]
+      },
+      "answer": {
+        "runId": "639cb83c-bd6d-4d0f-8f8a-ca3a9eac4266",
+        "status": "no_reliable_answer",
+        "question": "What exact percentage of all pending Solana transactions does the Blockspace Relayer expose today? Derive it from the number of regions or validators described on the site.",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "639cb83c-bd6d-4d0f-8f8a-ca3a9eac4266",
+          "calls": 2,
+          "inputTokens": 4202,
+          "outputTokens": 454,
+          "knownCostUsd": 0.004829910000000001,
+          "unknownCalls": 0,
+          "elapsedMs": 3857,
+          "startedAt": "2026-09-13T14:58:12.180Z",
+          "finishedAt": "2026-09-13T14:58:16.037Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "f8e4efea-6b86-4c8d-b25c-8c17ea0b1a5d",
+              "runId": "639cb83c-bd6d-4d0f-8f8a-ca3a9eac4266",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:12.938Z",
+              "elapsedMs": 217.84470899999724,
+              "inputTokens": 33,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 6.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_8a7b436be2924556ab5238d8fe85f825",
+              "error": null
+            },
+            {
+              "id": "a7fa3c52-02a8-4857-8d03-da057a00e83c",
+              "runId": "639cb83c-bd6d-4d0f-8f8a-ca3a9eac4266",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:13.688Z",
+              "elapsedMs": 2346.9812500000116,
+              "inputTokens": 4169,
+              "outputTokens": 454,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 432,
+              "costUsd": 0.00482925,
+              "status": "completed",
+              "providerRequestId": "BrqmaoKnA7aQnsEPxO2O6QU",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The abstention declines the requested exact percentage and does not manufacture a denominator or network share."
+    },
+    {
+      "question": {
+        "id": "E20",
+        "question": "I request withdrawal of 10 ETH now. At what exact UTC time will it reach my wallet, using only the public Instant Unstake guide and general terms?",
+        "reference": "No reliable exact time can be derived. Matching demand, queue state and network processing are not supplied by those static pages; instant branding is not an unconditional deadline.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/terms-of-use"
+        ],
+        "difficulty": "hard",
+        "category": "missing_live_queue",
+        "whyHard": "Do not invent live queue state or promise an immediate/fixed-time withdrawal.",
+        "negative": true,
+        "rubric": [
+          "Do not invent live queue state or promise an immediate/fixed-time withdrawal."
+        ]
+      },
+      "answer": {
+        "runId": "f306f01f-8fd4-41d0-8752-629979066dde",
+        "status": "no_reliable_answer",
+        "question": "I request withdrawal of 10 ETH now. At what exact UTC time will it reach my wallet, using only the public Instant Unstake guide and general terms?",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "f306f01f-8fd4-41d0-8752-629979066dde",
+          "calls": 2,
+          "inputTokens": 4148,
+          "outputTokens": 570,
+          "knownCostUsd": 0.0052244100000000005,
+          "unknownCalls": 0,
+          "elapsedMs": 4056,
+          "startedAt": "2026-09-13T14:58:16.083Z",
+          "finishedAt": "2026-09-13T14:58:20.139Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "bee72f26-c90d-414c-b1d5-f5436b7f4a84",
+              "runId": "f306f01f-8fd4-41d0-8752-629979066dde",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:16.704Z",
+              "elapsedMs": 227.73091699997894,
+              "inputTokens": 33,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 6.6e-7,
+              "status": "completed",
+              "providerRequestId": "req_1662664e0ef9457ba00ecd4b29d076f7",
+              "error": null
+            },
+            {
+              "id": "60f7b426-5605-490b-9ba8-ce3e11ca0d57",
+              "runId": "f306f01f-8fd4-41d0-8752-629979066dde",
+              "stage": "baseline",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:58:17.440Z",
+              "elapsedMs": 2697.544499999989,
+              "inputTokens": 4115,
+              "outputTokens": 570,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 548,
+              "costUsd": 0.00522375,
+              "status": "completed",
+              "providerRequestId": "CbqmarjDMvWf3boPzIjgwQ4",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-eae2b2b23116"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "The abstention declines the requested exact UTC withdrawal time without inventing live queue or matching state."
+    }
+  ],
+  "summary": {
+    "total": 20,
+    "completed": 20,
+    "assessed": 20,
+    "passed": 12,
+    "failed": 8,
+    "accuracy": 0.6,
+    "inventedFacts": 1,
+    "knownCostUsd": 0.16660359999999996,
+    "unknownCalls": 0
+  },
+  "measurements": {
+    "elapsedMs": 138703.953875,
+    "cpuUserMs": 17328.11,
+    "cpuSystemMs": 6646.21,
+    "maxRssKiB": 1119120,
+    "platform": "darwin",
+    "node": "v26.7.0"
+  }
+}
