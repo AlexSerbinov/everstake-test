@@ -160,7 +160,7 @@ prompts/video-speaker-review.md # Identity, role and label consistency in one pa
 config/youtube.yaml          # Source candidates, limits, model, policy
 web/features/corpus/youtube-sources.ts
 web/features/answer-sources/video-passage.ts
-Costs/YouTube/README.md       # Accounting boundary, generated exports
+costs/YouTube/README.md       # Accounting boundary, generated exports
 ```
 
 `screen-video` використовує metadata/captions; attribution працює по transcript/доказах особи й не бачить evaluation references. `build-video-evidence` створює provenance/turn links, не готові відповіді про компанію. Типи в чинному contracts.ts: VideoCandidate, TranscriptRevision, SpeakerTurn, SpeakerAttribution, VideoEvidence. Не заводити глобальний реєстр усіх посад і всіх фактів.
@@ -188,7 +188,7 @@ Discovery повторюється по каналах/пошуку; нові ID
 
 Фактичний облік: audioTokens × 1.50/1M + inputTextTokens × 3.50/1M + outputTextTokens × 3.50/1M, коли токени справді доступні з provider usage. Не рахувати довільні слова транскрипту як billing tokens. GET transcription документує duration і job metadata, але переглянута response schema не містить повної token/cost деталізації: [API reference](https://soniox.com/docs/api-reference/stt/transcriptions/get_transcription). На першому pilot з’ясувати доступний usage/billing export. Якщо є лише aggregate charge, показати суму по scope та окремо method-labelled allocation, не вигадувати точну ціну конкретного відео.
 
-У `Costs/YouTube/` зберігати exports спільного ledger: inventory до запуску, per-video/stage/attempt CSV або JSON, датований pricing snapshot, reconciliation notes й підсумковий звіт. Це папка звітів, не друга БД. У Costs UI є category=YouTube, загальний total містить ці витрати один раз; STT billed media seconds/tokens не змішуються з LLM text tokens без позначення одиниць.
+У `costs/YouTube/` зберігати exports спільного ledger: inventory до запуску, per-video/stage/attempt CSV або JSON, датований pricing snapshot, reconciliation notes й підсумковий звіт. Це папка звітів, не друга БД. У Costs UI є category=YouTube, загальний total містить ці витрати один раз; STT billed media seconds/tokens не змішуються з LLM text tokens без позначення одиниць.
 
 Для відео: planned duration, measured/provider duration, job ID, stage, cache hit, estimate, accounted cost, billing status, model/config version, attempts/errors. Cached run має $0 нових STT-витрат, але зберігає посилання на первісну оплачену транскрипцію. Окремо показати integration/development API spend та incremental refresh. Відновлення чи видалення remote artifact не стирає cost history.
 

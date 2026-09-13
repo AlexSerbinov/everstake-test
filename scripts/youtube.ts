@@ -468,9 +468,9 @@ function exportLedger(database: Database): void {
       providerMetadata: data.providerMetadata,
     };
   });
-  mkdirSync("Costs/YouTube", { recursive: true });
+  mkdirSync("costs/YouTube", { recursive: true });
   writeFileSync(
-    "Costs/YouTube/ledger.json",
+    "costs/YouTube/ledger.json",
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
@@ -487,7 +487,7 @@ function exportLedger(database: Database): void {
       readFileSync(config.paths.inventory, "utf8"),
     ) as Inventory;
     writeFileSync(
-      "Costs/YouTube/inventory-summary.json",
+      "costs/YouTube/inventory-summary.json",
       JSON.stringify(
         {
           generatedAt: inventory.generatedAt,

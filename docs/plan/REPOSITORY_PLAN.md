@@ -82,7 +82,7 @@ everstake-knowledge-assistant/
   artifacts/
     evaluation/                 # Selected sanitized runs and manifests
     corpus/                     # Coverage/exclusions, no uncontrolled data dump
-  Costs/
+  costs/
     YouTube/                    # Generated exports of the same cost ledger
   scripts/
   .github/

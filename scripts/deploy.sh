@@ -15,8 +15,8 @@ npm run check
 git archive "$code_version" | ssh "$server" "docker build -t '$image' -"
 ssh "$server" "docker run --rm --cpus=2 '$image' npm run check"
 # Preserve the serving database and credentials; publish only immutable artifacts/config.
-ssh "$server" "mkdir -p '$remote_dir/data' '$remote_dir/artifacts' '$remote_dir/Costs'"
-git archive "$code_version" compose.yaml artifacts Costs | ssh "$server" "tar -xf - -C '$remote_dir'"
+ssh "$server" "mkdir -p '$remote_dir/data' '$remote_dir/artifacts' '$remote_dir/costs'"
+git archive "$code_version" compose.yaml artifacts costs | ssh "$server" "tar -xf - -C '$remote_dir'"
 if ! ssh "$server" "test -f '$remote_dir/data/knowledge.sqlite'"; then
   snapshot_path="data/deploy-snapshot-$(date +%s).sqlite"
   npx tsx scripts/backup-database.ts "$snapshot_path"

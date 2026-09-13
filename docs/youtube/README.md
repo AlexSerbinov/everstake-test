@@ -2,7 +2,7 @@
 
 - [Readable transcripts and speaker tables](../../artifacts/youtube/reviewed/README.md)
 - [Machine-readable review manifest](../../artifacts/youtube/reviewed/manifest.json)
-- [Measured processing costs](../../Costs/YouTube/README.md)
+- [Measured processing costs](../../costs/YouTube/README.md)
 - [Topic-aware retrieval design](../YOUTUBE_KNOWLEDGE.md)
 
 ## What enters search

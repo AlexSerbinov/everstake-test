@@ -1,5 +1,7 @@
 # YouTube cost ledger
 
+> **Easier to read on the live site:** [Costs page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#costs) shows Soniox transcription and Gemini speaker-review spending next to the rest of the ledger. Overall index, query and 50× figures are in [COST.md](../../COST.md).
+
 `ledger.json` is exported from the shared runtime database. Each external attempt is recorded before submission. Gemini costs use provider-reported tokens and the dated price table. Soniox costs are reconciled from its usage-log API, matching both our operation ID and the provider transcription ID. Native audio/text token breakdowns remain in row metadata. Forecasts remain separate.
 
 ## Initial transcription work — 2026-09-13
