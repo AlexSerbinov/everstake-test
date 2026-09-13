@@ -4,7 +4,7 @@ An Everstake take-home assignment: one readable TypeScript application that answ
 
 Start with the **[assignment](docs/TEST_ASSIGNMENT_EN.md)** and **[supplied source list](docs/corpus_sources.csv)**. The implementation uses general source, date, scope and citation rules; it has no CEO-specific answer route.
 
-**[Open the live demo](https://everstate-knowledge-base.89-167-19-222.sslip.io)** · 939 documents · 92 offline tests. The final twenty-question agent run passed 70%, versus 60% for the baseline, with two versus one unsupported-fact cases. Full answers, failures and costs are in [EVAL.md](EVAL.md), [COST.md](COST.md) and [REPORT.md](REPORT.md). The earlier 75% run is retained; the final iteration did not improve aggregate quality.
+**[Open the live demo](https://everstate-knowledge-base.89-167-19-222.sslip.io)** · 939 documents · 101 offline tests. The final twenty-question agent run passed 95% (19/20) with no unsupported-fact case, versus 55% for the one-pass baseline. Full answers, failures and costs are in [EVAL.md](EVAL.md), [COST.md](COST.md) and [REPORT.md](REPORT.md). The three earlier complete runs (75%, 70%, 80%) are retained; the last two iterations added counterevidence retrieval and focused currentness/scope reviews before a claim is accepted.
 
 ![A live answer with dated source cards](artifacts/demo/answer-desktop.png)
 

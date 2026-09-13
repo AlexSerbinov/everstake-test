@@ -1,0 +1,252 @@
+[
+ {
+  "runId": "agent-9a157413",
+  "rows": [
+   {
+    "id": "E01",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Gives the June 2025 Kinitsky-as-CEO announcement as dated history and ends with the 13 Sept 2026 About page listing Vasylchuk as CEO and Kinitsky as CCDO, without adding President to the current title; each claim matches its excerpt."
+   },
+   {
+    "id": "E02",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Correctly separates 130+ as historical footprint from 30+ active (Sept 2026) and reports the 35+ active figure from the April 2026 page; it frames 35+ as an earlier figure rather than a same-day conflict, but does not present 130+ as an active count."
+   },
+   {
+    "id": "E03",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "States 2018 with a first-party source."
+   },
+   {
+    "id": "E04",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Lists SOC 2 Type II (and Type 1), ISO/IEC 27001:2022, NIST CSF 2.0 and ITGC alignment, GDPR and CCPA/CRPA, Prescient Security as auditor, and the June 2026 DORA controls assessment as an assessment rather than a certification; all supported by excerpts."
+   },
+   {
+    "id": "E05",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Covers only the 2025 shift (infrastructure leadership, certifications, SEC engagement, institutional mission) and omits the older retail/multi-chain baseline and the 2026 additions the reference requires (VaaS, Solana Blockspace/MEV, MCP access); no trajectory across two years is shown. Claims themselves are supported by the cited excerpts."
+   },
+   {
+    "id": "E06",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "States 0.01 ETH for new stakes since June 2026 (announced 18 June 2026, down from 0.1 ETH) and identifies 32 ETH as the protocol validator-activation requirement, not the retail minimum."
+   },
+   {
+    "id": "E07",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Separates transaction confirmation from validator activation, ties reward accrual to activation, explains the 32 ETH pool/standby phase and that Instant Stake works by matching a pending unstake request; no activation deadline is promised."
+   },
+   {
+    "id": "E08",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Computes 64 x 32 = 2,048 ETH fitting one validator at the post-Pectra cap and states the minimum remains 32 ETH; does not claim consolidation is automatic or mandatory."
+   },
+   {
+    "id": "E09",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Answers no: key control removes custody counterparty risk but slashing still hits institution capital, with SLA indemnification only conditional; no incident or contractual entitlement is asserted."
+   },
+   {
+    "id": "E10",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Assigns the Batch Deposit Contract review to the B2B deposit flow and the Staking Protocol review to retail mechanics, and states one review does not evidence both flows; nothing about deployed code is certified."
+   },
+   {
+    "id": "E11",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Uses the displayed $199/$499 rates, derives $1,595 monthly and $19,140 for twelve months, and states this is a scenario subtotal that establishes neither an annual-plan quote nor a percentage commission."
+   },
+   {
+    "id": "E12",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "States there is no single account-level key, lists the per-product auth models (x-token, IP allowlist, tip/QUIC keypair, token plus pubkey with application review) and the differing provisioning timelines, all matching the cited docs."
+   },
+   {
+    "id": "E13",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Correctly concludes the 3ms p50 in-region median is no per-message or cross-region guarantee and cites best-effort delivery; the 30-100ms cross-region RTT figure is present verbatim in the cited ShredStream quickstart excerpt, so no p99, cross-region latency or contractual maximum is invented (only loosely attributed to 'Direct Shreds documentation')."
+   },
+   {
+    "id": "E14",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "States the allowlisted QUIC key is transport-only and need not sign the transaction, and juxtaposes the mandatory >=1,000,000-lamport tip rule with the no-tip single-path statement, so the tip is treated as neither universally optional nor mandatory."
+   },
+   {
+    "id": "E15",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Reports the six-region guide versus seven-region ShredStream/SWQOS lists (Singapore), the launch post's Frankfurt-only full coverage, and refuses to promise every product in Singapore or New York without inferring rollout dates; the '30-100ms' style claims are absent and dates come from the cited post."
+   },
+   {
+    "id": "E16",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Does not name a current insurer, limit or beneficiary; correctly dates the Nexus Mutual partnership to 2022, notes payout up to a predetermined amount, and says the documentation defines no limit, beneficiary or whole-principal guarantee, without asserting absence of insurance."
+   },
+   {
+    "id": "E17",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "States that no exact compensation, penalty or service credit is published and that SLAs are custom, without inventing a refund percentage, assuming zero entitlement, or treating uptime figures as an SLA."
+   },
+   {
+    "id": "E18",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Refuses to give an all-in bill, stating add-on prices, volumes and commitment terms are not in the corpus, without inventing them; the $1,300/mo Pro base and the 500,000-lamport (0.0005 SOL) tip minimum are both reproduced from cited official pages (product page and June 2026 blog). The 500,000 figure differs from the reference's 1,000,000 docs rule, but it is a sourced first-party value, so the miss is an unreported corpus conflict (incompleteness), not an invented fact."
+   },
+   {
+    "id": "E19",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Explains that Relayer/TPU coverage depends on opted-in validators and explicitly says no percentage is stated or derivable from region or validator counts; no share is manufactured."
+   },
+   {
+    "id": "E20",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Abstains with no reliable answer, which is the correct behaviour since no exact arrival time can be derived from the static pages."
+   }
+  ]
+ },
+ {
+  "runId": "baseline-c656c369",
+  "rows": [
+   {
+    "id": "E01",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "The answer presents both the June 2025 announcement and the July 2026 overview but declares the current CEO unresolved, whereas the reference requires concluding that the newest roster lists Vasylchuk as CEO and Kinitsky as CCDO. Both claims are supported by their cited excerpts (the ai-info excerpt itself says 'CEO & President'), so nothing is invented."
+   },
+   {
+    "id": "E02",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Correctly gives 30+ active with a 130+ historical footprint and scopes 130+ as historical, but omits the conflict with other same-day first-party pages saying 35+ active, which the reference says must be reported. All stated figures are supported by the cited excerpts."
+   },
+   {
+    "id": "E03",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "States 2018, matching the reference, with a supporting excerpt."
+   },
+   {
+    "id": "E04",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Lists SOC 2 Type II, ISO 27001, NIST CSF, GDPR, CCPA/CRPA and ITGC and correctly describes DORA as an independent controls assessment rather than a certification; all supported by the ai-info excerpt. Prescient Security is not named but was not asked."
+   },
+   {
+    "id": "E05",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Covers the 2025 shift toward infrastructure leadership and the regulatory engagement, but does not show the trajectory the reference requires: no earlier retail/multi-chain baseline and no 2026 additions (institutional VaaS, Blockspace/MEV, MCP access). Both stated claims are supported by their excerpts."
+   },
+   {
+    "id": "E06",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Status is error (step limit exhausted); no answer was produced, so the 0.01 ETH minimum, its June 2026 date and the 32 ETH meaning were not delivered."
+   },
+   {
+    "id": "E07",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Correctly says confirmation alone does not start reward accrual, but omits the required Instant Stake explanation (matching an existing unstake request; regular entry depends on pool funding/activation). The activation-queue claim is supported by the cited 369 Wallet guide excerpt."
+   },
+   {
+    "id": "E08",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Status is error; no consolidation arithmetic (64 x 32 = 2,048 ETH) or statement that the 32 ETH minimum is unchanged was produced."
+   },
+   {
+    "id": "E09",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Answers no: non-custodial control removes counterparty custody risk but slashing can still destroy principal, matching the reference's material qualification; no incident or contractual entitlement is asserted, and all claims are supported by the CFO-guide and ETF excerpts."
+   },
+   {
+    "id": "E10",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Correctly assigns the ETH2 Batch Deposit Contract review to B2B deposits and the Ethereum Staking Protocol review to retail mechanics, and states one review does not cover both flows; supported by the Ethereum page excerpt and no deployed code is certified."
+   },
+   {
+    "id": "E11",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "False abstention: the reference shows the corpus supplies the $199 Core and $499 Prime monthly rates, so the $1,595/month and $19,140 total could have been computed; the system returned no reliable answer."
+   },
+   {
+    "id": "E12",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Status is error; the per-product access model (ShredStream token, Direct Shreds IP provisioning, SWQOS HTTP/QUIC access, gated Relayer) was never delivered."
+   },
+   {
+    "id": "E13",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Correctly explains that 3ms is an in-region p50 median, not an all-message maximum, and that region locking means listener placement matters; supported by the blog and docs excerpts with no invented p99 or SLA."
+   },
+   {
+    "id": "E14",
+    "verdict": "fail",
+    "inventedFacts": false,
+    "explanation": "Status is error; no answer about the transport key not needing to sign or about the internally inconsistent tip rules was produced."
+   },
+   {
+    "id": "E15",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Refuses to promise every product in either city, reports the six-region guide versus the seven-region ShredStream list including Singapore, and invents no rollout dates; supported by the cited excerpts. It does not cover Direct Shreds pricing or SWQOS regions, but the required conclusion and conflict are delivered."
+   },
+   {
+    "id": "E16",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Negative question; the system abstained and did not invent an insurer, policy limit or beneficiary."
+   },
+   {
+    "id": "E17",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Negative question; the system abstained without manufacturing a compensation amount or credit schedule."
+   },
+   {
+    "id": "E18",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Negative question; the system abstained and did not invent add-on prices, volumes or a commitment period."
+   },
+   {
+    "id": "E19",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Negative question; the system abstained rather than deriving a percentage from region or validator counts."
+   },
+   {
+    "id": "E20",
+    "verdict": "pass",
+    "inventedFacts": false,
+    "explanation": "Negative question; the system abstained and did not promise an exact UTC delivery time."
+   }
+  ]
+ }
+]
