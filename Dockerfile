@@ -3,7 +3,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates python3 python3-venv ffmpeg && rm -rf /var/lib/apt/lists/*
 RUN python3 -m venv /opt/ytdlp && /opt/ytdlp/bin/pip install --no-cache-dir yt-dlp
 ENV PATH="/opt/ytdlp/bin:${PATH}"
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json tsconfig.json ./
 RUN npm ci --no-audit --no-fund
 COPY src ./src
 COPY web ./web

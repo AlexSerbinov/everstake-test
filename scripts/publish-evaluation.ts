@@ -76,7 +76,7 @@ try {
   for (const row of baseline.rows)
     markdown += `| ${row.question.id} | ${agent.rows.find((r) => r.question.id === row.question.id)!.verdict} | ${row.verdict} | ${cell(row.explanation)} |\n`;
   markdown +=
-    "\nEarlier diagnostic runs are retained separately. They are not stitched into either final run. Model-based support verification is fallible; deterministic citation and arithmetic checks do not prove semantic truth.\n";
+    "\nThe earlier complete agent run `agent-2b8e50ab` scored 15/20 (75%) with one unsupported-fact case. It is retained as a measured iteration, alongside incomplete diagnostic runs. No answers are stitched into either final run. Model-based support verification is fallible; deterministic citation and arithmetic checks do not prove semantic truth.\n";
   writeFileSync("EVAL.md", markdown);
   console.log(
     JSON.stringify(runs.map((r) => ({ id: r.id, summary: r.summary }))),

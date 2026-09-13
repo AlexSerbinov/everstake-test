@@ -92,6 +92,7 @@ The evaluation runner first saves **pending** verdicts. A successful HTTP respon
 | Comparison with Everstake's static MCP | [docs/MCP_COMPARISON.md](docs/MCP_COMPARISON.md) |
 | One-page process redesign | [PROCESS.md](PROCESS.md) |
 | Defence walkthrough and live change | [docs/DEFENCE.md](docs/DEFENCE.md) |
+| Requirement-by-requirement audit | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) |
 | Working history and effort methodology | `git log`, [docs/TIME.md](docs/TIME.md), [transition](docs/REBUILD.md) |
 
 The earlier Claude and Codex prototypes remain in Git history before this branch's retirement commit. They are not dependencies of this implementation. Their local uncommitted work was not included or discarded. New commits preserve real timestamps and the worktree integration history.

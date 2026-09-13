@@ -1,0 +1,987 @@
+{
+  "id": "agent-d421747d",
+  "createdAt": "2026-09-13T14:12:15.040Z",
+  "corpusVersion": "corpus-b3ab09e66f53",
+  "plannedTotal": 4,
+  "mode": "agent",
+  "status": "incomplete",
+  "rows": [
+    {
+      "question": {
+        "id": "E01",
+        "question": "Who is the CEO of Everstake?",
+        "reference": "Sergii Vasylchuk (CEO & President). David Kinitsky, announced in June 2025 as joining as CEO, is listed as CCDO (Chief Corporate Development Officer) on the company page as of 2026.",
+        "referenceUrls": [
+          "https://everstake.com/company/about",
+          "https://everstake.com/ai-info"
+        ],
+        "difficulty": "basic",
+        "category": "factual or temporal synthesis",
+        "whyHard": "9 syndicated press copies say Kinitsky 'joins as CEO' (June 2025); majority vote / similarity picks the wrong person",
+        "negative": false,
+        "rubric": [
+          "Every factual claim has a supporting source and correct scope."
+        ]
+      },
+      "answer": {
+        "runId": "43d72b58-da4b-4523-a78b-adc7e845e3c3",
+        "status": "error",
+        "question": "Who is the CEO of Everstake?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "43d72b58-da4b-4523-a78b-adc7e845e3c3",
+          "calls": 5,
+          "inputTokens": 25801,
+          "outputTokens": 8729,
+          "knownCostUsd": 0.050898530000000004,
+          "unknownCalls": 0,
+          "elapsedMs": 32527,
+          "startedAt": "2026-09-13T14:12:15.040Z",
+          "finishedAt": "2026-09-13T14:12:47.567Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "483fa190-a2f3-4d11-87ae-78ae043c37bf",
+              "runId": "43d72b58-da4b-4523-a78b-adc7e845e3c3",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:16.038Z",
+              "elapsedMs": 332.87133300000005,
+              "inputTokens": 9,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_bbb28bef6c5449a5ae667ba953839525",
+              "error": null
+            },
+            {
+              "id": "4f6f5c36-3a2f-4f42-95ae-0ce981491aa3",
+              "runId": "43d72b58-da4b-4523-a78b-adc7e845e3c3",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:17.132Z",
+              "elapsedMs": 8296.692625,
+              "inputTokens": 7466,
+              "outputTokens": 2471,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 2204,
+              "costUsd": 0.01486575,
+              "status": "completed",
+              "providerRequestId": "Qa-mauLqHoWo28oPwaGhmAY",
+              "error": null
+            },
+            {
+              "id": "618fa23a-b7d3-463c-8560-9d9dc11970f7",
+              "runId": "43d72b58-da4b-4523-a78b-adc7e845e3c3",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:25.441Z",
+              "elapsedMs": 14056.821334,
+              "inputTokens": 7983,
+              "outputTokens": 3996,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 3836,
+              "costUsd": 0.02097225,
+              "status": "completed",
+              "providerRequestId": "Sa-mapLbK_mVxN8P8Yez0AI",
+              "error": null
+            },
+            {
+              "id": "15a5fdb1-2de9-402a-9d33-79ca9f550efb",
+              "runId": "43d72b58-da4b-4523-a78b-adc7e845e3c3",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:39.503Z",
+              "elapsedMs": 7111.336292,
+              "inputTokens": 8161,
+              "outputTokens": 2104,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1828,
+              "costUsd": 0.01401075,
+              "status": "completed",
+              "providerRequestId": "V6-matPvLPaJxN8P7eK7uQg",
+              "error": null
+            },
+            {
+              "id": "fae55fed-1351-4241-bd38-b7b241dc355f",
+              "runId": "43d72b58-da4b-4523-a78b-adc7e845e3c3",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:46.655Z",
+              "elapsedMs": 907.8240420000002,
+              "inputTokens": 2182,
+              "outputTokens": 158,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0010496,
+              "status": "completed",
+              "providerRequestId": "Xq-mat_dNKDDvdIPpvvxgAQ",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-b3ab09e66f53",
+        "error": "[\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"factual\",\n      \"synthesis\"\n    ],\n    \"path\": [\n      \"questionMode\"\n    ],\n    \"message\": \"Invalid option: expected one of \\\"factual\\\"|\\\"synthesis\\\"\"\n  }\n]"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E06",
+        "question": "The ETH guide is dated 2023 but now says both 0.1 and 0.01 ETH. What minimum applies to a new stake on 12 September 2026, since when, and what does 32 ETH refer to?",
+        "reference": "New stakes use 0.01 ETH from June 2026. The older 0.1 text remains. 32 ETH is the pooled validator activation threshold, not the retail minimum.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+          "https://everstake.com/staking/protocols/ethereum"
+        ],
+        "difficulty": "hard",
+        "category": "temporal_conflict",
+        "whyHard": "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum.",
+        "negative": false,
+        "rubric": [
+          "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum."
+        ]
+      },
+      "answer": {
+        "runId": "1b68d579-3952-4fdf-9888-fb3107b1773d",
+        "status": "answered",
+        "question": "The ETH guide is dated 2023 but now says both 0.1 and 0.01 ETH. What minimum applies to a new stake on 12 September 2026, since when, and what does 32 ETH refer to?",
+        "text": "Everstake's minimum staking requirement for new stakes is 0.01 ETH. [01fb27ed221b9d386699278e013c4598] [17f5853119a054335b8027ebadeb3842]\n\nThe 0.01 ETH minimum applies to new stakes as of June 2026, announced on June 18, 2026, lowering the previous 0.1 ETH threshold introduced on September 14, 2023. [01fb27ed221b9d386699278e013c4598] [17f5853119a054335b8027ebadeb3842]\n\nThe 32 ETH figure refers to the Ethereum protocol's native network requirement to launch and activate a validator. [17f5853119a054335b8027ebadeb3842] [1515f9ec9aade0f4da0c505c27cfcf70]",
+        "asOf": "2026-09-09",
+        "claims": [
+          {
+            "text": "Everstake's minimum staking requirement for new stakes is 0.01 ETH.",
+            "citations": [
+              "01fb27ed221b9d386699278e013c4598",
+              "17f5853119a054335b8027ebadeb3842"
+            ],
+            "asOf": "2026-09-09"
+          },
+          {
+            "text": "The 0.01 ETH minimum applies to new stakes as of June 2026, announced on June 18, 2026, lowering the previous 0.1 ETH threshold introduced on September 14, 2023.",
+            "citations": [
+              "01fb27ed221b9d386699278e013c4598",
+              "17f5853119a054335b8027ebadeb3842"
+            ],
+            "asOf": "2026-09-09"
+          },
+          {
+            "text": "The 32 ETH figure refers to the Ethereum protocol's native network requirement to launch and activate a validator.",
+            "citations": [
+              "17f5853119a054335b8027ebadeb3842",
+              "1515f9ec9aade0f4da0c505c27cfcf70"
+            ],
+            "asOf": "2026-09-09"
+          }
+        ],
+        "sources": [
+          {
+            "id": "01fb27ed221b9d386699278e013c4598",
+            "documentId": "494fcb24938007bb448408926130e107",
+            "url": "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+            "title": "How to Stake 0.1 Ether or more on the Everstake website | Everstake",
+            "text": "## We’re thrilled to announce our native staking solution, allowing everyone to stake Ethereum starting from as little as 0.1 ETH. In this article, you’ll find a clear understanding of staking, the distinct advantages of staking with Everstake, and a detailed walkthrough on how to stake and unstake your Ether. OCT 02, 2023 Last updated AUG 19, 2026 · V1 Share with your network Table of Contents What makes Instant Stake different from Regular Staking? What do you need to know before you start staking? How to stake ETH Stake ETH Faster Using Everstake’s Instant Stake How to Unstake ETH Everstake’s Reward System Explained The Takeaway Show NOTE: As of June 2026, the minimum to stake ETH with Everstake is 0.01 ETH, down from 0.1 ETH. The new minimum applies to new stakes only. Figures and screenshots elsewhere in this article may still reflect the old 0.1 ETH minimum. See current minimums on the ETH staking page (https://everstake.one/staking/protocols/ethereum). Blockchain technology has reshaped our understanding of currencies and introduced a new paradigm of assets and wealth generation mechanisms. At the heart of these mechanisms, staking is a pivotal process ensuring decentralized networks’ security and functionality. There are numerous staking opportunities, and choosing the proper validator can differentiate between substantial gains and missed opportunities. Everstake (https://everstake.one/), with its impressive infrastructure powered by over 8,000 nodes, is recognized for its unparalleled efficiency, ironclad security, and consistent returns.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2023-10-02T13:56:00.000Z",
+            "updatedAt": "2026-08-19T11:42:43.000Z",
+            "fetchedAt": "2026-09-13T14:03:14.353Z",
+            "duplicateGroup": "494fcb24938007bb448408926130e107",
+            "score": 0.03149801587301587,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "17f5853119a054335b8027ebadeb3842",
+            "documentId": "45cadbbdbaf9713824124b9b16a5cb8a",
+            "url": "https://everstake.com/resources/blog/everstake-lowers-the-ethereum-staking-minimum-to-0-01-eth",
+            "title": "Everstake Lowers the Ethereum Staking Minimum to 0.01 ETH | Everstake",
+            "text": "Company News\nethereum\n\n# Everstake Lowers the Ethereum Staking Minimum to 0.01 ETH\n\n## Everstake has lowered the minimum for our non-custodial Ethereum staking solution from 0.1 ETH to 0.01 ETH.\nJUN 18, 2026\nLast updated SEP 09, 2026 · V1\nShare with your network\nTable of Contents\nTL;DR\nWhy Use Everstake’s 0.01+ ETH Staking Solution\nHow to stake Ethereum starting from 0.01 ETH\nHow the 0.01+ ETH Staking Solution Works\nFAQ\nShow\n\n## TL;DR\n- You can now stake from 0.01 ETH with Everstake, a non-custodial staking provider founded in 2018.\n- Everstake simplifies the entry to staking, while validator activation remains subject to the Ethereum protocol’s 32 ETH requirement.\n- Assets stay in your wallet, withdrawals can be initiated anytime, and the solution is audited by ChainSecurity, Ackee, Trail of Bits.\n- Users can start staking through theEverstake ETH staking (https://stake.everstake.one/dashboard/stake/ethereum)dashboard in a few steps.\nThe previous threshold, introduced on September 14, 2023, already reduced the native 32 ETH validator requirement 320 times. The new minimum lowers it 3,200 times.\nA lower entry threshold means more holders can participate in securing the Ethereum network. Broader participation supports decentralization across the validator set.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-06-18T17:00:27.000Z",
+            "updatedAt": "2026-09-09T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:56.685Z",
+            "duplicateGroup": "45cadbbdbaf9713824124b9b16a5cb8a",
+            "score": 0.031818181818181815,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "1515f9ec9aade0f4da0c505c27cfcf70",
+            "documentId": "b905fd39b215735727a8f0f716d06578",
+            "url": "https://everstake.com/resources/blog/everstake-makes-ethereum-staking-accessible-and-high-yielding-to-everyone",
+            "title": "Everstake Makes Ethereum Staking Accessible and High-yielding to Everyone | Everstake",
+            "text": "ethereum\n\n# Everstake Makes Ethereum Staking Accessible and High-yielding to Everyone\n\n## Everstake is thrilled to announce the release of its 0.1+ ETH staking solution, the world’s first non-custodial service enabling anyone to stake as little as 0.1 ETH.\nSEP 14, 2023\nLast updated JUN 19, 2026 · V1\nShare with your network\nTable of Contents\nWhy Use Everstake’s 0.1+ ETH Staking Solution\nHow to stake Ethereum starting from 0.1 ETH\nHow the 0.1+ ETH Staking Solution Works\nShow\nWe’re thrilled to announce the release of our 0.1+ ETH staking (https://stake.everstake.one/ethereum/), a non-custodial service enabling anyone to stake as little as 0.1 ETH. We’re pretty thrilled to be the first ones to do it!\nNOTE: As of June 2026, the minimum to stake ETH with Everstake is 0.01 ETH, down from 0.1 ETH. The new minimum applies to new stakes only. Figures and screenshots elsewhere in this article may still reflect the old 0.1 ETH minimum. See current minimums on the ETH staking page (https://everstake.one/staking/protocols/ethereum).\nAfter Ethereum became a Proof-of-Stake blockchain, everyone was waiting for ETH’s staking to become a reality. Still, the network’s rules demand that the minimum stake to launch a validator is 32 ETH, which may be too high of a threshold for many potential stakers.\nWith Everstake’s solution, this entry threshold is lowered 320 times.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2023-09-14T12:14:00.000Z",
+            "updatedAt": "2026-06-19T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:03:15.738Z",
+            "duplicateGroup": "b905fd39b215735727a8f0f716d06578",
+            "score": 0.031009615384615385,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date is present in evidence; semantic verifier checks its meaning"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Everstake's minimum staking requirement for new stakes is 0.01 ETH as of June 2026."
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "The 0.01 ETH minimum applies to new stakes as of June 2026, replacing the previous 0.1 ETH threshold introduced on September 14, 2023."
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "The 32 ETH figure refers to the Ethereum protocol's native requirement to launch or activate a validator."
+          }
+        ],
+        "trust": {
+          "score": 95,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 15,
+              "maximum": 20,
+              "reason": "3 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "1b68d579-3952-4fdf-9888-fb3107b1773d",
+          "calls": 4,
+          "inputTokens": 22060,
+          "outputTokens": 4464,
+          "knownCostUsd": 0.030898900000000003,
+          "unknownCalls": 0,
+          "elapsedMs": 17868,
+          "startedAt": "2026-09-13T14:12:47.572Z",
+          "finishedAt": "2026-09-13T14:13:05.440Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "81a86127-2c05-4cd7-ae3d-97996fbd7226",
+              "runId": "1b68d579-3952-4fdf-9888-fb3107b1773d",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:48.519Z",
+              "elapsedMs": 354.52091700000165,
+              "inputTokens": 50,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 0.000001,
+              "status": "completed",
+              "providerRequestId": "req_271d9126961240f0b0a0793cfcab1fce",
+              "error": null
+            },
+            {
+              "id": "517a383a-fb5b-49b9-9225-c8d41df0fa55",
+              "runId": "1b68d579-3952-4fdf-9888-fb3107b1773d",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:49.982Z",
+              "elapsedMs": 8305.958750000005,
+              "inputTokens": 8369,
+              "outputTokens": 2234,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1876,
+              "costUsd": 0.01465425,
+              "status": "completed",
+              "providerRequestId": "Yq-maruMD5OLvdIP2pqR0QI",
+              "error": null
+            },
+            {
+              "id": "4f24ffbb-fc3c-4b22-9364-63c870d0fac1",
+              "runId": "1b68d579-3952-4fdf-9888-fb3107b1773d",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:12:58.290Z",
+              "elapsedMs": 6101.135209,
+              "inputTokens": 8978,
+              "outputTokens": 2029,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1684,
+              "costUsd": 0.01434225,
+              "status": "completed",
+              "providerRequestId": "aq-maofSH9WCxN8P5a2DsAs",
+              "error": null
+            },
+            {
+              "id": "a38dc6c1-efcb-48a2-a1df-cc729aa35511",
+              "runId": "1b68d579-3952-4fdf-9888-fb3107b1773d",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:04.393Z",
+              "elapsedMs": 1039.0063750000045,
+              "inputTokens": 4663,
+              "outputTokens": 201,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0019014,
+              "status": "completed",
+              "providerRequestId": "cK-mau6EJbO7vdIPvLz9iAQ",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-b3ab09e66f53"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E11",
+        "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
+        "reference": "3 × $199 + 2 × $499 = $1,595 monthly; twelve months total $19,140. This hypothetical subscription subtotal proves neither annual-plan discounts nor a percentage commission.",
+        "referenceUrls": [
+          "https://everstake.com/products/institutional-staking/vaas"
+        ],
+        "difficulty": "hard",
+        "category": "calculation_commercial_scope",
+        "whyHard": "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts.",
+        "negative": false,
+        "rubric": [
+          "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts."
+        ]
+      },
+      "answer": {
+        "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+        "status": "error",
+        "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
+        "text": "The request could not complete. Check provider availability or the configured budget.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "failed",
+            "reason": "Unsupported quantities: 597, 998, 19140, 1595"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "failed",
+            "reason": "Unsupported as-of date"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+          "calls": 10,
+          "inputTokens": 49980,
+          "outputTokens": 2067,
+          "knownCostUsd": 0.04518369,
+          "unknownCalls": 0,
+          "elapsedMs": 24795,
+          "startedAt": "2026-09-13T14:13:05.443Z",
+          "finishedAt": "2026-09-13T14:13:30.238Z",
+          "status": "failed",
+          "attempts": [
+            {
+              "id": "e1c414b7-c1d2-463d-b89e-5b0243e7542f",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:07.048Z",
+              "elapsedMs": 304.04595900000277,
+              "inputTokens": 40,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 8.000000000000001e-7,
+              "status": "completed",
+              "providerRequestId": "req_64f4821a41404e1d94ed72d3bf86df52",
+              "error": null
+            },
+            {
+              "id": "74e3d945-2169-4cb1-a36a-a6a083ababb8",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:08.043Z",
+              "elapsedMs": 1225.1031249999942,
+              "inputTokens": 7179,
+              "outputTokens": 97,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 83,
+              "costUsd": 0.005748,
+              "status": "completed",
+              "providerRequestId": "dK-mas7PEsKb28oPmqLWsAI",
+              "error": null
+            },
+            {
+              "id": "ee0bf39f-8399-4729-9c12-1053b98ed99e",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:10.505Z",
+              "elapsedMs": 224.32895799999824,
+              "inputTokens": 6,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.2e-7,
+              "status": "completed",
+              "providerRequestId": "req_d9ecbc1c89de451bac7277329fd18ab4",
+              "error": null
+            },
+            {
+              "id": "06e245e9-f7d1-4c9a-b9a1-c31ceddc3b0c",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:11.522Z",
+              "elapsedMs": 1722.310375000001,
+              "inputTokens": 7848,
+              "outputTokens": 42,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0060435,
+              "status": "completed",
+              "providerRequestId": "d6-marC8LM6p28oP8_jNwQQ",
+              "error": null
+            },
+            {
+              "id": "e8a4a1bf-79b1-433f-a56a-8019bed8b4ec",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:13.288Z",
+              "elapsedMs": 1708.8285830000023,
+              "inputTokens": 7921,
+              "outputTokens": 292,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 271,
+              "costUsd": 0.00703575,
+              "status": "completed",
+              "providerRequestId": "ea-masXaIJbT28oPm6-32AI",
+              "error": null
+            },
+            {
+              "id": "7d15386a-29cf-4871-8b72-8fb0b0514d95",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:15.958Z",
+              "elapsedMs": 296.19066600000224,
+              "inputTokens": 12,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_64cce9c27a8846e8b3c6e45642b40a9c",
+              "error": null
+            },
+            {
+              "id": "b1026888-8872-4db8-8b2b-540dfbdffe79",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:17.004Z",
+              "elapsedMs": 1090.4023749999978,
+              "inputTokens": 8701,
+              "outputTokens": 22,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00660825,
+              "status": "completed",
+              "providerRequestId": "fa-masbmDsD6xs0P7tu1sQM",
+              "error": null
+            },
+            {
+              "id": "716c822f-5877-4c56-98b0-37c76538ada1",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:19.062Z",
+              "elapsedMs": 228.544249999999,
+              "inputTokens": 14,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_5c36a52036d84dd88b23f9c32ba56ef8",
+              "error": null
+            },
+            {
+              "id": "c0c3be32-fa8e-4b19-bd7b-6327d7ce7942",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:19.858Z",
+              "elapsedMs": 2584.1494169999933,
+              "inputTokens": 9447,
+              "outputTokens": 120,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 79,
+              "costUsd": 0.00753525,
+              "status": "completed",
+              "providerRequestId": "gK-mau-vBP2HxN8Pq7feqAo",
+              "error": null
+            },
+            {
+              "id": "0f7fe381-8e63-4f33-ae5c-cf131d9f7d36",
+              "runId": "183e3369-531b-4154-b822-693ef8e41ef8",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:22.451Z",
+              "elapsedMs": 7784.23666699999,
+              "inputTokens": 8812,
+              "outputTokens": 1494,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1192,
+              "costUsd": 0.0122115,
+              "status": "completed",
+              "providerRequestId": "gq-maqj7Kpqp28oPq7DSiQs",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-b3ab09e66f53",
+        "error": "Research exhausted its step limit without a valid final answer"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    },
+    {
+      "question": {
+        "id": "E16",
+        "question": "For Everstake’s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
+        "reference": "No reliable product-specific policy establishes that guarantee in the reviewed evidence. Request the applicable policy and exclusions; market examples of insurers do not identify Everstake’s actual coverage.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/how-to-choose-staking-provider-institutions",
+          "https://everstake.com/resources/blog/staking-slashing-risk-prevention-insurance",
+          "https://everstake.com/terms-of-use"
+        ],
+        "difficulty": "hard",
+        "category": "missing_policy",
+        "whyHard": "Do not infer either universal insurance coverage or absence of insurance.",
+        "negative": true,
+        "rubric": [
+          "Do not infer either universal insurance coverage or absence of insurance."
+        ]
+      },
+      "answer": {
+        "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+        "status": "no_reliable_answer",
+        "question": "For Everstake’s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
+        "text": "No reliable answer was found in the available evidence.",
+        "asOf": null,
+        "claims": [],
+        "sources": [],
+        "checks": [
+          {
+            "rule": "abstention",
+            "status": "passed",
+            "reason": "No factual claims emitted"
+          }
+        ],
+        "trust": null,
+        "receipt": {
+          "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+          "calls": 9,
+          "inputTokens": 47023,
+          "outputTokens": 3175,
+          "knownCostUsd": 0.04713481,
+          "unknownCalls": 0,
+          "elapsedMs": 23028,
+          "startedAt": "2026-09-13T14:13:30.241Z",
+          "finishedAt": "2026-09-13T14:13:53.269Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "fb6eccbf-ed71-433e-a0d4-a10f631f8c70",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:30.887Z",
+              "elapsedMs": 261.60258299999987,
+              "inputTokens": 29,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.8e-7,
+              "status": "completed",
+              "providerRequestId": "req_a727b2ba034f48b794f4b741dafe0159",
+              "error": null
+            },
+            {
+              "id": "a99c85c1-21a4-4b64-8c45-50d10321d343",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:31.665Z",
+              "elapsedMs": 2595.192875000008,
+              "inputTokens": 7531,
+              "outputTokens": 573,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 554,
+              "costUsd": 0.007797,
+              "status": "completed",
+              "providerRequestId": "i6-mar-2OaiPxN8PjJbBqAs",
+              "error": null
+            },
+            {
+              "id": "a68b8c40-5061-4341-954e-6ffa702e4a20",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:34.827Z",
+              "elapsedMs": 243.1770419999957,
+              "inputTokens": 12,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_283fe13417784e9f8e8137a417fcb9ff",
+              "error": null
+            },
+            {
+              "id": "53e92c81-5959-431a-9b89-07c4100c80e3",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:35.753Z",
+              "elapsedMs": 5225.381708000001,
+              "inputTokens": 8892,
+              "outputTokens": 884,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 866,
+              "costUsd": 0.009984,
+              "status": "completed",
+              "providerRequestId": "kK-masyQAZ2lvdIPiof32Qs",
+              "error": null
+            },
+            {
+              "id": "a0ab435f-a11d-4a5b-98fd-afed407f59e8",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:41.564Z",
+              "elapsedMs": 287.1517909999966,
+              "inputTokens": 12,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.4e-7,
+              "status": "completed",
+              "providerRequestId": "req_ec567486f1fa466db5b62ebd2638ff64",
+              "error": null
+            },
+            {
+              "id": "af2687a0-3406-40ca-9485-71d0f411aca8",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:42.375Z",
+              "elapsedMs": 927.2479579999927,
+              "inputTokens": 8248,
+              "outputTokens": 43,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00634725,
+              "status": "completed",
+              "providerRequestId": "lq-mar-sJ7a_vdIPw5rFuQs",
+              "error": null
+            },
+            {
+              "id": "d97ad547-5bbc-4f33-b05a-649a6a9e7537",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:43.308Z",
+              "elapsedMs": 1480.9733339999948,
+              "inputTokens": 7615,
+              "outputTokens": 44,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00587625,
+              "status": "completed",
+              "providerRequestId": "l6-mavzOIYeUxN8P7deN8QI",
+              "error": null
+            },
+            {
+              "id": "ab02cb80-4a72-4e5d-bbc2-8cf14d84f8fb",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:44.811Z",
+              "elapsedMs": 947.239207999999,
+              "inputTokens": 7375,
+              "outputTokens": 43,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0056925,
+              "status": "completed",
+              "providerRequestId": "ma-matHQBL7dxs0PmYfe6AQ",
+              "error": null
+            },
+            {
+              "id": "c7dad077-5537-42f6-a22b-cfc236c86719",
+              "runId": "d2e2a265-9b79-467c-9a88-0b58041e1e7c",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T14:13:45.765Z",
+              "elapsedMs": 7502.623332999996,
+              "inputTokens": 7309,
+              "outputTokens": 1588,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1540,
+              "costUsd": 0.01143675,
+              "status": "completed",
+              "providerRequestId": "mq-matz0AbejvdIPpvapiAY",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-b3ab09e66f53"
+      },
+      "verdict": "pending",
+      "inventedFacts": null,
+      "explanation": "Awaiting independent rubric review against frozen corpus; successful API response is not a pass."
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "completed": 4,
+    "assessed": 0,
+    "passed": 0,
+    "failed": 0,
+    "accuracy": null,
+    "inventedFacts": null,
+    "knownCostUsd": 0.17411593,
+    "unknownCalls": 0
+  }
+}

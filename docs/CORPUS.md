@@ -60,3 +60,7 @@ Before hashing, chunking, or indexing, the sanitizer removed 7 sentences address
 ## Known limits
 
 The corpus is broad within its configured boundary, not a complete archive of every Everstake mention. JavaScript-only pages may yield too little server-rendered text; cross-origin moves require an operator decision; 254 documents are undated; GitHub coverage is deliberately bounded; video remains a separate pilot; and near-duplicate detection can miss paraphrases below its threshold. The frozen artifact records what was actually attempted and excluded so those gaps are visible rather than counted as successful coverage.
+
+## Final frozen corpus after integration
+
+The initial web run above is preserved as its own measurement. Final integration added four accepted YouTube transcripts, re-sanitized the AI guidance page, retained all near-duplicate variants, and exercised a staged targeted refresh. The final [manifest](../artifacts/corpus/frozen-manifest.json) identifies `corpus-eae2b2b23116`: **939 active documents, 927 canonical content groups, 7,694 active chunks**. Six duplicate groups contain seven redundant exact copies plus five additional near-duplicate members. Only the exact copies collapse at indexing; near-duplicate variants remain searchable. The source dates and final sanitation checks were independently re-audited in [evaluation-reference-audit.md](evaluation-reference-audit.md).

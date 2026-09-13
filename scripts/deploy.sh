@@ -13,8 +13,9 @@ rsync -az .env "$server:$remote_dir/.env"
 ssh "$server" "chmod 600 '$remote_dir/.env'"
 # Bootstrap data is transferred only when no live database exists. Subsequent deploys retain live costs/data.
 if ! ssh "$server" "test -f '$remote_dir/data/knowledge.sqlite'"; then
-  npx tsx scripts/backup-database.ts data/deploy-snapshot.sqlite
-  rsync -az data/deploy-snapshot.sqlite "$server:$remote_dir/data/knowledge.sqlite"
+  snapshot_path="data/deploy-snapshot-$(date +%s).sqlite"
+  npx tsx scripts/backup-database.ts "$snapshot_path"
+  rsync -az "$snapshot_path" "$server:$remote_dir/data/knowledge.sqlite"
 fi
 code_version=$(git rev-parse HEAD)
 ssh "$server" "cd '$remote_dir' && CODE_VERSION='$code_version' docker compose up -d --build"
