@@ -1,3 +1,15 @@
+# Everstate Knowledge Base
+
+A public-source knowledge assistant being rebuilt as one readable TypeScript implementation, combining lessons from the earlier Claude and Codex prototypes.
+
+**Status: rebuild started; the new application has not been implemented or evaluated yet.** The existing folders below are inherited prototypes. Their measured results and deployed demos do not establish the quality or deployment status of the new version.
+
+Start with the [assignment](docs/TEST_ASSIGNMENT_EN.md), [supplied source list](docs/corpus_sources.csv), and [rebuild transition](docs/REBUILD.md).
+
+The intended deployment is `https://everstate-knowledge-base.89-167-19-222.sslip.io` on the owner's personal server. This is a planned address, not a verified live deployment.
+
+## Previous prototypes and deliverables
+
 # Everstake test assignment — AI Automation & Agentic Systems Lead
 
 A knowledge assistant that answers questions about Everstake from **a corpus of public sources the system crawls itself** — every answer carries an as-of date and cited source URLs, and says "no reliable answer" when the corpus does not contain the fact. The assignment is in [`docs/TEST_ASSIGNMENT_EN.md`](docs/TEST_ASSIGNMENT_EN.md). The repository holds **two independent implementations of the same brief**: [`claude-work/`](claude-work) (TypeScript, built by Claude Code from the plan in [`docs/PLAN.md`](docs/PLAN.md)) is **the submission** — it is the one that covers every item of section 8. [`codex-work/`](codex-work) (Python, built by GPT-5.6 via Codex) is a **second, independent run started ~2 hours later** from the same inputs, with no access to `claude-work/` and no architectural hints (its brief: [`docs/codex-task.md`](docs/codex-task.md), [`docs/codex-task-2.md`](docs/codex-task-2.md)); Part B was explicitly excluded from it. It is kept because running one brief through two models is itself a result, and because each ended up stronger somewhere else — `claude-work` on corpus work and on the section-8 deliverables, `codex-work` on tamper evidence (Ed25519-signed audit chain) and scheduled refresh. **Neither is claimed to be better overall:** their numbers come from different models graded by different evaluation harnesses and are not directly comparable.

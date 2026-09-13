@@ -1,17 +1,10 @@
-# Project guide for agents and contributors
+# Everstake take-home assignment — project instructions
 
-## What this repository is
+This is the single project guide for agents and contributors. We are building Oleksandr Serbinov's take-home assignment for the AI Automation & Agentic Systems Lead role at Everstake: a source-grounded knowledge assistant and a one-page process redesign (Part B).
 
-A take-home test assignment for the **AI Automation & Agentic Systems Lead** role at Everstake, done by Oleksandr Serbinov. The task: build a knowledge assistant that answers questions about Everstake from a corpus of public sources the system crawls itself, with an as-of date and cited sources on every answer, an honest "no reliable answer" when the corpus lacks the fact, a measured evaluation, measured costs, and a written report; plus a one-page process redesign (Part B).
+## Start here
 
-Two independent implementations of the same brief live side by side and are both deployed:
-
-| Folder | Stack | Live | Role |
-|---|---|---|---|
-| `claude-work/` | TypeScript, Node ≥ 22.13, SQLite (`node:sqlite`), Hono, plain HTML/CSS/JS UI | https://everstake.89-167-19-222.sslip.io | primary submission |
-| `codex-work/` | Python, SQLite, tool-loop agent | https://everstake-codex.89-167-19-222.sslip.io | second, independent run for comparison |
-
-`README.md` at the root maps every deliverable of the assignment to the files that satisfy it.
+Read the relevant assignment sections, `docs/REBUILD.md`, and the assigned execution package before changing code. Build one small, readable TypeScript application with SQLite and clear feature modules. No RAG frameworks or unnecessary service infrastructure. The current `claude-work/` and `codex-work/` folders are reference prototypes; their results are not measurements of the new implementation.
 
 ## Source of truth: the assignment
 
@@ -34,47 +27,35 @@ Key non-negotiables from the assignment, paraphrased:
 - one paragraph comparing against Everstake's own MCP server, honest in both directions;
 - reviewers must be able to run the system or see it running; every line must be explainable and modifiable live.
 
-## Layout
+## Effort budget and accounting
 
-```
-docs/                      assignment, translation, seed CSV, plan, research notes, task briefs, daily reports
-claude-work/               primary implementation (see its README, REPORT, EVAL, ADVERSARIAL, COST, PROCESS)
-codex-work/                second implementation (see its README, REPORT, EVAL, SUMMARY)
-CHANGELOG.md               narrative timeline of the work
-docs/reports/YYYY-MM-DD.md daily progress reports
-docs/research/             design notes: freshness, scale & trust, adversarial evaluation, internal knowledge, reporting
-docs/github-map/           documentation of Everstake's public GitHub repositories, used as corpus input
-docs/DEFENCE.md            short theses for the defence session
-```
+- Aim to finish Part A within eight hours of human active effort; the assignment gives a 6–8 hour expectation and budgets Part B at approximately one hour separately. Reduce scope deliberately when necessary and document the trade-off.
+- Our accounting convention counts the user's active time: briefing, planning, reading, thinking, review, testing, supervision and integration. Autonomous agent runs while the user is away do not add to human hours. This distinction is our disclosed method, not an explicit exclusion stated by the assignment.
+- Record autonomous agent elapsed time and API spending separately. Parallel agents do not multiply human hours. Subscription usage is not necessarily zero resource usage.
+- Keep durations and their evidence in `docs/TIME.md`, not in this guide. Record actual session boundaries when tracking is authorized, pause when the user leaves, and merge overlapping human intervals. Do not infer absence from silence in prompt logs.
+- Keep retrospective user estimates separate from the historical event-based count; do not add both totals together. Label uncertainty. Eight hours is a budget, not a required reported result.
+- Git timestamps are real recording times, not timesheets. Do not backdate history or fabricate durations. TIME describes effort; CHANGELOG/TIMELINE describes outcomes; COST describes spending.
 
-Folders `reference/`, `everstake-mcp/`, `raw/`, `mcp-test/` are local scratch (third-party code, raw HTML, probes) and are git-ignored.
+## Git and parallel work
 
-## Working rules
+Continue the new implementation on `dev` in its registered worktree. Keep the original checkout and its uncommitted prototype changes intact. Use `git worktree list` to find it and check reference freshness before reading the old implementations. Archiving is deferred, not a prerequisite.
 
-- **Read before changing.** Each implementation has its own `README.md`, `REPORT.md` and config; the reports state measured numbers and must be updated when the numbers change.
-- **Stay in your lane.** Work on `claude-work/` or `codex-work/` touches only that folder (plus `docs/` and the root docs). The two implementations must not read from or depend on each other.
-- **Measured, not estimated.** Token counts come from provider usage fields; costs are tokens × a price table with the date the prices were copied; timings, CPU and memory come from the process. Anything assumed is labelled as assumed.
-- **Models.** Gemini 3.x generation only (`gemini-3.8-flash` for answers, `gemini-3.5-flash-lite` for cheap extraction and judging); OpenAI only for embeddings; an Anthropic path exists in `claude-work` and is used when a key is available. Never use Gemini 2.5.
-- **Explainable code.** No RAG frameworks; prefer small, readable modules; rules for models live in `prompts/` and `config/` files, not in string literals; agents, skills and prompts are real files.
-- **Safety invariants** (do not weaken): instruction sentences addressed to AI are stripped at index time; context is passed as tagged data; citations are validated in code; every number in an answer must be grounded in tool-returned text; provider errors are never reported as abstentions.
-- **Git.** Commit with real timestamps and descriptive messages. Do not push, force-push, rebase or rewrite history unless the owner explicitly asks. Do not commit secrets: `.env` files are ignored; `.env.example` lists the variables.
-- **Tests must stay green** (`npm test` in `claude-work`, the Python test suite in `codex-work`) before a commit.
-- **Deployment.** Each implementation has its own deploy script targeting its own port and data directory on the demo host; never stop, modify or remove services you did not create.
+Start worker branches only from a verified committed foundation, using `git worktree add` outside the repository. Each package needs dependencies, owned paths, acceptance checks and a handoff. The coordinator owns contracts, database schema, package/lock files and application entry points. Give workers separate mutable databases, output directories and ports; only frozen corpus snapshots may be shared read-only. Integrate and verify completed packages sequentially.
 
-## Defence notes: `docs/DEFENCE.md`
+Commit and push only with owner authorization, using descriptive messages and real timestamps. Do not force-push, rewrite history, discard working changes or merge into main without explicit authorization. The final main tree should contain the verified single implementation and preserve the development history. Do not delete prototype folders until required behavior is covered and the cleanup is authorized.
 
-Everything that will be shown or explained at the defence session is collected in `docs/DEFENCE.md`, written in **Ukrainian**, as **short plain-language theses**, one block per part of the system: how it works, what to show on screen, and a one-sentence takeaway. Keep it that way — it is a speaker's script, not documentation.
+## Implementation and validation
 
-Add to it whenever work produces something worth showing: a design decision with a clear reason, a mechanism that is verified at the system level rather than assumed (a gate in code, a measured number, a test that proves a property), a surprising finding in the corpus, or a trade-off that was made deliberately. If a behaviour is non-obvious — two sources disagree and the system picks one, a number is blocked, a source is down-weighted — write down *why*, in words a non-engineer follows, and which screen demonstrates it. Prefer honesty over polish: limitations belong there too, with the answer to "what would you do next".
+- Prefer small readable modules, general evidence rules and configuration over question-specific hardcoding. Keep actual model instructions in `prompts/` and configuration in `config/`.
+- Use Gemini 3.x generation: `gemini-3.8-flash` for answers and speaker attribution/review, `gemini-3.5-flash-lite` for cheap extraction/judging; OpenAI only for embeddings. Do not use Gemini 2.5. Keep provider identifiers configurable and validate availability before paid runs.
+- Strip AI-directed instruction sentences at index time, pass context as tagged data, validate citations in code and ground answer numbers in tool-returned text. Provider errors are not evidence-based abstentions. Do not weaken these invariants.
+- Get token counts from provider usage. Use a dated price table; distinguish calculated usage costs, provider billing, unknown costs and explicit forecasts. Do not reuse prototype totals as new measurements.
+- Run checks appropriate to the changed behavior before committing; keep the affected implementation's tests green. Report failures and unrun checks honestly.
+- Never commit secrets, mutable databases, build output or caches. Preserve existing `.env.example` keys.
+- The two existing demo services have separate ports and data directories. Do not stop or alter them during the rebuild. The planned new target is documented in `docs/REBUILD.md`.
 
-## Where to look for specific answers
+## Documentation
 
-| Question | File |
-|---|---|
-| Which requirement is satisfied where | `README.md` (root), `docs/CHECKLIST.md` |
-| Architecture and decisions, with reasons | `claude-work/REPORT.md`, `codex-work/REPORT.md` |
-| Evaluation results and failures | `claude-work/EVAL.md`, `claude-work/ADVERSARIAL.md`, `codex-work/EVAL.md` |
-| Measured costs | `claude-work/COST.md`, `codex-work/COST.md` |
-| How the corpus was chosen (robots, sitemaps, redirects) | `docs/crawl-survey.md`, `claude-work/config/sources.yaml` |
-| Original plan | `docs/PLAN.md` |
-| Defence theses | `docs/DEFENCE.md`, `docs/defence-answers.md` |
+Keep reviewer entry points concise: README for setup and deliverables, REPORT for decisions and limitations, EVAL for measured results, COST for spending, PROCESS for Part B. Prototype reports remain historical evidence until replaced by new measurements.
+
+Keep `docs/DEFENCE.md` as short Ukrainian speaker notes: how each block works, what to show, why a decision was made, and known limitations. User communication is Ukrainian; code, comments, errors and commit messages are English.

@@ -43,3 +43,13 @@ Not counted above; listed so the git log reads correctly. Spans are approximate,
 ## Earlier figure
 
 Until 2026-09-12 the changelog header said "roughly 7–8 hours of hands-on time". That was the wall-clock span of two sessions and included the agent runs in the table above. It has been replaced by this measurement; the old wording remains in the git history.
+
+## User recollection supplied on 2026-09-13
+
+The author estimates approximately 1.5 hours on Friday 2026-09-11 and 2.5 hours on Saturday 2026-09-12: approximately 4 hours combined. These are retrospective user estimates, not stopwatch measurements or a rerun of the event-based calculation above. They overlap the historical sessions and must not be added to the 199-minute event-based total. The methods differ and have not yet been reconciled.
+
+Sunday 2026-09-13 has no confirmed duration in this update. No start time or session duration is inferred from the current conversation. Therefore this estimate does not establish the total effort to date or the exact remaining budget. The ongoing accounting convention is defined in the project AGENTS.md.
+
+## Sunday planning start (user-reported)
+
+On 2026-09-13 the author reported starting planning at approximately 14:40 Europe/Madrid. This is a retrospective approximate start, not an instrumented timestamp. The end and active intervals are not yet established; no duration is asserted. Subsequent autonomous implementation time is recorded separately from human effort.
