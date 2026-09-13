@@ -18,6 +18,14 @@ try {
     ...videos,
   ].map((document) => {
     const sanitized = sanitizeDocument(document.text);
+    const historyRules = db
+      .prepare("SELECT snapshot FROM documents WHERE url=? AND active=0")
+      .all(document.url)
+      .flatMap((row) =>
+        sanitizeDocument(JSON.parse(String(row.snapshot)).text).removed.map(
+          (r) => r.rule,
+        ),
+      );
     const text = sanitized.text;
     const contentHash = createHash("sha256").update(text).digest("hex");
     const id = createHash("sha256")
@@ -38,6 +46,13 @@ try {
         removedInstructionCount:
           Number(document.metadata.removedInstructionCount ?? 0) +
           sanitized.removed.length,
+        removedInstructionRules: [
+          ...new Set([
+            ...((document.metadata.removedInstructionRules as string[]) ?? []),
+            ...sanitized.removed.map((r) => r.rule),
+            ...historyRules,
+          ]),
+        ],
         sanitationVersion: "v2",
       },
     };

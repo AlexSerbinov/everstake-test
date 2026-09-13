@@ -89,7 +89,18 @@ export function importInventory(options: {
     });
   };
 
-  const old = JSON.parse(readFileSync(options.oldManifest, "utf8")) as {
+  if (existsSync(options.output)) {
+    const current = JSON.parse(
+      readFileSync(options.output, "utf8"),
+    ) as Inventory;
+    for (const { decision, reason, ...candidate } of current.candidates)
+      add(candidate, { kind: "previous-inventory", checkedAt });
+  }
+  const old = (
+    options.oldManifest && existsSync(options.oldManifest)
+      ? JSON.parse(readFileSync(options.oldManifest, "utf8"))
+      : {}
+  ) as {
     ts?: string;
     candidates?: Array<Record<string, unknown>>;
   };

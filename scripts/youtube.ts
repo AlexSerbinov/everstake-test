@@ -35,16 +35,11 @@ const config = readYouTubeConfig();
 const flags = parseFlags(process.argv.slice(3));
 const command = process.argv[2] ?? "status";
 const livePath = flags.live ?? "artifacts/youtube/live-official.jsonl";
-const referenceRoot =
-  flags.reference ??
-  process.env.EVERSTAKE_REFERENCE_ROOT ??
-  "/Users/serbinov/Desktop/projects/personal/everstake-test";
-const oldManifest =
-  flags["old-manifest"] ??
-  `${referenceRoot}/claude-work/data/youtube-discovered.json`;
-const oldMetadata =
-  flags["old-metadata"] ?? `${referenceRoot}/claude-work/data/youtube`;
-const db = openDatabase(flags.db ?? "data/youtube.sqlite");
+const oldManifest = flags["old-manifest"] ?? "";
+const oldMetadata = flags["old-metadata"] ?? "data/youtube";
+const db = openDatabase(
+  flags.db ?? process.env.DB_PATH ?? "data/knowledge.sqlite",
+);
 
 try {
   if (command === "discover") {
@@ -278,7 +273,9 @@ function requiredAccepted(inventory: Inventory, id: string) {
 
 function reservedOrKnown(database: Database): number {
   const rows = database
-    .prepare("SELECT cost_usd, metadata FROM api_calls")
+    .prepare(
+      "SELECT cost_usd, metadata FROM api_calls WHERE stage LIKE 'youtube-%'",
+    )
     .all() as Array<{ cost_usd: number | null; metadata: string }>;
   return rows.reduce((sum, row) => {
     if (row.cost_usd !== null) return sum + row.cost_usd;
@@ -347,7 +344,7 @@ function writeDocuments(documents: DocumentSnapshot[]): void {
 function exportLedger(database: Database): void {
   const calls = database
     .prepare(
-      "SELECT id,run_id,stage,provider,model,started_at,elapsed_ms,input_tokens,output_tokens,cost_usd,status,metadata FROM api_calls ORDER BY started_at,id",
+      "SELECT id,run_id,stage,provider,model,started_at,elapsed_ms,input_tokens,output_tokens,cost_usd,status,metadata FROM api_calls WHERE stage LIKE 'youtube-%' ORDER BY started_at,id",
     )
     .all();
   const rows = database
@@ -375,7 +372,7 @@ function exportLedger(database: Database): void {
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        overview: costOverview(database),
+        overview: youtubeOverview(database),
         calls,
         jobs,
       },
@@ -413,7 +410,7 @@ function statusView(database: Database): Record<string, unknown> {
   return {
     database: resolve(flags.db ?? "data/youtube.sqlite"),
     jobs,
-    costs: costOverview(database),
+    costs: youtubeOverview(database),
     documents: readDocuments().size,
   };
 }
@@ -446,4 +443,27 @@ function annotateRun(
   database
     .prepare("UPDATE runs SET metadata=? WHERE id=?")
     .run(JSON.stringify({ ...metadata, ...values }), runId);
+}
+
+function youtubeOverview(database: Database) {
+  const rows = database
+    .prepare(
+      "SELECT input_tokens,output_tokens,cost_usd FROM api_calls WHERE stage LIKE 'youtube-%'",
+    )
+    .all();
+  return {
+    scope: "YouTube transcription and speaker review",
+    calls: rows.length,
+    knownCostUsd: rows.reduce((sum, row) => sum + Number(row.cost_usd ?? 0), 0),
+    unknownCalls: rows.filter((row) => row.cost_usd === null).length,
+    inputTokens: rows.reduce(
+      (sum, row) => sum + Number(row.input_tokens ?? 0),
+      0,
+    ),
+    outputTokens: rows.reduce(
+      (sum, row) => sum + Number(row.output_tokens ?? 0),
+      0,
+    ),
+    reservedOrKnownUsd: reservedOrKnown(database),
+  };
 }
