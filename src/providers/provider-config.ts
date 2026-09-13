@@ -43,7 +43,7 @@ export function providerBaseUrl(
   const override = provider === 'gemini'
     ? environment.GEMINI_API_BASE_URL ?? environment.GEMINI_BASE_URL
     : environment.OPENAI_API_BASE_URL ?? environment.OPENAI_BASE_URL;
-  return (override ?? settings.baseURL).replace(/\/+$/, '');
+  return (override?.trim() || settings.baseURL).replace(/\/+$/, '');
 }
 
 export function geminiProtocol(settings: ProviderSettings, baseURL: string, environment: NodeJS.ProcessEnv): 'native' | 'openai-compatible' {

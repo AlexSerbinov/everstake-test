@@ -1,12 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
+import { readConfig } from '../../config.js';
 import { z } from 'zod';
 import type { AnswerResult, Emit, EvidencePassage, ModelClient, ModelMessage, Receipt } from '../../contracts.js';
 import { getSetting, type Database } from '../../storage/database.js';
 import { readDocument, searchCorpus } from '../search/search-corpus.js';
 import { scoreEvidence } from '../trust/score-evidence.js';
-import { calculate } from './calculate.js';
+import { calculate, calculateExpression, scenarioNumbers } from './calculate.js';
 import { verifyClaims } from './verify-claims.js';
 import { numbers, verifyAnswer } from './verify-answer.js';
 
@@ -14,7 +15,7 @@ const claimSchema=z.object({text:z.string().min(1).max(3000),citations:z.array(z
 const actionSchema=z.discriminatedUnion('action',[
  z.object({action:z.literal('search'),query:z.string().min(1).max(1000)}),
  z.object({action:z.literal('read'),documentId:z.string(),offset:z.number().int().min(0).max(500).default(0)}),
- z.object({action:z.literal('calculate'),operation:z.enum(['add','subtract','multiply','divide']),operands:z.array(z.number()).min(2).max(10),citations:z.array(z.string()).min(1)}),
+ z.object({action:z.literal('calculate'),operation:z.enum(['add','subtract','multiply','divide']).optional(),operands:z.array(z.number()).min(2).max(10).optional(),expression:z.string().max(200).optional(),citations:z.array(z.string()).min(1)}),
  z.object({action:z.literal('answer'),status:z.enum(['answered','partial','no_reliable_answer']),claims:z.array(claimSchema).max(15),reason:z.string().optional()})
 ]);
 export interface AnswerDependencies { db: Database; model: ModelClient; search?:(query:string,limit?:number)=>Promise<EvidencePassage[]>; receipt:(runId:string)=>Receipt; finish:(runId:string,status:string)=>void; }
@@ -25,12 +26,15 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
  const definition=parse(readFileSync('agents/researcher.yaml','utf8')) as {prompt:string;skills:string[];maxSteps:number};
  const system=[readFileSync(definition.prompt,'utf8'),...definition.skills.map(p=>readFileSync(p,'utf8'))].join('\n\n');
  let answeredAction=false;
+ const policy=readConfig<{maxEvidence:number;maxOutputTokens:number}>('policy');
+ const evidenceLimit=Math.max(6,Math.min(policy.maxEvidence,30));
  const registry=new Map<string,EvidencePassage>();
  const messages:ModelMessage[]=[{role:'user',text:question}];
  let result:AnswerResult={runId,status:'no_reliable_answer',question,text:'No reliable answer was found in the available evidence.',asOf:null,claims:[],sources:[],checks:[],trust:null,receipt:deps.receipt(runId),corpusVersion:getSetting(db,'corpus_version','unbuilt')};
  const register=(sources:EvidencePassage[])=>{
   const fresh=sources.filter(s=>!registry.has(s.id)); const repeated=sources.length-fresh.length;
-  for(const source of sources) registry.set(source.id,source);
+  const window=[...fresh,...registry.values()].slice(0,evidenceLimit);
+  registry.clear();for(const source of window) registry.set(source.id,source);
   send('sources',`Found ${fresh.length} new passages, ${repeated} already seen`,{sources,newCount:fresh.length,repeated});
  };
  try {
@@ -41,7 +45,7 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
   for(let step=0;step<steps;step++) {
    send('step',mode==='baseline'?'Generating plain-RAG baseline':`Research step ${step+1} of ${steps}`);
    const instruction=mode==='baseline'?'Return answer action now using only supplied initial passages.':step===steps-1?'This is your final turn: return answer action using evidence collected so far.':'';
-   const response=await model.generate({runId,stage:mode==='baseline'?'baseline':'answer',system,messages:[...messages,{role:'user',text:instruction||'Choose the next research action.'}],maxOutputTokens:4000});
+   const response=await model.generate({runId,stage:mode==='baseline'?'baseline':'answer',system,messages:[messages[0]!,...messages.slice(1).filter(m=>!m.text.startsWith('{"untrustedEvidence":')&&!m.text.startsWith('{"calculation":')).slice(-8),{role:'user',text:JSON.stringify({untrustedEvidence:[...registry.values()],instruction:instruction||'Choose the next research action. Only these evidence IDs are currently available; search again if an earlier passage is needed.'})}],maxOutputTokens:Math.min(policy.maxOutputTokens,4000)});
    messages.push({role:'model',text:response.text});
    let action:z.infer<typeof actionSchema>;
    try { action=actionSchema.parse(JSON.parse(response.text.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,''))); }
@@ -72,12 +76,13 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
     const sources=readDocument(db,action.documentId,action.offset);register(sources);
     messages.push({role:'user',text:JSON.stringify({untrustedEvidence:sources,nextOffset:action.offset+sources.length})});
    } else {
+    const computation=action.expression?calculateExpression(action.expression):{value:calculate(action.operation??'',action.operands??[]),operands:action.operands??[],steps:[]};
     const cited=action.citations.map(id=>registry.get(id));
-    const known=new Set(numbers(question+' '+cited.filter(Boolean).map(s=>s!.text).join(' ')));
-    if(cited.some(s=>!s)||action.operands.some(n=>!known.has(String(n)))) {messages.push({role:'user',text:'Calculation requires cited sources and operands present in the question or cited evidence.'});continue;}
-    const value=calculate(action.operation,action.operands);
+    const known=new Set([...scenarioNumbers(question).map(String),...numbers(cited.filter(Boolean).map(s=>s!.text).join(' '))]);
+    if(cited.some(s=>!s)||computation.operands.some(n=>!known.has(String(n)))) {messages.push({role:'user',text:'Calculation requires cited sources and operands present in the question or cited evidence.'});continue;}
+    const value=computation.value;
     const base=cited[0]!;
-    const evidence={...base,id:`calc-${randomUUID().slice(0,8)}`,text:`Calculated scenario: ${action.operation}(${action.operands.join(', ')}) = ${value}. Inputs from user scenario and sources: ${action.citations.join(', ')}.\n${cited.map(s=>s!.text).join('\n')}`,reason:'Deterministic source-backed calculation',metadata:{...base.metadata,calculation:{operation:action.operation,operands:action.operands,result:value,citations:action.citations}}};
+    const evidence={...base,id:`calc-${randomUUID().slice(0,8)}`,text:`Calculated scenario: ${action.expression??`${action.operation}(${computation.operands.join(', ')})`} = ${value}; steps: ${computation.steps.join('; ')}. Inputs from user scenario and sources: ${action.citations.join(', ')}.\n${cited.map(s=>s!.text).join('\n')}`,reason:'Deterministic source-backed calculation',metadata:{...base.metadata,calculation:{operation:action.operation,expression:action.expression,operands:computation.operands,result:value,citations:action.citations}}};
     register([evidence]);messages.push({role:'user',text:JSON.stringify({calculation:evidence})});
    }
   }

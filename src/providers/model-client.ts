@@ -268,7 +268,7 @@ async function runMeteredAttempts<T, R>(
         error: safeError,
       });
       if (attempt === options.settings.maxAttempts || !retryable(error, timedOut)) throw safeError;
-      await common.sleep(Math.min(250 * 2 ** (attempt - 1), 2_000));
+      await common.sleep(Math.min(1_000 * 2 ** (attempt - 1), 8_000));
     } finally {
       clearTimeout(timer);
     }
