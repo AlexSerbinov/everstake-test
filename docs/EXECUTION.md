@@ -13,10 +13,10 @@ The owner authorized end-to-end implementation, tests, evaluation and an indepen
 | W11 frozen corpus | verified for selected scope | 939 documents; corpus-eae2b2b23116; independent reference/sanitation audit |
 | W12 answer/Trust | implemented and tested; quality measured separately | Bounded actions, arithmetic, dates/citations, semantic/counterevidence review; Trust cannot override gates |
 | W13 refresh | verified with stated operational limits | Validated staging, fenced atomic activation, source/due/resume commands; real targeted refresh, failure and stale-baseline fixtures |
-| W14 evaluation | measured | Twenty questions, five negatives; final agent 14/20 with two unsupported cases, baseline 12/20 with one; earlier 15/20 preserved |
+| W14 evaluation | measured | Twenty questions, five negatives; final agent 19/20 with no unsupported case, baseline 11/20; earlier 15/20, 14/20 and 16/20 preserved |
 | W15–W16 frontend | verified locally | Ask, Corpus, Costs, Evaluation; desktop/mobile and SSE/error/receipt checks |
 | W17 process/report | written | PROCESS.md, REPORT.md and Ukrainian defence walkthrough; final metrics and honest failures published |
-| W18 final verification | verified within documented limits | 92 tests pass on Mac and Linux Node 22; full agent/baseline independently graded; refresh and boundary regressions pass |
+| W18 final verification | verified within documented limits | 101 tests pass on Mac and Linux Node 22; full agent/baseline independently graded; refresh and boundary regressions pass |
 | W19 isolated deployment | live and verified | HTTPS health, actual Ukrainian question, SSE/source cards, desktop/mobile; container healthy, existing demos unchanged |
 | W20 repository handoff | published dev; main merge requires owner approval | One active implementation, preserved history and detailed plan; GitHub CI and review artifacts |
 

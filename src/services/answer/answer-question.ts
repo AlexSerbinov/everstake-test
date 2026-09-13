@@ -20,6 +20,8 @@ import {
   scenarioNumbers,
 } from "./calculate.js";
 import { verifyClaims } from "./verify-claims.js";
+import { gatherCounterevidence } from "./counterevidence.js";
+import { cancelledError } from "../../providers/model-client.js";
 import { numbers, verifyAnswer } from "./verify-answer.js";
 
 const claimSchema = z.object({
@@ -54,6 +56,8 @@ export interface AnswerDependencies {
   search?: (query: string, limit?: number) => Promise<EvidencePassage[]>;
   receipt: (runId: string) => Receipt;
   finish: (runId: string, status: string) => void;
+  /** Aborts provider calls and stops the loop when the client goes away. */
+  signal?: AbortSignal;
 }
 export async function answerQuestion(
   deps: AnswerDependencies,
@@ -62,7 +66,10 @@ export async function answerQuestion(
   emit: Emit = () => {},
   mode: "agent" | "baseline" = "agent",
 ): Promise<AnswerResult> {
-  const { db, model } = deps;
+  const { db, model, signal } = deps;
+  const throwIfCancelled = () => {
+    if (signal?.aborted) throw cancelledError();
+  };
   const search =
     deps.search ??
     (async (query: string, limit = 12) => searchCorpus(db, query, limit));
@@ -103,17 +110,28 @@ export async function answerQuestion(
     receipt: deps.receipt(runId),
     corpusVersion: getSetting(db, "corpus_version", "unbuilt"),
   };
-  const register = (sources: EvidencePassage[]) => {
+  const register = (
+    sources: EvidencePassage[],
+    label = (fresh: number, repeated: number) =>
+      `Found ${fresh} new passages, ${repeated} already seen`,
+    keep: string[] = [],
+  ) => {
     const fresh = sources.filter((s) => !registry.has(s.id));
     const repeated = sources.length - fresh.length;
-    const window = [...fresh, ...registry.values()].slice(0, evidenceLimit);
+    // Passages a draft already cites stay in the window so a repaired draft can keep them.
+    const kept = keep
+      .map((id) => registry.get(id))
+      .filter((s): s is EvidencePassage => !!s);
+    const window = [...kept, ...fresh, ...registry.values()]
+      .filter((s, i, all) => all.findIndex((o) => o.id === s.id) === i)
+      .slice(0, evidenceLimit);
     registry.clear();
     for (const source of window) registry.set(source.id, source);
-    send(
-      "sources",
-      `Found ${fresh.length} new passages, ${repeated} already seen`,
-      { sources, newCount: fresh.length, repeated },
-    );
+    send("sources", label(fresh.length, repeated), {
+      sources,
+      newCount: fresh.length,
+      repeated,
+    });
   };
   try {
     send("step", "Searching the crawled corpus");
@@ -125,6 +143,7 @@ export async function answerQuestion(
     });
     const steps = mode === "baseline" ? 1 : Math.min(definition.maxSteps, 8);
     for (let step = 0; step < steps + (mode === "agent" ? 1 : 0); step++) {
+      throwIfCancelled();
       send(
         "step",
         mode === "baseline"
@@ -164,6 +183,7 @@ export async function answerQuestion(
           },
         ],
         maxOutputTokens: Math.min(policy.maxOutputTokens, 4000),
+        signal,
       });
       messages.push({ role: "model", text: response.text });
       let action: z.infer<typeof actionSchema>;
@@ -201,7 +221,24 @@ export async function answerQuestion(
             status: "failed",
             reason: "Answer has no claims",
           });
-        if (!checks.some((c) => c.status === "failed"))
+        if (!checks.some((c) => c.status === "failed")) {
+          send("step", "Looking for newer evidence and exceptions");
+          const counterevidence = await gatherCounterevidence(
+            action.claims,
+            registry,
+            search,
+          );
+          const found = counterevidence.flatMap((c) => [
+            ...c.newer,
+            ...c.exceptions,
+          ]);
+          if (found.length)
+            register(
+              found,
+              (fresh) =>
+                `Compared ${fresh} newer or exception passages against the draft`,
+              action.claims.flatMap((c) => c.citations),
+            );
           checks.push(
             ...(await verifyClaims(
               model,
@@ -209,8 +246,11 @@ export async function answerQuestion(
               action.claims,
               registry,
               question,
+              signal,
+              counterevidence,
             )),
           );
+        }
         send(
           "verification",
           "Checking citations, dates, quantities and support",
@@ -223,7 +263,7 @@ export async function answerQuestion(
             text: JSON.stringify({
               rejectedDraftChecks: checks,
               instruction:
-                "Fix using actual evidence or abstain. Do not invent citations or unsupported numbers.",
+                "Fix using actual evidence or abstain. Do not invent citations or unsupported numbers. If a claim was superseded by newer evidence, cite the newer passage for the current state and date the older statement as history.",
             }),
           });
           continue;
@@ -341,16 +381,25 @@ export async function answerQuestion(
         "Research exhausted its step limit without a valid final answer",
       );
   } catch (error) {
+    const cancelled = signal?.aborted ?? false;
     result = {
       ...result,
       status: "error",
-      text: "The request could not complete. Check provider availability or the configured budget.",
-      error: error instanceof Error ? error.message : "Unknown provider error",
+      text: cancelled
+        ? "The request was stopped before an answer was assembled."
+        : "The request could not complete. Check provider availability or the configured budget.",
+      error: cancelled
+        ? "Request cancelled by the user"
+        : error instanceof Error
+          ? error.message
+          : "Unknown provider error",
       trust: null,
     };
-    send("error", "Request failed", { message: result.error });
+    send("error", cancelled ? "Request stopped" : "Request failed", {
+      message: result.error,
+    });
   }
-  deps.finish(runId, result.status);
+  deps.finish(runId, signal?.aborted ? "cancelled" : result.status);
   result.receipt = deps.receipt(runId);
   db.prepare("INSERT OR REPLACE INTO answers(run_id,result) VALUES(?,?)").run(
     runId,

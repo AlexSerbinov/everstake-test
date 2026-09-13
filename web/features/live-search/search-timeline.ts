@@ -1,6 +1,6 @@
 import type { EvidencePassage, RunEvent } from "../../../src/contracts.js";
-import { badge, details, el } from "../../shared/dom.js";
-import { sourceCard } from "../answer-sources/source-cards.js";
+import { badge, el, link } from "../../shared/dom.js";
+import { date } from "../../shared/source-date.js";
 import { ElapsedTimer } from "./elapsed-timer.js";
 export class SearchTimeline {
   readonly node = el("details", "disclosure research");
@@ -9,10 +9,9 @@ export class SearchTimeline {
   private activeTimer = new ElapsedTimer();
   private active?: HTMLElement;
   private count = 0;
-  private interacted = false;
   private sending = el("p", "muted small", "Sending your question…");
   private title = el("span", "", "Research in progress");
-  constructor(private scope: string) {
+  constructor(_scope: string) {
     this.node.open = true;
     const summary = el("summary");
     const elapsed = el("span", "elapsed");
@@ -28,12 +27,6 @@ export class SearchTimeline {
     );
     this.rows.append(this.sending);
     this.timer.start(elapsed);
-    this.node.addEventListener("pointerdown", () => {
-      this.interacted = true;
-    });
-    this.node.addEventListener("keydown", () => {
-      this.interacted = true;
-    });
   }
   add(event: RunEvent) {
     this.sending.remove();
@@ -62,32 +55,31 @@ export class SearchTimeline {
         newCount?: number;
         repeated?: number;
       };
+      // One flat line per page: title, publisher and date. Full passages appear only in the
+      // answer's source cards, so the log stays readable on a phone.
       const block = el("div", "search-results");
       block.append(
         badge(`${data.newCount ?? 0} new · ${data.repeated ?? 0} already seen`),
       );
-      const list = el("div", "search-previews");
-      for (const [index, source] of (data.sources ?? []).entries())
-        list.append(
-          sourceCard(
-            [source],
-            new Map(),
-            `${this.scope}-search-${this.count}-${index}`,
+      const list = el("ul", "found-list");
+      const pages = new Map<string, EvidencePassage>();
+      for (const source of data.sources ?? [])
+        if (!pages.has(source.documentId || source.url))
+          pages.set(source.documentId || source.url, source);
+      for (const source of pages.values()) {
+        const row = el("li", "found-row");
+        const when = source.updatedAt ?? source.publishedAt;
+        row.append(
+          link(source.title || source.url, source.url),
+          el(
+            "span",
+            "muted small",
+            `${source.publisher}${when ? ` · ${date(when).slice(0, 10)}` : " · undated"}`,
           ),
         );
-      const found = details(
-        `${data.sources?.length ?? 0} passages found`,
-        list,
-      );
-      found.open = true;
-      block.append(
-        el(
-          "p",
-          "muted small",
-          "Read during research; these passages are not necessarily cited in the final answer.",
-        ),
-        found,
-      );
+        list.append(row);
+      }
+      block.append(list);
       this.rows.append(block);
     }
   }
@@ -96,6 +88,6 @@ export class SearchTimeline {
     this.activeTimer.stop();
     this.active?.classList.remove("active");
     this.title.textContent = `${status} · ${this.count} research steps`;
-    if (!this.interacted) this.node.open = false;
+    this.node.open = false;
   }
 }

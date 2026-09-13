@@ -1,3 +1,6 @@
+import { exportReviewedTranscript } from "../src/services/youtube/export-reviewed.js";
+import { isEvidenceEligible } from "../src/services/youtube/evidence-turns.js";
+import { reviewInputHash } from "../src/services/youtube/review-cache.js";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { loadEnvFile } from "node:process";
@@ -27,6 +30,8 @@ import {
   transcribeVideo,
   type TranscriptionMeter,
 } from "../src/services/youtube/transcribe-video.js";
+import { reconcileSonioxCosts } from "../src/services/youtube/reconcile-soniox-costs.js";
+import { renderTranscript } from "../src/services/youtube/render-transcript.js";
 import { openDatabase, type Database } from "../src/storage/database.js";
 
 if (existsSync(".env")) loadEnvFile(".env");
@@ -67,7 +72,7 @@ try {
       inventory,
       config.limits.pilotBudgetUsd,
     );
-  } else if (command === "process") {
+  } else if (command === "process" || command === "transcribe") {
     const ids = (flags.ids ?? "").split(",").filter(Boolean);
     if (!ids.length)
       throw new Error(
@@ -75,17 +80,25 @@ try {
       );
     const inventory = await ensureInventory(false);
     for (const id of ids) requiredAccepted(inventory, id);
-    await processVideos(ids, inventory, config.limits.totalBudgetUsd);
+    await processVideos(
+      ids,
+      inventory,
+      config.limits.totalBudgetUsd,
+      command === "transcribe",
+    );
   } else if (command === "rebuild-documents") {
     const inventory = await ensureInventory(false);
     rebuildDocuments(inventory);
     print({ status: "completed", documents: readDocuments().size });
+  } else if (command === "reconcile-costs") {
+    print(await reconcileSonioxCosts(db));
+    exportLedger(db);
   } else if (command === "export" || command === "status") {
     exportLedger(db);
     print(statusView(db));
   } else {
     throw new Error(
-      "Usage: npx tsx scripts/youtube.ts discover|inventory|pilot|process --ids=...|rebuild-documents|status|export",
+      "Usage: npx tsx scripts/youtube.ts discover|inventory|pilot|process|transcribe --ids=...|rebuild-documents|reconcile-costs|status|export",
     );
   }
 } finally {
@@ -110,19 +123,33 @@ async function processVideos(
   ids: string[],
   inventory: Inventory,
   capUsd: number,
+  transcriptionOnly = false,
 ): Promise<void> {
   const selected = ids.map((id) => requiredAccepted(inventory, id));
   const forecast = selected.reduce((sum, video) => {
     const job = db
-      .prepare("SELECT status FROM youtube_jobs WHERE video_id=?")
-      .get(video.id) as { status: string } | undefined;
-    const reviewExists = existsSync(`data/youtube/${video.id}.review.json`);
+      .prepare("SELECT status,data FROM youtube_jobs WHERE video_id=?")
+      .get(video.id) as { status: string; data: string } | undefined;
+    const reviewPath = `data/youtube/${video.id}.review-v2.json`;
+    let reviewExists = false;
+    if (job?.status === "completed" && existsSync(reviewPath)) {
+      const envelope = JSON.parse(readFileSync(reviewPath, "utf8"));
+      const turns = JSON.parse(job.data).turns ?? [];
+      const metadata = {
+        title: video.title,
+        channel: video.channel,
+        publishedAt: video.publishedAt,
+        description: video.description ?? "",
+        recordingDate: video.metadata?.recordingDate ?? null,
+      };
+      reviewExists = envelope.inputHash === reviewInputHash(turns, metadata);
+    }
     const stt =
       job?.status === "completed"
         ? 0
         : ((video.durationSeconds ?? 0) / 3_600) *
           config.limits.sonioxForecastPerHourUsd;
-    return sum + stt + (reviewExists ? 0 : 0.05);
+    return sum + stt + (transcriptionOnly || reviewExists ? 0 : 0.15);
   }, 0);
   const alreadyReserved = reservedOrKnown(db);
   if (alreadyReserved + forecast > capUsd) {
@@ -131,6 +158,7 @@ async function processVideos(
     );
   }
   const documents = readDocuments();
+  const failures: string[] = [];
   for (const candidate of selected) {
     const runId = beginRun(db, "youtube_video", {
       videoId: candidate.id,
@@ -150,28 +178,86 @@ async function processVideos(
           durationSeconds: candidate.durationSeconds,
         },
       );
-      const reviewPath = `data/youtube/${candidate.id}.review.json`;
+      const transcriptDirectory = "artifacts/youtube/transcripts";
+      mkdirSync(transcriptDirectory, { recursive: true });
+      writeFileSync(
+        `${transcriptDirectory}/${candidate.id}.md`,
+        renderTranscript(candidate, job.turns ?? []),
+      );
+      writeFileSync(
+        `${transcriptDirectory}/${candidate.id}.json`,
+        JSON.stringify(
+          {
+            videoId: candidate.id,
+            sourceUrl: candidate.url,
+            title: candidate.title,
+            uploadedAt: candidate.publishedAt,
+            durationSeconds: candidate.durationSeconds,
+            status: "transcribed_unreviewed",
+            speakerIdentity: "unverified",
+            turns: job.turns ?? [],
+          },
+          null,
+          2,
+        ),
+      );
+      if (transcriptionOnly) {
+        annotateRun(db, runId, {
+          reviewStatus: "not_requested",
+          documentEmitted: false,
+          transcriptSaved: true,
+        });
+        finishRun(db, runId, "completed");
+        exportLedger(db);
+        console.log(
+          `Transcribed ${candidate.id}: ${(job.turns ?? []).length} timed turns`,
+        );
+        continue;
+      }
+      const reviewPath = `data/youtube/${candidate.id}.review-v2.json`;
+      const reviewMetadata = {
+        title: candidate.title,
+        channel: candidate.channel,
+        publishedAt: candidate.publishedAt,
+        description: candidate.description ?? "",
+        recordingDate: candidate.metadata?.recordingDate ?? null,
+      };
+      const inputHash = reviewInputHash(job.turns ?? [], reviewMetadata);
+      const cachedReview = existsSync(reviewPath)
+        ? JSON.parse(readFileSync(reviewPath, "utf8"))
+        : null;
       let review: SpeakerReview;
-      if (existsSync(reviewPath)) {
-        review = JSON.parse(readFileSync(reviewPath, "utf8")) as SpeakerReview;
+      if (cachedReview?.inputHash === inputHash) {
+        review = cachedReview.review as SpeakerReview;
         validateReview(review, job.turns ?? []);
       } else {
         review = await reviewSpeakers(
           createModelClient(db),
           runId,
           job.turns ?? [],
-          {
-            title: candidate.title,
-            channel: candidate.channel,
-            publishedAt: candidate.publishedAt,
-            recordingDate: candidate.metadata?.recordingDate ?? null,
-            description: candidate.description ?? "",
-          },
+          reviewMetadata,
         );
         mkdirSync(dirname(reviewPath), { recursive: true });
-        writeFileSync(reviewPath, JSON.stringify(review, null, 2));
+        writeFileSync(
+          reviewPath,
+          JSON.stringify(
+            { inputHash, model: "gemini-3.8-flash", review },
+            null,
+            2,
+          ),
+        );
       }
-      if (review.status === "needs_review") {
+      exportReviewedTranscript(
+        candidate,
+        job.turns ?? [],
+        review,
+        "artifacts/youtube/reviewed",
+      );
+      if (
+        !job.turns?.some((turn, index) =>
+          isEvidenceEligible(turn, index, review),
+        )
+      ) {
         annotateRun(db, runId, {
           reviewStatus: "needs_review",
           documentEmitted: false,
@@ -190,11 +276,17 @@ async function processVideos(
       });
       finishRun(db, runId, "failed");
       exportLedger(db);
-      throw error;
+      if (!transcriptionOnly) throw error;
+      failures.push(candidate.id);
+      console.error(
+        `Transcription failed for ${candidate.id}; see persisted run metadata`,
+      );
     }
   }
   exportLedger(db);
   print(statusView(db));
+  if (failures.length)
+    throw new Error(`Incomplete transcription batch: ${failures.join(", ")}`);
 }
 
 function sonioxMeter(
@@ -313,17 +405,27 @@ function rebuildDocuments(inventory: Inventory): void {
     );
     if (!candidate || candidate.decision !== "accepted") continue;
     const reviewPath = reviewDirectories
-      .map((directory) => `${directory}/${row.video_id}.review.json`)
+      .map((directory) => `${directory}/${row.video_id}.review-v2.json`)
       .find(existsSync);
     if (!reviewPath) continue;
-    const review = JSON.parse(
-      readFileSync(reviewPath, "utf8"),
-    ) as SpeakerReview;
+    const cached = JSON.parse(readFileSync(reviewPath, "utf8"));
+    const review = cached.review as SpeakerReview;
     const job = JSON.parse(row.data) as {
       turns?: Parameters<typeof buildDocument>[1];
     };
+    const expectedHash = reviewInputHash(job.turns ?? [], {
+      title: candidate.title,
+      channel: candidate.channel,
+      publishedAt: candidate.publishedAt,
+      description: candidate.description ?? "",
+      recordingDate: candidate.metadata?.recordingDate ?? null,
+    });
+    if (cached.inputHash !== expectedHash) continue;
     validateReview(review, job.turns ?? []);
-    if (review.status !== "reviewed") continue;
+    if (
+      !job.turns?.some((turn, index) => isEvidenceEligible(turn, index, review))
+    )
+      continue;
     documents.push(buildDocument(candidate, job.turns ?? [], review));
   }
   writeDocuments(documents);

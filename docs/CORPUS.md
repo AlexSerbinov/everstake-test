@@ -33,7 +33,7 @@ Thirty-five accepted URL results collapsed into an existing stable document iden
 
 The crawler starts only from operator-configured roots and seed URLs in [`config/sources.yaml`](../config/sources.yaml). It expands through sitemaps and same-origin links when enabled. The crawl found 9,391 occurrences of external links, representing 3,581 unique URLs, but recorded them as candidates rather than silently expanding the trust boundary. Adding one requires an explicit source entry, authority tier, reason, and crawl policy.
 
-This frozen web corpus does not include video transcripts. The repository contains a separate bounded YouTube screening and transcription pipeline, but its pilot outputs were not merged into these 935 documents.
+These 935 documents are the web-only measurement. The four accepted video transcripts were added in the final integration described below; the frozen corpus therefore has 939 documents.
 
 ## Exclusions
 

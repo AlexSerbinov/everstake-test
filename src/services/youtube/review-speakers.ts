@@ -15,6 +15,17 @@ const speakerSchema = z
       "unknown",
     ]),
     evidenceTurnIndexes: z.array(z.number().int().nonnegative()),
+    introductionEvidence: z
+      .array(
+        z
+          .object({
+            introductionTurnIndex: z.number().int().nonnegative(),
+            responseTurnIndex: z.number().int().nonnegative(),
+            reason: z.string().min(1),
+          })
+          .strict(),
+      )
+      .default([]),
     reason: z.string().min(1),
   })
   .strict();
@@ -32,11 +43,28 @@ const reviewSchema = z
         })
         .strict(),
     ),
+    excludedTurnIndexes: z.array(z.number().int().nonnegative()).default([]),
     limitations: z.array(z.string()),
   })
   .strict();
 
-export type SpeakerReview = z.infer<typeof reviewSchema>;
+type ParsedSpeakerReview = z.infer<typeof reviewSchema>;
+type ParsedSpeaker = ParsedSpeakerReview["speakers"][number];
+
+/** Optional fields let previously saved reviews remain readable; model output is normalized to arrays. */
+export type SpeakerReview = Omit<
+  ParsedSpeakerReview,
+  "speakers" | "excludedTurnIndexes"
+> & {
+  speakers: Array<
+    Omit<ParsedSpeaker, "introductionEvidence"> & {
+      introductionEvidence?: ParsedSpeaker["introductionEvidence"];
+    }
+  >;
+  excludedTurnIndexes?: number[];
+};
+
+const MAX_INTRODUCTION_RESPONSE_GAP = 6;
 
 /** One logical model pass covers identity, role-at-recording and label consistency together. */
 export async function reviewSpeakers(
@@ -66,7 +94,8 @@ export async function reviewSpeakers(
         }),
       },
     ],
-    maxOutputTokens: 5_000,
+    model: "gemini-3.8-flash",
+    maxOutputTokens: 16_000,
   });
   const review = conservativeReview(
     reviewSchema.parse(parseJson(response.text)),
@@ -87,16 +116,32 @@ export function conservativeReview(
       (index) =>
         index < turns.length && turns[index]?.speaker === speaker.label,
     );
+    const introductionEvidence = (speaker.introductionEvidence ?? []).filter(
+      (evidence) => validIntroductionEvidence(speaker.label, evidence, turns),
+    );
+    const removedInvalidEvidence =
+      evidenceTurnIndexes.length !== speaker.evidenceTurnIndexes.length ||
+      introductionEvidence.length !==
+        (speaker.introductionEvidence ?? []).length;
     const unsupportedAttribution =
       (speaker.name ||
         speaker.roleAtRecording ||
         speaker.participantType !== "unknown") &&
-      evidenceTurnIndexes.length === 0;
+      evidenceTurnIndexes.length === 0 &&
+      introductionEvidence.length === 0;
     const roleWithoutIdentity = Boolean(
       speaker.roleAtRecording && !speaker.name,
     );
+    if (removedInvalidEvidence) downgraded = true;
     if (!unsupportedAttribution && !roleWithoutIdentity)
-      return { ...speaker, evidenceTurnIndexes };
+      return {
+        ...speaker,
+        evidenceTurnIndexes,
+        introductionEvidence,
+        reason: removedInvalidEvidence
+          ? `${speaker.reason} Invalid evidence links were removed by deterministic validation.`
+          : speaker.reason,
+      };
     downgraded = true;
     return {
       ...speaker,
@@ -106,20 +151,29 @@ export function conservativeReview(
         ? ("unknown" as const)
         : speaker.participantType,
       evidenceTurnIndexes,
+      introductionEvidence,
       reason: `${speaker.reason} Unsupported identity/role fields were removed by deterministic validation.`,
     };
   });
+  const excludedTurnIndexes = [...new Set(review.excludedTurnIndexes ?? [])]
+    .filter((index) => {
+      const valid = index < turns.length;
+      if (!valid) downgraded = true;
+      return valid;
+    })
+    .sort((left, right) => left - right);
   return downgraded
     ? {
         ...review,
         status: "needs_review",
         speakers,
+        excludedTurnIndexes,
         limitations: [
           ...review.limitations,
-          "Unsupported speaker attribution was removed; manual review is required.",
+          "Invalid speaker evidence or excluded-turn references were removed; manual review is required.",
         ],
       }
-    : { ...review, speakers };
+    : { ...review, speakers, excludedTurnIndexes };
 }
 
 export function validateReview(review: SpeakerReview, turns: Turn[]): void {
@@ -142,11 +196,19 @@ export function validateReview(review: SpeakerReview, turns: Turn[]): void {
         );
       }
     }
+    for (const evidence of speaker.introductionEvidence ?? []) {
+      if (!validIntroductionEvidence(speaker.label, evidence, turns)) {
+        throw new Error(
+          `Speaker ${speaker.label} has an invalid introduction-to-response link`,
+        );
+      }
+    }
     if (
       (speaker.name ||
         speaker.roleAtRecording ||
         speaker.participantType !== "unknown") &&
-      !speaker.evidenceTurnIndexes.length
+      !speaker.evidenceTurnIndexes.length &&
+      !(speaker.introductionEvidence ?? []).length
     ) {
       throw new Error(
         `Attributed speaker ${speaker.label} has no transcript evidence`,
@@ -164,12 +226,43 @@ export function validateReview(review: SpeakerReview, turns: Turn[]): void {
       "Suspicious diarization intervals require needs_review status",
     );
   }
+  for (const index of review.excludedTurnIndexes ?? []) {
+    if (index >= turns.length)
+      throw new Error(`Excluded turn index is out of bounds: ${index}`);
+  }
   const missing = [...labels].filter((label) => !seen.has(label));
   if (missing.length && review.status !== "needs_review") {
     throw new Error(
       `Unreviewed speaker labels require needs_review status: ${missing.join(", ")}`,
     );
   }
+}
+
+function validIntroductionEvidence(
+  label: string,
+  evidence: {
+    introductionTurnIndex: number;
+    responseTurnIndex: number;
+  },
+  turns: Turn[],
+): boolean {
+  const introduction = turns[evidence.introductionTurnIndex];
+  const response = turns[evidence.responseTurnIndex];
+  if (
+    !introduction ||
+    !response ||
+    introduction.speaker === null ||
+    introduction.speaker === label ||
+    response.speaker !== label ||
+    evidence.responseTurnIndex <= evidence.introductionTurnIndex ||
+    evidence.responseTurnIndex - evidence.introductionTurnIndex >
+      MAX_INTRODUCTION_RESPONSE_GAP
+  ) {
+    return false;
+  }
+  return !turns
+    .slice(evidence.introductionTurnIndex + 1, evidence.responseTurnIndex)
+    .some((turn) => turn.speaker === label);
 }
 
 function parseJson(text: string): unknown {

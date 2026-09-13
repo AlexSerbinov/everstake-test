@@ -1,12 +1,12 @@
 {
   "generatedAt": "2026-09-13T14:01:10.392Z",
   "counts": {
-    "discovered": 186,
-    "accepted": 78,
-    "needs_review": 71,
-    "excluded": 37
+    "accepted": 82,
+    "needs_review": 70,
+    "excluded": 34,
+    "discovered": 186
   },
-  "acceptedDurationSeconds": 65632,
+  "acceptedDurationSeconds": 78829,
   "unknownAcceptedDurations": 0,
   "sourceCount": 2
 }

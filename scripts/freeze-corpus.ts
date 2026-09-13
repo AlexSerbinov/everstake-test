@@ -10,7 +10,7 @@ const db = openDatabase();
 let changed = 0;
 try {
   const videos = JSON.parse(
-    readFileSync("artifacts/youtube/accepted-documents.json", "utf8"),
+    readFileSync("artifacts/youtube/reviewed/documents.json", "utf8"),
   ) as import("../src/contracts.js").DocumentSnapshot[];
   const videoUrls = new Set(videos.map((d) => d.canonicalUrl));
   const documents = [

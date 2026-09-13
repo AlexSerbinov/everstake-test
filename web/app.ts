@@ -45,10 +45,13 @@ async function ask(question: string) {
   const scope = run.scope;
   const heading = el("div", "question-heading");
   heading.append(el("p", "eyebrow", "YOUR QUESTION"), el("h2", "", question));
-  const result = el("div");
+  const result = el("div", "answer-slot");
   timeline = new SearchTimeline(scope);
   const currentTimeline = timeline;
-  output.replaceChildren(heading, currentTimeline.node, result);
+  // The answer is rendered above the research log: readers see the result first and open
+  // the log only when they want to audit how it was found.
+  output.replaceChildren(heading, result, currentTimeline.node);
+  heading.scrollIntoView({ behavior: "instant", block: "start" });
   let receivedAnswer = false;
   let failed = false;
   const handle = (event: RunEvent) => {
@@ -61,6 +64,8 @@ async function ask(question: string) {
       status.textContent = failed
         ? "The request failed."
         : "Your answer is ready.";
+      currentTimeline.finish(failed ? "Request failed" : "Research complete");
+      heading.scrollIntoView({ behavior: "instant", block: "start" });
     } else if (event.type === "error") {
       failed = true;
       currentTimeline.finish("Request failed");
@@ -78,22 +83,30 @@ async function ask(question: string) {
     } else if (event.type !== "done") currentTimeline.add(event);
   };
   try {
-    const response = await fetch("/api/ask", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-      },
-      body: JSON.stringify({ question }),
-      signal: run.signal,
-    });
+    // The server runs one question at a time and releases the slot right after a stop;
+    // a brief retry hides that hand-over instead of showing a "still running" error.
+    let response: Response;
+    for (let attempt = 0; ; attempt++) {
+      response = await fetch("/api/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({ question }),
+        signal: run.signal,
+      });
+      if (response.status !== 429 || attempt >= 8) break;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (!run.current()) return;
+    }
     await readRunStream(response, handle, run.signal);
     if (run.current()) {
       if (!receivedAnswer && !failed)
         throw new Error(
           "The request ended without an answer. Please try again.",
         );
-      currentTimeline.finish(failed ? "Request failed" : "Research complete");
+      if (!receivedAnswer) currentTimeline.finish("Research complete");
     }
   } catch (error) {
     if (!run.current()) return;

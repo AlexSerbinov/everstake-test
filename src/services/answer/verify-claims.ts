@@ -6,12 +6,14 @@ import type {
   EvidencePassage,
   ModelClient,
 } from "../../contracts.js";
+import { evidenceDate, type ClaimCounterevidence } from "./counterevidence.js";
 const schema = z.object({
   questionMode: z.enum(["factual", "synthesis"]),
   checks: z.array(
     z.object({
       claimIndex: z.number().int().nonnegative(),
       supported: z.boolean(),
+      supersededByNewer: z.boolean().optional().default(false),
       reason: z.string(),
     }),
   ),
@@ -22,15 +24,22 @@ export async function verifyClaims(
   claims: Claim[],
   registry: Map<string, EvidencePassage>,
   question: string,
+  signal?: AbortSignal,
+  counterevidence: ClaimCounterevidence[] = [],
 ): Promise<CheckResult[]> {
-  const response = await model.generate({
+  const extra = new Map(counterevidence.map((c) => [c.claimIndex, c]));
+  // Counterevidence is compared, not cited, so the reviewer sees a bounded excerpt of each.
+  const excerpt = (sources: EvidencePassage[]) =>
+    sources.map((s) => ({ ...s, text: s.text.slice(0, 700) }));
+  const request = {
     runId,
+    signal,
     stage: "claim-verification",
     model: "gemini-3.5-flash-lite",
     system: readFileSync("prompts/verify-claims.md", "utf8"),
     messages: [
       {
-        role: "user",
+        role: "user" as const,
         text: JSON.stringify({
           question,
           otherRetrievedEvidence: [...registry.values()],
@@ -38,28 +47,102 @@ export async function verifyClaims(
             claimIndex,
             claim,
             evidence: claim.citations.map((id) => registry.get(id)),
+            newerEvidence: excerpt(extra.get(claimIndex)?.newer ?? []),
+            exceptionEvidence: excerpt(extra.get(claimIndex)?.exceptions ?? []),
           })),
         }),
       },
     ],
     maxOutputTokens: 3000,
-  });
-  const result = schema.parse(
-    JSON.parse(
-      response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
-    ),
-  );
-  if (
-    result.checks.length !== claims.length ||
-    new Set(result.checks.map((c) => c.claimIndex)).size !== claims.length ||
-    result.checks.some((c) => c.claimIndex >= claims.length)
-  )
+  };
+  const complete = (result: z.infer<typeof schema>) =>
+    result.checks.length === claims.length &&
+    new Set(result.checks.map((c) => c.claimIndex)).size === claims.length &&
+    result.checks.every((c) => c.claimIndex < claims.length);
+  let result: z.infer<typeof schema> | undefined;
+  // A malformed review is a provider defect, not evidence about the answer: one metered
+  // retry before the question is reported as an error.
+  for (let attempt = 0; attempt < 2 && !result; attempt++) {
+    const response = await model.generate(request);
+    try {
+      const parsed = schema.parse(
+        JSON.parse(
+          response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
+        ),
+      );
+      if (complete(parsed)) result = parsed;
+    } catch {
+      /* Retry once; the second failure is reported below. */
+    }
+  }
+  if (!result)
     throw new Error("Verifier did not assess every claim exactly once");
-  const checks: CheckResult[] = result.checks.map((c) => ({
-    rule: `claim-${c.claimIndex + 1}:support`,
-    status: c.supported ? "passed" : "failed",
-    reason: c.reason,
-  }));
+  // The small reviewer sees every claim and passage at once and can miss a changed role or
+  // count buried in a long page. A claim that has newer evidence gets one focused comparison
+  // by the stronger answer model; either reviewer can mark it superseded.
+  const focused = new Map<number, { superseded: boolean; reason: string }>();
+  const scoped = new Map<number, { unqualified: boolean; reason: string }>();
+  for (const check of result.checks) {
+    const claim = claims[check.claimIndex]!;
+    const newer = extra.get(check.claimIndex)?.newer ?? [];
+    if (newer.length && !check.supersededByNewer)
+      focused.set(
+        check.claimIndex,
+        await reviewCurrentness(model, runId, signal, question, claim, newer),
+      );
+    const exceptions = extra.get(check.claimIndex)?.exceptions ?? [];
+    if (exceptions.length && check.supported)
+      scoped.set(
+        check.claimIndex,
+        await reviewScope(model, runId, signal, question, claim, exceptions),
+      );
+  }
+  const checks: CheckResult[] = result.checks.flatMap((c) => {
+    const newer = extra.get(c.claimIndex)?.newer ?? [];
+    const dates = newer.map((s) => evidenceDate(s)).join(", ");
+    const strong = focused.get(c.claimIndex);
+    const scope = scoped.get(c.claimIndex);
+    const superseded = c.supersededByNewer || strong?.superseded === true;
+    const unqualified = scope?.unqualified === true;
+    const exceptions = extra.get(c.claimIndex)?.exceptions ?? [];
+    return [
+      {
+        rule: `claim-${c.claimIndex + 1}:support`,
+        status:
+          c.supported && !superseded && !unqualified ? "passed" : "failed",
+        reason:
+          c.supported && superseded
+            ? (strong?.reason ?? c.reason)
+            : c.supported && unqualified
+              ? `Absolute wording is limited by an exception in the corpus; qualify it. ${scope!.reason}`
+              : c.reason,
+      },
+      ...(exceptions.length
+        ? [
+            {
+              rule: `claim-${c.claimIndex + 1}:scope`,
+              status: unqualified ? "failed" : "passed",
+              reason: unqualified
+                ? `An exception or optional path was found for this absolute statement. ${scope!.reason}`
+                : `${exceptions.length} passage(s) retrieved for exceptions do not limit this statement`,
+            } satisfies CheckResult,
+          ]
+        : []),
+      {
+        rule: `claim-${c.claimIndex + 1}:currentness`,
+        status: superseded
+          ? "failed"
+          : newer.length
+            ? "passed"
+            : "not_applicable",
+        reason: superseded
+          ? `Newer evidence (${dates}) describes a different current state; cite it or date the claim as historical. ${strong?.reason ?? c.reason}`
+          : newer.length
+            ? `${newer.length} newer passage(s) (${dates}) were compared and do not contradict this claim`
+            : "No newer passage of equal or higher authority was retrieved for this subject",
+      },
+    ] satisfies CheckResult[];
+  });
   if (result.questionMode === "synthesis") {
     const cited = claims.flatMap((c) =>
       c.citations.map((id) => registry.get(id)!),
@@ -78,4 +161,100 @@ export async function verifyClaims(
     });
   }
   return checks;
+}
+
+const currentnessSchema = z.object({
+  superseded: z.boolean(),
+  reason: z.string(),
+});
+async function reviewCurrentness(
+  model: ModelClient,
+  runId: string,
+  signal: AbortSignal | undefined,
+  question: string,
+  claim: Claim,
+  newer: EvidencePassage[],
+): Promise<{ superseded: boolean; reason: string }> {
+  const response = await model.generate({
+    runId,
+    signal,
+    stage: "currentness-review",
+    system: readFileSync("prompts/currentness.md", "utf8"),
+    messages: [
+      {
+        role: "user",
+        text: JSON.stringify({
+          question,
+          claim,
+          newerPassages: newer.map((s) => ({
+            id: s.id,
+            url: s.url,
+            date: evidenceDate(s),
+            authority: s.authority,
+            text: s.text,
+          })),
+        }),
+      },
+    ],
+    maxOutputTokens: 1500,
+  });
+  try {
+    return currentnessSchema.parse(
+      JSON.parse(
+        response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
+      ),
+    );
+  } catch {
+    // An unreadable focused review neither approves nor rejects; the general review stands.
+    return {
+      superseded: false,
+      reason: "Focused currentness review was unreadable",
+    };
+  }
+}
+
+const scopeSchema = z.object({ unqualified: z.boolean(), reason: z.string() });
+async function reviewScope(
+  model: ModelClient,
+  runId: string,
+  signal: AbortSignal | undefined,
+  question: string,
+  claim: Claim,
+  exceptions: EvidencePassage[],
+): Promise<{ unqualified: boolean; reason: string }> {
+  const response = await model.generate({
+    runId,
+    signal,
+    stage: "scope-review",
+    system: readFileSync("prompts/scope.md", "utf8"),
+    messages: [
+      {
+        role: "user",
+        text: JSON.stringify({
+          question,
+          claim,
+          exceptionPassages: exceptions.map((s) => ({
+            id: s.id,
+            url: s.url,
+            date: evidenceDate(s),
+            authority: s.authority,
+            text: s.text,
+          })),
+        }),
+      },
+    ],
+    maxOutputTokens: 1500,
+  });
+  try {
+    return scopeSchema.parse(
+      JSON.parse(
+        response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
+      ),
+    );
+  } catch {
+    return {
+      unqualified: false,
+      reason: "Focused scope review was unreadable",
+    };
+  }
 }

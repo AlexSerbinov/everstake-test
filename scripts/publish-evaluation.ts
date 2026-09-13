@@ -75,8 +75,22 @@ try {
     "\n| Case | Agent | Baseline | Baseline explanation |\n|---|---|---|---|\n";
   for (const row of baseline.rows)
     markdown += `| ${row.question.id} | ${agent.rows.find((r) => r.question.id === row.question.id)!.verdict} | ${row.verdict} | ${cell(row.explanation)} |\n`;
-  markdown +=
-    "\nThe earlier complete agent run `agent-2b8e50ab` scored 15/20 (75%) with one unsupported-fact case. It is retained as a measured iteration, alongside incomplete diagnostic runs. No answers are stitched into either final run. Model-based support verification is fallible; deterministic citation and arithmetic checks do not prove semantic truth.\n";
+  const earlier = db
+    .prepare("SELECT result FROM evaluations ORDER BY created_at")
+    .all()
+    .map((r) => JSON.parse(String(r.result)) as EvaluationRun)
+    .filter(
+      (r) =>
+        r.mode === "agent" &&
+        r.id !== agent.id &&
+        r.status === "completed" &&
+        r.summary.accuracy !== null,
+    )
+    .map(
+      (r) =>
+        `\`${r.id}\` ${r.summary.passed}/20 (${((r.summary.accuracy ?? 0) * 100).toFixed(0)}%, ${r.summary.inventedFacts} unsupported-fact case${r.summary.inventedFacts === 1 ? "" : "s"})`,
+    );
+  markdown += `\nEarlier complete agent runs on the same corpus are retained as measured iterations, alongside incomplete diagnostic runs: ${earlier.join("; ")}. No answers are stitched into any run. Model-based support verification is fallible; deterministic citation and arithmetic checks do not prove semantic truth.\n`;
   writeFileSync("EVAL.md", markdown);
   console.log(
     JSON.stringify(runs.map((r) => ({ id: r.id, summary: r.summary }))),

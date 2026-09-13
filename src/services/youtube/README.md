@@ -9,3 +9,14 @@ Run `npx tsx scripts/youtube.ts inventory` to merge and re-screen the legacy 128
 `npx tsx scripts/import-youtube.ts --source=... --target=... --documents=... --dry-run` checks an import without writing. Omitting `--dry-run` atomically imports runs, API calls, jobs, and inactive snapshots. Existing equal rows are skipped; any same-ID/different-content row aborts the whole transaction. It never creates chunks or embeddings.
 
 The Soniox REST contract and `stt-async-v5` model were checked against the official async transcription documentation on 2026-09-13. The configured $0.10/hour amount is a planning forecast. Actual provider cost stays unknown in the ledger when the response exposes duration but no billed amount; it is never recorded as zero.
+
+
+## Save transcripts before named-speaker review
+
+`transcribe --db=data/youtube-batch.sqlite --ids=...` runs only download/Soniox for explicitly screened videos, exporting timed JSON and Markdown to `artifacts/youtube/transcripts/`. It does not call Gemini or add those transcripts to the active factual corpus. A failed video is persisted and the remaining selected videos continue; rerunning the same batch database resumes stored job IDs. Check the shared job registry before starting a new isolated batch database, then import its ledger/jobs with `import-youtube.ts` and an empty documents array. Retain the audio cache for hash-checked reuse.
+
+`reconcile-costs --db=...` fetches Soniox's official usage logs and matches both client operation references and transcription IDs. It stores provider-reported USD and separate native token counts, preserving forecasts and leaving unmatched costs unknown. Repeated reconciliation does not duplicate spend. These queries report existing usage; they do not submit audio.
+
+The source-linked navigation-note proposal for history and positioning is in [YOUTUBE_KNOWLEDGE.md](../../../docs/YOUTUBE_KNOWLEDGE.md). That retrieval layer is a design, not an active feature.
+
+For current named-speaker processing, use `npx tsx scripts/review-youtube.ts --ids=...`. It reuses Soniox transcripts and caches the review by input/model/prompt hash. The `process` and `rebuild-documents` paths also consume this v2 cache; legacy reviews without evidence-scope classification cannot emit testimony. Reviewed files and their reading index are in `artifacts/youtube/reviewed/`. `scripts/activate-youtube.ts` activates only eligible testimony and records incremental embedding costs. See `docs/youtube/README.md`.

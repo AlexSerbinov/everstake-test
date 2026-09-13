@@ -293,6 +293,7 @@ async function runMeteredAttempts<T, R>(
       messages?: ModelMessage[];
       input?: string | string[];
       maxOutputTokens?: number;
+      signal?: AbortSignal;
     };
     provider: string;
     model: string;
@@ -309,7 +310,9 @@ async function runMeteredAttempts<T, R>(
     common.environment,
   );
   let lastError: unknown;
+  const external = options.request.signal;
   for (let attempt = 1; attempt <= options.settings.maxAttempts; attempt += 1) {
+    if (external?.aborted) throw cancelledError();
     const attemptId = beginApiAttempt(
       db,
       {
@@ -333,6 +336,8 @@ async function runMeteredAttempts<T, R>(
       () => controller.abort(),
       options.settings.timeoutMs,
     );
+    const cancel = () => controller.abort();
+    external?.addEventListener("abort", cancel, { once: true });
     let result: AttemptResult<T> | null = null;
     try {
       result = await options.call({ signal: controller.signal, key, baseURL });
@@ -350,10 +355,11 @@ async function runMeteredAttempts<T, R>(
       const safeError = new Error(sanitizeError(error));
       safeError.name = error instanceof Error ? error.name : "Error";
       lastError = safeError;
-      const timedOut = controller.signal.aborted;
+      const cancelled = external?.aborted ?? false;
+      const timedOut = controller.signal.aborted && !cancelled;
       const metered = error instanceof MeteredResponseError ? error : null;
       finishApiAttempt(db, attemptId, {
-        status: timedOut ? "timed_out" : "error",
+        status: cancelled ? "cancelled" : timedOut ? "timed_out" : "error",
         elapsedMs: performance.now() - startedAt,
         usage: result?.usage ?? metered?.usage,
         price:
@@ -364,6 +370,7 @@ async function runMeteredAttempts<T, R>(
         actualModel: result?.model ?? metered?.model,
         error: safeError,
       });
+      if (cancelled) throw cancelledError();
       if (
         attempt === options.settings.maxAttempts ||
         !retryable(error, timedOut)
@@ -372,9 +379,16 @@ async function runMeteredAttempts<T, R>(
       await common.sleep(Math.min(1_000 * 2 ** (attempt - 1), 8_000));
     } finally {
       clearTimeout(timer);
+      external?.removeEventListener("abort", cancel);
     }
   }
   throw lastError;
+}
+
+export function cancelledError(): Error {
+  const error = new Error("Request cancelled by the user");
+  error.name = "AbortError";
+  return error;
 }
 
 function retryable(error: unknown, timedOut: boolean): boolean {
