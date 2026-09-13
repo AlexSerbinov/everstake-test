@@ -46,6 +46,11 @@ export interface Claim {
   text: string;
   citations: string[];
   asOf: string | null;
+  /** Meaning and exact cited origin of asOf; optional for historical saved runs. */
+  asOfBasis?: "effective" | "published" | "updated" | "observed";
+  asOfSource?: string;
+  /** Scope of the statement, reviewed against the cited passages. */
+  temporalScope?: "current" | "cumulative" | "historical" | "unspecified";
 }
 export interface CheckResult {
   rule: string;
@@ -104,6 +109,7 @@ export interface ModelRequest {
   messages: ModelMessage[];
   model?: string;
   maxOutputTokens?: number;
+  thinkingLevel?: "low" | "medium" | "high";
   /** Cancels the in-flight provider call; a cancelled attempt is recorded, never retried. */
   signal?: AbortSignal;
 }

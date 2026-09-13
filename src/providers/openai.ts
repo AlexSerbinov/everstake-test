@@ -34,6 +34,9 @@ export function openAiGenerationRequest(
     ...(request.maxOutputTokens === undefined
       ? {}
       : { max_tokens: request.maxOutputTokens }),
+    ...(request.thinkingLevel
+      ? { reasoning_effort: request.thinkingLevel }
+      : {}),
   };
 }
 

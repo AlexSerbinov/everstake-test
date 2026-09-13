@@ -52,6 +52,8 @@ export interface ClaimCounterevidence {
   claimIndex: number;
   newer: EvidencePassage[];
   exceptions: EvidencePassage[];
+  /** Same-subject evidence can differ in scope without having a newer timestamp. */
+  related?: EvidencePassage[];
 }
 
 export function evidenceDate(source: EvidencePassage): string | null {
@@ -106,6 +108,7 @@ export async function gatherCounterevidence(
       results.push({
         claimIndex,
         newer,
+        related: subject.filter((s) => !seen.has(s.id)).slice(0, perClaim),
         exceptions: exceptions
           .filter((s) => !seen.has(s.id))
           .slice(0, perClaim),

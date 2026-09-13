@@ -7,8 +7,11 @@ import type {
   ModelClient,
 } from "../../contracts.js";
 import { evidenceDate, type ClaimCounterevidence } from "./counterevidence.js";
+import { numbers } from "./verify-answer.js";
+import { readConfig } from "../../config.js";
 const schema = z.object({
   questionMode: z.enum(["factual", "synthesis"]),
+  answerScope: z.object({ supported: z.boolean(), reason: z.string() }),
   checks: z.array(
     z.object({
       claimIndex: z.number().int().nonnegative(),
@@ -143,6 +146,27 @@ export async function verifyClaims(
       },
     ] satisfies CheckResult[];
   });
+  // A broad lightweight review can approve each quantity while missing the relationship
+  // implied by their juxtaposition. Compare multi-value answers as a whole, with only
+  // their cited passages, using the answer model (the same pattern as currentness review).
+  const scopeReview =
+    result.answerScope.supported &&
+    new Set(claims.flatMap((claim) => numbers(claim.text))).size > 1
+      ? await reviewAnswerScope(
+          model,
+          runId,
+          signal,
+          question,
+          claims,
+          registry,
+          counterevidence,
+        )
+      : result.answerScope;
+  checks.push({
+    rule: "answer-scope",
+    status: scopeReview.supported ? "passed" : "failed",
+    reason: scopeReview.reason,
+  });
   if (result.questionMode === "synthesis") {
     const cited = claims.flatMap((c) =>
       c.citations.map((id) => registry.get(id)!),
@@ -161,6 +185,60 @@ export async function verifyClaims(
     });
   }
   return checks;
+}
+
+async function reviewAnswerScope(
+  model: ModelClient,
+  runId: string,
+  signal: AbortSignal | undefined,
+  question: string,
+  claims: Claim[],
+  registry: Map<string, EvidencePassage>,
+  counterevidence: ClaimCounterevidence[],
+): Promise<{ supported: boolean; reason: string }> {
+  const ids = new Set(claims.flatMap((claim) => claim.citations));
+  const response = await model.generate({
+    runId,
+    signal,
+    stage: "answer-scope-review",
+    system: readFileSync("prompts/answer-scope.md", "utf8"),
+    thinkingLevel: readConfig<{
+      answerThinkingLevel?: "low" | "medium" | "high";
+    }>("policy").answerThinkingLevel,
+    messages: [
+      {
+        role: "user",
+        text: JSON.stringify({
+          question,
+          claims,
+          untrustedEvidence: [...ids].map((id) => registry.get(id)),
+          otherRetrievedEvidence: [
+            ...new Map(
+              [
+                ...registry.values(),
+                ...counterevidence.flatMap((c) => [
+                  ...c.newer,
+                  ...c.exceptions,
+                  ...(c.related ?? []),
+                ]),
+              ]
+                .filter((s) => !ids.has(s.id))
+                .map((s) => [s.id, s]),
+            ).values(),
+          ],
+        }),
+      },
+    ],
+    maxOutputTokens: 1500,
+  });
+  // An unreadable review is a provider error; it must not silently approve the answer.
+  return z
+    .object({ supported: z.boolean(), reason: z.string().trim().min(1) })
+    .parse(
+      JSON.parse(
+        response.text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, ""),
+      ),
+    );
 }
 
 const currentnessSchema = z.object({

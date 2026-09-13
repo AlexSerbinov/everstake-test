@@ -3,6 +3,7 @@ prompt: prompts/answer.md
 skills:
   - skills/evidence.md
 maxSteps: 6
+maxRepairSteps: 2
 tools:
   - search
   - read

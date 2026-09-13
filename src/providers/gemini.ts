@@ -19,10 +19,14 @@ export function nativeGeminiRequest(
       role: message.role,
       parts: [{ text: message.text }],
     })),
-    generationConfig:
-      request.maxOutputTokens === undefined
+    generationConfig: {
+      ...(request.maxOutputTokens === undefined
         ? {}
-        : { maxOutputTokens: request.maxOutputTokens },
+        : { maxOutputTokens: request.maxOutputTokens }),
+      ...(request.thinkingLevel
+        ? { thinkingConfig: { thinkingLevel: request.thinkingLevel } }
+        : {}),
+    },
   };
 }
 

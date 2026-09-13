@@ -23,11 +23,23 @@ import { verifyClaims } from "./verify-claims.js";
 import { gatherCounterevidence } from "./counterevidence.js";
 import { cancelledError } from "../../providers/model-client.js";
 import { numbers, verifyAnswer } from "./verify-answer.js";
+import {
+  commonEffectiveDate,
+  normalizeClaimDate,
+  renderDatedClaims,
+} from "./claim-date.js";
 
 const claimSchema = z.object({
   text: z.string().min(1).max(3000),
   citations: z.array(z.string()).min(1).max(10),
   asOf: z.string().nullable(),
+  asOfBasis: z
+    .enum(["effective", "published", "updated", "observed"])
+    .optional(),
+  asOfSource: z.string().optional(),
+  temporalScope: z
+    .enum(["current", "cumulative", "historical", "unspecified"])
+    .optional(),
 });
 const actionSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("search"), query: z.string().min(1).max(1000) }),
@@ -82,6 +94,7 @@ export async function answerQuestion(
     prompt: string;
     skills: string[];
     maxSteps: number;
+    maxRepairSteps?: number;
   };
   const system =
     mode === "baseline"
@@ -91,9 +104,11 @@ export async function answerQuestion(
           ...definition.skills.map((p) => readFileSync(p, "utf8")),
         ].join("\n\n");
   let answeredAction = false;
-  const policy = readConfig<{ maxEvidence: number; maxOutputTokens: number }>(
-    "policy",
-  );
+  const policy = readConfig<{
+    maxEvidence: number;
+    maxOutputTokens: number;
+    answerThinkingLevel?: "low" | "medium" | "high";
+  }>("policy");
   const evidenceLimit = Math.max(6, Math.min(policy.maxEvidence, 30));
   const registry = new Map<string, EvidencePassage>();
   const messages: ModelMessage[] = [{ role: "user", text: question }];
@@ -142,7 +157,11 @@ export async function answerQuestion(
       text: JSON.stringify({ untrustedEvidence: initial }),
     });
     const steps = mode === "baseline" ? 1 : Math.min(definition.maxSteps, 8);
-    for (let step = 0; step < steps + (mode === "agent" ? 1 : 0); step++) {
+    const repairSteps =
+      mode === "agent"
+        ? Math.max(0, Math.min(definition.maxRepairSteps ?? 1, 2))
+        : 0;
+    for (let step = 0; step < steps + repairSteps; step++) {
       throwIfCancelled();
       send(
         "step",
@@ -183,6 +202,7 @@ export async function answerQuestion(
           },
         ],
         maxOutputTokens: Math.min(policy.maxOutputTokens, 4000),
+        thinkingLevel: policy.answerThinkingLevel,
         signal,
       });
       messages.push({ role: "model", text: response.text });
@@ -214,6 +234,9 @@ export async function answerQuestion(
           ];
           break;
         }
+        action.claims = action.claims.map((claim) =>
+          normalizeClaimDate(claim, registry),
+        );
         const checks = verifyAnswer(action.claims, registry, question);
         if (!action.claims.length)
           checks.push({
@@ -231,6 +254,7 @@ export async function answerQuestion(
           const found = counterevidence.flatMap((c) => [
             ...c.newer,
             ...c.exceptions,
+            ...(c.related ?? []),
           ]);
           if (found.length)
             register(
@@ -263,7 +287,7 @@ export async function answerQuestion(
             text: JSON.stringify({
               rejectedDraftChecks: checks,
               instruction:
-                "Fix using actual evidence or abstain. Do not invent citations or unsupported numbers. If a claim was superseded by newer evidence, cite the newer passage for the current state and date the older statement as history.",
+                "Return a concise corrected answer using the available evidence and the failed check reasons. Do not invent citations, numbers, relationships or dates. A newer document does not automatically supersede a different metric. If evidence cannot support the requested conclusion, give a supported partial answer or abstain.",
             }),
           });
           continue;
@@ -277,18 +301,8 @@ export async function answerQuestion(
           claims: action.claims,
           checks,
           sources,
-          asOf:
-            action.claims
-              .map((c) => c.asOf)
-              .filter(Boolean)
-              .sort()
-              .at(-1) ?? null,
-          text: action.claims
-            .map(
-              (c) =>
-                `${c.text} ${c.citations.map((id) => `[${id}]`).join(" ")}`,
-            )
-            .join("\n\n"),
+          asOf: commonEffectiveDate(action.claims),
+          text: renderDatedClaims(action.claims, sources),
           trust: scoreEvidence(sources, checks),
         };
         break;
