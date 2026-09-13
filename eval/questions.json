@@ -1,0 +1,324 @@
+{
+  "status": "references_pending_frozen_corpus_review",
+  "provenance": "Selected from the previous public-source evaluation banks; never used as runtime context.",
+  "questions": [
+    {
+      "id": "E01",
+      "question": "Who is the CEO of Everstake?",
+      "reference": "Sergii Vasylchuk (CEO & President). David Kinitsky, announced in June 2025 as joining as CEO, is listed as CCDO (Chief Corporate Development Officer) on the company page as of 2026.",
+      "referenceUrls": [
+        "https://everstake.com/company/about",
+        "https://everstake.com/ai-info"
+      ],
+      "difficulty": "basic",
+      "category": "factual or temporal synthesis",
+      "whyHard": "9 syndicated press copies say Kinitsky 'joins as CEO' (June 2025); majority vote / similarity picks the wrong person",
+      "negative": false,
+      "rubric": [
+        "Every factual claim has a supporting source and correct scope."
+      ]
+    },
+    {
+      "id": "E02",
+      "question": "How many Proof-of-Stake networks does Everstake support?",
+      "reference": "130+ networks (as of 2026; everstake.com states 'historically supported 130+'). Older sources say 85 (June 2025) and 70+ (2022–2024).",
+      "referenceUrls": [
+        "https://everstake.com/ai-info"
+      ],
+      "difficulty": "basic",
+      "category": "factual or temporal synthesis",
+      "whyHard": "three different numbers by year; must pick the newest first-party value and may mention history",
+      "negative": false,
+      "rubric": [
+        "Every factual claim has a supporting source and correct scope."
+      ]
+    },
+    {
+      "id": "E03",
+      "question": "In what year was Everstake founded?",
+      "reference": "2018",
+      "referenceUrls": [
+        "https://everstake.com/company/about"
+      ],
+      "difficulty": "basic",
+      "category": "factual or temporal synthesis",
+      "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+      "negative": false,
+      "rubric": [
+        "Every factual claim has a supporting source and correct scope."
+      ]
+    },
+    {
+      "id": "E04",
+      "question": "What security certifications and compliance frameworks does Everstake hold?",
+      "reference": "SOC 2 Type II, ISO/IEC 27001, NIST CSF, ITGC, GDPR, CCPA/CRPA (plus a DORA controls assessment). Auditor: Prescient Security.",
+      "referenceUrls": [
+        "https://everstake.com/ai-info",
+        "https://security.everstake.com/"
+      ],
+      "difficulty": "basic",
+      "category": "factual or temporal synthesis",
+      "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+      "negative": false,
+      "rubric": [
+        "Every factual claim has a supporting source and correct scope."
+      ]
+    },
+    {
+      "id": "E05",
+      "question": "How has Everstake's positioning changed over the last two years?",
+      "reference": "From a broad retail/multi-chain staking provider ('70+ chains', 'staking for everyone', 2022–2024) to an institution-first, certified infrastructure provider (SOC 2/ISO 27001, non-custodial, VaaS, institutional staking, new CEO/leadership announcements 2025, 'Certified Yield Infrastructure for Institutions' 2026) plus Solana blockspace/MEV products and AI-agent access (MCP). Should show the trajectory with dated sources.",
+      "referenceUrls": [
+        "blog 2022 (nexus mutual)",
+        "2024 (turns six)",
+        "2025 (year in review)",
+        "2026 ai-info/about"
+      ],
+      "difficulty": "basic",
+      "category": "factual or temporal synthesis",
+      "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
+      "negative": false,
+      "rubric": [
+        "Every factual claim has a supporting source and correct scope."
+      ]
+    },
+    {
+      "id": "E06",
+      "question": "The ETH guide is dated 2023 but now says both 0.1 and 0.01 ETH. What minimum applies to a new stake on 12 September 2026, since when, and what does 32 ETH refer to?",
+      "reference": "New stakes use 0.01 ETH from June 2026. The older 0.1 text remains. 32 ETH is the pooled validator activation threshold, not the retail minimum.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+        "https://everstake.com/staking/protocols/ethereum"
+      ],
+      "difficulty": "hard",
+      "category": "temporal_conflict",
+      "whyHard": "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum.",
+      "negative": false,
+      "rubric": [
+        "Do not date the 0.01 change to 2023 or call 32 ETH the retail minimum."
+      ]
+    },
+    {
+      "id": "E07",
+      "question": "A pooled ETH deposit is confirmed but its validator is not active. Another customer has requested an exit. Explain when Instant Stake helps and whether confirmation alone establishes reward accrual.",
+      "reference": "Confirmation is not validator activation. Matching an existing unstake request can enable Instant Stake; regular entry depends on pool funding and activation. Do not guarantee an activation deadline.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+        "https://everstake.com/staking/protocols/ethereum"
+      ],
+      "difficulty": "hard",
+      "category": "conditional_process",
+      "whyHard": "Do not equate transaction confirmation with immediate rewards.",
+      "negative": false,
+      "rubric": [
+        "Do not equate transaction confirmation with immediate rewards."
+      ]
+    },
+    {
+      "id": "E08",
+      "question": "An operator has 64 validators with 32 ETH each. Using Everstake’s Pectra explanation, what consolidation fits the new effective-balance cap, and did the minimum validator stake rise to that cap?",
+      "reference": "64 × 32 = 2,048 ETH, fitting one validator at the new effective-balance cap. This changes the maximum, not the 32 ETH validator minimum.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/pectra-and-fusaka-what-they-bring-to-institutional-stakers",
+        "https://everstake.com/staking/protocols/ethereum"
+      ],
+      "difficulty": "hard",
+      "category": "calculation_scope",
+      "whyHard": "Do not infer that every operator must stake 2,048 ETH or that consolidation is automatically completed.",
+      "negative": false,
+      "rubric": [
+        "Do not infer that every operator must stake 2,048 ETH or that consolidation is automatically completed."
+      ]
+    },
+    {
+      "id": "E09",
+      "question": "Everstake’s CFO guide limits operator-failure loss to missed rewards, yet also describes slashing of principal. Can a treasury conclude that retaining withdrawal control makes its principal immune to operator mistakes?",
+      "reference": "No. The guide contains a material qualification: non-custodial control and validator-signing risk differ. Slashing can affect principal. Public terms disclose risk; private indemnities require their own evidence.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/non-custodial-vs-managed-staking-risk-framework-cfos",
+        "https://everstake.com/terms-of-use"
+      ],
+      "difficulty": "hard",
+      "category": "same_source_contradiction",
+      "whyHard": "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement.",
+      "negative": false,
+      "rubric": [
+        "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement."
+      ]
+    },
+    {
+      "id": "E10",
+      "question": "The Ethereum page lists two Ackee reviews. Which concerns institutional batch deposits and which retail staking? Is one review evidence that both flows were examined?",
+      "reference": "The ETH2 Batch Deposit Contract review concerns B2B deposits; the Ethereum Staking Protocol review concerns retail mechanics. Their scopes differ; a listing is not an independent audit of deployed code.",
+      "referenceUrls": [
+        "https://everstake.com/staking/protocols/ethereum"
+      ],
+      "difficulty": "hard",
+      "category": "audit_scope",
+      "whyHard": "Do not treat one report as covering both contracts or certify an unseen deployed version.",
+      "negative": false,
+      "rubric": [
+        "Do not treat one report as covering both contracts or certify an unseen deployed version."
+      ]
+    },
+    {
+      "id": "E11",
+      "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
+      "reference": "3 × $199 + 2 × $499 = $1,595 monthly; twelve months total $19,140. This hypothetical subscription subtotal proves neither annual-plan discounts nor a percentage commission.",
+      "referenceUrls": [
+        "https://everstake.com/products/institutional-staking/vaas"
+      ],
+      "difficulty": "hard",
+      "category": "calculation_commercial_scope",
+      "whyHard": "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts.",
+      "negative": false,
+      "rubric": [
+        "Do not present the subtotal as a negotiated all-in invoice, include unquoted taxes, or infer annual discounts."
+      ]
+    },
+    {
+      "id": "E12",
+      "question": "A team wants one API key and immediate access to all four Blockspace products. What must change in its onboarding and authentication plan?",
+      "reference": "Access is product-specific: ShredStream token, Direct Shreds IP-based provisioning, SWQOS HTTP/QUIC-specific access, and application-gated Relayer/TPU. Provisioning timelines differ; there is no universal account key.",
+      "referenceUrls": [
+        "https://docs.blockspace.everstake.com/getting-started/first-request",
+        "https://docs.blockspace.everstake.com/getting-started/authentication"
+      ],
+      "difficulty": "hard",
+      "category": "access_model_comparison",
+      "whyHard": "Do not invent reusable credentials or call every product immediately self-serve.",
+      "negative": false,
+      "rubric": [
+        "Do not invent reusable credentials or call every product immediately self-serve."
+      ]
+    },
+    {
+      "id": "E13",
+      "question": "Direct Shreds advertises 3ms p50 in-region. A client runs far from the validator and requires every message within 3ms. Does the advertised measurement establish that guarantee?",
+      "reference": "No. The stated figure is an in-region median, not an all-message upper bound or cross-region SLA. Listener placement and network distance matter.",
+      "referenceUrls": [
+        "https://docs.blockspace.everstake.com/direct-shreds",
+        "https://docs.blockspace.everstake.com/getting-started/troubleshooting"
+      ],
+      "difficulty": "hard",
+      "category": "metric_scope",
+      "whyHard": "Do not invent a p99, cross-region latency, or contractual maximum.",
+      "negative": false,
+      "rubric": [
+        "Do not invent a p99, cross-region latency, or contractual maximum."
+      ]
+    },
+    {
+      "id": "E14",
+      "question": "A QUIC connection authenticates with allowlisted key A, but the submitted transaction is signed by wallet B. Does the published SWQOS API require A to sign that transaction, and is the tip optional?",
+      "reference": "The allowlisted QUIC key authenticates transport and need not sign the transaction. The product API says both paths require a tip, but its later no-tip paragraph and the official repository describe single-path forwarding; the README scopes a no-tip exception to prepaid subscription customers. Report the conflicting or plan-specific wording. Do not promise that an arbitrary account can omit the tip or invent which source supersedes the other.",
+      "referenceUrls": [
+        "https://docs.blockspace.everstake.com/swqos/api",
+        "https://raw.githubusercontent.com/everstake/everstake-swqos-docs/main/README.md"
+      ],
+      "difficulty": "hard",
+      "category": "identity_boundary",
+      "whyHard": "Do not treat the tip as universally optional or universally mandatory across all plans; do not require the transport key to sign the transaction.",
+      "negative": false,
+      "rubric": [
+        "Do not treat the tip as universally optional or universally mandatory across all plans; do not require the transport key to sign the transaction."
+      ]
+    },
+    {
+      "id": "E15",
+      "question": "The Blockspace homepage describes seven regions, but other sections and the regions guide list six. Can we promise every product in Singapore and New York? Reconcile the product matrix without inventing update dates.",
+      "reference": "Flag the discrepancy. The homepage matrix lists ShredStream/SWQOS in both cities, Relayer live in New York but upcoming in Singapore, and Direct Shreds upcoming in both. Do not universalize coverage.",
+      "referenceUrls": [
+        "https://blockspace.everstake.com/",
+        "https://docs.blockspace.everstake.com/getting-started/regions"
+      ],
+      "difficulty": "hard",
+      "category": "conflicting_coverage",
+      "whyHard": "Do not infer a rollout date or silently treat all undated pages as synchronized.",
+      "negative": false,
+      "rubric": [
+        "Do not infer a rollout date or silently treat all undated pages as synchronized."
+      ]
+    },
+    {
+      "id": "E16",
+      "question": "For Everstake’s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
+      "reference": "No reliable product-specific policy establishes that guarantee in the reviewed evidence. Request the applicable policy and exclusions; market examples of insurers do not identify Everstake’s actual coverage.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-choose-staking-provider-institutions",
+        "https://everstake.com/resources/blog/staking-slashing-risk-prevention-insurance",
+        "https://everstake.com/terms-of-use"
+      ],
+      "difficulty": "hard",
+      "category": "missing_policy",
+      "whyHard": "Do not infer either universal insurance coverage or absence of insurance.",
+      "negative": true,
+      "rubric": [
+        "Do not infer either universal insurance coverage or absence of insurance."
+      ]
+    },
+    {
+      "id": "E17",
+      "question": "The VaaS page says both instant launch and deployment within 72 hours. What exact compensation is contractually owed if our validator is not operational after 72 hours?",
+      "reference": "No reliable compensation amount or credit schedule is established by the reviewed product page. Marketing timing and custom-SLA availability do not supply the customer’s contract.",
+      "referenceUrls": [
+        "https://everstake.com/products/institutional-staking/vaas",
+        "https://everstake.com/terms-of-use"
+      ],
+      "difficulty": "hard",
+      "category": "missing_contract",
+      "whyHard": "Do not manufacture a refund percentage, assume zero entitlement, or treat uptime statistics as an SLA.",
+      "negative": true,
+      "rubric": [
+        "Do not manufacture a refund percentage, assume zero entitlement, or treat uptime statistics as an SLA."
+      ]
+    },
+    {
+      "id": "E18",
+      "question": "What is the exact monthly SWQOS Pro bill including London and Dublin QUIC add-ons, all transaction tips, and any minimum commitment?",
+      "reference": "No reliable all-in amount is available from the reviewed public tier description. Add-on pricing requires the dashboard quote, and transaction-tip totals require workload assumptions.",
+      "referenceUrls": [
+        "https://docs.blockspace.everstake.com/swqos"
+      ],
+      "difficulty": "hard",
+      "category": "missing_addon_quote",
+      "whyHard": "Do not invent add-on prices, traffic volumes, or a commitment period.",
+      "negative": true,
+      "rubric": [
+        "Do not invent add-on prices, traffic volumes, or a commitment period."
+      ]
+    },
+    {
+      "id": "E19",
+      "question": "What exact percentage of all pending Solana transactions does the Blockspace Relayer expose today? Derive it from the number of regions or validators described on the site.",
+      "reference": "No reliable percentage or denominator is supplied. Coverage depends on participating validator traffic; region or validator counts do not establish network-wide transaction share.",
+      "referenceUrls": [
+        "https://docs.blockspace.everstake.com/mempool",
+        "https://blockspace.everstake.com/"
+      ],
+      "difficulty": "hard",
+      "category": "missing_denominator",
+      "whyHard": "Do not report 100% or manufacture a share from unrelated counts.",
+      "negative": true,
+      "rubric": [
+        "Do not report 100% or manufacture a share from unrelated counts."
+      ]
+    },
+    {
+      "id": "E20",
+      "question": "I request withdrawal of 10 ETH now. At what exact UTC time will it reach my wallet, using only the public Instant Unstake guide and general terms?",
+      "reference": "No reliable exact time can be derived. Matching demand, queue state and network processing are not supplied by those static pages; instant branding is not an unconditional deadline.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-stake-01-ether-or-more-on-the-everstake-website",
+        "https://everstake.com/terms-of-use"
+      ],
+      "difficulty": "hard",
+      "category": "missing_live_queue",
+      "whyHard": "Do not invent live queue state or promise an immediate/fixed-time withdrawal.",
+      "negative": true,
+      "rubric": [
+        "Do not invent live queue state or promise an immediate/fixed-time withdrawal."
+      ]
+    }
+  ]
+}

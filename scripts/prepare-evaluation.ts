@@ -1,0 +1,10 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+import { parse } from 'yaml';
+import type { EvaluationQuestion } from '../src/contracts.js';
+const original=process.argv[2]; if(!original) throw new Error('Provide reference checkout path');
+const basic=parse(readFileSync(`${original}/claude-work/eval/questions.yaml`,'utf8')).questions as {id:string;question:string;reference:string;reference_source:string;trap?:string}[];
+const hard=JSON.parse(readFileSync(`${original}/docs/evaluation/hard-v1/questions.json`,'utf8')).questions as {id:string;kind:string;question:string;reference:string;must_not:string;source_ids:string[]}[];
+const sources=JSON.parse(readFileSync(`${original}/docs/evaluation/hard-v1/sources.json`,'utf8')) as {id:string;url:string}[];
+const basicIds=['q01','q02','q03','q05','q14'];const hardIds=['H01','H02','H03','H05','H06','H07','H09','H10','H12','H14','H16','H17','H18','H19','H20'];
+const questions:EvaluationQuestion[]=[...basicIds.map(id=>{const q=basic.find(q=>q.id===id)!;return {id,question:q.question,reference:q.reference,referenceUrls:q.reference_source.split(',').map(s=>s.trim()),difficulty:'basic' as const,category:'factual or temporal synthesis',whyHard:q.trap??'Requires source-backed facts and an explicit date, without filling gaps from model knowledge.',negative:false,rubric:['Every factual claim has a supporting source and correct scope.']};}),...hardIds.map(id=>{const q=hard.find(q=>q.id===id)!;return {id,question:q.question,reference:q.reference,referenceUrls:q.source_ids.map(id=>sources.find(s=>s.id===id)!.url),difficulty:'hard' as const,category:q.kind,whyHard:q.must_not,negative:Number(id.slice(1))>=16,rubric:[q.must_not]};})].map((q,i)=>({...q,id:`E${String(i+1).padStart(2,'0')}`}));
+writeFileSync('eval/questions.json',JSON.stringify({status:'references_pending_frozen_corpus_review',provenance:'Selected from the previous public-source evaluation banks; never used as runtime context.',questions},null,2)+'\n');
