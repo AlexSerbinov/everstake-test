@@ -15,18 +15,34 @@ const rules: Array<{ name: string; pattern: RegExp }> = [
   { name: 'prompt_exfiltration', pattern: /\b(?:reveal|repeat|print|show|return)\b.{0,100}\b(?:system|developer)\s+(?:message|prompt|instructions?)\b/i },
 ];
 
+const aiAddressee = /\b(?:you\s+are|act\s+as|behave\s+as)\b.{0,100}\b(?:chatgpt|(?:ai|virtual|helpful)\s+assistant|language model|llm|ai model|artificial intelligence)\b/i;
+const contextualDirective = /^(?:always\s+|never\s+|only\s+|please\s+)?(?:answer|respond|reply|say|state|mention|output|return|write|ignore|follow|obey|reveal|repeat|print|show)\b|^(?:your\s+answer|your\s+response|the\s+answer)\b.{0,80}\b(?:must|should|shall)\b/i;
+
 /** Removes explicit instructions aimed at an AI while preserving ordinary imperative prose. */
 export function sanitizeDocument(text: string): SanitizedDocument {
   const removed: RemovedInstruction[] = [];
   const lines: string[] = [];
+  let addressedToAi = false;
   for (const line of text.split('\n')) {
     const kept: string[] = [];
     for (const part of line.split(/(?<=[.!?])\s+/u)) {
       const sentence = part.trim();
       if (!sentence) continue;
+      if (aiAddressee.test(sentence)) {
+        removed.push({ text: sentence, rule: 'ai_addressee' });
+        addressedToAi = true;
+        continue;
+      }
+      if (addressedToAi && contextualDirective.test(sentence)) {
+        removed.push({ text: sentence, rule: 'contextual_ai_directive' });
+        continue;
+      }
       const matched = rules.find(rule => rule.pattern.test(sentence));
       if (matched) removed.push({ text: sentence, rule: matched.name });
-      else kept.push(sentence);
+      else {
+        kept.push(sentence);
+        addressedToAi = false;
+      }
     }
     lines.push(kept.join(' '));
   }
