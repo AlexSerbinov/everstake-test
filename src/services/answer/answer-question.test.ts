@@ -149,7 +149,13 @@ for (const lateRepair of [false, true])
         model: {
           generate: async (request) => {
             let response;
-            if (request.stage === "claim-verification") {
+            if (request.stage === "answer-scope-review") {
+              response = {
+                supported: true,
+                unsupportedAssumptions: [],
+                reason: "The dated statement answers the question",
+              };
+            } else if (request.stage === "claim-verification") {
               const input = JSON.parse(request.messages[0]!.text);
               assert.equal(input.claims[0].claim.asOfBasis, "published");
               assert.equal(input.claims[0].claim.asOfSource, source.id);

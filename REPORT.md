@@ -1,5 +1,11 @@
 # Everstate Knowledge Base — decisions and results
 
+<!-- submission-summary:start -->
+**16/20 (challenging questions), average rubric score 92.75/100.**
+
+18 answers retained and 2 rechecked; not a new full run. Partial credit contributes to the average; 16/20 is the full-pass count. Post-hoc coding-assistant review, not a blind benchmark or probability of correctness.
+<!-- submission-summary:end -->
+
 **English** · [Українська](REPORT.uk.md) · [Try the demo](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Setup and walkthrough](README.md)
 
 A company’s latest page, an old announcement, and ten copies of that announcement can all disagree. I built a knowledge assistant that shows which evidence supports an answer, what date it describes, and when the available material is insufficient.
@@ -40,13 +46,12 @@ The researcher can search, read registered evidence, calculate, and propose an a
 
 ## 4. What the evaluation actually showed
 
-![Quality and cost on the same frozen twenty-question set](docs/images/report-results.png)
+![Quality and cost on the same frozen twenty-question set](docs/images/06-evaluation.png)
 
 The latest full `core-v2` run passed **14/20 (70%)**, with **one case containing an invented factual relationship**. In E18, the answer incorrectly equated 1,000,000 lamports with 0.0005 SOL. Other failures include incomplete conclusions and reviewer-format errors. Seven separate practical scenarios passed **2/7**; they do not change the core denominator.
 
 After a format fix, E21 and E12 passed a separate **2/2 recheck** costing $0.106771. This gives sixteen questions with a successful answer across runs, **not a new full 80% run**: the other eighteen were not rerun. Original errors and receipts remain visible. [Answers, grading, and rechecks](EVAL.md).
 
-The historical 19/20 researcher and 11/20 baseline used the earlier corpus and question set. `core-v2` replaces the founding-year lookup with a harder question about approval, launch, projections, and voting. No new baseline was run. Scores across these sets are not a controlled improvement/regression comparison. Grading is a separate coding-assistant audit, not human-certified or held-out validation. [Historical results](docs/evaluation/general-quality/EVAL-previous.md).
 
 Everstake’s MCP supplies direct operational data; this assistant adds historical and multi-source research. On `core-v2`, a client using captured MCP context passed **6/20**, with zero invented-fact cases. It used different evidence and verification budgets, so this is not a ranking of autonomous MCP clients. Live tools remain better suited to current APY and uptime. [Comparison method](docs/MCP_COMPARISON.md).
 

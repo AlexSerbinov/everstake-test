@@ -13,7 +13,7 @@ The owner authorized end-to-end implementation, tests, evaluation and an indepen
 | W11 frozen corpus | verified for selected scope | 939 documents; corpus-eae2b2b23116; independent reference/sanitation audit |
 | W12 answer/Trust | implemented and tested; quality measured separately | Bounded actions, arithmetic, dates/citations, semantic/counterevidence review; Trust cannot override gates |
 | W13 refresh | verified with stated operational limits | Validated staging, fenced atomic activation, source/due/resume commands; real targeted refresh, failure and stale-baseline fixtures |
-| W14 evaluation | measured | Twenty questions, five negatives; final agent 19/20 with no unsupported case, baseline 11/20; earlier 15/20, 14/20 and 16/20 preserved |
+| W14 evaluation | measured | 16/20 challenging questions; average rubric score 92.75/100; 18 retained answers plus 2 rechecks; MCP-only comparator 6/20. See EVAL.md. |
 | W15–W16 frontend | verified locally | Ask, Corpus, Costs, Evaluation; desktop/mobile and SSE/error/receipt checks |
 | W17 process/report | written | PROCESS.md, REPORT.md and Ukrainian defence walkthrough; final metrics and honest failures published |
 | W18 final verification | verified within documented limits | 101 tests pass on Mac and Linux Node 22; full agent/baseline independently graded; refresh and boundary regressions pass |

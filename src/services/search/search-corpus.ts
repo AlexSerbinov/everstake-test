@@ -1,6 +1,6 @@
+import { sanitizeDocument } from "../evidence/sanitize-document.js";
 import type { Database } from "../../storage/database.js";
 import type { DocumentSnapshot, EvidencePassage } from "../../contracts.js";
-import { sanitizeField } from "../evidence/sanitize-document.js";
 
 /** FTS retrieves candidates; authority and dates remain visible for evidence comparison. */
 export function searchCorpus(
@@ -90,6 +90,7 @@ export function readDocument(
   db: Database,
   documentId: string,
   offset = 0,
+  query?: string,
 ): EvidencePassage[] {
   const row = db
     .prepare("SELECT snapshot FROM documents WHERE id=? AND active=1")
@@ -98,20 +99,50 @@ export function readDocument(
   const d = JSON.parse(row.snapshot) as DocumentSnapshot;
   const chunks = db
     .prepare(
-      "SELECT id,text FROM chunks WHERE document_id=? ORDER BY ordinal LIMIT 4 OFFSET ?",
+      "SELECT id,text,ordinal FROM chunks WHERE document_id=? ORDER BY ordinal",
     )
-    .all(documentId, Math.max(0, Math.min(offset, 500))) as {
+    .all(documentId) as {
     id: string;
     text: string;
+    ordinal: number;
   }[];
-  return chunks.map((c) => passage(d, c.id, c.text));
+  const words = [
+    ...new Set(query?.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) ?? []),
+  ];
+  // Search the complete indexed document, not only its first window or the globally
+  // diversified search results. Nothing is fetched or taken from unsanitized snapshots.
+  const ranked = words.length
+    ? chunks
+        .map((c) => ({
+          c,
+          score: words.reduce(
+            (n, word) => n + (c.text.toLowerCase().includes(word) ? 1 : 0),
+            0,
+          ),
+        }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score || a.c.ordinal - b.c.ordinal)
+        .map(({ c }) => c)
+    : chunks;
+  const start = Math.max(0, Math.min(offset, 500));
+  return ranked.slice(start, start + 4).map((c) => ({
+    ...passage(d, c.id, c.text),
+    metadata: {
+      ...visibleMetadata(d.metadata),
+      chunkOrdinal: c.ordinal,
+      documentChunks: chunks.length,
+      matchingChunks: ranked.length,
+      nextOffset: start + 4 < ranked.length ? start + 4 : null,
+      readQuery: query ?? null,
+    },
+  }));
 }
 
-/**
- * A page title or a model-derived speaker label sits next to the passage in the model's
- * context, so a directive planted there would bypass the body sanitizer. Fields pass the same
- * rules; a title that was nothing but a directive falls back to the host name.
- */
+function sanitizeField(value: string): string {
+  return sanitizeDocument(value).text.replace(/\s+/g, " ").trim();
+}
+
+/** Preserve the deployed title and metadata sanitization when reading more chunks. */
 export function safeTitle(d: Pick<DocumentSnapshot, "title" | "url">): string {
   const title = sanitizeField(d.title);
   if (title) return title;

@@ -234,19 +234,8 @@ def protection():
 
 
 def quality():
-    d=Drawing('06-evaluation',t('Twenty questions. Every outcome stays visible.','Двадцять питань. Кожен результат видно.'),t('Saved evaluation on 13 September 2026; five questions have insufficient evidence.','Збережене оцінювання 13 вересня 2026 року; п’ять питань — із недостатніми доказами.'),720)
-    d.text(70,244,t('Research agent','Агент із пошуком'),31,bold=True)
-    d.text(70,404,t('One-pass baseline','Одна спроба відповіді'),31,bold=True)
-    for y,passed in [(255,19),(415,11)]:
-        for i in range(20):d.rect(500+i*39,y,30,44,GREEN if i<passed else RED,r=6,stroke=False)
-        d.text(1350,y-5,f'{passed}/20',42,bold=True,width=190)
-    d.text(500,322,t('1 incomplete answer','1 неповна відповідь'),25,MUTED)
-    d.text(500,482,t('9 failed cases, including errors and omissions','9 невдач, зокрема помилки й неповні відповіді'),25,MUTED)
-    d.rect(70,550,20,20,GREEN,r=4,stroke=False);d.text(101,544,t('Passed','Успішно'),23,MUTED)
-    d.rect(270,550,20,20,RED,r=4,stroke=False);d.text(301,544,t('Failed','Невдача'),23,MUTED)
-    d.text(760,544,t('0 invented-fact cases in these two runs','0 випадків вигаданих фактів у цих двох прогонах'),25,bold=True,width=780)
-    d.footer(t('A separate rubric review grades saved answers. This is not a blind benchmark.','Окрема перевірка оцінює збережені відповіді. Це не сліпий тест.'),t('Source: EVAL.md · agent-9a157413 / baseline-c656c369 · one square = one question','Джерело: EVAL.md · agent-9a157413 / baseline-c656c369 · квадрат = питання'))
-    d.save()
+    import runpy
+    runpy.run_path(str(ROOT/'scripts/docs/render-evaluation-comparison.py'), run_name='__main__')
 
 
 def refresh():

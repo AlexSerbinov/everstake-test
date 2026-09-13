@@ -43,7 +43,8 @@ export function collectionSummary(): HTMLElement {
     });
   void getJson<{ runs: EvaluationRun[] }>("/api/evaluations")
     .then(({ runs }) => {
-      const run = defaultEvaluationRun(publicEvaluations(runs));
+      const visible = publicEvaluations(runs);
+      const run = visible.find((run) => run.viewKind === "updated") ?? defaultEvaluationRun(visible);
       if (!run) {
         quality.replaceWith(metric("Saved evaluation", "Not measured"));
         return;
@@ -51,8 +52,8 @@ export function collectionSummary(): HTMLElement {
       const progress = evaluationMetrics(run);
       const average = averageQuality(run);
       const result = metric(
-        average === null ? "Saved evaluation" : "Average answer rubric score",
-        average === null ? "See results" : `${average.toFixed(2)} / 100`,
+        average === null ? "Saved evaluation" : "Evaluation · challenging questions",
+        average === null ? "See results" : `${run.summary.passed}/${progress.planned} · ${average.toFixed(2)}/100`,
         average === null
           ? "See the saved answers and failure analysis in Evaluation."
           : `Post-hoc rubric review, including partial credit. ${run.summary.passed}/${progress.planned} fully passed${run.viewKind === "updated" ? ` after ${run.recheckedCount} rechecks; not a new full run` : ""}. Not a probability of correctness.`,

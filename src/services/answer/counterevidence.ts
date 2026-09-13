@@ -10,7 +10,7 @@ import type { Claim, EvidencePassage } from "../../contracts.js";
  * decided by the support review, which receives them alongside the cited evidence.
  */
 export const ABSOLUTE_WORDING =
-  /\b(always|never|every|all|any|must|mandatory|compulsory|obligatory|required|guaranteed?|only|cannot|unconditional(?:ly)?|not optional|non-optional|no exceptions?|without exception|in all cases|in every case|regardless)\b/i;
+  /\b(always|never|every|all|any|must|mandatory|compulsory|obligatory|required|guaranteed?|only|cannot|unconditional(?:ly)?|not optional|non-optional|no exceptions?|without exception|in all cases|in every case|regardless)\b|(?:завжди|ніколи|кожн[а-яіїєґ]*|усі|всі|будь-як[а-яіїєґ]*|обов[’']язков[а-яіїєґ]*|гарант[а-яіїєґ]*|лише|тільки|виключно|неможливо|не може|не можуть|миттєво|негайно|немає інформації)/iu;
 const EXCEPTION_TERMS =
   "optional exception except unless alternative without free waived not required can also";
 
@@ -85,8 +85,12 @@ export async function gatherCounterevidence(
   registry: Map<string, EvidencePassage>,
   search: (query: string, limit?: number) => Promise<EvidencePassage[]>,
   perClaim = 3,
+  question = "",
 ): Promise<ClaimCounterevidence[]> {
   const results: ClaimCounterevidence[] = [];
+  // Searching only a proposed answer can confirm its framing while missing the
+  // user's requested state. Keep question-led evidence in the review as well.
+  const requested = question ? await search(question, 10) : [];
   // Searches run one after another: each scans the corpus vectors, and parallel scans
   // multiply peak memory on the small demo host.
   for (const [claimIndex, claim] of claims.entries()) {
@@ -94,7 +98,14 @@ export async function gatherCounterevidence(
       const cited = claim.citations
         .map((id) => registry.get(id))
         .filter((s): s is EvidencePassage => !!s);
-      const subject = await search(claim.text, 10);
+      const subject = [
+        ...new Map(
+          [...requested, ...(await search(claim.text, 10))].map((s) => [
+            s.id,
+            s,
+          ]),
+        ).values(),
+      ];
       const exceptions = ABSOLUTE_WORDING.test(claim.text)
         ? await search(exceptionQuery(claim.text), 12)
         : [];

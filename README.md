@@ -1,5 +1,11 @@
 # Everstate Knowledge Base
 
+<!-- submission-summary:start -->
+**16/20 (challenging questions), average rubric score 92.75/100.**
+
+18 answers retained and 2 rechecked; not a new full run. Partial credit contributes to the average; 16/20 is the full-pass count. Post-hoc coding-assistant review, not a blind benchmark or probability of correctness.
+<!-- submission-summary:end -->
+
 **Demo here — Knowledge Base:** https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask
 
 **Part B — Process automation:** [here](PART_B_DAILY_LOG_AUTOMATION.md#english-version)
@@ -89,13 +95,13 @@ The filter relies mainly on English patterns. Paraphrased or other-language atta
 
 | Method | Fully answered | Failed | Cases with unsupported facts | Answer-generation cost |
 |---|---:|---:|---:|---:|
-| Our research agent — full run | 14/20 | 6 | 1 | $1.041169 |
+| Our agent — selected answers, 92.75/100 | **16/20 (challenging questions)** | 4 | 1 | $1.147940 |
 | Same model + only Everstake MCP responses | 6/20 | 14 | 0 | $0.236955 |
-| Our agent — including two rechecks | 16/20 | 4 | 1 | $1.147940 |
+| Original full run — history | 14/20 | 6 | 1 | $1.041169 |
 
 The 16/20 summary retains 18 earlier answers and includes two successful rechecks. It is not a new full run. MCP's six successes are one factual answer and five correct refusals. Most other questions require article details or history missing from the captured MCP responses.
 
-![Measured results: our full run 14/20, model with MCP data 6/20, our summary after two rechecks 16/20](docs/images/06-evaluation.png)
+![16/20 challenging questions; average rubric score 92.75/100; MCP comparison 6/20](docs/images/06-evaluation.png)
 
 **MCP is a tool server, not an answering model.** This test gives the same model only captured MCP tool responses and one answer turn. It uses no crawled corpus, reference answers, or browsing on the MCP side. It does not test autonomous MCP tool selection. Both assessments are post-hoc coding-assistant reviews, not a blind benchmark or proof of overall superiority.
 

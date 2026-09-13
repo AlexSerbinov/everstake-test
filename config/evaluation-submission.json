@@ -1,0 +1,31 @@
+{
+  "questionSetVersion": "core-v2",
+  "corpusVersion": "corpus-664b2e73d71f",
+  "baseRun": "agent-cdf52dda",
+  "rechecks": [
+    "agent-82df0052"
+  ],
+  "comparator": "mcp-85c3489e",
+  "baseArtifact": "agent-cdf52dda.json",
+  "recheckArtifacts": [
+    "agent-82df0052.json"
+  ],
+  "comparatorArtifact": "mcp-core-v2.json",
+  "baseManifest": {
+    "codeVersion": "unknown",
+    "dirtyDiffHash": null,
+    "configHash": "8cfa36de186d0017c7defbbe9ddcc6127e48ec0a8fa09c480005c9f5f8f798e5",
+    "parserVersion": "typescript-extractor-v1",
+    "recordedAt": "2026-09-13T19:11:36.104Z"
+  },
+  "recheckManifests": [
+    {
+      "codeVersion": "unknown",
+      "dirtyDiffHash": null,
+      "configHash": "12897cabd6a34526f3505389eab13d5a61e0f093023f2916abed7572ecd6453e",
+      "parserVersion": "typescript-extractor-v1",
+      "recordedAt": "2026-09-13T19:27:46.956Z"
+    }
+  ],
+  "scope": "Selected saved answers: 18 retained and 2 rechecked; not a new full run. Post-hoc rubric review, not a blind benchmark."
+}

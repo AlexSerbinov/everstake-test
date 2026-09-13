@@ -40,30 +40,10 @@ def boundaries():
 
 
 def results():
-    t = s.t
-    agent = json.loads((ROOT/'artifacts/evaluation/agent-cdf52dda.json').read_text())
-    baseline = json.loads((ROOT/'artifacts/evaluation/mcp-core-v2.json').read_text())
-    assert agent['corpusVersion'] == 'corpus-664b2e73d71f'
-    d = s.Drawing('report-results', t('Latest full runs: coverage and cost', 'Останні повні прогони: якість і ціна'),
-                  t('core-v2: 20 questions · Different evidence and verification budgets',
-                    'core-v2: 20 запитань · Різні джерела та бюджети перевірки'), 650)
-    d.text(55, 230, t('METHOD', 'МЕТОД'), 20, s.MUTED, True)
-    d.text(470, 230, t('PASSED / 20', 'ПРОЙДЕНО / 20'), 20, s.MUTED, True)
-    d.text(1290, 230, t('MEAN / QUERY', 'СЕРЕДНЄ / ЗАПИТ'), 20, s.MUTED, True)
-    for y, label, run, fill in [(290, t('Research agent', 'Агент-дослідник'), agent, s.GREEN),
-                                 (395, t('Captured MCP context', 'Збережений MCP-контекст'), baseline, s.BLUE)]:
-        summary = run['summary']
-        assert summary['total'] == summary['assessed'] == 20
-        d.text(55, y+12, label, 29, bold=True, width=400)
-        for i in range(20):
-            d.rect(470+i*31, y, 25, 55, fill if i<summary['passed'] else s.RED, r=5, stroke=False)
-        d.text(1120, y+12, f"{summary['passed']}/20", 29, bold=True)
-        d.text(1290, y+12, f"${summary['knownCostUsd']/20:.6f}", 29, bold=True)
-    d.footer(t('Invented-fact cases: agent 1, MCP 0. Separate agent recheck: 2/2 passed.',
-               'Випадки вигаданих фактів: агент 1, MCP 0. Окрема повторна перевірка: 2/2.'),
-             t('Rechecks do not replace full-run results. Captured MCP context is not autonomous tool selection.',
-               'Повтори не замінюють повного прогону. MCP-контекст — не автономний вибір інструментів.'))
-    d.save()
+    import runpy, shutil
+    runpy.run_path(str(ROOT/'scripts/docs/render-evaluation-comparison.py'), run_name='__main__')
+    for suffix in ['', '-uk']:
+        shutil.copyfile(ROOT/f'docs/images/06-evaluation{suffix}.png', ROOT/f'docs/images/report-results{suffix}.png')
 
 
 if __name__ == '__main__':

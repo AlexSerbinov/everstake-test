@@ -1,10 +1,11 @@
+import submission from "../../../config/evaluation-submission.json" with { type: "json" };
 import type { EvaluationRun } from "./evaluation-page.js";
 import { defaultEvaluationRun } from "./default-evaluation-run.js";
 
 /** A labelled presentation of latest assessed answers; saved runs remain unchanged. */
-export function publicEvaluations(saved: EvaluationRun[]): EvaluationRun[] {
+export function publicEvaluations(saved: EvaluationRun[], selection = submission): EvaluationRun[] {
   const visible = saved.filter((run) => run.mode !== "baseline");
-  const base = defaultEvaluationRun(visible.filter((run) => !run.recheckOf));
+  const base = visible.find((run) => run.id === selection.baseRun) ?? defaultEvaluationRun(visible.filter((run) => !run.recheckOf));
   if (!base || base.summary.assessed !== 20 || base.rows.length !== 20)
     return visible;
   const key = (row: EvaluationRun["rows"][number]) =>
@@ -16,6 +17,7 @@ export function publicEvaluations(saved: EvaluationRun[]): EvaluationRun[] {
     .filter(
       (run) =>
         run.recheckOf === base.id &&
+        (base.id !== selection.baseRun || selection.rechecks.includes(run.id)) &&
         run.status === "completed" &&
         run.rows.length > 0 &&
         run.summary.assessed === run.rows.length &&

@@ -157,3 +157,36 @@ test("the exception query names the subject next to the absolute term, not the w
   assert.match(query, /optional exception except unless/);
   assert.doesNotMatch(query, /documentation|checked|2026/);
 });
+
+test("Ukrainian absolute claims trigger the same exception retrieval as English", async () => {
+  let calls = 0;
+  const cited = source("a", "Completion is immediate.", "2026-01-01");
+  await gatherCounterevidence(
+    [
+      {
+        text: "Кошти завжди доступні миттєво.",
+        citations: ["a"],
+        asOf: "2026-01-01",
+      },
+    ],
+    new Map([["a", cited]]),
+    async () => {
+      calls++;
+      return [];
+    },
+  );
+  assert.equal(calls, 2);
+});
+
+test("question-led retrieval retains evidence excluded by the draft's historical framing", async () => {
+  const old = source("old", "Previous appointment.", "2025-01-01");
+  const current = source("current", "Current roster differs.", "2026-01-01");
+  const [result] = await gatherCounterevidence(
+    [{ text: "Previous appointment.", citations: ["old"], asOf: "2025-01-01" }],
+    new Map([["old", old]]),
+    async (query) => (query === "Current roster?" ? [current] : [old]),
+    3,
+    "Current roster?",
+  );
+  assert.ok(result?.newer.some((s) => s.id === "current"));
+});

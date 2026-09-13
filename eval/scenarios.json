@@ -1,0 +1,121 @@
+{
+  "version": "scenarios-v1",
+  "provenance": "Seven supplemental diagnostic cases; separate from the required twenty-question benchmark. References reviewed against frozen corpus-664b2e73d71f.",
+  "questions": [
+    {
+      "id": "S01",
+      "question": "Увімкнув автоматичне повторне вкладення нагород через REStake. Це означає, що валідатор тепер може переказати мої кошти собі? Які саме дії я дозволив і чи можу відкликати дозвіл?",
+      "reference": "Under the documented REStake authorization, the validator may claim rewards and delegate them to the same validator, not transfer wallet funds. The grant is revocable. If discussing expiry, the guide later identifies one year as the default and allows a chosen expiry date; do not call it an immutable lifetime.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-auto-compound-staking-rewards-in-cosmos-chains-with-restake-app"
+      ],
+      "difficulty": "hard",
+      "category": "practical_scenario",
+      "whyHard": "Preserve the exact permission scope and distinguish defaults from fixed limits.",
+      "negative": false,
+      "rubric": [
+        "Answer every requested part with cited, dated evidence.",
+        "Preserve the exact permission scope and distinguish defaults from fixed limits."
+      ]
+    },
+    {
+      "id": "S02",
+      "question": "REStake перестав працювати після оновлення мережі. Мій внесок теж перестав працювати чи зупинилася тільки автоматизація? Що можна встановити з ваших публічних документів, а що треба перевіряти окремо?",
+      "reference": "Removing Authz support or platform chain support disables auto-compounding without changing the existing stake. This is a conditional explanation, not a diagnosis of the user account. Check chain support, validator enablement and authorization in the relevant interfaces; exact cause is not established by static public documents.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-auto-compound-staking-rewards-in-cosmos-chains-with-restake-app"
+      ],
+      "difficulty": "hard",
+      "category": "practical_scenario",
+      "whyHard": "Do not infer a real account or network incident from a possible documented failure mode.",
+      "negative": false,
+      "rubric": [
+        "Answer every requested part with cited, dated evidence.",
+        "Do not infer a real account or network incident from a possible documented failure mode."
+      ]
+    },
+    {
+      "id": "S03",
+      "question": "У Everstake нульова комісія на Polygon. Чому гаманець просить ETH за стейкінг і отримання нагород? У мене ж є POL! У якій мережі мають бути токени і чи означає нульова комісія, що всі операції безкоштовні?",
+      "reference": "The guide places POL delegation, claiming and unstaking on Ethereum mainnet. POL must be held there and ETH pays network gas. The stated zero validator commission concerns rewards retained by the validator, not free network transactions. No exact live gas cost is supplied.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-choose-polygon-validator"
+      ],
+      "difficulty": "hard",
+      "category": "practical_scenario",
+      "whyHard": "Distinguish asset, execution network, validator commission and transaction fees.",
+      "negative": false,
+      "rubric": [
+        "Answer every requested part with cited, dated evidence.",
+        "Distinguish asset, execution network, validator commission and transaction fees."
+      ]
+    },
+    {
+      "id": "S04",
+      "question": "Валідатор NEAR працював 95% часу. Чому я отримав приблизно половину нагород, а не 95%? Це списали частину мого внеску? Поясни за вашими джерелами, не вигадуючи стан мого гаманця.",
+      "reference": "The NEAR guide states that 95% uptime yields approximately 50% of potential rewards and below 90% yields none for that epoch. It says downtime does not cause slashing. Explain this documented mechanism conditionally; do not assert that the user’s actual balance was checked or that no other loss occurred.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/near-protocol-wallets-which-one-to-pick"
+      ],
+      "difficulty": "hard",
+      "category": "practical_scenario",
+      "whyHard": "A public protocol rule is not proof of a particular wallet balance.",
+      "negative": false,
+      "rubric": [
+        "Answer every requested part with cited, dated evidence.",
+        "A public protocol rule is not proof of a particular wallet balance."
+      ]
+    },
+    {
+      "id": "S05",
+      "question": "Учора я перевів свої NLS від валідатора A до B через Leap. Сьогодні хочу перевести ті самі токени від B до C. У гайді написано, що валідатора можна змінити без очікування. Чому друга зміна не проходить? Чи можу я тим часом забрати нагороди, чи вони теж заблоковані?",
+      "reference": "The guide specifies a 20-day cooldown for redelegation from the receiving validator, continued staking rewards during redelegation, and separately claimable liquid rewards. Unstaking has its own 20-day unbonding with no reward accrual. Apply these rules to the scenario without claiming to inspect its transaction.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-stake-nls-via-leap-wallet"
+      ],
+      "difficulty": "hard",
+      "category": "practical_scenario",
+      "whyHard": "Distinguish redelegation cooldown, unbonding and reward claiming.",
+      "negative": false,
+      "rubric": [
+        "Answer every requested part with cited, dated evidence.",
+        "Distinguish redelegation cooldown, unbonding and reward claiming."
+      ]
+    },
+    {
+      "id": "S06",
+      "question": "У мене вже давно застейкано 0,5 SOL, і ще 0,5 SOL хочу застейкати окремо. Один ваш гайд каже, що мінімуму немає, а Nightly — що мінімум підвищили до 1 SOL. Чи треба терміново поповнити старий внесок, і чи пройде новий? Поясни суперечність за вашими джерелами.",
+      "reference": "The explicit correction says the minimum changed from 0.01 to 1 SOL on June 18, 2026, for new stakes only; existing holders need take no action. Under that stated rule the new separate 0.5 deposit is below the threshold. A retained no-minimum passage conflicts with the correction; use the explicit scoped correction, not majority or generic page freshness.",
+      "referenceUrls": [
+        "https://everstake.com/resources/blog/how-to-stake-solana-sol-using-nightly-wallet",
+        "https://everstake.com/resources/blog/how-to-stake-solana-guide"
+      ],
+      "difficulty": "hard",
+      "category": "practical_scenario",
+      "whyHard": "Handle decimal commas and distinguish old deposits from new ones without inventing account state.",
+      "negative": false,
+      "rubric": [
+        "Answer every requested part with cited, dated evidence.",
+        "Handle decimal commas and distinguish old deposits from new ones without inventing account state."
+      ]
+    },
+    {
+      "id": "S07",
+      "question": "Я застейкав SUI і через годину передумав та вивів їх у тій самій епосі. Ви пишете, що вивести можна будь-коли. Чи отримаю я нагороду за цю годину? І чи це означає, що можна завжди забирати кошти миттєво — у статті про Sui та Aptos згадано межу епохи?",
+      "reference": "The protocol page excludes rewards when entry and exit occur in the same epoch. The wallet guide says immediate unstaking whereas the comparison describes availability at epoch transitions. Disclose this difference and do not guarantee universally immediate completion or fabricate a request-versus-settlement distinction.",
+      "referenceUrls": [
+        "https://everstake.com/staking/protocols/sui",
+        "https://everstake.com/resources/blog/how-to-stake-sui-via-sui-wallet",
+        "https://everstake.com/resources/blog/sui-vs-aptos-staking-rewards-comparison-2026"
+      ],
+      "difficulty": "hard",
+      "category": "practical_scenario",
+      "whyHard": "Individually cited statements must not conceal an unresolved timing conflict.",
+      "negative": false,
+      "rubric": [
+        "Answer every requested part with cited, dated evidence.",
+        "Individually cited statements must not conceal an unresolved timing conflict."
+      ]
+    }
+  ]
+}

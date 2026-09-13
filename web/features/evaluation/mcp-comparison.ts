@@ -1,3 +1,4 @@
+import submission from "../../../config/evaluation-submission.json" with { type: "json" };
 import { el, money } from "../../shared/dom.js";
 import type { EvaluationRun } from "./evaluation-page.js";
 
@@ -15,7 +16,7 @@ export function matchingMcpRun(
       .sort();
   const expected = questions(base);
   return [...runs]
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .sort((a, b) => Number(b.id === submission.comparator) - Number(a.id === submission.comparator) || b.createdAt.localeCompare(a.createdAt))
     .find(
       (run) =>
         run.mode === "mcp" &&

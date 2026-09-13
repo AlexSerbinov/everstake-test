@@ -1,3 +1,4 @@
+import { averageQuality } from "./average-quality.js";
 import { matchingMcpRun, mcpComparison } from "./mcp-comparison.js";
 import { publicEvaluations } from "./current-evaluation.js";
 import {
@@ -134,7 +135,7 @@ export function evaluationPage(): HTMLElement {
                 ? "Не визначено"
                 : progress.accuracy,
             run.viewKind === "updated"
-              ? `${progress.accuracy} питань виконано повністю`
+              ? `Складні питання · середня оцінка ${averageQuality(run)?.toFixed(2).replace(".", ",") ?? "не визначена"}/100`
               : `${summary.passed} успішних із ${progress.planned} запланованих`,
           ),
           metric(

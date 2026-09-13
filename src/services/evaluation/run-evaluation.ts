@@ -52,8 +52,15 @@ export function summarize(rows: EvaluationRow[], plannedTotal = rows.length) {
     unknownCalls: rows.reduce((n, r) => n + r.answer.receipt.unknownCalls, 0),
   };
 }
-export function readQuestions(): EvaluationQuestion[] {
-  return JSON.parse(readFileSync("eval/questions.json", "utf8")).questions;
+export function readQuestions(
+  set: "core" | "scenarios" = "core",
+): EvaluationQuestion[] {
+  return JSON.parse(
+    readFileSync(
+      set === "core" ? "eval/questions.json" : "eval/scenarios.json",
+      "utf8",
+    ),
+  ).questions;
 }
 export function saveEvaluation(db: Database, run: EvaluationRun): void {
   run.summary = summarize(run.rows, run.plannedTotal);
@@ -74,13 +81,20 @@ export async function runEvaluation(
   ) => Promise<AnswerResult>,
   mode: "agent" | "baseline" = "agent",
   ids?: string[],
+  questionSet: "core" | "scenarios" = "core",
 ): Promise<EvaluationRun> {
   const started = performance.now();
   const cpuStart = process.cpuUsage();
-  const all = readQuestions();
+  const all = readQuestions(questionSet);
   const questions = ids ? all.filter((q) => ids.includes(q.id)) : all;
   if (
+    !questions.length ||
+    (ids && ids.some((id) => !all.some((q) => q.id === id)))
+  )
+    throw new Error("Unknown or empty evaluation question selection");
+  if (
     !ids &&
+    questionSet === "core" &&
     (questions.length !== 20 || questions.filter((q) => q.negative).length < 5)
   )
     throw new Error(
@@ -93,6 +107,13 @@ export async function runEvaluation(
     corpusVersion: getSetting(db, "corpus_version"),
     plannedTotal: questions.length,
     mode,
+    questionSet,
+    questionSetVersion: JSON.parse(
+      readFileSync(
+        questionSet === "core" ? "eval/questions.json" : "eval/scenarios.json",
+        "utf8",
+      ),
+    ).version,
     status: "running",
     rows: [],
     summary: summarize([]),
@@ -129,7 +150,8 @@ export async function runEvaluation(
     platform: process.platform,
     node: process.version,
   };
-  run.status = run.rows.length === 20 ? "completed" : "incomplete";
+  run.status =
+    run.rows.length === run.plannedTotal ? "completed" : "incomplete";
   saveEvaluation(db, run);
   return run;
 }

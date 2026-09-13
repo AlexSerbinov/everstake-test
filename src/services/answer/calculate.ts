@@ -1,3 +1,4 @@
+import { numbers } from "./verify-answer.js";
 export function calculate(operation: string, operands: number[]): number {
   if (
     operands.length < 2 ||
@@ -122,16 +123,13 @@ export function scenarioNumbers(text: string): number[] {
     одинадцять: 11,
     дванадцять: 12,
   };
-  return (
-    text
-      .toLowerCase()
-      .replace(/’/g, "'")
-      .match(/[\p{L}']+|\d+(?:\.\d+)?/gu) ?? []
-  ).flatMap((token) =>
-    small[token] !== undefined
-      ? [small[token]!]
-      : /^\d/.test(token)
-        ? [Number(token)]
-        : [],
-  );
+  return [
+    ...numbers(text).map(Number),
+    ...(
+      text
+        .toLowerCase()
+        .replace(/’/g, "'")
+        .match(/[\p{L}']+/gu) ?? []
+    ).flatMap((token) => (small[token] !== undefined ? [small[token]!] : [])),
+  ];
 }
