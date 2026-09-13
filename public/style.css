@@ -1942,3 +1942,5 @@ input[type="checkbox"] {
 .findings-page h1 {
   overflow-wrap: anywhere;
 }
+
+.evaluation-comparison { min-width: 0; }
