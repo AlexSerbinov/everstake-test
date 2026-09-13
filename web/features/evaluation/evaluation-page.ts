@@ -7,6 +7,7 @@ import {
   metric,
   money,
 } from "../../shared/dom.js";
+import { defaultEvaluationRun } from "./default-evaluation-run.js";
 import { evaluationMetrics } from "./evaluation-metrics.js";
 import { date } from "../../shared/source-date.js";
 import { questionResultCard, type ResultRow } from "./question-result-card.js";
@@ -77,6 +78,7 @@ export function evaluationPage(): HTMLElement {
         option.value = run.id;
         select.append(option);
       }
+      select.value = defaultEvaluationRun(runs)!.id;
       const filterLabel = el("label", "", "Show results");
       const filter = el("select");
       filter.id = "evaluation-filter";

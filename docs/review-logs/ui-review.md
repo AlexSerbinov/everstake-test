@@ -27,3 +27,7 @@ Date: 2026-09-13. Review base: `7eed6e5`. Scope: browser code against the integr
 ## Limits
 
 No paid question, evaluation or refresh was started by this review. Live production streaming and model correctness remain separate integration/evaluation work. Incomplete/mixed assessment states were exercised with deterministic saved-contract fixtures because the live evaluation list was empty when inspected. The UI reports the count of planned questions without saved answers; it does not fabricate missing question identities or combine them with a different live question-set revision.
+
+## Deployment readiness follow-up
+
+The saved API history subsequently contained a 70% final agent run, a newer 60% baseline, an older 75% agent run, and incomplete probes. The page originally chose the first API row, so the headline defaulted to the baseline and could be displaced by a later probe. The default now selects the chronologically newest fully assessed 20-question agent run, without using accuracy as a selection criterion. Every other saved run stays selectable. Regression fixtures cover newer probes, baseline-only history and a better historical score.
