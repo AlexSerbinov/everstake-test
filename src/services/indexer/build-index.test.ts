@@ -39,3 +39,14 @@ test('indexes one representative for duplicate URLs', () => {
   assert.equal((db.prepare('SELECT count(*) AS count FROM documents WHERE active=1').get() as { count: number }).count, 2);
   db.close();
 });
+
+test('keeps a changed named fact searchable across near-duplicate revisions', () => {
+ const db=openDatabase(':memory:');
+ const boilerplate=Array.from({length:120},(_,index)=>`context${index}`).join(' ');
+ const first={...document('first','alice'),text:`${boilerplate} The chief executive is Alice.`,contentHash:'alice'};
+ const second={...document('second','bob'),text:`${boilerplate} The chief executive is Bob.`,contentHash:'bob'};
+ buildIndex(db,[first,second],{version:'named-fact-change'});
+ const bob=db.prepare('SELECT count(*) AS count FROM chunks_fts WHERE chunks_fts MATCH ?').get('Bob') as {count:number};
+ assert.equal(bob.count,1);
+ db.close();
+});

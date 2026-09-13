@@ -27,7 +27,10 @@ export function buildIndex(db: Database, input: DocumentSnapshot[], options: Bui
   if (input.length === 0) throw new Error('Cannot activate an empty corpus');
   const deduplicated = deduplicateDocuments(input);
   const representatives = deduplicated.documents.filter(document => document.duplicateOf === null);
-  const chunks = representatives.flatMap(document => chunkDocument(document, options));
+  const indexableDocuments = deduplicated.documents.filter(document =>
+    document.duplicateOf === null || document.metadata.duplicateReason === 'near_duplicate',
+  );
+  const chunks = indexableDocuments.flatMap(document => chunkDocument(document, options));
   const version = options.version ?? defaultVersion(deduplicated.documents);
   const deactivateBySource = options.sourceIds?.length
     ? db.prepare(`UPDATE documents SET active=0 WHERE active=1 AND json_extract(snapshot, '$.metadata.sourceId') IN (${options.sourceIds.map(() => '?').join(',')})`)
