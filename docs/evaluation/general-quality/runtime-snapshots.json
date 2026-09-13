@@ -1,0 +1,5 @@
+{
+  "evaluationSourceSha256": "9af15e53a27f4597c9ed361896d094e0c4863c8b241f4a2d007dfb45bc64462f",
+  "deploymentSourceSha256": "de6ef44354bad6289d050c603af241c60337edfbe57c5d90d953723d220f7294",
+  "note": "Deployment retains newer published sanitizer, costs and updates changes. Evaluation uses its frozen 941-document snapshot; it is not a claim about the later live corpus."
+}

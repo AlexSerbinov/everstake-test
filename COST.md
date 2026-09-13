@@ -72,3 +72,7 @@ Run `mcp-8bcd1ef1` made **20 actual Gemini calls** for the same twenty questions
 This is a separate measured addition, not a recomputed all-time total or an adjustment to the historical ledger table above. It covers answer generation, not an invoice-reconciled provider bill, MCP hosting, network/tool-access charges, subscription agent effort or independent review effort. No MCP service-access price was measured; absence of such a measurement does not establish zero operating cost. The successful calculator probe is retained in the capture but was not inserted into unrelated question contexts.
 
 [Provider attempts and usage](artifacts/mcp/measurements-2026-09-13.json) · [Question receipts](artifacts/evaluation/mcp-2026-09-13.json) · [Comparison methodology](docs/MCP_COMPARISON.md).
+
+## MCP-only comparison on core-v2
+
+Twenty questions, same answer model, captured MCP responses only: **$0.236955** in measured usage-priced generation cost, zero unknown-cost calls. Tool capture is reused; hosting and any unmeasured MCP service charges are excluded. [Per-call measurements](artifacts/mcp/core-v2-measurements.json).

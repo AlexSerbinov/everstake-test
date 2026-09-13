@@ -85,18 +85,33 @@ The filter relies mainly on English patterns. Paraphrased or other-language atta
 
 ## What the measurements show
 
-**20 questions, including 5 without sufficient answers in the corpus.** Both modes used the same frozen collection on 13 September 2026.
+**20 questions, including five negative cases.** Both full runs used the same question texts and Gemini 3.8 Flash, but different evidence and workflows.
 
-| Mode | Passed | Failed | Cases with invented facts |
-|---|---:|---:|---:|
-| Agent with further research | **19/20 · 95%** | 1 | 0 |
-| One answer attempt after retrieval | 11/20 · 55% | 9 | 0 |
+| Method | Fully answered | Failed | Cases with unsupported facts | Answer-generation cost |
+|---|---:|---:|---:|---:|
+| Our research agent — full run | 14/20 | 6 | 1 | $1.041169 |
+| Same model + only Everstake MCP responses | 6/20 | 14 | 0 | $0.236955 |
+| Our agent — including two rechecks | 16/20 | 4 | 1 | $1.147940 |
 
-![Twenty squares per mode: the agent has 19 passes and the baseline 11](docs/images/06-evaluation.png)
+The 16/20 summary retains 18 earlier answers and includes two successful rechecks. It is not a new full run. MCP's six successes are one factual answer and five correct refusals. Most other questions require article details or history missing from the captured MCP responses.
 
-The agent's failure was an incomplete account of the company's positioning over time. Earlier complete runs scored 75%, 70% and 80% and remain available. A separate coding agent applied the evaluation rubric: this is neither a blind test nor a guarantee for arbitrary questions. [Every question, answer and verdict →](EVAL.md)
+![Measured results: our full run 14/20, model with MCP data 6/20, our summary after two rechecks 16/20](docs/images/06-evaluation.png)
 
-That agent run cost **$0.842412 for 20 questions**, averaging **$0.042121 per request**. The ledger separately records tokens, retries and unknown charges. Index building and repairs in the later ledger used **2,166,597 input tokens**, with **$0.043332 known cost** and 5 unpriced attempts. The **50× corpus extrapolation**, its arithmetic and assumptions are in [COST.md](COST.md).
+**MCP is a tool server, not an answering model.** This test gives the same model only captured MCP tool responses and one answer turn. It uses no crawled corpus, reference answers, or browsing on the MCP side. It does not test autonomous MCP tool selection. Both assessments are post-hoc coding-assistant reviews, not a blind benchmark or proof of overall superiority.
+
+For an easier-to-read presentation, open the [Evaluation page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#evaluation): per-answer scores, sources and failure explanations. [Full results and limits](EVAL.md).
+
+## Where our assistant is better — and worse
+
+Our assistant is better suited to **historical questions, conflicting articles and exact source passages**. It preserves dated snapshots and exposes why an answer was accepted. Its drawbacks are maintaining the crawl and index, extra model calls, stale data and retrieval mistakes. One answer in this run still combined two numbers incorrectly.
+
+Everstake MCP is better suited to **direct operational tools and staking calculations**, without maintaining a separate corpus. Its captured responses give concise company and product facts but lack much of the article-level detail needed by this test. The measured answer cost was lower, but we did not benchmark autonomous MCP agents, service latency or the accuracy of all live operational values.
+
+![Strengths and limitations of our research assistant and Everstake MCP](docs/images/09-mcp-tradeoffs.png)
+
+[How the MCP comparison was run, including all twenty answers](docs/MCP_COMPARISON.md). Operational tool scope is based on the [inspected official MCP source](https://github.com/everstake/mcp/tree/68f5f5f02b15a666849438971a65d5923a96e5ee).
+
+
 
 ## Keeping the library up to date
 
@@ -127,7 +142,6 @@ Open **http://localhost:4318**. Data persists in `data/knowledge.sqlite`. Indexi
 
 ## The rest of the work
 
-**Compared with Everstake MCP.** An actual twenty-question run using captured official MCP tool responses received **7/20 (35%) confirmed by two independent rubric/source reviews**, versus the earlier corpus-agent result of 19/20. Its generation cost was **$0.23630625**. This measures a single-turn MCP-context baseline, not autonomous tool use or general superiority: MCP remains useful for live operational data and calculations. [Methodology, answers and limitations →](docs/MCP_COMPARISON.md)
 
 ## Part B: reporting automation
 

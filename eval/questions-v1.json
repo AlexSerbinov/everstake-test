@@ -1,6 +1,6 @@
 {
-  "status": "references_reviewed_against_corpus_664b2e73d71f",
-  "provenance": "Core-v2 retains 19 original cases, including CEO, network scope and all five negatives. E21 replaces the simple founding-year lookup E03. Source references were reviewed against the frozen corpus; runtime prompts never receive reference answers. Previous measured runs retain their original questions.",
+  "status": "references_reviewed_against_frozen_corpus_2026-09-13",
+  "provenance": "References were independently checked against the 935 active documents in the frozen 2026-09-13 web corpus; they are never used as runtime context.",
   "questions": [
     {
       "id": "E01",
@@ -39,19 +39,18 @@
       ]
     },
     {
-      "id": "E21",
-      "question": "У новині про SGP-0002 пишуть, що зниження емісії Solana вже схвалено. Значить, мої нагороди вже зменшилися? Чи можна пообіцяти клієнту рівно 2,25 SOL на рік зі 100 SOL у 2029 році? І якщо Everstake опублікував цю новину, він голосував за зміну?",
-      "reference": "The September 10 article separates governance approval from technical activation; approval alone does not prove a reward change. The 2.25% figure is a conditional issuance-based projection around 2029 at 68% participation, excluding other reward components and commission, not a guaranteed payout. The article explicitly says Everstake voted against. Do not infer the publisher supported a proposal merely because it reported the outcome. Do not claim a currently verified activation state from the dated article.",
+      "id": "E03",
+      "question": "In what year was Everstake founded?",
+      "reference": "2018",
       "referenceUrls": [
-        "https://everstake.com/resources/blog/sol-staking-apr-rewards-after-sgp-0002-double-disinflation"
+        "https://everstake.com/company/about"
       ],
-      "difficulty": "hard",
-      "category": "practical_scenario",
-      "whyHard": "Distinguish approval, activation, forecast, guarantee and the named actor’s vote. Missing a fact in an opening excerpt does not prove it absent.",
+      "difficulty": "basic",
+      "category": "factual or temporal synthesis",
+      "whyHard": "Requires source-backed facts and an explicit date, without filling gaps from model knowledge.",
       "negative": false,
       "rubric": [
-        "Answer every requested part with cited, dated evidence.",
-        "Distinguish approval, activation, forecast, guarantee and the named actor’s vote. Missing a fact in an opening excerpt does not prove it absent."
+        "Every factual claim has a supporting source and correct scope."
       ]
     },
     {
@@ -128,8 +127,8 @@
     },
     {
       "id": "E08",
-      "question": "An operator has 64 validators with 32 ETH each. Using Everstake’s Pectra explanation, what consolidation fits the new effective-balance cap, and did the minimum validator stake rise to that cap?",
-      "reference": "64 × 32 = 2,048 ETH, fitting one validator at the new effective-balance cap. This changes the maximum, not the 32 ETH validator minimum.",
+      "question": "An operator has 64 validators with 32 ETH each. Using Everstake\u2019s Pectra explanation, what consolidation fits the new effective-balance cap, and did the minimum validator stake rise to that cap?",
+      "reference": "64 \u00d7 32 = 2,048 ETH, fitting one validator at the new effective-balance cap. This changes the maximum, not the 32 ETH validator minimum.",
       "referenceUrls": [
         "https://everstake.com/resources/blog/pectra-and-fusaka-what-they-bring-to-institutional-stakers",
         "https://everstake.com/staking/protocols/ethereum"
@@ -144,7 +143,7 @@
     },
     {
       "id": "E09",
-      "question": "Everstake’s CFO guide limits operator-failure loss to missed rewards, yet also describes slashing of principal. Can a treasury conclude that retaining withdrawal control makes its principal immune to operator mistakes?",
+      "question": "Everstake\u2019s CFO guide limits operator-failure loss to missed rewards, yet also describes slashing of principal. Can a treasury conclude that retaining withdrawal control makes its principal immune to operator mistakes?",
       "reference": "No. The guide contains a material qualification: non-custodial control and validator-signing risk differ. Slashing can affect principal. Public terms disclose risk; private indemnities require their own evidence.",
       "referenceUrls": [
         "https://everstake.com/resources/blog/non-custodial-vs-managed-staking-risk-framework-cfos",
@@ -152,10 +151,10 @@
       ],
       "difficulty": "hard",
       "category": "same_source_contradiction",
-      "whyHard": "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement.",
+      "whyHard": "Do not claim a real slashing incident occurred or determine a customer\u2019s contractual entitlement.",
       "negative": false,
       "rubric": [
-        "Do not claim a real slashing incident occurred or determine a customer’s contractual entitlement."
+        "Do not claim a real slashing incident occurred or determine a customer\u2019s contractual entitlement."
       ]
     },
     {
@@ -176,7 +175,7 @@
     {
       "id": "E11",
       "question": "Assume three Core and two Prime VaaS subscriptions, each billed monthly for twelve months at the displayed rates. Calculate the budget. Does it establish an annual-plan quote or a percentage staking commission?",
-      "reference": "3 × $199 + 2 × $499 = $1,595 monthly; twelve months total $19,140. This hypothetical subscription subtotal proves neither annual-plan discounts nor a percentage commission.",
+      "reference": "3 \u00d7 $199 + 2 \u00d7 $499 = $1,595 monthly; twelve months total $19,140. This hypothetical subscription subtotal proves neither annual-plan discounts nor a percentage commission.",
       "referenceUrls": [
         "https://everstake.com/products/institutional-staking/vaas"
       ],
@@ -258,7 +257,7 @@
     },
     {
       "id": "E16",
-      "question": "For Everstake’s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
+      "question": "For Everstake\u2019s ETH offering, name the actual insurer, policy limit and beneficiary that guarantee reimbursement of my entire principal after any slashing event.",
       "reference": "No current product-specific evidence establishes all requested fields or guarantees reimbursement of the entire principal. A 2022 Everstake post names a Nexus Mutual partnership for ETH staking coverage tied to validator infrastructure or setup failures. Current 2026 sources discuss Chainproof and Nexus Mutual as market products and say Everstake slashing insurance is available on request, but provide no current policy, limit, beneficiary or whole-principal guarantee and describe material exclusions.",
       "referenceUrls": [
         "https://everstake.com/resources/blog/everstake-and-nexus-mutual-are-to-protect-delegators-from-eth-staking-risks",
@@ -277,7 +276,7 @@
     {
       "id": "E17",
       "question": "The VaaS page says both instant launch and deployment within 72 hours. What exact compensation is contractually owed if our validator is not operational after 72 hours?",
-      "reference": "No reliable compensation amount or credit schedule is established by the reviewed product page. Marketing timing and custom-SLA availability do not supply the customer’s contract.",
+      "reference": "No reliable compensation amount or credit schedule is established by the reviewed product page. Marketing timing and custom-SLA availability do not supply the customer\u2019s contract.",
       "referenceUrls": [
         "https://everstake.com/products/institutional-staking/vaas",
         "https://everstake.com/terms-of-use"
@@ -340,6 +339,5 @@
         "Do not invent live queue state or promise an immediate/fixed-time withdrawal."
       ]
     }
-  ],
-  "version": "core-v2"
+  ]
 }

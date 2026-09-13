@@ -12,6 +12,7 @@ export interface ResultRow {
   verdict: string;
   inventedFacts?: unknown[] | number | boolean | null;
   explanation?: string;
+  qualityScore?: { correctness: number; completeness: number; grounding: number; uncertainty: number; reason: string };
 }
 /** Replace only registered evidence markers; never alter the saved answer or guess links. */
 export function savedAnswerSegments(answer: AnswerResult) {

@@ -1,0 +1,1411 @@
+{
+  "id": "agent-82df0052",
+  "createdAt": "2026-09-13T19:27:46.911Z",
+  "manifest": {
+    "codeVersion": "unknown",
+    "dirtyDiffHash": null,
+    "configHash": "12897cabd6a34526f3505389eab13d5a61e0f093023f2916abed7572ecd6453e",
+    "parserVersion": "typescript-extractor-v1",
+    "recordedAt": "2026-09-13T19:27:46.956Z"
+  },
+  "corpusVersion": "corpus-664b2e73d71f",
+  "plannedTotal": 2,
+  "mode": "agent",
+  "questionSet": "core",
+  "questionSetVersion": "core-v2",
+  "status": "completed",
+  "rows": [
+    {
+      "question": {
+        "id": "E21",
+        "question": "У новині про SGP-0002 пишуть, що зниження емісії Solana вже схвалено. Значить, мої нагороди вже зменшилися? Чи можна пообіцяти клієнту рівно 2,25 SOL на рік зі 100 SOL у 2029 році? І якщо Everstake опублікував цю новину, він голосував за зміну?",
+        "reference": "The September 10 article separates governance approval from technical activation; approval alone does not prove a reward change. The 2.25% figure is a conditional issuance-based projection around 2029 at 68% participation, excluding other reward components and commission, not a guaranteed payout. The article explicitly says Everstake voted against. Do not infer the publisher supported a proposal merely because it reported the outcome. Do not claim a currently verified activation state from the dated article.",
+        "referenceUrls": [
+          "https://everstake.com/resources/blog/sol-staking-apr-rewards-after-sgp-0002-double-disinflation"
+        ],
+        "difficulty": "hard",
+        "category": "practical_scenario",
+        "whyHard": "Distinguish approval, activation, forecast, guarantee and the named actor’s vote. Missing a fact in an opening excerpt does not prove it absent.",
+        "negative": false,
+        "rubric": [
+          "Answer every requested part with cited, dated evidence.",
+          "Distinguish approval, activation, forecast, guarantee and the named actor’s vote. Missing a fact in an opening excerpt does not prove it absent."
+        ]
+      },
+      "answer": {
+        "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+        "status": "answered",
+        "question": "У новині про SGP-0002 пишуть, що зниження емісії Solana вже схвалено. Значить, мої нагороди вже зменшилися? Чи можна пообіцяти клієнту рівно 2,25 SOL на рік зі 100 SOL у 2029 році? І якщо Everstake опублікував цю новину, він голосував за зміну?",
+        "text": "Попри схвалення SGP-0002 нагороди за стейкінг ще не зменшилися, оскільки оновлення емісії ще не активоване в основній мережі та потребує реалізації попередніх технічних умов, зокрема впровадження SIMD-0607 у клієнті Agave v4.4. [51220b90c153c44dcf2744c605586bad] [21af3ced42cf3703e59672215fdee1f2] (Source published 2026-09-10 [51220b90c153c44dcf2744c605586bad]; fact effective date not established.)\n\nОбіцяти клієнту фіксовану дохідність не можна, оскільки показник 2,25% до 2029 року є лише розрахунковою базовою ставкою за умови 68% участі в стейкінгу, а реальні виплати залежать від рівня стейкінгу в мережі, комісій валідаторів, активності MEV та комісій за транзакції. [9938b1fd67bc33e6a06a2b308f0e647b] [21af3ced42cf3703e59672215fdee1f2] (Source published 2026-09-10 [9938b1fd67bc33e6a06a2b308f0e647b]; fact effective date not established.)\n\nEverstake не голосував за пропозицію SGP-0002, а голосував проти неї, мотивуючи це ризиками для невеликих валідаторів, інституційних розрахункових моделей винагород та потенційним зниженням надходжень для стейкерів. [3ffcd31bba242503a69f305642fc5e47] (Source published 2026-09-10 [3ffcd31bba242503a69f305642fc5e47]; fact effective date not established.)",
+        "asOf": null,
+        "claims": [
+          {
+            "text": "Попри схвалення SGP-0002 нагороди за стейкінг ще не зменшилися, оскільки оновлення емісії ще не активоване в основній мережі та потребує реалізації попередніх технічних умов, зокрема впровадження SIMD-0607 у клієнті Agave v4.4.",
+            "citations": [
+              "51220b90c153c44dcf2744c605586bad",
+              "21af3ced42cf3703e59672215fdee1f2"
+            ],
+            "asOf": "2026-09-10",
+            "asOfBasis": "published",
+            "asOfSource": "51220b90c153c44dcf2744c605586bad",
+            "temporalScope": "current"
+          },
+          {
+            "text": "Обіцяти клієнту фіксовану дохідність не можна, оскільки показник 2,25% до 2029 року є лише розрахунковою базовою ставкою за умови 68% участі в стейкінгу, а реальні виплати залежать від рівня стейкінгу в мережі, комісій валідаторів, активності MEV та комісій за транзакції.",
+            "citations": [
+              "9938b1fd67bc33e6a06a2b308f0e647b",
+              "21af3ced42cf3703e59672215fdee1f2"
+            ],
+            "asOf": "2026-09-10",
+            "asOfBasis": "published",
+            "asOfSource": "9938b1fd67bc33e6a06a2b308f0e647b",
+            "temporalScope": "current"
+          },
+          {
+            "text": "Everstake не голосував за пропозицію SGP-0002, а голосував проти неї, мотивуючи це ризиками для невеликих валідаторів, інституційних розрахункових моделей винагород та потенційним зниженням надходжень для стейкерів.",
+            "citations": [
+              "3ffcd31bba242503a69f305642fc5e47"
+            ],
+            "asOf": "2026-09-10",
+            "asOfBasis": "published",
+            "asOfSource": "3ffcd31bba242503a69f305642fc5e47",
+            "temporalScope": "historical"
+          }
+        ],
+        "sources": [
+          {
+            "id": "51220b90c153c44dcf2744c605586bad",
+            "documentId": "47cc52b46f08c866e0a1393a48e027d9",
+            "url": "https://everstake.com/resources/blog/sol-staking-apr-rewards-after-sgp-0002-double-disinflation",
+            "title": "SOL Staking APR After SGP-0002: How Much Rewards Change | Everstake",
+            "text": "All these directly influence the high vote success rates, disciplined client upgrades, and strong uptime of the validator, hence the potential staking rewards.\n\n### Timing and Activation\nThe current inflation rate of roughly 3.67% remains in effect. Nothing about issuance has changed on mainnet yet.\nA hard technical precondition stands in the way.SIMD-0607 must merge (https://solanacompass.com/news/simd-0607-must-merge-before-solanas-disinflation-rate-can-activate-anza-says) first, and it targets client version Agave v4.4.\nSIMD-0607 replaces floating-point reward math with deterministic integer math. The two mainnet clients, Agave (https://everstake.com/resources/blog/how-to-maximize-agave-node-performance-with-cherry-servers) and Firedancer (https://everstake.com/resources/blog/solana-validator-node-hardware-vs-cloud-2026), must produce bit-for-bit identical reward results.\nIf one client’s calculation deviates even in the last digit, that is a consensus failure. Deterministic integer math removes that risk before the disinflation gate can be scheduled.\nThe implementation sequence runs in order:\n- SIMD-0607 merges.\n- It ships in Agave v4.4.\n- Feature gates for both changes get scheduled.\n- The disinflation rate changes at an epoch boundary.\nAs of early September 2026 no timeline for Agave v4.4 has been given.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-09-10T14:10:11.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:40.493Z",
+            "duplicateGroup": "47cc52b46f08c866e0a1393a48e027d9",
+            "score": 0,
+            "reason": "Requested document section",
+            "metadata": {
+              "sourceId": "everstake-com",
+              "chunkOrdinal": 15,
+              "documentChunks": 18,
+              "matchingChunks": 11,
+              "nextOffset": 4,
+              "readQuery": "Everstake vote"
+            }
+          },
+          {
+            "id": "21af3ced42cf3703e59672215fdee1f2",
+            "documentId": "47cc52b46f08c866e0a1393a48e027d9",
+            "url": "https://everstake.com/resources/blog/sol-staking-apr-rewards-after-sgp-0002-double-disinflation",
+            "title": "SOL Staking APR After SGP-0002: How Much Rewards Change | Everstake",
+            "text": "How SOL APR Compares After SIMD-0550: ETH, ADA, DOT, ATOM\nWhere The Staking Rewards Come From After SIMD-0550\nWhy Change The Speed of Issuance on Solana\nShow\n\n## TL;DR\n- Solana validators narrowly approved SGP-0002 on August 28, 2026, doubling the annual disinflation rate from 15% to 30%. Itpassed by 0.334 points (https://solanacompass.com/news/sgp-0002-passes-solana) after late vote reversals, the network’s first binding on-chain governance decision.\n- SGP-0002 approved the issuance change, while SIMD-0550 defines how that change is implemented at the protocol level.\n- The baseline nominal staking rate is projected to fall from about 5.04% today toward 4.34% in year one, 3.00% in year two, and 2.25% in year three near 2029. These are Helius Research projections at a 68% stake rate, and actual figures will move with the stake rate and fee activity.\n- That baseline counts only rewards from newly minted SOL. The real rate might be different, because MEV and priority fees are untouched by this change and, by mid-2026, alreadyadd roughly 0.5–1% (https://skrumble.com/learn/how-to-stake-solana/) on top through the Jito.\n- With lower issuance holders face slower dilution, while stakers receive fewer new tokens each year.\n- The lower issuance schedule will not apply immediately. SIMD-0550 requires the relevant technical changes and feature activation before the new disinflation rate takes effect.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-09-10T14:10:11.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:40.493Z",
+            "duplicateGroup": "47cc52b46f08c866e0a1393a48e027d9",
+            "score": 0.031754032258064516,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "everstake-com"
+            }
+          },
+          {
+            "id": "9938b1fd67bc33e6a06a2b308f0e647b",
+            "documentId": "47cc52b46f08c866e0a1393a48e027d9",
+            "url": "https://everstake.com/resources/blog/sol-staking-apr-rewards-after-sgp-0002-double-disinflation",
+            "title": "SOL Staking APR After SGP-0002: How Much Rewards Change | Everstake",
+            "text": "- Feature gates for both changes get scheduled.\n- The disinflation rate changes at an epoch boundary.\nAs of early September 2026 no timeline for Agave v4.4 has been given.\n\n### Bottom Line\nThe APR decline is gradual and already modeled. It steps down over several years once the change goes live, with each epoch settling under the schedule in force at the time.\nThe nominal rate falls by more than half over the taper, but the real rate moves far less, because slower dilution offsets most of the nominal cut. The open question is whether fee and MEV activity rises enough to support the total rate, and where the stake rate settles will shape the outcome.\nSolana chose this tradeoff through its first binding on-chain vote. Less dilution for holders comes paired with a lower nominal rate for stakers, and it walks the network toward the same compressed-rate equilibrium Ethereum already occupies.\nInstitutional Solana Staking (https://everstake.com/staking/protocols/solana)\n\n### FAQ\n\n#### Did SIMD-0550 pass?\nYes. SGP-0002, the governance mandate behind SIMD-0550, passed on August 28, 2026 with 67.001% support.\n\n#### Will my current staking rewards drop overnight?\nNo. The decline is gradual, applies from an epoch boundary onward, and does not retroactively cut rewards already earned.\n\n#### What will SOL staking APR be in 2029?\nThe current modeling projects a baseline nominal rate near 2.25% at 68% stake participation, before MEV, fees, and commissions.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-09-10T14:10:11.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:40.493Z",
+            "duplicateGroup": "47cc52b46f08c866e0a1393a48e027d9",
+            "score": 0,
+            "reason": "Requested document section",
+            "metadata": {
+              "sourceId": "everstake-com",
+              "chunkOrdinal": 16,
+              "documentChunks": 18,
+              "matchingChunks": 11,
+              "nextOffset": 4,
+              "readQuery": "Everstake vote"
+            }
+          },
+          {
+            "id": "3ffcd31bba242503a69f305642fc5e47",
+            "documentId": "47cc52b46f08c866e0a1393a48e027d9",
+            "url": "https://everstake.com/resources/blog/sol-staking-apr-rewards-after-sgp-0002-double-disinflation",
+            "title": "SOL Staking APR After SGP-0002: How Much Rewards Change | Everstake",
+            "text": "Enterprise-grade Solana Staking (https://everstake.com/staking/protocols/solana)\n\n## Why Change The Speed of Issuance on Solana\nSolana supporters argued the network no longer needs elevated early issuance to secure itself.\nLower issuance means slower dilution and a more sustainable long-term monetary policy. Inflation had already fallen to roughly 3.67% by mid-2026, down from the original 8% start.\nThe vote was contested. SGP-0002 passed by just 0.334 points, clearing the 66.67% supermajority bar at 67.001% support.\nLarge operators split on the question. Helius advocated for the change, while Figment, Everstake and P2P voted against it (read our reasoning here (https://x.com/everstake_pool/status/2092186353257611581), however, we respect the outcome and community’s decision). The arguments against it were based on concerns that what helps long-term holders could harm the number of smaller validators, impact the projected reward models of institutions and shrink what stakers receive.\nThe final tally recorded176.29 million SOL (https://cryptoslate.com/solana-sgp-0002-passes-with-176-million-sol-as-governance-debate-shifts-to-technical-execution/) for, 66.19 million SOL against, and 20.63 million SOL abstaining, cast across 1,326 validators.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": "2026-09-10T14:10:11.000Z",
+            "updatedAt": "2026-09-10T00:00:00.000Z",
+            "fetchedAt": "2026-09-13T14:01:40.493Z",
+            "duplicateGroup": "47cc52b46f08c866e0a1393a48e027d9",
+            "score": 0,
+            "reason": "Requested document section",
+            "metadata": {
+              "sourceId": "everstake-com",
+              "chunkOrdinal": 12,
+              "documentChunks": 18,
+              "matchingChunks": 11,
+              "nextOffset": 4,
+              "readQuery": "Everstake vote"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date matches published evidence in 51220b90c153c44dcf2744c605586bad; semantic verifier checks its applicability"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date matches published evidence in 9938b1fd67bc33e6a06a2b308f0e647b; semantic verifier checks its applicability"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date matches published evidence in 3ffcd31bba242503a69f305642fc5e47; semantic verifier checks its applicability"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "the source explicitly states that nothing about issuance has changed on mainnet yet and that technical preconditions like SIMD-0607 and Agave v4.4 must happen first."
+          },
+          {
+            "rule": "claim-1:currentness",
+            "status": "passed",
+            "reason": "1 newer passage(s) (2026-09-11) were compared and do not contradict this claim"
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "the source notes that 2.25% is a baseline projection at a 68% stake rate, and actual figures will move with the stake rate, MEV, and fee activity."
+          },
+          {
+            "rule": "claim-2:scope",
+            "status": "passed",
+            "reason": "3 passage(s) retrieved for exceptions do not limit this statement"
+          },
+          {
+            "rule": "claim-2:currentness",
+            "status": "not_applicable",
+            "reason": "No newer passage of equal or higher authority was retrieved for this subject"
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "the source explicitly states that Figment, Everstake, and P2P voted against the proposal and details their reasoning."
+          },
+          {
+            "rule": "claim-3:currentness",
+            "status": "not_applicable",
+            "reason": "No newer passage of equal or higher authority was retrieved for this subject"
+          },
+          {
+            "rule": "answer-scope",
+            "status": "passed",
+            "reason": "Кожне твердження повністю підтверджується наданими джерелами: уривок 51220b90c153c44dcf2744c605586bad підтверджує, що в основній мережі емісія ще не змінилася через технічну передумову (SIMD-0607 у клієнті Agave v4.4); уривки 21af3ced42cf3703e59672215fdee1f2 та 9938b1fd67bc33e6a06a2b308f0e647b свідчать, що 2,25% до 2029 року — це лише змодельована базова ставка при 68% стейкінгу без урахування комісій, MEV і реальних факторів мережі; уривок 3ffcd31bba242503a69f305642fc5e47 прямо підтверджує, що Everstake голосував проти SGP-0002 через ризики для дрібних валідаторів, інституційних моделей винагород і скорочення виплат стейкерам."
+          }
+        ],
+        "trust": {
+          "score": 85,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 5,
+              "maximum": 20,
+              "reason": "1 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+          "calls": 13,
+          "inputTokens": 62071,
+          "outputTokens": 3081,
+          "knownCostUsd": 0.048145400000000005,
+          "unknownCalls": 0,
+          "elapsedMs": 22520,
+          "startedAt": "2026-09-13T19:27:47.044Z",
+          "finishedAt": "2026-09-13T19:28:09.564Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "7ff9eb02-4267-40f7-b36a-fa0457c41dce",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:50.456Z",
+              "elapsedMs": 323.32958400000007,
+              "inputTokens": 143,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.8599999999999997e-06,
+              "status": "completed",
+              "providerRequestId": "req_4bc6c8b25e3a40b482ebd6b92465ca70",
+              "error": null
+            },
+            {
+              "id": "2461fb19-6b08-4603-abc6-dba0651bfff8",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:50.884Z",
+              "elapsedMs": 1182.5001249999996,
+              "inputTokens": 5295,
+              "outputTokens": 50,
+              "cachedInputTokens": 4080,
+              "thinkingTokens": 0,
+              "costUsd": 0.00446475,
+              "status": "completed",
+              "providerRequestId": "N_mmav3VFeS9xN8Pxo7yoAE",
+              "error": null
+            },
+            {
+              "id": "676e9e9a-9104-44b9-817a-b89ef0db64ab",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:52.129Z",
+              "elapsedMs": 2724.2451249999995,
+              "inputTokens": 10588,
+              "outputTokens": 623,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.01027725,
+              "status": "completed",
+              "providerRequestId": "OPmmatj-G52lvdIPiof32Qs",
+              "error": null
+            },
+            {
+              "id": "133d9cca-c297-464d-9402-a8306aff681c",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:54.863Z",
+              "elapsedMs": 2569.7453330000008,
+              "inputTokens": 11591,
+              "outputTokens": 595,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0109245,
+              "status": "completed",
+              "providerRequestId": "O_mmaqqUCciLvdIP--WZsQs",
+              "error": null
+            },
+            {
+              "id": "9c69daeb-d1ff-4022-aeef-ea080bae375d",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:57.604Z",
+              "elapsedMs": 329.0616659999996,
+              "inputTokens": 143,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.8599999999999997e-06,
+              "status": "completed",
+              "providerRequestId": "req_b38a421e5ba14cb0951d249975cebe11",
+              "error": null
+            },
+            {
+              "id": "46b6750f-7f46-4e94-ae19-cd5fec5ce534",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:58.229Z",
+              "elapsedMs": 220.6860829999987,
+              "inputTokens": 137,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.74e-06,
+              "status": "completed",
+              "providerRequestId": "req_f771fbc85a43488b87cd5c46f68c11b2",
+              "error": null
+            },
+            {
+              "id": "99ba2a87-fedd-4577-90d4-e77ff297c2d4",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:58.525Z",
+              "elapsedMs": 231.20545800000036,
+              "inputTokens": 161,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 3.22e-06,
+              "status": "completed",
+              "providerRequestId": "req_a3eaaef7b5564789bdbc1b5ca1a524c4",
+              "error": null
+            },
+            {
+              "id": "382d9bff-ecab-416f-803b-62695351ed61",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:58.956Z",
+              "elapsedMs": 216.7361669999991,
+              "inputTokens": 49,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 9.8e-07,
+              "status": "completed",
+              "providerRequestId": "req_5381929d82494a02a5d862b06173842f",
+              "error": null
+            },
+            {
+              "id": "9eef4b3c-6b33-4a96-b2f0-0b13754c0002",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:59.342Z",
+              "elapsedMs": 210.1033329999991,
+              "inputTokens": 117,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 2.34e-06,
+              "status": "completed",
+              "providerRequestId": "req_ce23862ca55b4203979ea6867ab2f38e",
+              "error": null
+            },
+            {
+              "id": "744b7221-2560-4d6e-b029-c441d4bcda48",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:27:59.586Z",
+              "elapsedMs": 1675.5501249999998,
+              "inputTokens": 20828,
+              "outputTokens": 278,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0069434,
+              "status": "completed",
+              "providerRequestId": "P_mmat28O86NxN8P5YGAiQw",
+              "error": null
+            },
+            {
+              "id": "cd0b3014-94c4-437a-83c0-9cb184cde38c",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "currentness-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:01.285Z",
+              "elapsedMs": 3041.989999999998,
+              "inputTokens": 1014,
+              "outputTokens": 40,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0009105,
+              "status": "completed",
+              "providerRequestId": "Qfmmaq2ZIpLtxs0PsZDj4Ao",
+              "error": null
+            },
+            {
+              "id": "92f24022-0a24-4249-8dbb-2125e3534914",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:04.332Z",
+              "elapsedMs": 931.143624999997,
+              "inputTokens": 1742,
+              "outputTokens": 55,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00151275,
+              "status": "completed",
+              "providerRequestId": "RPmmavmKJP6s28oPlsnkkQg",
+              "error": null
+            },
+            {
+              "id": "69ac53ae-05e7-4f02-886c-ba4d8789a330",
+              "runId": "610ce55d-dad7-4507-ba04-9374fa8bc2bc",
+              "stage": "answer-scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:05.270Z",
+              "elapsedMs": 4287.896457999999,
+              "inputTokens": 10263,
+              "outputTokens": 1440,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1117,
+              "costUsd": 0.01309725,
+              "status": "completed",
+              "providerRequestId": "RfmmapL8IayW28oPk5CloAI",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-664b2e73d71f"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "Схвалення відділено від активації, прогноз не подано як гарантію, позицію Everstake знайдено в тексті голосування.",
+      "qualityScore": {
+        "correctness": 40,
+        "completeness": 30,
+        "grounding": 20,
+        "uncertainty": 10,
+        "reason": "Схвалення відділено від активації, прогноз не подано як гарантію, позицію Everstake знайдено в тексті голосування. За цими критеріями суттєвих пропусків не виявлено; це не гарантія безпомилковості."
+      }
+    },
+    {
+      "question": {
+        "id": "E12",
+        "question": "A team wants one API key and immediate access to all four Blockspace products. What must change in its onboarding and authentication plan?",
+        "reference": "Access is product-specific: ShredStream token, Direct Shreds IP-based provisioning, SWQOS HTTP/QUIC-specific access, and application-gated Relayer/TPU. Provisioning timelines differ; there is no universal account key.",
+        "referenceUrls": [
+          "https://docs.blockspace.everstake.com/getting-started/first-request",
+          "https://docs.blockspace.everstake.com/getting-started/authentication"
+        ],
+        "difficulty": "hard",
+        "category": "access_model_comparison",
+        "whyHard": "Do not invent reusable credentials or call every product immediately self-serve.",
+        "negative": false,
+        "rubric": [
+          "Do not invent reusable credentials or call every product immediately self-serve."
+        ]
+      },
+      "answer": {
+        "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+        "status": "answered",
+        "question": "A team wants one API key and immediate access to all four Blockspace products. What must change in its onboarding and authentication plan?",
+        "text": "Although Blockspace's high-level overview describes packaging shred delivery, stake-weighted priority, and bundle relay behind one API key and billing layer, its product documentation specifies that it is not a single-key gateway and has no single account-level API key unlocking every product. [122b9b0c504cbdb3edd94192653c10bb] [bb743996e8a04edfec68f0e6066542d8] (Page checked 2026-09-13 [bb743996e8a04edfec68f0e6066542d8]; fact effective date not established.)\n\nThe authentication plan must accommodate product-specific mechanisms rather than a single key: ShredStream uses per-subscription gRPC x-token metadata; Direct Shreds relies on a source-IP allowlist; SWQOS requires an open HTTP endpoint with on-chain tip transfers or a QUIC signing-keypair allowlist; and Relayer/TPU requires a token alongside a signing-pubkey allowlist. [bb743996e8a04edfec68f0e6066542d8] [05d8fb8d6cd3ba48aae7790132183ea5] (Page checked 2026-09-13 [bb743996e8a04edfec68f0e6066542d8]; fact effective date not established.)\n\nImmediate access across all four products is not possible because provisioning models and onboarding timelines vary by product rather than operating under a single unified subscription. [db260e89df2fd0992c31ebeef942cd65] (Page checked 2026-09-13 [db260e89df2fd0992c31ebeef942cd65]; fact effective date not established.)\n\nWhile ShredStream and SWQOS can be provisioned self-serve in minutes, Direct Shreds requires roughly 30 minutes of provisioning, and Relayer/TPU is application-gated and requires an email review taking days. [bb743996e8a04edfec68f0e6066542d8] [db260e89df2fd0992c31ebeef942cd65] (Page checked 2026-09-13 [db260e89df2fd0992c31ebeef942cd65]; fact effective date not established.)",
+        "asOf": null,
+        "claims": [
+          {
+            "text": "Although Blockspace's high-level overview describes packaging shred delivery, stake-weighted priority, and bundle relay behind one API key and billing layer, its product documentation specifies that it is not a single-key gateway and has no single account-level API key unlocking every product.",
+            "citations": [
+              "122b9b0c504cbdb3edd94192653c10bb",
+              "bb743996e8a04edfec68f0e6066542d8"
+            ],
+            "asOf": "2026-09-13",
+            "asOfBasis": "observed",
+            "asOfSource": "bb743996e8a04edfec68f0e6066542d8",
+            "temporalScope": "current"
+          },
+          {
+            "text": "The authentication plan must accommodate product-specific mechanisms rather than a single key: ShredStream uses per-subscription gRPC x-token metadata; Direct Shreds relies on a source-IP allowlist; SWQOS requires an open HTTP endpoint with on-chain tip transfers or a QUIC signing-keypair allowlist; and Relayer/TPU requires a token alongside a signing-pubkey allowlist.",
+            "citations": [
+              "bb743996e8a04edfec68f0e6066542d8",
+              "05d8fb8d6cd3ba48aae7790132183ea5"
+            ],
+            "asOf": "2026-09-13",
+            "asOfBasis": "observed",
+            "asOfSource": "bb743996e8a04edfec68f0e6066542d8",
+            "temporalScope": "current"
+          },
+          {
+            "text": "Immediate access across all four products is not possible because provisioning models and onboarding timelines vary by product rather than operating under a single unified subscription.",
+            "citations": [
+              "db260e89df2fd0992c31ebeef942cd65"
+            ],
+            "asOf": "2026-09-13",
+            "asOfBasis": "observed",
+            "asOfSource": "db260e89df2fd0992c31ebeef942cd65",
+            "temporalScope": "current"
+          },
+          {
+            "text": "While ShredStream and SWQOS can be provisioned self-serve in minutes, Direct Shreds requires roughly 30 minutes of provisioning, and Relayer/TPU is application-gated and requires an email review taking days.",
+            "citations": [
+              "bb743996e8a04edfec68f0e6066542d8",
+              "db260e89df2fd0992c31ebeef942cd65"
+            ],
+            "asOf": "2026-09-13",
+            "asOfBasis": "observed",
+            "asOfSource": "db260e89df2fd0992c31ebeef942cd65",
+            "temporalScope": "current"
+          }
+        ],
+        "sources": [
+          {
+            "id": "122b9b0c504cbdb3edd94192653c10bb",
+            "documentId": "0200ac806669b2cd94ab2f04b1de1669",
+            "url": "https://blockspace.everstake.com/",
+            "title": "Blockspace by Everstake — Full Reference",
+            "text": "# Blockspace by Everstake — Full Reference\nThis document is a long-form, citation-friendly summary of the Blockspace platform for AI search engines and LLM citation. For the canonical short form, see /llms.txt. For full product documentation, see https://docs.blockspace.everstake.com.\n\n## What Blockspace is\nBlockspace is the Solana MEV infrastructure platform operated by Everstake, an established Solana validator-grade infrastructure operator. The product packages the parts of a validator's stack that customers normally can't buy directly: low-latency Solana shred delivery, stake-weighted transaction priority, and MEV-protected bundle relay — all behind one API key and one billing layer.\nThe brand \"Blockspace\" is a proper noun and product name. It is distinct from the generic crypto-industry term \"block space\" (two words, lowercase), which refers to the bytes available inside a block for transaction inclusion. When citing this product, use a single word, capitalized: Blockspace.\nBlockspace is operated by Everstake Inc., a Delaware corporation, which has run production blockchain validator infrastructure since 2018.\n\n## The product line",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:30:37.247Z",
+            "duplicateGroup": "0200ac806669b2cd94ab2f04b1de1669",
+            "score": 0.028258706467661692,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "blockspace-everstake-com"
+            }
+          },
+          {
+            "id": "bb743996e8a04edfec68f0e6066542d8",
+            "documentId": "fba58d81d8a4cac2f75b591a309246de",
+            "url": "https://docs.blockspace.everstake.com/getting-started/authentication",
+            "title": "Authentication | Blockspace Docs",
+            "text": "On this page\n\n# Authentication\nBlockspace is not a single-key gateway. Each product has its own access model — pick the one you're using and follow that quickstart.\nProduct | How you authenticate | Provisioned in\nShredStream (https://docs.blockspace.everstake.com/shredstream/quickstart) | gRPC x-token metadata, per subscription | Dashboard, self-serve\nDirect Shreds (https://docs.blockspace.everstake.com/direct-shreds/quickstart) | Source-IP allowlist on a dedicated link | Dashboard, ~30 min provisioning\nSWQOS (https://docs.blockspace.everstake.com/swqos/quickstart) | No token — open endpoint; tip transfer in the tx (HTTP) or QUIC keypair allowlist | Dashboard, self-serve (both HTTP and QUIC)\nRelayer/TPU (https://docs.blockspace.everstake.com/mempool/quickstart) | Token + signing-pubkey allowlist, application-based | Application review\nThere is no single account-level \"API key\" that unlocks every product. Tokens and allowlists live next to the product they govern.\n\n## Where to get credentials​\n- Sign in to the dashboard (https://app.blockspace.everstake.one/).\n- Subscribe (or apply, for application-gated products).\n- Open the product page — the connection details (endpoint, token, region, allowlist form) are on that page.\n\n## Rotating credentials​\nEach product page has its own rotate flow. For token-based products, generate a new token, deploy it, then revoke the old one — both remain valid during the swap so there's no downtime.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:49.127Z",
+            "duplicateGroup": "fba58d81d8a4cac2f75b591a309246de",
+            "score": 0.03279569892473118,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          },
+          {
+            "id": "05d8fb8d6cd3ba48aae7790132183ea5",
+            "documentId": "28864c7b35620470856e4d5e7bece29d",
+            "url": "https://docs.blockspace.everstake.com/getting-started/faq",
+            "title": "FAQ | Blockspace Docs",
+            "text": "On this page\n\n# FAQ\n\n## Access & Authentication​\n\n### How do I authenticate?​\nIt depends on the product. ShredStream and Relayer/TPU use tokens; Direct Shreds uses source-IP allowlists; SWQOS HTTP is open with an on-chain tip; SWQOS QUIC uses a signing keypair. See Authentication (https://docs.blockspace.everstake.com/getting-started/authentication) for the full matrix.\n\n### Can I share credentials across multiple servers or apps?​\nFor token-based products, the token is scoped to your subscription and can be used across as many backends, workers, or clients as you want. For allowlist-based products (Direct Shreds, SWQOS QUIC, Relayer/TPU), each source IP or signing pubkey needs to be listed explicitly.\n\n### How do I rotate credentials without downtime?​\nGenerate a new token (or add a new IP/pubkey) in the dashboard (https://app.blockspace.everstake.one/), deploy it, then revoke the old one. Both stay valid during the swap so there's no gap.\n\n## Plans & Billing​\n\n### What payment methods are accepted?​\nCard and crypto. Both are configured in the dashboard; crypto invoices settle in USDC on Solana or Ethereum.\n\n### How do I upgrade or change plans?​\nIn the dashboard (https://app.blockspace.everstake.one/) → service page → Plan. Plan changes apply immediately; prorated billing on the next cycle.\n\n## Products​\n\n### Which chains are supported?​\nBlockspace MEV products target Solana exclusively — that's where Everstake's validator stake translates directly into latency and inclusion advantage.\n\n## Status & Privacy​",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:49.524Z",
+            "duplicateGroup": "28864c7b35620470856e4d5e7bece29d",
+            "score": 0.032539682539682535,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          },
+          {
+            "id": "db260e89df2fd0992c31ebeef942cd65",
+            "documentId": "8787d5a11ef47e1748cc23d09ecc0055",
+            "url": "https://docs.blockspace.everstake.com/getting-started/first-request",
+            "title": "Your First Request | Blockspace Docs",
+            "text": "On this page\n\n# Your First Request\nBlockspace isn't a single subscription. Each product has its own access model, timeline, and entry point. Pick the row that matches your situation.\nProduct | What it is | How to start | Time to first call\nShredStream (https://docs.blockspace.everstake.com/shredstream/quickstart) | Stream Solana shreds before slot confirmation | Start free → (https://app.blockspace.everstake.one/) self-serve | minutes\nDirect Shreds (https://docs.blockspace.everstake.com/direct-shreds/quickstart) | Dedicated IP, your bandwidth alone | Provision → (https://app.blockspace.everstake.one/) — provisioning ~30 min | ~30 min\nSWQOS (https://docs.blockspace.everstake.com/swqos/quickstart) | Stake-weighted priority lane (HTTP RPC) | Enable → (https://app.blockspace.everstake.one/) — public endpoint, no key | minutes\nSWQOS QUIC (https://docs.blockspace.everstake.com/swqos/quickstart) | Stake-weighted priority lane (QUIC, signed) | Subscribe or trial → (https://app.blockspace.everstake.one/) — self-serve, add pubkey in dashboard | minutes\nRelayer/TPU (https://docs.blockspace.everstake.com/mempool/quickstart) | MEV mempool + bundle relay, pay-on-profit | Apply → (mailto:support-blockspace@everstake.one?subject=Relayer%20%2B%20TPU) | days (application review)\nSelf-serve products (ShredStream, SWQOS HTTP, SWQOS QUIC, Direct Shreds onboarding) provision in the dashboard (https://app.blockspace.everstake.one/). Application-gated products start with an email to support-blockspace@everstake.one.",
+            "authority": 1,
+            "publisher": "Everstake",
+            "publishedAt": null,
+            "updatedAt": null,
+            "fetchedAt": "2026-09-13T14:06:49.606Z",
+            "duplicateGroup": "8787d5a11ef47e1748cc23d09ecc0055",
+            "score": 0.031754032258064516,
+            "reason": "Lexical and semantic rank fusion; diversified by content group. Authority and temporal validity checked separately.",
+            "metadata": {
+              "sourceId": "docs-blockspace-everstake-com"
+            }
+          }
+        ],
+        "checks": [
+          {
+            "rule": "claim-1:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-1:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-1:date",
+            "status": "passed",
+            "reason": "Date matches observed evidence in bb743996e8a04edfec68f0e6066542d8; semantic verifier checks its applicability"
+          },
+          {
+            "rule": "claim-2:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-2:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-2:date",
+            "status": "passed",
+            "reason": "Date matches observed evidence in bb743996e8a04edfec68f0e6066542d8; semantic verifier checks its applicability"
+          },
+          {
+            "rule": "claim-3:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-3:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-3:date",
+            "status": "passed",
+            "reason": "Date matches observed evidence in db260e89df2fd0992c31ebeef942cd65; semantic verifier checks its applicability"
+          },
+          {
+            "rule": "claim-4:citations",
+            "status": "passed",
+            "reason": "All references were returned in this run"
+          },
+          {
+            "rule": "claim-4:quantities",
+            "status": "passed",
+            "reason": "Quantities occur in cited evidence; semantic scope still requires review"
+          },
+          {
+            "rule": "claim-4:date",
+            "status": "passed",
+            "reason": "Date matches observed evidence in db260e89df2fd0992c31ebeef942cd65; semantic verifier checks its applicability"
+          },
+          {
+            "rule": "claim-1:support",
+            "status": "passed",
+            "reason": "Although the high-level overview mentions a single API key and billing layer, the product documentation explicitly states that Blockspace is not a single-key gateway and lacks a single account-level API key for all products."
+          },
+          {
+            "rule": "claim-1:scope",
+            "status": "passed",
+            "reason": "3 passage(s) retrieved for exceptions do not limit this statement"
+          },
+          {
+            "rule": "claim-1:currentness",
+            "status": "not_applicable",
+            "reason": "No newer passage of equal or higher authority was retrieved for this subject"
+          },
+          {
+            "rule": "claim-2:support",
+            "status": "passed",
+            "reason": "The authentication plan must be adjusted to use product-specific mechanisms: gRPC x-token for ShredStream, source-IP allowlists for Direct Shreds, open endpoints with on-chain tips or QUIC keypairs for SWQOS, and token-plus-pubkey allowlists for Relayer/TPU."
+          },
+          {
+            "rule": "claim-2:scope",
+            "status": "passed",
+            "reason": "3 passage(s) retrieved for exceptions do not limit this statement"
+          },
+          {
+            "rule": "claim-2:currentness",
+            "status": "not_applicable",
+            "reason": "No newer passage of equal or higher authority was retrieved for this subject"
+          },
+          {
+            "rule": "claim-3:support",
+            "status": "passed",
+            "reason": "Immediate access cannot be achieved via a single subscription because each product maintains an independent access model, entry point, and timeline."
+          },
+          {
+            "rule": "claim-3:scope",
+            "status": "passed",
+            "reason": "3 passage(s) retrieved for exceptions do not limit this statement"
+          },
+          {
+            "rule": "claim-3:currentness",
+            "status": "not_applicable",
+            "reason": "No newer passage of equal or higher authority was retrieved for this subject"
+          },
+          {
+            "rule": "claim-4:support",
+            "status": "passed",
+            "reason": "Onboarding timelines differ across products: ShredStream and SWQOS provision in minutes, Direct Shreds requires approximately 30 minutes, and Relayer/TPU requires an application review taking days."
+          },
+          {
+            "rule": "claim-4:currentness",
+            "status": "not_applicable",
+            "reason": "No newer passage of equal or higher authority was retrieved for this subject"
+          },
+          {
+            "rule": "answer-scope",
+            "status": "passed",
+            "reason": "All claims directly reflect the cited documentation. Blockspace does not offer a single account-level API key or unified instant access. The authentication plan must accommodate product-specific credentials (gRPC x-token metadata for ShredStream, source-IP allowlisting for Direct Shreds, open HTTP with tips or QUIC signing keypairs for SWQOS, and token plus signing pubkey allowlisting for Relayer/TPU). Onboarding timelines also prevent immediate access across all four products because Direct Shreds requires roughly 30 minutes to provision and Relayer/TPU is application-gated via email review taking days."
+          }
+        ],
+        "trust": {
+          "score": 80,
+          "components": [
+            {
+              "name": "Authority",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Publisher provenance; platform alone is not authority"
+            },
+            {
+              "name": "Temporal evidence",
+              "score": 0,
+              "maximum": 20,
+              "reason": "Known publication/update dates; fetched dates do not establish fact validity"
+            },
+            {
+              "name": "Grounding checks",
+              "score": 30,
+              "maximum": 30,
+              "reason": "Structural gates and model-based support review passed; review can still be wrong"
+            },
+            {
+              "name": "Independent evidence",
+              "score": 20,
+              "maximum": 20,
+              "reason": "4 distinct content groups; not a majority vote or proof of agreement"
+            }
+          ],
+          "limitations": [
+            "Heuristic evidence score, not a probability of truth.",
+            "Lexical and numeric checks cannot establish semantic entailment.",
+            "Independent pages can still repeat an unsupported claim."
+          ]
+        },
+        "receipt": {
+          "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+          "calls": 28,
+          "inputTokens": 93522,
+          "outputTokens": 3607,
+          "knownCostUsd": 0.05862529,
+          "unknownCalls": 0,
+          "elapsedMs": 28940,
+          "startedAt": "2026-09-13T19:28:09.630Z",
+          "finishedAt": "2026-09-13T19:28:38.570Z",
+          "status": "completed",
+          "attempts": [
+            {
+              "id": "417b5050-23f7-487d-ba13-aed9acaca067",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:09.845Z",
+              "elapsedMs": 286.6365000000005,
+              "inputTokens": 27,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.4e-07,
+              "status": "completed",
+              "providerRequestId": "req_2283d189ba414240affa3438aab05a01",
+              "error": null
+            },
+            {
+              "id": "6376e831-0ab2-4f30-aa2c-6b2729d66cfc",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:10.405Z",
+              "elapsedMs": 4542.680124999999,
+              "inputTokens": 9358,
+              "outputTokens": 612,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0093135,
+              "status": "completed",
+              "providerRequestId": "S_mmavH1ArqUkdUPrfDE4AY",
+              "error": null
+            },
+            {
+              "id": "7f0ee6f5-8fb5-4703-adf2-773cdda8c2d7",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:15.179Z",
+              "elapsedMs": 267.55883299999914,
+              "inputTokens": 27,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.4e-07,
+              "status": "completed",
+              "providerRequestId": "req_1e8c7338680b4a37a93198b8cfa9475c",
+              "error": null
+            },
+            {
+              "id": "e4d02ccf-0fbc-43c6-a666-a0dd8471178d",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:15.991Z",
+              "elapsedMs": 218.1138749999991,
+              "inputTokens": 25,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5e-07,
+              "status": "completed",
+              "providerRequestId": "req_8f992ec247f3427089e3b20281dd2305",
+              "error": null
+            },
+            {
+              "id": "0e70eb4b-5cdb-4be8-8fc7-8e65d07554be",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:16.355Z",
+              "elapsedMs": 217.5197079999998,
+              "inputTokens": 22,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 4.4e-07,
+              "status": "completed",
+              "providerRequestId": "req_1a82967ddaea4d1989501878abe9f59f",
+              "error": null
+            },
+            {
+              "id": "3ce92c9c-aa73-4760-90bc-c50c15719ab1",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:16.726Z",
+              "elapsedMs": 215.03320800000074,
+              "inputTokens": 76,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.52e-06,
+              "status": "completed",
+              "providerRequestId": "req_2a0a3fb1dfd8443e99522984e0db2a75",
+              "error": null
+            },
+            {
+              "id": "8a23a9ed-86d2-48ca-8773-767a39010824",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:17.089Z",
+              "elapsedMs": 185.51629200000025,
+              "inputTokens": 21,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 4.2e-07,
+              "status": "completed",
+              "providerRequestId": "req_af99312dbe054455be48687efd955d60",
+              "error": null
+            },
+            {
+              "id": "48958829-e186-42fe-8247-8ce9d2e3cf63",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:17.411Z",
+              "elapsedMs": 191.8670839999977,
+              "inputTokens": 19,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 3.8e-07,
+              "status": "completed",
+              "providerRequestId": "req_c07d59867294451094a1bc689eb5844c",
+              "error": null
+            },
+            {
+              "id": "1831a962-237b-4233-a10a-17ffa613ab51",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:17.754Z",
+              "elapsedMs": 205.27270899999712,
+              "inputTokens": 21,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 4.2e-07,
+              "status": "completed",
+              "providerRequestId": "req_5daaef8d4b2e4564a641d93d40d5e12b",
+              "error": null
+            },
+            {
+              "id": "a8cdf4a9-f5c2-4abb-aa43-232cc4dd4ee5",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:18.147Z",
+              "elapsedMs": 216.72254199999952,
+              "inputTokens": 46,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 9.200000000000001e-07,
+              "status": "completed",
+              "providerRequestId": "req_a891e925ad424e8d8149a681042b3011",
+              "error": null
+            },
+            {
+              "id": "5cf835d5-eb8c-49c5-9b1a-1306a0633578",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:18.396Z",
+              "elapsedMs": 1582.049708999999,
+              "inputTokens": 26389,
+              "outputTokens": 233,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0084992,
+              "status": "completed",
+              "providerRequestId": "UvmmaviLMeXQ28oPmciz8AM",
+              "error": null
+            },
+            {
+              "id": "e6fbb834-55e7-455e-9d9b-d9991b5fce9d",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:19.981Z",
+              "elapsedMs": 916.3871670000008,
+              "inputTokens": 1628,
+              "outputTokens": 82,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0015285,
+              "status": "completed",
+              "providerRequestId": "VPmmaoTCD9W7vdIPkL2JoQQ",
+              "error": null
+            },
+            {
+              "id": "a9966843-1878-4bdc-b7bf-3596029a7946",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:20.900Z",
+              "elapsedMs": 1014.6697080000013,
+              "inputTokens": 1879,
+              "outputTokens": 40,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00155925,
+              "status": "completed",
+              "providerRequestId": "Vfmmat29CYDkxN8Pldj-sAg",
+              "error": null
+            },
+            {
+              "id": "00e846d9-b25e-4944-b7ba-9ac47c4d740d",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:21.916Z",
+              "elapsedMs": 818.5583750000005,
+              "inputTokens": 1129,
+              "outputTokens": 41,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0010005,
+              "status": "completed",
+              "providerRequestId": "VvmmaszCC9mZ28oP8crEiAI",
+              "error": null
+            },
+            {
+              "id": "ff675270-b95c-41ae-bc15-171c791e626a",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "answer",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:22.739Z",
+              "elapsedMs": 2706.733957999997,
+              "inputTokens": 11389,
+              "outputTokens": 688,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.01112175,
+              "status": "completed",
+              "providerRequestId": "V_mmapM2_YfE3w-rt96oCg",
+              "error": null
+            },
+            {
+              "id": "8715ff5a-3159-4730-aa46-b4a91ae1a601",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:25.635Z",
+              "elapsedMs": 280.45420799999556,
+              "inputTokens": 27,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.4e-07,
+              "status": "completed",
+              "providerRequestId": "req_2449d897d09c4fb897137d5c09f7348c",
+              "error": null
+            },
+            {
+              "id": "5d3ca928-5f74-4aff-bcff-6a737840730b",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:26.173Z",
+              "elapsedMs": 211.13025000000198,
+              "inputTokens": 52,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.04e-06,
+              "status": "completed",
+              "providerRequestId": "req_0d146cd4f1d94b77b1749770af1b61e4",
+              "error": null
+            },
+            {
+              "id": "26fb1fb0-edbf-423d-ad95-92418432fcc5",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:26.509Z",
+              "elapsedMs": 222.92933300000004,
+              "inputTokens": 22,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 4.4e-07,
+              "status": "completed",
+              "providerRequestId": "req_67aaae3f5832467cb9a2a195e1ba7686",
+              "error": null
+            },
+            {
+              "id": "c9a81193-5ebc-47ac-b338-6c450817359c",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:26.874Z",
+              "elapsedMs": 241.84229200000118,
+              "inputTokens": 80,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 1.6000000000000001e-06,
+              "status": "completed",
+              "providerRequestId": "req_86518829810d4a0f87772c45ef507de2",
+              "error": null
+            },
+            {
+              "id": "6c02fe03-12ae-4bbd-95d1-a392f5a4b132",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:27.234Z",
+              "elapsedMs": 193.2800419999985,
+              "inputTokens": 21,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 4.2e-07,
+              "status": "completed",
+              "providerRequestId": "req_fdae545a76b44febb6b8efaca07a37e3",
+              "error": null
+            },
+            {
+              "id": "6375eeb9-02c5-4b3c-b508-9871b3d25aaf",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:27.589Z",
+              "elapsedMs": 201.89162500000384,
+              "inputTokens": 28,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 5.6e-07,
+              "status": "completed",
+              "providerRequestId": "req_862489148c8a459da231afcafd967c91",
+              "error": null
+            },
+            {
+              "id": "25aa73b3-8638-4301-987a-3f3294bfa89b",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:27.932Z",
+              "elapsedMs": 200.38524999999936,
+              "inputTokens": 21,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 4.2e-07,
+              "status": "completed",
+              "providerRequestId": "req_f491ac7eea1842e79681b03796a96b38",
+              "error": null
+            },
+            {
+              "id": "32c1246e-b542-4c49-9e15-ec906edcad8a",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "query-embedding",
+              "provider": "openai",
+              "model": "text-embedding-3-small",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:28.288Z",
+              "elapsedMs": 229.70116699999926,
+              "inputTokens": 47,
+              "outputTokens": 0,
+              "cachedInputTokens": 0,
+              "thinkingTokens": null,
+              "costUsd": 9.400000000000001e-07,
+              "status": "completed",
+              "providerRequestId": "req_e44ec5749b6e4a4c91f62929b3033fa4",
+              "error": null
+            },
+            {
+              "id": "10397bc8-ab6d-4a02-8ba7-98980232b200",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "claim-verification",
+              "provider": "gemini",
+              "model": "gemini-3.5-flash-lite",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:28.547Z",
+              "elapsedMs": 1820.676625,
+              "inputTokens": 26514,
+              "outputTokens": 416,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.0089942,
+              "status": "completed",
+              "providerRequestId": "XPmmas6kM_2PvdIPmfzwmAU",
+              "error": null
+            },
+            {
+              "id": "169b413d-7982-4cf5-bfcc-bc3afd9875d3",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:30.371Z",
+              "elapsedMs": 1385.5117499999978,
+              "inputTokens": 1615,
+              "outputTokens": 56,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00142125,
+              "status": "completed",
+              "providerRequestId": "XvmmasXZJuWJvdIP-a-vkQs",
+              "error": null
+            },
+            {
+              "id": "8c9c0427-f93f-420b-adcb-4197709cc886",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:31.759Z",
+              "elapsedMs": 942.6913329999952,
+              "inputTokens": 1670,
+              "outputTokens": 51,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00144375,
+              "status": "completed",
+              "providerRequestId": "X_mmatGdPM6p28oP8_jNwQQ",
+              "error": null
+            },
+            {
+              "id": "407c9c29-758b-47bb-ae03-814f2919cb05",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:32.704Z",
+              "elapsedMs": 990.4697499999966,
+              "inputTokens": 1138,
+              "outputTokens": 35,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 0,
+              "costUsd": 0.00098475,
+              "status": "completed",
+              "providerRequestId": "YPmmao_rObjyvdIP4aW5mAg",
+              "error": null
+            },
+            {
+              "id": "a82a0b73-a450-4596-a3da-02fd02d9a2e9",
+              "runId": "36f5e1ad-c614-46b9-acf9-e348887709ff",
+              "stage": "answer-scope-review",
+              "provider": "gemini",
+              "model": "gemini-3.8-flash",
+              "attempt": 1,
+              "startedAt": "2026-09-13T19:28:33.698Z",
+              "elapsedMs": 4865.982208000001,
+              "inputTokens": 10231,
+              "outputTokens": 1353,
+              "cachedInputTokens": 0,
+              "thinkingTokens": 1198,
+              "costUsd": 0.012747,
+              "status": "completed",
+              "providerRequestId": "YfmmauTtOcD6xs0P7tu1sQM",
+              "error": null
+            }
+          ]
+        },
+        "corpusVersion": "corpus-664b2e73d71f"
+      },
+      "verdict": "pass",
+      "inventedFacts": false,
+      "explanation": "Показано різні способи авторизації та строки доступу для всіх чотирьох продуктів. Єдиного ключа й миттєвого доступу не обіцяно.",
+      "qualityScore": {
+        "correctness": 40,
+        "completeness": 30,
+        "grounding": 20,
+        "uncertainty": 10,
+        "reason": "Показано різні способи авторизації та строки доступу для всіх чотирьох продуктів. Єдиного ключа й миттєвого доступу не обіцяно. За цими критеріями суттєвих пропусків не виявлено; це не гарантія безпомилковості."
+      }
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "completed": 2,
+    "assessed": 2,
+    "passed": 2,
+    "failed": 0,
+    "accuracy": 1,
+    "inventedFacts": 0,
+    "knownCostUsd": 0.10677069,
+    "unknownCalls": 0
+  },
+  "measurements": {
+    "elapsedMs": 51674.699167000006,
+    "cpuUserMs": 3040.824,
+    "cpuSystemMs": 2561.241,
+    "maxRssKiB": 619216,
+    "platform": "darwin",
+    "node": "v26.7.0"
+  },
+  "recheckOf": "agent-cdf52dda",
+  "assessment": {
+    "method": "Offline rubric review against saved references and cited passages",
+    "scope": "Only E21 and E12 rerun after output-schema fix; remaining 18 questions not rerun."
+  },
+  "qualityScoring": {
+    "method": "Post-hoc coding-assistant rubric assessment; not human-certified or a probability. Binary verdicts remain unchanged.",
+    "weights": {
+      "correctness": 40,
+      "completeness": 30,
+      "grounding": 20,
+      "uncertainty": 10
+    },
+    "negativeCases": "A justified refusal can earn full credit; an error with no answer earns zero.",
+    "scope": "Scores apply to the exact saved answer, not later rechecks."
+  }
+}

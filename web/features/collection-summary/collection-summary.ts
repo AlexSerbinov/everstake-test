@@ -1,4 +1,5 @@
 import { el, getJson, metric, money } from "../../shared/dom.js";
+import { publicEvaluations } from "../evaluation/current-evaluation.js";
 import { defaultEvaluationRun } from "../evaluation/default-evaluation-run.js";
 import { evaluationMetrics } from "../evaluation/evaluation-metrics.js";
 import type { EvaluationRun } from "../evaluation/evaluation-page.js";
@@ -41,7 +42,7 @@ export function collectionSummary(): HTMLElement {
     });
   void getJson<{ runs: EvaluationRun[] }>("/api/evaluations")
     .then(({ runs }) => {
-      const run = defaultEvaluationRun(runs);
+      const run = defaultEvaluationRun(publicEvaluations(runs));
       if (!run) {
         quality.replaceWith(metric("Saved evaluation", "Not measured"));
         return;
@@ -49,9 +50,11 @@ export function collectionSummary(): HTMLElement {
       const progress = evaluationMetrics(run);
       quality.replaceWith(
         metric(
-          "Saved evaluation accuracy",
+          run.viewKind === "updated" ? "Evaluation after rechecks" : "Saved evaluation accuracy",
           progress.accuracy,
-          `${run.summary.passed}/${progress.planned} passed · ${run.mode} · ${run.corpusVersion}. Saved results, not a guarantee for new questions.`,
+          run.viewKind === "updated"
+            ? `${run.summary.passed}/${progress.planned} passed, including ${run.recheckedCount} rechecked questions. Updated saved answers, not a new full run or a guarantee for new questions.`
+            : `${run.summary.passed}/${progress.planned} passed · ${run.mode} · ${run.corpusVersion}. Saved results, not a guarantee for new questions.`,
         ),
       );
     })
@@ -80,7 +83,7 @@ export function collectionSummary(): HTMLElement {
           "small muted",
           data.settings.automatic
             ? "Automatic checks are enabled. Each source follows its saved schedule."
-            : "Automatic checks are off. Start a refresh from Updates.",
+            : "Automatic checks are off. An operator can refresh the collection in Updates.",
         ),
       );
     })

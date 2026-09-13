@@ -23,6 +23,9 @@ export interface EvaluationRun {
   manifest?: ReturnType<typeof runtimeManifest>;
   createdAt: string;
   corpusVersion: string;
+  questionSet?: "core" | "scenarios";
+  questionSetVersion?: string;
+  recheckOf?: string;
   plannedTotal: number;
   mode: "agent" | "baseline";
   status: "running" | "completed" | "incomplete";
