@@ -26,13 +26,15 @@ Research steps appear while the assistant works. Afterward, you can inspect cite
 
 The assistant searches its own library of sources — the **corpus**. It must not fill gaps from the model's memory.
 
-![Public sources are prepared into a searchable library of passages with dates and source links](docs/images/01-corpus.png)
+![Web pages and reviewed video testimony enter a shared source library through separate preparation paths](docs/images/01-corpus.png)
 
 Collection starts with the [assignment's source list](docs/corpus_sources.csv). The crawler finds additional pages on allowed sites, respects `robots.txt`, and records why pages were skipped. Text retains its address, publisher and dates.
 
 The web collection produced **935 documents**. With four video documents, the evaluation snapshot contained **939 documents**, above the required 200. This is the frozen test collection, not the live demo's current count. [Corpus composition and gaps →](docs/CORPUS.md)
 
 **Copies do not become extra evidence.** Exact text and similar passages are compared: the web collection found 12 additional copies in 6 groups. Exact copies share indexed text; near-duplicate versions remain searchable so meaningful differences are not lost.
+
+![Copies of one announcement form a content group rather than independent confirmations](docs/images/04-copies.png)
 
 **Videos are selected deliberately.** Soniox transcribes audio with timestamps. Gemini reviews who is speaking and which role is supported. An interviewer's question does not become a company statement. This brings in interview material but adds processing costs and review work, so the full video archive was not processed. [Video evidence and spending →](docs/youtube/README.md)
 
@@ -51,6 +53,8 @@ Insufficient evidence produces **no reliable answer**. An unavailable API or exh
 The useful questions are **who said it, when, and about what**. A company's historical network footprint and its active-network count describe different things. A newer page does not make them the same metric.
 
 The system searches for newer statements and exceptions, then compares subjects and conditions. A page's download date means “we observed this text then,” not “every fact became valid then.” Conflicts that cannot be resolved should remain visible in the answer.
+
+![A timeline separates the past claim, its later replacement and the observation date](docs/images/05-dates.png)
 
 **Trust Score** explains the evidence: source provenance, available dates and passed checks. It is not a probability of truth; a high score cannot override a failed check.
 
@@ -82,6 +86,8 @@ The filter relies mainly on English patterns. Paraphrased or other-language atta
 | Agent with further research | **19/20 · 95%** | 1 | 0 |
 | One answer attempt after retrieval | 11/20 · 55% | 9 | 0 |
 
+![Twenty squares per mode: the agent has 19 passes and the baseline 11](docs/images/06-evaluation.png)
+
 The agent's failure was an incomplete account of the company's positioning over time. Earlier complete runs scored 75%, 70% and 80% and remain available. A separate coding agent applied the evaluation rubric: this is neither a blind test nor a guarantee for arbitrary questions. [Every question, answer and verdict →](EVAL.md)
 
 That agent run cost **$0.842412 for 20 questions**, averaging **$0.042121 per request**. The ledger separately records tokens, retries and unknown charges. Index building and repairs in the later ledger used **2,166,597 input tokens**, with **$0.043332 known cost** and 5 unpriced attempts. The **50× corpus extrapolation**, its arithmetic and assumptions are in [COST.md](COST.md).
@@ -89,6 +95,8 @@ That agent run cost **$0.842412 for 20 questions**, averaging **$0.042121 per re
 ## Keeping the library up to date
 
 Updates are prepared separately from the serving database. New text and search data activate together after validation. If collection or a provider call fails, the last successful version remains available.
+
+![Prepare a separate corpus version; activate it on success and preserve the old one on failure](docs/images/07-refresh.png)
 
 The current code supports manual updates and a schedule that an operator enables explicitly. Updating the corpus does not recalculate its historical quality score: new data needs a new evaluation run. [Update controls and behavior →](docs/UPDATES.md)
 
@@ -115,6 +123,8 @@ Open **http://localhost:4318**. Data persists in `data/knowledge.sqlite`. Indexi
 **Compared with Everstake MCP.** This assistant is useful for history, comparing publications and dated evidence. Everstake MCP is better suited to live operational data and staking calculations without maintaining a separate corpus. Our approach adds model costs and the risk of stale or missed sources. [Full comparison →](docs/MCP_COMPARISON.md)
 
 **Redesigning weekly reporting.** A separate one-page proposal has code collect tracker, Slack and meeting records, a model draft a source-linked report, and a department head review and approve it. It covers pilot metrics, detection of incomplete data and deliberate limits on automation. It is a process design, not implemented integrations. [PROCESS.md →](PROCESS.md)
+
+![Proposed process: code collects and validates, a model drafts, a person approves](docs/images/08-reporting.png)
 
 **Code that can be explained.** Collection, search, answers and spending live in [small modules](src/services/). [Agents](agents/), [skills](skills/) and [prompts](prompts/) are actual files. Git history retains real timestamps; [effort](docs/TIME.md) is accounted for separately from API spending.
 
