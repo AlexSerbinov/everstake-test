@@ -13,15 +13,17 @@ export class SearchTimeline {
   private title = el("span", "", "Research in progress");
   constructor(_scope: string) {
     this.node.open = true;
-    const summary = el("summary");
+    const summary = el("summary", "research-heading");
     const elapsed = el("span", "elapsed");
-    summary.append(this.title, elapsed);
+    const icon = el("span", "research-icon", "◌");
+    icon.setAttribute("aria-hidden", "true");
+    summary.append(icon, this.title, elapsed);
     this.node.append(
       summary,
       el(
         "p",
-        "muted small",
-        "Actual research activity. Elapsed time includes the connection to your browser.",
+        "research-note muted small",
+        "Searching the collected corpus. Each step below comes from the running request; timings include the browser connection.",
       ),
       this.rows,
     );
@@ -36,7 +38,11 @@ export class SearchTimeline {
       const row = el("div", "timeline-step active");
       const elapsed = el("span", "elapsed");
       const head = el("div", "section-heading");
-      head.append(el("span", "", event.label), elapsed);
+      head.append(
+        el("span", "timeline-index", String(this.count + 1).padStart(2, "0")),
+        el("span", "", event.label),
+        elapsed,
+      );
       row.append(head);
       const data = event.data as
         { query?: string; title?: string; reason?: string } | undefined;
@@ -50,7 +56,7 @@ export class SearchTimeline {
       this.count++;
     }
     if (event.type === "sources") {
-      const data = event.data as {
+      const data = (event.data ?? {}) as {
         sources?: EvidencePassage[];
         newCount?: number;
         repeated?: number;
@@ -58,8 +64,13 @@ export class SearchTimeline {
       // One flat line per page: title, publisher and date. Full passages appear only in the
       // answer's source cards, so the log stays readable on a phone.
       const block = el("div", "search-results");
+      const counts: string[] = [];
+      if (typeof data.newCount === "number")
+        counts.push(`${data.newCount} new`);
+      if (typeof data.repeated === "number")
+        counts.push(`${data.repeated} already seen`);
       block.append(
-        badge(`${data.newCount ?? 0} new · ${data.repeated ?? 0} already seen`),
+        badge(counts.length ? counts.join(" · ") : "Sources received"),
       );
       const list = el("ul", "found-list");
       const pages = new Map<string, EvidencePassage>();
@@ -87,7 +98,8 @@ export class SearchTimeline {
     this.timer.stop();
     this.activeTimer.stop();
     this.active?.classList.remove("active");
-    this.title.textContent = `${status} · ${this.count} research steps`;
+    this.title.textContent = `${status} · ${this.count} research ${this.count === 1 ? "step" : "steps"}`;
+    this.node.classList.add("research-finished");
     this.node.open = false;
   }
 }
