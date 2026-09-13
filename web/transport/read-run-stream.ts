@@ -44,7 +44,12 @@ export async function readRunStream(
     )
       throw new Error("The response contained an invalid event.");
     runId ??= event.runId;
-    if (event.runId !== runId) return;
+    // The HTTP adapter uses this sentinel when an unexpected failure occurs after a run started.
+    if (
+      event.runId !== runId &&
+      !(event.type === "error" && event.runId === "request-error")
+    )
+      return;
     const eventId = lines
       .find((line) => line.startsWith("id:"))
       ?.slice(3)

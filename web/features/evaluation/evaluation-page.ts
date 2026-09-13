@@ -7,17 +7,20 @@ import {
   metric,
   money,
 } from "../../shared/dom.js";
+import { evaluationMetrics } from "./evaluation-metrics.js";
 import { date } from "../../shared/source-date.js";
 import { questionResultCard, type ResultRow } from "./question-result-card.js";
 export interface EvaluationRun {
   id: string;
   createdAt: string;
   corpusVersion: string;
+  plannedTotal?: number;
   mode: string;
   status: string;
   rows: ResultRow[];
   summary: {
     total: number;
+    completed?: number;
     assessed: number;
     passed: number;
     failed: number;
@@ -85,6 +88,7 @@ export function evaluationPage(): HTMLElement {
       function render(resetFilter = false) {
         const run = runs.find((item) => item.id === select.value)!;
         const summary = run.summary;
+        const progress = evaluationMetrics(run);
         if (resetFilter) {
           filter.replaceChildren();
           for (const value of [
@@ -101,23 +105,19 @@ export function evaluationPage(): HTMLElement {
           }
         }
         const stats = el("div", "metrics");
-        const strictAccuracy =
-          summary.total && summary.assessed
-            ? `${((summary.passed / summary.total) * 100).toFixed(1)}%`
-            : "Not assessed";
         stats.append(
           metric(
             "Strict accuracy",
-            strictAccuracy,
-            `${summary.passed} passed / ${summary.total} planned`,
+            progress.accuracy,
+            `${summary.passed} passed / ${progress.planned} planned`,
           ),
           metric(
             "Assessed",
-            `${summary.assessed} / ${summary.total}`,
-            `${summary.failed} failed · ${summary.total - summary.assessed} not assessed`,
+            `${summary.assessed} / ${progress.planned}`,
+            `${summary.failed} failed · ${progress.awaitingAssessment} awaiting assessment · ${progress.notRun} not run`,
           ),
           metric(
-            "Invented facts found",
+            "Answers with invented facts",
             summary.inventedFacts === null
               ? "Not established"
               : String(summary.inventedFacts),
@@ -137,8 +137,10 @@ export function evaluationPage(): HTMLElement {
           `Run ${run.id} · Collection ${run.corpusVersion} · ${run.mode}`,
         );
         const state = badge(
-          run.status,
-          run.status === "completed" && summary.assessed === summary.total
+          run.status === "completed" && !progress.assessmentComplete
+            ? "Answers saved · assessment incomplete"
+            : run.status,
+          run.status === "completed" && progress.assessmentComplete
             ? ""
             : "warning",
         );
@@ -146,6 +148,11 @@ export function evaluationPage(): HTMLElement {
           stats,
           version,
           state,
+          el(
+            "p",
+            "muted small",
+            `${progress.completed} requests recorded · ${progress.errors} request errors · ${progress.notRun} planned questions have no saved answer in this run.`,
+          ),
           el(
             "p",
             "muted small",

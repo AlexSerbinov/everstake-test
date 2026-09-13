@@ -87,14 +87,22 @@ export function questionResultCard(
   const inventions = Array.isArray(row.inventedFacts)
     ? row.inventedFacts.length
     : typeof row.inventedFacts === "boolean"
-      ? Number(row.inventedFacts)
+      ? null
       : row.inventedFacts;
-  if (inventions === null || inventions === undefined)
+  if (row.inventedFacts === null || row.inventedFacts === undefined)
     body.append(
       el(
         "p",
         "muted small",
         "Invented facts have not been independently assessed for this answer.",
+      ),
+    );
+  if (row.inventedFacts === true)
+    body.append(
+      el(
+        "p",
+        "error-text",
+        "Invented facts were identified in this answer; an exact fact count was not recorded.",
       ),
     );
   if (inventions)

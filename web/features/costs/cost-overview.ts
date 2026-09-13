@@ -10,6 +10,7 @@ import {
   money,
 } from "../../shared/dom.js";
 import { date } from "../../shared/source-date.js";
+import { activityLabel, activityTitle } from "./activity-label.js";
 import { costReceipt } from "./cost-receipt.js";
 interface Attempt {
   id: string;
@@ -111,7 +112,7 @@ export function costOverview(): HTMLElement {
         const option = el(
           "option",
           "",
-          value === "all" ? "All activity" : value.replaceAll("_", " "),
+          value === "all" ? "All activity" : activityLabel(value),
         );
         option.value = value;
         filter.append(option);
@@ -134,7 +135,7 @@ export function costOverview(): HTMLElement {
           const row = el("article", "cost-run");
           const heading = el("div", "section-heading");
           heading.append(
-            el("h3", "", run.question || run.kind.replaceAll("_", " ")),
+            el("h3", "", activityTitle(run.kind, run.question, run.id)),
             el("strong", "cost-amount", money(run.receipt.knownCostUsd)),
           );
           row.append(
@@ -142,13 +143,13 @@ export function costOverview(): HTMLElement {
             el(
               "p",
               "small muted",
-              `${date(run.startedAt)} · ${run.kind.replaceAll("_", " ")}`,
+              `${date(run.startedAt)} · ${activityLabel(run.kind)}`,
             ),
             badge(
               run.status,
               ["failed", "error"].includes(run.status) ? "danger" : "",
             ),
-            costReceipt(run.receipt),
+            costReceipt(run.receipt, "Activity receipt"),
           );
           rows.append(row);
         }

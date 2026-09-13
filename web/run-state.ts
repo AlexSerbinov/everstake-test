@@ -8,6 +8,7 @@ export class RunState {
     this.controller = new AbortController();
     return {
       signal: this.controller.signal,
+      scope: `answer-${generation}`,
       current: () => generation === this.generation,
     };
   }
