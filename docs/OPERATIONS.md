@@ -21,7 +21,7 @@ npm run cli -- refresh-due
 npm run cli -- refresh-resume JOB_ID
 ```
 
-Use the job ID from the refresh output. Run one refresh worker against a serving database. A failed staging job leaves the active version intact; resume reuses compatible staged work. A fresh crawl can produce different facts and counts from the committed evaluation snapshot. The demo has no unattended scheduler enabled.
+Use the job ID from the refresh output. Run one refresh worker against a serving database. A failed staging job leaves the active version intact; resume reuses compatible staged work. A fresh crawl can produce different facts and counts from the committed evaluation snapshot. The current code also has an operator-enabled scheduler, disabled by default; see [Updates](UPDATES.md). Do not infer the hosted configuration from local code.
 
 To admit a new domain, edit [sources.yaml](../config/sources.yaml), including publisher, authority, reason and limits, then refresh that source ID. An unsupported format needs an extraction adapter with a fixture. Source content cannot grant itself more authority.
 
