@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-09-13T15:02:11.063Z",
+  "generatedAt": "2026-09-13T15:13:25.175Z",
   "scope": "This TypeScript rebuild only; prior prototype spending is not imported",
   "corpusVersion": "corpus-eae2b2b23116",
   "overview": {
-    "calls": 529,
-    "inputTokens": 4134629,
-    "outputTokens": 191875,
-    "knownCostUsd": 2.0938216850000004,
+    "calls": 534,
+    "inputTokens": 4169421,
+    "outputTokens": 196708,
+    "knownCostUsd": 2.1333020250000003,
     "unknownCalls": 12,
     "pendingCalls": 0,
     "byModel": [
       {
         "provider": "gemini",
         "model": "gemini-3.8-flash",
-        "calls": 214,
-        "knownCostUsd": 1.9224053250000002,
+        "calls": 217,
+        "knownCostUsd": 1.958291325,
         "unknownCalls": 1
       },
       {
@@ -27,23 +27,23 @@
       {
         "provider": "openai",
         "model": "text-embedding-3-small",
-        "calls": 258,
-        "knownCostUsd": 0.042742560000000096,
+        "calls": 259,
+        "knownCostUsd": 0.042742800000000095,
         "unknownCalls": 5
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
-        "calls": 51,
-        "knownCostUsd": 0.12867379999999998,
+        "calls": 52,
+        "knownCostUsd": 0.13226789999999997,
         "unknownCalls": 0
       }
     ],
     "byStatus": [
       {
         "status": "completed",
-        "calls": 523,
-        "knownCostUsd": 2.0938216850000004,
+        "calls": 528,
+        "knownCostUsd": 2.1333020250000003,
         "unknownCalls": 6
       },
       {
@@ -11562,6 +11562,116 @@
             "costUsd": 0.00522375,
             "status": "completed",
             "providerRequestId": "CbqmarjDMvWf3boPzIjgwQ4",
+            "error": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+      "kind": "query",
+      "started_at": "2026-09-13T15:11:35.519Z",
+      "status": "completed",
+      "receipt": {
+        "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+        "calls": 5,
+        "inputTokens": 34792,
+        "outputTokens": 4833,
+        "knownCostUsd": 0.03948034,
+        "unknownCalls": 0,
+        "elapsedMs": 29065,
+        "startedAt": "2026-09-13T15:11:35.519Z",
+        "finishedAt": "2026-09-13T15:12:04.584Z",
+        "status": "completed",
+        "attempts": [
+          {
+            "id": "a19987f4-f025-4afe-a57c-213cce779775",
+            "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+            "stage": "query-embedding",
+            "provider": "openai",
+            "model": "text-embedding-3-small",
+            "attempt": 1,
+            "startedAt": "2026-09-13T15:11:46.510Z",
+            "elapsedMs": 474.2619799999957,
+            "inputTokens": 12,
+            "outputTokens": 0,
+            "cachedInputTokens": 0,
+            "thinkingTokens": null,
+            "costUsd": 2.4e-7,
+            "status": "completed",
+            "providerRequestId": "req_fb4f2cb25e5f487facac9f31f94c0956",
+            "error": null
+          },
+          {
+            "id": "f1504677-5432-46cd-bf1e-08dd861f8bec",
+            "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+            "stage": "answer",
+            "provider": "gemini",
+            "model": "gemini-3.8-flash",
+            "attempt": 1,
+            "startedAt": "2026-09-13T15:11:48.766Z",
+            "elapsedMs": 3498.220378999991,
+            "inputTokens": 7726,
+            "outputTokens": 999,
+            "cachedInputTokens": 0,
+            "thinkingTokens": 957,
+            "costUsd": 0.00954075,
+            "status": "completed",
+            "providerRequestId": "NL2mao2YOtixnsEP_tHe4Ac",
+            "error": null
+          },
+          {
+            "id": "fa480ee5-eeaf-4754-9202-2bb51e991ec0",
+            "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+            "stage": "answer",
+            "provider": "gemini",
+            "model": "gemini-3.8-flash",
+            "attempt": 1,
+            "startedAt": "2026-09-13T15:11:52.292Z",
+            "elapsedMs": 3732.8047890000016,
+            "inputTokens": 8848,
+            "outputTokens": 1069,
+            "cachedInputTokens": 0,
+            "thinkingTokens": 1025,
+            "costUsd": 0.01064475,
+            "status": "completed",
+            "providerRequestId": "OL2masX0HP3xnsEPxIHm2QY",
+            "error": null
+          },
+          {
+            "id": "27db70cd-b15d-4e9c-9daa-afd700594e2e",
+            "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+            "stage": "answer",
+            "provider": "gemini",
+            "model": "gemini-3.8-flash",
+            "attempt": 1,
+            "startedAt": "2026-09-13T15:11:56.041Z",
+            "elapsedMs": 7125.016207000008,
+            "inputTokens": 8434,
+            "outputTokens": 2500,
+            "cachedInputTokens": 0,
+            "thinkingTokens": 2173,
+            "costUsd": 0.0157005,
+            "status": "completed",
+            "providerRequestId": "PL2maqyHDdqR3boPuu3M8Ao",
+            "error": null
+          },
+          {
+            "id": "6621f846-2940-43e9-b009-b68930828cc7",
+            "runId": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+            "stage": "claim-verification",
+            "provider": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "attempt": 1,
+            "startedAt": "2026-09-13T15:12:03.173Z",
+            "elapsedMs": 1400.5505989999947,
+            "inputTokens": 9772,
+            "outputTokens": 265,
+            "cachedInputTokens": 0,
+            "thinkingTokens": 0,
+            "costUsd": 0.0035941,
+            "status": "completed",
+            "providerRequestId": "Q72maomwFPGDkdUPm8fPqQY",
             "error": null
           }
         ]
@@ -23418,6 +23528,120 @@
         "source": "https://ai.google.dev/gemini-api/docs/pricing",
         "note": "Standard paid tier through 2026-12-31; output includes thinking tokens.",
         "model": "gemini-3.8-flash",
+        "pricesAsOf": "2026-09-13"
+      },
+      "reservationUsd": 0.05
+    },
+    {
+      "id": "a19987f4-f025-4afe-a57c-213cce779775",
+      "run_id": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+      "stage": "query-embedding",
+      "provider": "openai",
+      "model": "text-embedding-3-small",
+      "started_at": "2026-09-13T15:11:46.510Z",
+      "elapsed_ms": 474.2619799999957,
+      "input_tokens": 12,
+      "output_tokens": 0,
+      "cost_usd": 2.4e-7,
+      "status": "completed",
+      "prices": {
+        "inputPerMillionUsd": 0.02,
+        "outputPerMillionUsd": 0,
+        "source": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+        "note": "Standard embeddings endpoint.",
+        "model": "text-embedding-3-small",
+        "pricesAsOf": "2026-09-13"
+      },
+      "reservationUsd": 0.05
+    },
+    {
+      "id": "f1504677-5432-46cd-bf1e-08dd861f8bec",
+      "run_id": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+      "stage": "answer",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "started_at": "2026-09-13T15:11:48.766Z",
+      "elapsed_ms": 3498.220378999991,
+      "input_tokens": 7726,
+      "output_tokens": 999,
+      "cost_usd": 0.00954075,
+      "status": "completed",
+      "prices": {
+        "inputPerMillionUsd": 0.75,
+        "cachedInputPerMillionUsd": 0.075,
+        "outputPerMillionUsd": 3.75,
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "note": "Standard paid tier through 2026-12-31; output includes thinking tokens.",
+        "model": "gemini-3.8-flash",
+        "pricesAsOf": "2026-09-13"
+      },
+      "reservationUsd": 0.05
+    },
+    {
+      "id": "fa480ee5-eeaf-4754-9202-2bb51e991ec0",
+      "run_id": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+      "stage": "answer",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "started_at": "2026-09-13T15:11:52.292Z",
+      "elapsed_ms": 3732.8047890000016,
+      "input_tokens": 8848,
+      "output_tokens": 1069,
+      "cost_usd": 0.01064475,
+      "status": "completed",
+      "prices": {
+        "inputPerMillionUsd": 0.75,
+        "cachedInputPerMillionUsd": 0.075,
+        "outputPerMillionUsd": 3.75,
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "note": "Standard paid tier through 2026-12-31; output includes thinking tokens.",
+        "model": "gemini-3.8-flash",
+        "pricesAsOf": "2026-09-13"
+      },
+      "reservationUsd": 0.05
+    },
+    {
+      "id": "27db70cd-b15d-4e9c-9daa-afd700594e2e",
+      "run_id": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+      "stage": "answer",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "started_at": "2026-09-13T15:11:56.041Z",
+      "elapsed_ms": 7125.016207000008,
+      "input_tokens": 8434,
+      "output_tokens": 2500,
+      "cost_usd": 0.0157005,
+      "status": "completed",
+      "prices": {
+        "inputPerMillionUsd": 0.75,
+        "cachedInputPerMillionUsd": 0.075,
+        "outputPerMillionUsd": 3.75,
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "note": "Standard paid tier through 2026-12-31; output includes thinking tokens.",
+        "model": "gemini-3.8-flash",
+        "pricesAsOf": "2026-09-13"
+      },
+      "reservationUsd": 0.05
+    },
+    {
+      "id": "6621f846-2940-43e9-b009-b68930828cc7",
+      "run_id": "c0ba2459-7724-43e9-a5fe-20c2b16cc314",
+      "stage": "claim-verification",
+      "provider": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "started_at": "2026-09-13T15:12:03.173Z",
+      "elapsed_ms": 1400.5505989999947,
+      "input_tokens": 9772,
+      "output_tokens": 265,
+      "cost_usd": 0.0035941,
+      "status": "completed",
+      "prices": {
+        "inputPerMillionUsd": 0.3,
+        "cachedInputPerMillionUsd": 0.03,
+        "outputPerMillionUsd": 2.5,
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "note": "Standard paid tier.",
+        "model": "gemini-3.5-flash-lite",
         "pricesAsOf": "2026-09-13"
       },
       "reservationUsd": 0.05

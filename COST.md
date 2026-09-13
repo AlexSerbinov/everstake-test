@@ -2,7 +2,7 @@
 
 Scope: this TypeScript rebuild, from provider probes through collection, indexing, YouTube, diagnostic questions and final evaluations. Prior Claude/Codex totals are historical and are not added to these runs. Subscription agent effort, existing server rental and bandwidth are not provider-token charges.
 
-**Known usage-priced total: $2.093822; 12 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).
+**Known usage-priced total: $2.133302; 12 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).
 
 | Operation | Calls | Input tokens | Output tokens | Known cost | Unknown cost calls |
 |---|---:|---:|---:|---:|---:|
@@ -10,9 +10,9 @@ Scope: this TypeScript rebuild, from provider probes through collection, indexin
 | youtube-transcription | 6 | 0 | 0 | $0.000000 | 6 |
 | youtube-speaker-review | 6 | 51992 | 7488 | $0.067074 | 0 |
 | index | 127 | 2134172 | 0 | $0.042683 | 5 |
-| query-embedding | 131 | 2956 | 0 | $0.000059 | 0 |
-| answer | 174 | 1477034 | 132985 | $1.607292 | 0 |
-| claim-verification | 51 | 343546 | 10244 | $0.128674 | 0 |
+| query-embedding | 132 | 2968 | 0 | $0.000059 | 0 |
+| answer | 177 | 1502042 | 137553 | $1.643178 | 0 |
+| claim-verification | 52 | 353318 | 10509 | $0.132268 | 0 |
 | baseline | 32 | 124901 | 40952 | $0.247246 | 1 |
 
 Each attempt is written before the external request. Successful, retried, timed-out and invalid-content calls retain their usage. Native provider usage supplies tokens; a dated price table in `config/models.yaml` converts usage to cost. Cached-input and thinking tokens are handled without counting them twice. Parent receipts aggregate descendant calls once. HTTP failures without usage remain unknown rather than being silently priced at zero.

@@ -19,4 +19,4 @@ if ! ssh "$server" "test -f '$remote_dir/data/knowledge.sqlite'"; then
 fi
 code_version=$(git rev-parse HEAD)
 ssh "$server" "cd '$remote_dir' && CODE_VERSION='$code_version' docker compose up -d --build"
-ssh "$server" "curl --fail --retry 10 --retry-connrefused --retry-delay 2 http://127.0.0.1:4318/health"
+ssh "$server" "curl --fail --retry 10 --retry-all-errors --retry-delay 2 http://127.0.0.1:4318/health"
