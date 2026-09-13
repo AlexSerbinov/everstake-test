@@ -53,6 +53,32 @@ export function chunkDocument(
     Math.floor(maxChars / 3),
   );
   if (maxChars < 200) throw new Error("maxChars must be at least 200");
+  // Each video passage retains its own timestamp and speaker, including long turns.
+  if (document.kind === "youtube") {
+    const texts = document.text
+      .split(/\n/)
+      .filter(Boolean)
+      .flatMap((line) => {
+        const match = line.match(
+          /^(\[[^\]]+\] .+?\(company participant; testimony at recording\): )(.*)$/,
+        );
+        if (!match) return splitLongBlock(line, maxChars);
+        const [, header, body] = match;
+        return splitLongBlock(
+          body!,
+          Math.max(100, maxChars - header!.length),
+        ).map((part) => header + part);
+      });
+    return texts.map((text, ordinal) => ({
+      id: createHash("sha256")
+        .update(`${document.id}:${ordinal}:${text}`)
+        .digest("hex")
+        .slice(0, 32),
+      documentId: document.id,
+      text,
+      ordinal,
+    }));
+  }
   const blocks = document.text
     .split(/\n{2,}|(?=^#{1,6}\s)/m)
     .map((value) => value.trim())

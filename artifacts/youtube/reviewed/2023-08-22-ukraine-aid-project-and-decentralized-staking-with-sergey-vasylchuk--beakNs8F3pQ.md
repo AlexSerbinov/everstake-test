@@ -1,0 +1,277 @@
+# Ukraine Aid Project and Decentralized Staking with Sergey Vasylchuk
+
+Source: https://www.youtube.com/watch?v=beakNs8F3pQ
+
+Uploaded: 2023-08-22
+
+Video ID: beakNs8F3pQ
+
+Speaker review: reviewed
+
+Speaker names and roles are contextual model attributions at the time of recording, not independently verified current employment. Evidence eligibility is a filtering decision, not a guarantee of factual truth. All dialogue is preserved, including questions and rejected claims. This export does not activate a corpus source.
+
+## Speakers
+
+| Original label | Name | Role at recording | Participant type | Attribution basis |
+| --- | --- | --- | --- | --- |
+| 1 | Alex Kehaya | Host of The Index | interviewer | Explicitly self-identifies in turn 0 as the host, phonetically transcribed as Alex Cahaya. Spelling normalized from supplied video metadata after transcript attribution. |
+| 2 | Sergey Vasylchuk | CEO and founder of EverStake | employee | Introduced in turn 0 by the host as CEO and founder of Everstake, confirmed by discussion of his role and company operations. Spelling normalized from supplied video metadata after transcript attribution. |
+
+## Limitations
+
+- Text-only review cannot guarantee diarization identity.
+
+## Transcript
+
+### [0:00](https://www.youtube.com/watch?v=beakNs8F3pQ&t=0) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 0 · original label: 1 · evidence eligible: no
+
+Here. Hey everyone, and welcome to "The Index," brought to you by The Graph, where we talk to the entrepreneurs building the next wave of the internet. I'm your host, Alex Cahaya, and today we are speaking with, uh, Sergey Vasychuk, CEO and founder of EverStake. EverStake is the biggest decentralized staking provider in the blockchain industry, trusted by 625,000 users. I'm really excited to have you on the show today and to talk about EverStake, but also, um, your efforts in Ukraine. As you know, you guys are from Ukraine, so I really want to shine a light on the work that you've been doing to help support the Ukrainian people and your homeland. Thanks for being on the show.
+
+### [0:45](https://www.youtube.com/watch?v=beakNs8F3pQ&t=45) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 1 · original label: 2 · evidence eligible: yes
+
+Yeah, thank you for inviting me. I'm glad to talk to you as well. And yeah, EverStake is originally a Ukrainian company. The founders are Ukrainian, the, like, first employers are Ukrainian, and currently the majority of the people, like, have at least a Ukrainian passport. But at the same time, like, since, like, the invasion and the war happening over Ukraine, like, I a bit, like, reevaluate people who I judge as Ukrainian. For me, it's less about having the passport, it's, like, more about, like, how you care about this country. I see, like, many, like, many Americans who care much more than, like, unfortunately, a few, like, several— a few of the Ukrainian. I even know, like, a few Russian people who cares, like, much more than, like, some of the Ukrainian. So for me, like, Ukrainian is, like, a bit, like, more wider audience, and, like, wider people. It's like, how did you use, and what you did for, for the help of Ukraine. I have many Americans which I call Ukrainian. Like, I don't know, like, do they like or not, but, like, I genuinely, like, more Ukrainian. Comparing what they did, like, for my homeland.
+
+### [1:54](https://www.youtube.com/watch?v=beakNs8F3pQ&t=114) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 2 · original label: 1 · evidence eligible: no
+
+I love that. Yeah. Can you, um, can you just give everybody a quick download on what EverStake does? I know I said some of it in the introduction, and then I want to kind of translate that into how you guys have leveraged Web3 technologies to aid Ukraine. But what is, what is, what does EverStake do? What's the genesis of the company? And then let's talk about some of the specific things you guys have done to help in Ukraine.
+
+### [2:29](https://www.youtube.com/watch?v=beakNs8F3pQ&t=149) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 3 · original label: 2 · evidence eligible: yes
+
+Well, EverStake is a poor infrastructure company. So we run validators in probably all the proof-of-stake chains. So for us, like, we don't validate in some, like, scum projects, and we don't validate in a few projects that we don't like. So it's probably against of our, like, philosophy. But the main philosophy for us is, like, being useful and being fast. So a few years ago, when I was, like, thinking about how this industry needs to go on, what will be, I had the assumption that in order to gain the mass adoption and to, to gain the DeFi, like, the NFT, what we have, all this, like, heavy traffic that currently exists in, in, in Web3, we need, like, faster blockchain. And as an engineer, as a software developer, like, I was just, since, like, my institute, I was remember that the, the speed of the all the centralized distributed system is equal to speed the slowest participant. And I, I was, like, thinking, like, how we can increase the speed of, of blockchain itself. Because if we're not be able to increase the speed, we'll not be able to onboard the banking, the finance, and other industries. And then I remember this time that the EOS came, and it was quite fast. Compared with the Bitcoin, compared with the, like, Ripple, Stellar, like, Ethereum, it was able to handle two transactions per second. And it was near the real-time. And those, like, what the, like, trigger for me that, well, if I will be fast enough and I will, like, the, the increase, like, the, the threshold of the limit of the standard, how, like, professional block producer, it's called block producer, need to work, I can increase the speed of, of the blockchain and the industry. And since that, like, we started the race, we have just one, like, KPI for, for our, like, engineers. We need, we need to
+
+### [4:29](https://www.youtube.com/watch?v=beakNs8F3pQ&t=269) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 4 · original label: 2 · evidence eligible: yes
+
+be, like, faster. We need to be the fastest block producer in every chain that we are participating. The only thing is. And we try to do this, and, like, it works. Many of the competitors and colleagues hated us because we constantly tried to increase this limit. But it's competition. Like, the, the more, the more block, like, you will, like, sign, the more rewards you get. So we have the economical incentive to be fast and efficient. And of course, competitors tried to do this because it's clear, like, economic incentive, like, to, to not be behind the leader. And I believe we were one of the guys who was, like, bringing a lot of, like, value and increase speed of the blockchain in general. Now I'm pretty sure that the validator are the core part of the infrastructure and, and the blockchain itself. So that's why, like, we validate in blockchain producer, like, whatever you call it, in probably 60 with something blockchain, some of them in the mainnet, some of them in the R&D, some on the testnet, some already gone. So probably, like, the more the 100 blockchains, like, go through our hands, and we're pretty familiar what blockchain is and what industry is. And generally, I'm.
+
+### [5:44](https://www.youtube.com/watch?v=beakNs8F3pQ&t=344) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 5 · original label: 1 · evidence eligible: no
+
+It's really interesting. It's really interesting because.
+
+### [5:46](https://www.youtube.com/watch?v=beakNs8F3pQ&t=346) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 6 · original label: 2 · evidence eligible: yes
+
+I'm happy to be here.
+
+### [5:48](https://www.youtube.com/watch?v=beakNs8F3pQ&t=348) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 7 · original label: 1 · evidence eligible: no
+
+Yeah, you guys, you guys are on the forefront of, of the entire space,right? I mean, you're known as one of the top, if not the top, validators and, and block producers of, of the entire industry. And so, um, I know for a fact from talking because I've worked with, like, a lot of really early stage teams, and I, you are always one of the top three that they go to, to try to get their, even their testnet going. So, um, you know, like, you, you're, you're like the first validator that they call up and say, "Hey, we're launching this new thing. It's got all these benefits. You know, will you run, will you participate?" And you guys seem to always participate, which, um, which is really intriguing to me because it means that you are, like, the top of the food chain for all the information of what's coming and, like, the new technologies and how, um, and, uh, and, and, and the, and the new advancements in the space. I think that's a pretty incredible position to be in. I mean, case in point, you guys were one of the first validators on Solana,right? I mean, that's because, because you're always there early at the, at the best place.
+
+### [6:54](https://www.youtube.com/watch?v=beakNs8F3pQ&t=414) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 8 · original label: 2 · evidence eligible: yes
+
+Well, from Solana, like, it has a different, like, sentiments. I met Anatoly Kavienka. He has Ukrainian roots. And, like, it was some kind of, like, friendship on this.
+
+### [7:05](https://www.youtube.com/watch?v=beakNs8F3pQ&t=425) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 9 · original label: 1 · evidence eligible: no
+
+Yeah.
+
+### [7:06](https://www.youtube.com/watch?v=beakNs8F3pQ&t=426) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 10 · original label: 2 · evidence eligible: yes
+
+Like, sentiment. But in general, I was expecting something, like, to happen like Solana. Before that, I was waiting a long time for Ethereum to, to, to become faster. I was waiting for the, like, Hedera Cash Graph, like, to become this, like, enterprise-level blockchain. I was waiting for the Telegram blockchain to happen. But, like, probably those projects were not in the proper place or the condition, the proper time. And Solana was moving, like, fast. Yeah, I was liking the, the speed how Solana team was facing the, the challenge and, like, they, they don't, like, waste their time just for the talk. About the thinking. They solved the problem. They solved the problem. They see that somebody needs the help, like, they, they provide the help. So they were, like, very, very efficient. And the concept of the real-time scalable blockchain, like, likes me. I, I was pretty sure that we need this type of a solution. So that's why, like, I was in the early beginning. And it's, it's quite important to be in the early beginning because you have some competitive advantages. Because if you have the mainnet, you're probably delayed already. Because you, you need to train your people, you need to, to understand the, the, the spirit of the project, the technical side of the project. And I believe it's not possible, like, to just come, then the mainnet is alive. So what, what you did, like, there is no, like, the institute of blockchain. There is no, like, the space, like, or, like, some, I don't know, place that people can educate the DevOps engineers to validate the Solana. Yeah, you, you, you need to, to do it on your own. So that's why, like, testnet is something that you need to learn, you need to train. And it's another thing, like, to, to try to play things without huge
+
+### [8:51](https://www.youtube.com/watch?v=beakNs8F3pQ&t=531) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 11 · original label: 2 · evidence eligible: yes
+
+responsibility. Because what it is, it's responsibility. We, we have, like, a, a huge number of the token, a huge number of the people who trust us. And, like, forecasts and fails, like, are inevitable, just part of the game. So if you will not be able, like, to play with this, like, forecasts and games in the testnet, you probably could fail on the mainnet, and it's much more worse. So for us, it's not about, like, do we like or do we have the strategy, like, to, to participate in the testnet. Yeah, you, you are obligated. Like, there is no other chance if you want to be the professional validator and to be responsible validator. So it's, it's just, like, be useful, be responsive, be fast, be responsible. So the strategy is quite simple. Like, nothing, like, nothing complex here.
+
+### [9:33](https://www.youtube.com/watch?v=beakNs8F3pQ&t=573) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 12 · original label: 1 · evidence eligible: no
+
+Yeah, I think it's, I think it's, um, a great insight for people listening who are looking at how to get into this space. Whether they're a professional validator or, or they're a community manager or they're, like, in business development, like, whatever their role is that they can play in the ecosystem, what I have found is that the, the best way to get it, to break in, is to just try to create value. And to do so as early as possible, you know, you really have to earn your way,right? It's not, there are no free rides here,right? Like, I think people kind of have this idea that, like, oh, you can just turn on a validator or you can just, like, buy an NFT and you'll just make a lot of money or, or whatever it is. But that's just not the case. I mean, it's just like any other business, any other market opportunity, you have to get in and work and earn your way to, to develop the expertise. But once you do, like, again, with EverStake, that institutional knowledge that you guys have across all those chains that you support is super valuable now,right? And, um, hard to build, hard to acquire all that knowledge over time. So very, very cool competitive advantage you have. I'm, I'm curious to learn more. Can you, can you tell me a little bit of the story of, like, EverStake in Ukraine and the, and the, the, you know, the war with Russia and your, you know, I know that there was a lot that happened when the invasion first happened to get your people. About. And I know that, um, you've done a lot to help try to raise awareness and funding for Ukraine. Can you just tell the story from your experience of all, all that?
+
+### [11:20](https://www.youtube.com/watch?v=beakNs8F3pQ&t=680) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 13 · original label: 2 · evidence eligible: yes
+
+Yeah, it's, it's hard story, like, to, to, like, to replay and remember, but, like, I will try. So as I said, like, we're a Ukrainian team, and, like, our office was based in the Kyiv, in the capital, in the hub. And one of the reasons that we're forced to be in the, in the single place because we manage the Kyiv here. So it's hard for us, like, to trust, to trust that someone around the world we don't have the access to. So we even have the security team which, like, taking care about the physical security of the people who, who have the access to the Kyiv. It's not possible, like, to, to use the some, like, cold warriors or some, like, HSM on the early stage. You, you, you come to Solana, you come to, like, other blockchains which, like, have not even clue how they're reported in the world. And you need to, to, to have the, the key generated from the, like, common line instead of, like, having on, on the, on the HSM. So it's one of the reasons that we're, like, very focused and concentrated in, in, in the Ukraine. But at the same time, like, I was understanding that this is the risk, the risk, the risk of the physical access, like, like, to, to the people. And I was worried about their security, about security of the funds, about my responsibility, like, from the blockchain team. Because, like, we call them partners. Each of the blockchain developers and, and blockchain, like, core team, I call them partners. And even before the war, even before the risk, we have the strategy that we, we can allow ourself to be the single, like, point of failure. I was saying to the guys, "Hey, guys, imagine that tomorrow the Russian missile or something happen, explosion in our office. We can't allow ourselves to disappear." So let's plan in advance some, like, like, actions in ord
+
+### [13:05](https://www.youtube.com/watch?v=beakNs8F3pQ&t=785) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 14 · original label: 2 · evidence eligible: yes
+
+er to diversify our servers, diversify the people, and so on. So we were building quite in advance, like, backup system for the human and keys and hardware resources. So it was done, like, far away from, like, far advance before the invasion. But then, like, then it was, like, started happening. We have quite, like, smart guys, the guy, the chief of security in, in our company, and he's military. And, like, his military knowledge and his ability to analyze all the stuff, he said, like, "Well, like, it's, it's, it's, it's a risk. It's a poor risk, like, of, like, it's happening." And, like, he, he began to raise the, the consortium's warrior, like, far advance. And, like, also, I remember from, like, my flight school, the, the, the risk matrix and there is, like, quite unique things that they say there is a highly unlikely event with highly severe consequences. It means that the long pilot not to ignore the risk which could, like, could trigger the crash. Yeah, like, you, you should act this. And then, like, I was thinking, well, probably is it the case? If no one even believes that it's happening, if it's happening, it will destroy, like, our business, our reputation, our people, like, everything we are building. So I decided to act despite what will happen or not. So I was acting more as a manager to, to, like, manage the risk, like, nothing special. So that's why I was talking to the people, "Hey, guys, like, let's move to other countries, like, let's backup each other's and so on." Be honest, like, no one believe. They, like, 90% of the people in my company think that I'm crazy. But I have some few tricks that, like, "Hey, guys, like, do you want to have a vacation on the Cyprus?" Like, I pay. Like, and the most, like, the most difficult was to the top manager. So
+
+### [14:57](https://www.youtube.com/watch?v=beakNs8F3pQ&t=897) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 15 · original label: 2 · evidence eligible: yes
+
+they said, "Hey, don't foolish us. Like, we know that the Kyiv, we are smart guys. Like, give us, like, to work. Like, don't, like, don't, don't bother us." But I also found some trick, like, to, to force them to have the corporate strategy session, like, in the Austria. So technically, I just back up the, the emergency state, the people, and the servers, which are part of the outboard, part of the legal side. So I was, like, I was prepared. And then it all this happening, I cannot believe on myself. So I know that I prepared, but I was prepared not to be it happened. And as it really happened, like, it, it was still disaster. So from the business point of view, we, we stay, like, operational. But from the mental point of view, we're just killed, we're just destroyed. We, we, we can do nothing. And only that, that our system was quite robust to self and autonomous. This system was, like, working on the idle, like, mode without the human intervention because all the human was just, like, mentally destroyed. But then I never, like, forget this case, like, Anatoly.
+
+### [16:07](https://www.youtube.com/watch?v=beakNs8F3pQ&t=967) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 16 · original label: 1 · evidence eligible: no
+
+When, when you say, when you, when you say mentally destroyed, you mean after the invasion, everybody was just devastated and they were just, like, unable to work, depressed, just, like.
+
+### [16:16](https://www.youtube.com/watch?v=beakNs8F3pQ&t=976) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 17 · original label: 2 · evidence eligible: yes
+
+You can't do nothing. Yeah, you understand the, the, the, the part of the people, like, inside the office, like, my parents there, my relatives here. And it's not about that all EverStake, like, was outgrown. So big part of the people were staying in the Ukraine. Some of them, like, did not refuse, like, they refused, like, to, like, to, to do to relocate. Especially guys who have the keys, the wife, and so on. So it was hard. And, like, five people from EverStake are still fighting on the front line. So, like, they're currently, like, fighting. And, like, trying to figure out what is going on and how you can help, like, it's, it's totally a kill you. And it was just the, the, the few days, like, seeing the, the news, like, having the, the, the full, like, years of the teardrops, like, and, and it, it was, like, I, I just, I was thinking, like, an animal, huh? Like, the human without the brains. It was, like, full of the, like, depression, emotion, and so on. And then I, I remember then, like, Anatoly called me and he said, like, "What are you doing?" And I was thinking, like, "Shit, like, I'm doing nothing." It's stupid. Like, it's stupid, like, to, to see it, like, and, and doing nothing. Like, but the next question, like, what I can do. And I was start to call in, like, guys in the, who was in the front line, who was trying to figure out and think, like, how can I help you? They say to me, like, "We, we, we need money. We need money because we need to supply the bulletproof helmets. We need to, to buy this and those. Like, we don't have, like, a lot of things." Like, like. Country wasn't prepared, unfortunately. No one believed. Even intelligence and the government was not, like, believe. The part of the American, like, and Western people didn't believe. So it was
+
+### [17:58](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1078) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 18 · original label: 2 · evidence eligible: yes
+
+really shock. And, okay, I, I just, I just think, well, in this period, in the stress, you couldn't expect from the human to be efficient. It's something that the human was hard to experience never before. You can act efficiently in something that you, that you have experienced, like, the, the, the good experience. So I judged that, like, crypto and managing the crypto is something that I'm good in. And I can do this even without, like, using, like, my brains, which was totally, like, destroyed for this. So, okay, I have a crypto. I, I, I know that people need just funding. And, like, we need fundingright now because during the invasion, the central bank, like, just denied, like, prohibited all the transfers of the USD, like, foreign currency. So the, the, the biggest problem that we cannot buy the things that we need to supply for our, like, defense out, out broad because we, we don't have the, the payment system. And he's like, "Okay, first, I, I know, like, this is, this is crypto. We were very efficient. Like, we were able to buy some supply, like, in the seconds because if we do it, like, with, with a bank, it, it could take, like, days, weeks. We don't, we, we, we don't have these weeks." The next steps was many of the partners, I, I said, like, the blockchains was calling us, like, "Hey, guys, we know you're from Ukraine, like, how we can help you." I said, like, "We need, like, we need money. If you can help you with the, with the money, just send us money. Like, any type of tokens, money, we'll be transferring this to, to the appropriate people and they will, like, it will be a help. It's the fastest way to help." The next thing that we struggled with was, like, scammers because many of the people start to open some fake fundraising initiatives and trying to
+
+### [19:47](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1187) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 19 · original label: 2 · evidence eligible: yes
+
+steal the money. So they know that people have not ability, like, to, to, like, to verify. And, like, unfortunately, like, many of the scammers gave some, like, money. I hope they will die together with this money because, well, but, like, it was. And I, I, many of the partners was confused, like, "Hey, guys, like, you, we know, like, 10 volleys which are, like, accepting the crypto for, for army, like, which of them are, like, legitimate." And I was like, "Oh, fuck. Like, it's, it's, it's real disaster." And, like, I was afraid that moreover the people sending money, I cannot imagine how they upset that this money was stolen. And we were thinking how, how, how to figure out this. I called the, like, guys and trades from the Ministry of Digital Transformation. It's, like, one of the best ministry. They're, like, quite innovative. And, like, in general, this is the guy who was a former developers, project managers, and, like, tech entrepreneurs. So we, we speak the similar language, but they have, like, this, like, technology, technology, like, representative in the government. And we, I found, like, everyone who was, like, legitimate to, to making this, like, crypto donation. We put it under the umbrella of the Ministry of Digital Transformation. We put the website on the dot gov.ua domain. We have the control after this domain because we, the next thing, we will have a huge DDoS attack. Like, we never expect this, like, DDoS attack that's early. And that's why, like, government domain was very helpful for us. So we made the umbrella. We united, like, all the force. The next things was we're struggling is, like, how we can trust you that this money will be spent, like, in, in the proper way. And here is the, the, the beauty of the DAO, I appears, like, yeah. We created
+
+### [21:28](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1288) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 20 · original label: 2 · evidence eligible: yes
+
+the DAO with the signatures of the EverStake of one local exchange, I mean, Ukrainian exchange, Kuna, one of the representative of the Ministry of Digital Transformation, guys from the also the central bank of the government. So we, we, we created the setup, the trust for people will see, like, who all the people who was, like, behind the signers of this money, who will be responsible reporting for this money. And, like, two guys from the government was one of them. So it was, like, quite trustworthy. But you should understand, like, we solved this problem for the, for the hours and days. So technically, we created the fundraising platform, which was trustworthy, which was, like, transparent, and which was enough flexible to assemble, like, any tokens in the main, like, blockchains. And but was nothing was happening, like, significantly. Yeah, there wasn't a huge donation. And then, like, we, we, we started, like, to, okay, like, we need to put the example. So we donate, like, a few millions. Like, I know that we'll not name this, like, names, but, like, few of the partners blockchain also, like, donated the millions. I know that Gavin Wood also had the million, like, few millions. Like, Vitalik Buterin also had the millions. And then, like, it, it become to grow. It become to grow, like, and, and it, it was already, like, serious. Like, people will see, like, if those big guys was, like, donating to exactly this aid for Ukraine, like, web page or, or the domain or the volleys, like, is legitimate. And after that, like, we, we just, like, got, like, enormous number of donation. And I, I see different, like, it was, like, few cents. It was few dollars. I see donation, anonymous donation for the million. I saw the donation which was reflect the year of the invasion of
+
+### [23:10](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1390) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 21 · original label: 2 · evidence eligible: yes
+
+the Russia in different countries. So I wasn't surprised. Like, I see, like, 90, like, 45, like, like, 90, like, 38, and so on. I was googling and seeing this is the date of some, like, historical things, like, around the Russia. So I wasn't say, like, this is, like, this is Polish people, this is Czech people, this is Slovak people. And, like, it, I, I was thinking, well, what we did, we just created the tool for the any token holder around the world to have the impact, like, fast impact. Well, the next things, like, we, we face, like, the, the few of the recipient was not able to accept the crypto, especially it was, like, interacting with the government. So we are thinking, like, how to, how to convert this money in, in, in, in the United States dollars, you know, to, to fund directly to the central bank and they be able to, to, like, to act on the buying behalf of the Ministry of Defense. And, like, big thanks, like, thanks for, for FTX, for all the guys who was involved in this together with the founders, with the operational staff. So they technically did impossible. They open account for the DAO or, like, or, or we can say, like, they open account for the central bank for the Ukraine. And they're, like, permit us, like, to, to liquidate some of this, like, donation and send directly to the correspondent account of the central bank, which was also in the United States. So we're, we're able even to bypass the Ukraine, but at the same time, like, to put this money under control of the central bank or, like, its authority. And then I understand that we build a system which, like, anyone could donate a dollar, a million dollars, or 10 million of the dollars. And for the few hours, it will be available of the, of the treasury of the Ministry of Defense. So, and it was
+
+### [24:59](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1499) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 22 · original label: 2 · evidence eligible: yes
+
+done, like, for the few days. So imagine the power or imagine the alternative, how we can do it with the, like, what the hell, like, legacy system. How much it takes to register this type of the entity, how it takes, like, to, to engage the central bank, how we can engage, like, the million of the people. So I believe we did something which is not possible in other circumstances and did, like, very efficiency. And then they understand the, the real power of, of, of, of, of, of crypto. It's not just about the technology. It's how we are able to mobilize the, the, the huge amount of the smart people, the people who care, who people who are ready to, to protect the, the, the freedom and the industry and make it for the few days and, like, immediately. Unfortunately, those days were, like, was the most vulnerable. The Ukraine was most vulnerable. And after, like, we supplied the 50 million for those first days was significant. We could, like, buy, like, many, many things. Many of the things I could, like, sell you what we bought, but many of the things was crucial, like, to, to, to protect the Kyiv. Many of the things that was crucial, like, to, to hold some of the airports. So really impact, like, everyone guys who hear me who has donated at least $1. Sorry.
+
+### [26:16](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1576) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 23 · original label: 1 · evidence eligible: no
+
+I'm going to start crying too now. Shit. Oh, man. That's heavy. That's, uh, incredible. Just incredible.
+
+### [26:24](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1584) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 24 · original label: 2 · evidence eligible: yes
+
+Just thank you. Just thank you. You are best.
+
+### [26:30](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1590) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 25 · original label: 1 · evidence eligible: no
+
+Thank you for sharing that. I know that was hard. And, uh, yeah, I mean, it, it makes me I think, like, the work that I do as an entrepreneur and as a, as a professional is all about the impact that I can have on the world. And I think that's what drives most of us that do what we do. And you certainly had that impact. And I think you enabled the, the other people to, to participate in that positive impact. And it's, uh, unfortunate circumstances, but also kind of a dream to be able to do that. And we're lucky. We're lucky to be in the time that we are where we can actually even have that capability,right? The, the, the time and space, the technology, the people. Taking a few days to, to put that together is like lightning fast. And it wouldn't have been possible without your efforts and without the efforts of, of a bunch of influential people in the space. And, um, it, like, I, I, my wife and I donated too and, uh, uh, through the, the, uh, through the Aid for Ukraine process that you guys launched. And, um, it was really comforting to know that it was going to go to theright place. That made a huge difference for us because we were trying to figure out how to help. And it also just hearing you say the impact it had, like, I, I hadn't heard yet. You know, I mean, I assumed it went to straight to the front lines, you know, but you don't know what that means,right? Like, hearing what that means, like, this, these, this money, like, helped save an airport,right? It helped protect key parts of Kyiv,right? That's really, really important. It made a huge difference in, like, your work made a huge difference in people's lives on the ground. And, you know, I, I hope that we can continue. You know, I hope people who are listening to this are inspired to contribute in whatever
+
+### [28:28](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1708) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 26 · original label: 1 · evidence eligible: no
+
+way that they can because it's important. This is not going back to how you started the show where you're talking about who is Ukraine, who is actually Ukrainian. This is about the whole world. This is not about just one place and one people. It's about all of us. And I think, you know, unfortunately, I think what we're trying to avoid is history repeating itself,right? We saw this happen in World War II and similar, if you look back in history, like, just similar narratives playing on around the world. And we need to, you know, defending Ukraine is defending everybody as far as I can tell. So anyway, I, I appreciate you taking the, the, the time to share the message, to share the story because I don't, I want people to hear it. I want everybody who, who listens to this podcast to, to really take in a heart what you have been through, what your team has been through, and what your country has been through and to decide to do whatever they can to help. If that's retweeting this message, this episode to other people, do that. If it's donating through Aid for Ukraine, do that. Whatever you can do. And on that note, like, how do people, because this is still available,right? Where do they go if they want to contribute to Aid for Ukraine today? Because there's still a website up where they can actually make donations.
+
+### [29:58](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1798) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 27 · original label: 2 · evidence eligible: yes
+
+Yes, sure. It's a website up and running. Unfortunately, now the, the, the stream of donation is decreasing. Like, people exhausted, like, mentally, financially exhausted, but we still require this. Now, like, more, more governments, like, help us, but at the same time, like, we are more efficient. Like, we are more efficient from, from the time of the receiving donation and the supply and the drone on the front line. Like, it's, it's, it's the days. Sometimes it's the hours. So it's, it's quite efficient because we work with the people on the ground. You can visit my website. You can visit my Twitter. There is several links. Please don't trust, like, any other links which don't have the, the dot gov or, like, government official domain. It probably could be the, the scam. See this Aid for Ukraine on the Ukrainian government domain, domain, and you will find, like, a batch of the volleys, like, probably, like, 15 blockchains accept. Like, you can donate with any tokens, like USD, USDC, like, Solana, like Bitcoin, Ethereum, like ICA, like whatever. Like, you will see the list of the coin. Please do it. And, like, sometimes, like, sometimes later after the war will over, it will be more secure. We'll show you. We'll show you, like, how, how, for example, one drone which, like, costs 3,000 K, like, $3,000 is destroyed the, like, hell machine, like, for the $3 million. So the conversion of this money, like, we're talking about the numbers, like, is super efficient. Nobody can expect the civilian people using, like, civilians, like, stuff with, like, untrained to, to, to, to, to struggle with, like, with the, like, huge military machine could be so efficient. So I believe that, like, like, any one single drone which, like, went to this initiative have the, like, a thousand
+
+### [31:35](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1895) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 28 · original label: 2 · evidence eligible: yes
+
+or the million impacts on the front line. We'll show you a bit later. Like,right now, like, currently, we cannot, but we'll show you this video and this impact a bit later.
+
+### [31:44](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1904) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 29 · original label: 1 · evidence eligible: no
+
+That is neat.
+
+### [31:45](https://www.youtube.com/watch?v=beakNs8F3pQ&t=1905) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 30 · original label: 2 · evidence eligible: yes
+
+But in general, it's in, in general, like, you, you'reright. Like, it's unfortunate that we use this, like, power technology, like, to have the war impact. But if, if, if we'll, like, try to scale out bits from the Ukraine and, and, and this war, we, we can see, like, like, other takeaways there. So the blockchain is, is in the crypto is a technology which I call it we can unite or gather our, our usefulness here. So we, we can be useful. And if we can somehow, like, join with all other useful force, the impact could be huge. It will be, like, much more than the, the, the, the to be useful from a single man here. And another stuff that, like, one of the, like, official of the government said to me, he was asking, like, how guys you was able to attract the intention and the time of the probably unemployed people. The people who worst participate in, in this initiative, they typically are not employable. We cannot, like, pay them and hire and, and, and, and try to, to achieve together the same type of, like, of the impact. So we did the system which gather for the free, for the, like, few seconds or the few days, the most advanced mind which are unemployable. So technically, we did the impossible. And it's only because those people are able in the real time to track the impact on some specific field. And it's bring me the, like, the, the another case. Like, this is, like, our strategy of the Ukraine and be useful. It could be scalable for, like, for the another, like, another cases for the, like, disaster recovery for other stuff. The government or other official, like, are not so useful. So it's some types of the special force with the, like, group, like, huge amount, a number, like, a huge number of the smart people around the world. And they still could be, like, an
+
+### [33:40](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2020) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 31 · original label: 2 · evidence eligible: yes
+
+onymous. So we need to learn. We need to learn from this case. We need to, to, to, to, to have the takeaways and probably to build some scalable solution which will be working, like, over the government and over the country. Now I believe that, like, the freedom and the voice of the freedom and the, and, and the, the willing of the people, like, is unstoppable. And for me, blockchain is just another things, like, which could, like, which could empower this. So it's just the new paradigm, the new platform to, to unite the people. It's not just about the defying the NFT, yeah? It's like how you can, like, join the global force and, and, and make a huge impact.
+
+### [34:15](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2055) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 32 · original label: 1 · evidence eligible: no
+
+Yeah. I, I think it's that is very important to, to point out. I mean, I've talked about, uh, I've been doing podcasts. I've had two shows since 2018, I think, was when I started my first one. And that specific show was all about the intersection of human rights, democracy, and technology and Web3. And I think this is a very concrete example of how these technologies can enable, especially in emerging markets with, like, where governments maybe not are not able to provide the, the basic things that, you know, like disaster relief,right? Like, those kinds of things where now the community, the global community can, can organize, self-organize in a permissionless way to help with these kinds of humanitarian crises. And so it, yeah, it, it's I think we have to, I agree, we have to learn from this and figure out how to scale this to other, other initiatives. I think one of the interesting learnings will be I think one of the hard parts of what you did, the really hard parts is not just the coordinations with, like, all the smart people, but how you connected this with the government in a credible way so that, like, on the ground, the money actually was distributed efficiently to have real impact in, like, a very short period. That's the, that's the place where, like, the infrastructure in many countries doesn't exist to make that happen is my understanding,right? In many countries, the infrastructure for that last mile is, like, a really hard part where it's like, hey, I sent you USDC. How do I use that to buy bread for people who need, who need it? And I think, you know, with FTX's help and the Ministry of Defense being pretty progressive or sorry, the Digital what was it? Ministry of Digital Affairs is the is what it's called. You know, being really active with you, you
+
+### [36:07](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2167) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 33 · original label: 1 · evidence eligible: no
+
+were able to get that done. But yeah, it'll be interesting to, to explore and I'd love to, you know, help with that as, as you guys get some, you know, it's going to be a, I think, a while before we are able to focus on that, but when you are, I, you know, I would love to, to talk again about that.
+
+### [36:27](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2187) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 34 · original label: 2 · evidence eligible: yes
+
+Now, like, it, it transformed, like, to more, like, sustainable, like, funds. Like, by the way, after, like, after we passed the 50 millions, like, the threshold, not the threshold, but 50 millions in total donation, like, our President Zelensky signed the law recruiting his legal tender like in Ukraine. So the visual assets, like, is something, like, is not, like, out of the, like, legal base. And I saw, like, I'm also, like, put in some group which, like, working on the next laws and, like, legislation on the Ukraine. And I believe, like, after, like, this war, we Ukraine become the one comprehensive jurisdiction, like, to handle. They, they, they plan to, like, to charge us 5% of the, like, trading fee or just 5% of the gain, whichever gain it is. And it will be, like, fair. And it will be, like, the, the government support of this technology who technically, like, helped us write the government. I believe, like, we'll have the, the, the, the, the crypto hub in the Ukraine after we win this war. But, but, but at the same time, but at the same time, like, it was not, like, without the problem. Like, I said we had a, the huge attack with the huge attack on the websites. So we work with all the team of the engineers on the, like, our, our stake and the partners, like, Exchange Kuna was also participating in this. Like, it's not about their stake. It's, it's, like, the, the whole of the community which working, like, on this. I don't like to mention, like, anyone from the list because if I mention, I can forget someone else. So we just, like, call the crypto community. So we need to imagine job, but at the same time, it was attacked. And then I also realized that we have the weak parts. It's the. Web2 is generally the weak part. The website was tried to, like, to attack
+
+### [38:04](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2284) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 35 · original label: 2 · evidence eligible: yes
+
+by the DDoS. The RPC level was tried to attack by the DDoS. So, like, probably Russian of their, like, partners, they tried to do all the best, like, to, to down the site. And they, they, they was, like, succeed in a few of them, but they were not able, like, to, to down the, the blockchain itself, the layer. And for me, the, the, the, the, like, assessment layer. And for me, it was, like, another type of the, like, outcome that, well, we were thinking that we already built the, like, sustainable Web3, but it is not. We still have the very, like, weak part, like, fragile part. The only sustainable is the blockchain, but then, like, let's talk about RPC is fragile. Like, people could, like, attack this or people could, like, censor this where they, like, attacking the domain, attacking the provider. So we need to decentralize to make it efficient this layer. The next stuff is, is domains here. Only because we have the government domains, like, it was under the government control, we're able, like, to, to control and keep it. Then the, the, the hosting, like, the, the, the people who will or the company who will be hosting the, the, like, front end style, like, the application itself. So, like, it's too early, like, to claim that we build, like, Web3, which is sustainable. It's not, guys. We just, like, close the 25%, like, of, of the required things. Like, we need to work more and more.
+
+### [39:28](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2368) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 36 · original label: 1 · evidence eligible: no
+
+Yeah. And this is why you guys are I forget what it's what you named it, but you have a decentralized RPC gateway that you're building that ever stakes is which is trying to solve one of these problems.
+
+### [39:39](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2379) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 37 · original label: 2 · evidence eligible: yes
+
+Yep. We try to, to build a decentralized RPC. And it, it could sound strange, but in the, in the design, the concept, we also put the risk of the team. Like, we're thinking, like, well, like, what happens if ever stake will disappear tomorrow? It could happen. Unfortunately, it happens. Like, the history proves we cannot reject this. So that's why we're, we're trying to build some type of the system which will incentive, like, other people to join. Some of the software which will be constantly, like, tracking the available, like, public RPC. I want to build some incentive system, like, to other people to join. And what's happening, like, in any case, like, in disaster recovery, we have a sustainable, like, RPC gateway which can empower the application, the three application to, to resist. Because, like, in, in case of the attack, it's, it's the next layer to attack. We want you to make it happen. If I will be able, like, to, to be the part of the decentralized sustainable consensus level in I will be involved in being the part of the decentralized sustainable RPC level, like, at least I can self-aware myself, like, my life is not, like, lasting, like, useless here. I, I, I bring some useful and bring some value for this stuff. If I will be involved in the half, like, of this achievement, I will be the super happy and the most happy person on, on the ground.
+
+### [41:01](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2461) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 38 · original label: 1 · evidence eligible: no
+
+Amazing. So we are we're at the top of the show here, and I always ask the same question of every guest, but, like, what have we not talked about that you would have liked to discuss or what have I not asked you that I should have asked?
+
+### [41:16](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2476) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 39 · original label: 2 · evidence eligible: yes
+
+Probably all the people, many of the people who, like, listen to us have some doubts, like, especially in this market. Like, do. I in theright place? What I'm doing? Maybe I'll find, like, another place. No, guys. Like, you in, in the very proper time, in the veryright place. This is the place you can contribute to make the, the real impact. We're just in the beginning. We can build the, the next level of the web. We can build the next level of the government system. We can build something that we cannot imagine. Like, after my experience, then this technology, like, allow us, like, to survive, like, my country, to survive, like, my company and to, to, to done impossible. Like, don't have a doubts. Like, we're the early adopters of the most advanced technology which will impact the whole world, like, believe me. It's, it's my case. And, like, I am, like, not 100, 1000% sure that I'm in the proper time, in the proper place. The only things, like, my strategy, like, for all the world is just be useful. I was trying to be useful for my customers. I was trying to be useful for my governments. And, like, if you are useful and really useful, you want to be useful, you will find the resources, you will find the investors, you will find the customers, you find, like, everything. Just be useful here and have no doubts. Like, we're in the proper place.
+
+### [42:30](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2550) — Alex Kehaya · Host of The Index · interviewer
+
+Turn 40 · original label: 1 · evidence eligible: no
+
+Let's fucking go. What a great note to, to end on. I couldn't agree more. Thanks so much for being on the show.
+
+### [42:37](https://www.youtube.com/watch?v=beakNs8F3pQ&t=2557) — Sergey Vasylchuk · CEO and founder of EverStake · employee
+
+Turn 41 · original label: 2 · evidence eligible: yes
+
+Thank you. Thank you for hosting us.
+

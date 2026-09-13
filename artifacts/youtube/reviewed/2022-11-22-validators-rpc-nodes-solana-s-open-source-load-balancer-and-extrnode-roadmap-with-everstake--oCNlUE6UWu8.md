@@ -1,0 +1,529 @@
+# Validators, RPC Nodes, Solana's Open Source Load Balancer and extrnode Roadmap with Everstake
+
+Source: https://www.youtube.com/watch?v=oCNlUE6UWu8
+
+Uploaded: 2022-11-22
+
+Video ID: oCNlUE6UWu8
+
+Speaker review: reviewed
+
+Speaker names and roles are contextual model attributions at the time of recording, not independently verified current employment. Evidence eligibility is a filtering decision, not a guarantee of factual truth. All dialogue is preserved, including questions and rejected claims. This export does not activate a corpus source.
+
+## Speakers
+
+| Original label | Name | Role at recording | Participant type | Attribution basis |
+| --- | --- | --- | --- | --- |
+| 1 | Marian Walter | Host, Staking Mondays podcast | interviewer | Explicitly self-identifies in turn 0 ('I'm your host, Marian Walter') and turn 82 ('I'm Marian Walter'). |
+| 2 | Sergey Vasylchuk | CEO of Everstake | employee | Introduced by the host as CEO of Everstake in turn 0 and turn 82; in turns 3, 5, 8, and 52 describes founding Everstake, running company operations, and current leadership. |
+
+## Limitations
+
+- Text-only review cannot guarantee diarization identity.
+
+## Transcript
+
+### [0:09](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=9) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 0 · original label: 1 · evidence eligible: no
+
+I'm your host, Marian Walter, and you're listening to the Staking Mondays podcast here on Staking Rewards, where we analyze the staking industry one deep dive a week to make investors, professionals, and new entrants more knowledgeable. My special guest this week is Sergey Vasylchuk, CEO of EverStake. EverStake is one of the biggest decentralized staking providers, trusted by more than 635,000 users. Going live in 2018, the company has been using enterprise-level hardware to run over 8,000 nodes for more than 70 blockchain networks. Sergey founded EverStake in June 2018. He's also CEO of Attic Labs, which provides innovative fintech and blockchain solutions. Today we are going to talk about the validator business of EverStake, fixing the RPC layer with ExtraNode, and the launch of Solana's open-source load balancer. Sergey, welcome to the Staking Mondays.
+
+### [1:04](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=64) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 1 · original label: 2 · evidence eligible: yes
+
+Hi guys, nice to meet you.
+
+### [1:06](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=66) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 2 · original label: 1 · evidence eligible: no
+
+Great to have you on the show. Sergey, tell us a little bit about yourself. How did you start out of education to where you are now?
+
+### [1:15](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=75) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 3 · original label: 2 · evidence eligible: yes
+
+By education and by my spirit, I'm a software engineer. So I was interested in computer science and software development since probably the school. And then I go to the university for the technical education, graduated the Kyiv Polytechnic Institute with an engineering degree. And during my graduation at the technical university, I started making some soft. Mostly it was web development and other applications. So all my conscious life, I'm making the code or I'm building some product. So I identify myself as a software developer, builder, and technically don't be able to do anything just for the code. So code, tech is me.
+
+### [2:06](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=126) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 4 · original label: 1 · evidence eligible: no
+
+Got it. And you launched EverStake in 2018. What drove you to this?
+
+### [2:13](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=133) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 5 · original label: 2 · evidence eligible: yes
+
+Well, before EverStake, I was doing some outsourcing of stuff in business and development for the blockchain space. I was a big fan of everything that is decentralized, starting from the torrents, KASA, and all these decentralized services networks. And then I noticed Bitcoin and blockchain. I thought, well, it's good to disrupt the payment industry. Those times I was building software for the e-commerce. So it was payment system, the fraud, everything that was connected in part of the payments. That's why having an engineering background and the passion about decentralized networks and having the knowledge how bank and payment system works, I'm shifting my attention more and more into this industry. I have a few experiments with trying to make stablecoins for the bank, trying to make the CBDC for the Central Bank of Ukraine. And it was half banking, half crypto. And then I learned that in order to make real mass adoptions, we need to have the blockchain which will be close to real-time speed. Because in banking and in finance, nobody will wait for the 10 minutes for the block to confirm. And having my engineering knowledge, I understand that the speed of the network will be the speed of the slowest participant. So I was constantly looking for the solution which allow to empower financial applications in the real time. And for me, staking was obvious. I just was waiting for the first blockchain to appear. First, it was Dash. I was curious how it works, this pull and dash. Then EOS was created, and the speed of the EOS was close to the half second for the block, like two blocks per second. And it was the time that I decided, hey, here my niche. I need to start some infrastructure services in order to make this blockchain faster. So this was the trigger how I created
+
+### [4:23](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=263) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 6 · original label: 2 · evidence eligible: yes
+
+EverStake those times.
+
+### [4:24](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=264) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 7 · original label: 1 · evidence eligible: no
+
+So basically, you came from traditional finance and the need for payments as one of the prime use cases for banking in general, looking at the advantages of blockchain technology and then seeing that it's about the speed of the slowest participant. So actually, the leverage for you to place your assets that you built over the time was in the staking industry to make these networks more fast and reliable.
+
+### [4:53](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=293) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 8 · original label: 2 · evidence eligible: yes
+
+Yeah, those times I did not think about the staking that it will become some type of rewarding or financial product. For me, it was pure engineering. So I was trying to challenge other participants, the validator, the producer, how they come to be faster. Because we try to be faster in each of the blockchain. And the faster you are, the more probability to sign the block, and the more profitable you are. So other participants try to follow you. So we were challenging many other validators from the speed. And as a result, people started supporting us because we see that we create the value for the machine in this community. But probably only after half of the year or a year, we realized this is business model. So we can make the money based on the staking, not just about providing and playing with infrastructure. So it was curious because EverStake was not planned with a business plan, with a profitable company. It was started the experiment. Those times where we were building the cryptocurrency exchange. But things shifted in this way that our exchange was failed, but staking was growing. So yeah, it's a side project. EverStake probably was a side project of the exchange.
+
+### [6:12](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=372) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 9 · original label: 1 · evidence eligible: no
+
+And how many people, how large was your team when you started working on it, even as it was just a side project? How can we imagine that?
+
+### [6:21](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=381) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 10 · original label: 2 · evidence eligible: yes
+
+Well, it was not a team. It was me as a person who was trying to convince, like, hey, this is the new future of the blockchain. Staking is the new future because we need to be quick. Many of the team members were thinking I'm a bit crazy and I've nothing to do. So I have my old friend, also he's Sergey, he was CTO of those exchanges. And he just tried to give me to set up all this validator because I was a tube boy. And I had one project manager. He was a designer on the exchange, but now he's one of the most important persons, is Bogdan, to try to organize with the timelines, with the deadlines, because no one was happy to spend extra time on this side project. So it was just three or four people part-time with some passion about technology and with having a clue about the business model.
+
+### [7:19](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=439) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 11 · original label: 1 · evidence eligible: no
+
+Wow. I think this is super interesting to know for our audience, to see what little resources are actually required, just from an HR perspective, to kick off such projects. Especially since in the staking industry, we are a little bit dependent on having more providers, more validators,right, doing the staking business. So it remains decentralized. And this is definitely good information for people to know that you can actually start with three people already.
+
+### [7:51](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=471) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 12 · original label: 2 · evidence eligible: yes
+
+Yep.
+
+### [7:51](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=471) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 13 · original label: 1 · evidence eligible: no
+
+So coming from that status in 2018, where do you see the validator industry now? What has changed since 2018 up to 2022?
+
+### [8:06](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=486) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 14 · original label: 2 · evidence eligible: yes
+
+Well, we have much more perspective. And it will be a highly competitive space because technically it's not rocket science. Everyone can do the staking. Not everyone could provide the sustainable staking. But this is where the business processes, the management, and all the traditional management in the company took place. It's very similar, I believe, for the money pools because this operation is pretty similar. And this operation is similar to hosting here. So technically, everyone could install a few servers on his attic or in the house and try to provide some hosting for virtual machine access. But in order to make it sustainable, you need to have 24/7, you need to have the cups, you need to have the support, you need to have some marketing, and so on. So just regular business, but in the web3 space. And as hosting has a lot of different business cases, hosting like virtual mouse, bare metal, and other site services, validators will do the same. So we started just for the block producing. Now we have the RPC, now we have the bridges, now we have a lot of things to validate. So it's some type of the notary, but in the web3. But the products and the use cases for the validator will grow since the market is growing.
+
+### [9:44](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=584) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 15 · original label: 1 · evidence eligible: no
+
+So two dynamics here at place,right? Growing applications and a growing space that needs to be validated. At the same time, you have almost compressing pressure from competition. I personally, from the Staking Summit and the conversations that I had there, a lot of people are anticipating a consolidation in the provider space just because you need to be able to run your operations efficiently. And so with efficiency gains, less efficient, let's say, more private types of validators will be driven out of the market. Would you agree to that?
+
+### [10:30](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=630) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 16 · original label: 2 · evidence eligible: yes
+
+Yeah, it's obvious. It's obvious in any business, in any domain. And web3 is not the exception. So you have very similar problems. Is it the talents? Is it the operations? Is it the burn rate? Is it support? Is it the marketing? So just try to provide your services better than others. Try to satisfy your customers. And inside the company, the only KPI that we have is being useful. How are you useful to the customers? Being fast. How are you fast in order to be something better for competitors? And be kind. Just love your customers. Respect what they do and so on. So it's kind of simple. The secret sauce is simple. But in order to achieve this, yeah, it requires a number of support of the management, working with the people and so on. Managing people and building the team is much more harder than just building the hardware and the ops side.
+
+### [11:34](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=694) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 17 · original label: 1 · evidence eligible: no
+
+And next to validating networks, EverStake also provides a lot of additional value-added services for the delegators and their supported networks in general. I think this goes a little bit to the direction that you just mentioned,right? What are those value-added services and why are you providing them?
+
+### [11:56](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=716) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 18 · original label: 2 · evidence eligible: yes
+
+Well, first of all, it's about the philosophy and ideology. So you need to be useful. You need to be somehow competitive. Just spinning the node is not rocket science. Everyone can do it. You should be better from the competitors. Another stuff, we become not only the validators of the layer one, we become the validators of the layer two, we become the guardians, like the validators in the bridges. And all this type of software and the apps, they require the RPC. And it's one of the crucial and undervalued problems inside the whole blockchain space. Because to be honest, it's the main point of attack from the resistance, from server resistancy. If, for example, I have a goal to attack the web3 and applications, I will start with the hosting and with RPC. It's the most vulnerable entityright now. And as experience shows me, that if RPC is down, the half of the industry is down. The bridges start, wallets start, and it's panic. And we see it several times with the failure of the big RPC provider, which kind of like one point of centralization, which caused the stuck even for the exchanges with the main adoption. So it could have the severe consequences. So that's why we try to expose the services for the public. As a validator, we're forced to maintain the RPC. Do we want or do we not want? We have the obligations. We have the operations we need. So one of the prime times, I see that we already have this, but don't expose it to the public. And we say, hey guys, let's put this more with the public goods. Let's help other devs to start the applications. Let's contribute more value for the community. And for me, it's still some type of a social experiment. We'll see how it plays.
+
+### [14:09](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=849) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 19 · original label: 1 · evidence eligible: no
+
+And looking at all the assets that are staked with EverStake, could you give us a rough breakdown on how much, so to say, assets under management go or assets under staking go through to the different main blockchain networks, like EOS, Solana, and so on? Could you give us a breakdown there, just for our audience to get an image about it?
+
+### [14:35](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=875) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 20 · original label: 2 · evidence eligible: yes
+
+Well, it's hard to estimate because we need to have some point of measure. In the peak, a few months ago, I remember we had a total $7 billion worth of the total stake assets, around 60 with something blockchain. Right now, it's dropped. It significantly dropped with the market. So we can calculate by the number of the tokens in each specific blockchain. But it's hard for me to say because it's very dynamic. You just can go to the blockchain explorers and see in the easy blockchains. But usually, we are in the top 10 or top 5, sometimes top 1 in all the blockchains. So we have the thousands of the customers. So around the whole 60 with something blockchain, we have 600,000 with something customers. And our goal to achieve for the next year is probably to the 1 million around the old blockchains. And the big advantages for us is the retail customers. So we have the thousands, hundreds of thousands of the small customers, retail customers, which usually start with one token, 10 token, and then it grows to the thousands or hundreds of thousands of the million. So we're targeting retail customers, and we're trying to serve retail customers. So that's why our audience is quite, I don't say the huge, but close to 700,000 customers. If you can try to imagine these people in the one place, it's kind of a big audience. And we still love them.
+
+### [16:20](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=980) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 21 · original label: 1 · evidence eligible: no
+
+Right. And here for the audience that's tuned in to the podcast, feel free to drop in your questions below, and we will take them to the show and ask them to Sergey. So yeah, please note your comments into the comment section on YouTube, and we will pick it up in the show. My next question is about Extra Note. One month ago, you announced Extra Note, a decentralized cluster of RPC nodes. RPC nodes are crucial for web3 since they provide a link between blockchains and the dApps that run on top of them. Which issues did you see with the current status of public RPC nodes? So what was the problem that brought you to developing Extra Note?
+
+### [17:08](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1028) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 22 · original label: 2 · evidence eligible: yes
+
+Well, a few things triggered me. One of the things that I see a lot of attacks on the financial applications with RPC layer. So attacker will take the response from the node during the DNS attack or other type of attack. And application who was trusted was leaning on the incorrect data, which leaned into the bridges. In order to diversify and mitigate this type of attack, applications need to spin up another node, to have some backup nodes, some validation of this data. And it will create another level of the expenses for these dApps. And it's become the big barrier for onboarding the new startups and new ideas. And that's why I believe that having some bootstrapping options to access this world is crucial. We need to have some public available goods for the newbers. At the same time, for example, if we see the growth of the ledger of this blockchain, it becomes the terabytes. Sometimes it's like multiple of the terabytes. It means that not everyone is even able to bootstrap and spin up its own node. And it's become the more and more bigger barrier. And sustainable operations in bigger blockchains will require significant investments in the hardware, in the people, and so on. And it's lead that people don't want to run its own infrastructure. They try to lean on a few of the providers. But they're only a few. And imagine a situation that we have, for example, three providers in the Solana or Ethereum or other blockchains. And I don't know, United States or Germany or any other countries will issue some bill that we need to shut down this and this company because they accept the transaction or whatever from some illegal site, whatever. So from the legal perspective, they could down these few providers in a minute. Just one order, and the whole blockchain is down. And in
+
+### [19:30](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1170) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 23 · original label: 2 · evidence eligible: yes
+
+order to mitigate this risk, we need to have more type of decentralization. And each of the products hosts their own nodes. But at the same time, instead of having investment backup infrastructure, I would like to lean on the extra node. So it should be like extra backup for your infrastructure. And instead of spending each command, each team will spend a thousand or thousand dollars for backup infrastructure. Let's unite together and leverage each other. So it will be much more cheaper. So the initial cost is to optimize the cost of the dApps, of the validators, and so on.
+
+### [20:14](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1214) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 24 · original label: 1 · evidence eligible: no
+
+Maybe taking a step back again, how would you explain an RPC node to a 12 or 16-year-old?
+
+### [20:26](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1226) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 25 · original label: 2 · evidence eligible: yes
+
+How I will explain? Yeah, it's hard. It's hard. So it's something about the wires. If you want to have the electricity in your home, you have the company which transports this electricity. It's wires which empower you. If we compare the internet, there is internet, but there is an internet service provider which brings the wire to your house. So Extra Note will be really the company which unites different internet service providers to a single network which allows you to access the internet. So if you need to access the internet, you need to have the ESP. If you want to access web3, you need to have the RPC. So this type of infrastructure provider which bridges blockchain to your applications. Because your applications will be working autonomously on your laptop. It will be front-end applications. It's serverless. But you need to have this crucial bridge in order to access this information.
+
+### [21:27](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1287) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 26 · original label: 1 · evidence eligible: no
+
+And Extra Note, how is it set up as a company? Or is it a web3 project? So decentralized. Does it run under the roof of EverStake?
+
+### [21:38](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1298) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 27 · original label: 2 · evidence eligible: yes
+
+Well, for now, it's an experiment. It's a social experiment which is running by the part-time employees of the EverStake. So it's very similar to the story of how EverStake handled the exchange. And at the same time, we are inspired of creating some value on the resources that we have with EverStake, and we do it. So if it will become successful, we obviously will create some legal entity, some dedicated team, and become a more operational business-like entity. But for now, we just have the fun. We have a few people inside EverStake who believe and share this value. And we try to bring this value to the community. So it's very simple.
+
+### [22:23](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1343) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 28 · original label: 1 · evidence eligible: no
+
+OK, got it. How does Extra Note stand out from other RPC solutions such as Anchor, Inphera, or Pocket Network?
+
+### [22:34](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1354) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 29 · original label: 2 · evidence eligible: yes
+
+Let me try to make the example. So imagine that you are a family. And you're a family of four, two adults and two kids. And you have one car. Usually, your car is enough to fulfill all the needs with the groceries for the kids and so on. But sometimes, a few days per week, there is some conflict, and you need to have the two cars, or you need to use a taxi. Sometimes it's cheaper and more efficient to use Uber for these few cases instead of managing your own car. But you still have a single car. So Extra Note is very similar. So each of the projects or each of the validators that participate technically maintain its own node and use it as a primary. But in case of the extra load or extra backup or something extra that you need, I encourage, don't spin up another the same cost of infrastructure, but share our resources to have some backup. So for example, if your application uses 100 requests per minute, and sometimes you exceed not 100, but 150, send this extra 50 blockchains to Extra Note. Other participants will share this load, and you will pay extra dollars, not extra thousand dollars. So this is more like an Uber-style backup solution to have the sustainable but backup solution for your primary RPC layer.
+
+### [24:10](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1450) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 30 · original label: 1 · evidence eligible: no
+
+Last Thursday, you announced the launch of Solana's load balancer. Was there a specific reason you decided to start with Solana?
+
+### [24:20](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1460) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 31 · original label: 2 · evidence eligible: yes
+
+Solana is kind of painful because the whole history ledger is huge and it's expensive to host. And we're a lot of rumors that, hey, this is impossible to bootstrap the project. The RPC is heavy. Solana is centralized and so on. And we make a very simple experiment. We're just like, OK, let's don't trust the rumor. Let's make the math. So we rolled a few scanners, and we checked each of the IP addresses of each node in the Solana. So we found a thousand different nodes. Then we started to check if any of these nodes provide the RPC. And we found a few hundreds. It was like 300 with 50, whatever. And I was thinking, hey, guys, there is no problem with Solana. You're just lazy. A hundred nodes could do it for free. Just use it. And we published a long list of the RPC nodes which are publicly available. But then people start also complaining and becoming lazy. Hey, but how can we use this node because it's stuck, it's hard. Can you help us with wrapping this in some solution which allows us to make it more easy? OK, let's do some load balancer. Who will use these public nodes for you, for your convenience? So we're trying to build, to wrap all this complexity in the one common line instrument from the Docker which helps you to use all these public nodes for free.
+
+### [26:03](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1563) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 32 · original label: 1 · evidence eligible: no
+
+And maybe now also some commentary on Solana due to the recent developments with FTX. And I would say Solana ecosystem has taken a hard hit from that instances happening there. Could you just give us your thoughts on the current situation with Solana after the FTX collapse?
+
+### [26:25](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1585) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 33 · original label: 2 · evidence eligible: yes
+
+Yeah, FTX collapse, of course, it was huge financial damage for many of the participants. And the worst stuff that I call it middle class, yeah. Because no one expects from the entity who has the proper risk management this to happen. And it's hit the middle class developers, dApps, funds, VC. And not only financial, but huge reputational damage, huge moral damage because people, they hit trust, yeah. They hit reputation, and they hit trust. But at the same time, if you will see Solana publish the number of the tokens which are allowed to hold and the number of tokens to unlock, there is nothing scary. So even those tokens will come to the market, nothing happens with Solana from the token Solana. So from the technical and economical point of view, I don't see any hits, the damage that would happen. But at the same time, there is sometimes depression, yeah. Because people expect something. There is no good news. There is some depression. People losing the money. There are some expectations, misinformation. And it's all about the emotion. As I said, I'm an engineer, and I try to make judgment decisions based on the data. I don't see any significant bad news for the Solanaright now. Yes, TVL is dropping on the DeFi, but this is consequences of this depression. From the technical point of view, it was like 3,000 validators, I remember last time. Now we have in Solana 1,800, something like this. But this is an insignificant drop. If you compare the volume of the damage, reputational damage, and the number of the people who quit Solana as a validator, it's nothing. So I believe that it will make Solana stronger, but we need to survive this depression we seeright now.
+
+### [28:39](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1719) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 34 · original label: 1 · evidence eligible: no
+
+OK. Turning to the community questions now. From Kilian, the first question. Is running a Solana validator node feasible for smaller players given the current price of Solana?
+
+### [28:53](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1733) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 35 · original label: 2 · evidence eligible: yes
+
+Well, for me, it's hard to sayright now. I believe that people who came in the web3 just about the money, they will fail. As I said, my story, we start spinning Solana and other blockchains not about the money, but about the curiosity and having these resources. Right now, bootstrapping Solana with escalation with zero investment is kind of hard. Because in order to compete with big players, you need to invest in hardware in the 27 operations. You need to have enough time with the companies. But it's still possible. I know many of the validators who come with zero, but they were very persistent. So they have something, some incentive, not only the money. So if you have some incentive which is different from the money, don't be afraid. You will find a way to survive. If you have just an economic model to become the validator, or you need to have investment in the beginning, or just don't do it.
+
+### [30:04](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1804) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 36 · original label: 1 · evidence eligible: no
+
+Another question from Kilian is, do you think there is a point at which EverStake can or could become too big and therefore create a centralization issue?
+
+### [30:15](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1815) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 37 · original label: 2 · evidence eligible: yes
+
+No, I don't believe so. So the staking itself and the validator itself is the market that there is no winner, yeah. In many of the domains, a rule of the winner takes all doesn't work here. Because we know our competitors, but at the same time, it's our partners. Because we share responsibility to guard the network. And moreover, with more and more development of the blockchains, there are built-in fuses and mechanics which prevent validators to become too big. So having some portion of the network in each blockchain for us is sufficient. But we don't make any extra marketing activity to extract some more and more customers from the network. We continue to bring the value. I mean, Extra Note, documentation, educational, all the stuff. And sometimes people just are grateful for us, and they stay for us. But we have not any one blockchain which will exceed 10% or 20% that we become the threshold for the blockchain. It's not those cases. And it's very replaceable. Each of the validators could disappear for the tomorrow. It's not like in the political life that you select somebody, some representative, and they will rule the parliament for the four years. If you don't like EverStake or any of our validators, you can devolve tomorrow. So we have the very thin air. If we will have the misbehavior or do something wrong, we can lose the position not tomorrow, but the next few seconds or hours. So that's why I don't think this type of decentralization is even possible. There is some type of the issue with exchanges which hold a significant number of the third-party assets. And with the custody, yes, I see the threat in this case. But from guys like us, more decentralized and retail-focused validators is not the case.
+
+### [32:30](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1950) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 38 · original label: 1 · evidence eligible: no
+
+Got it. Next question is from Misha Shevchenko. EverStake was launched during the bear market. Has this been an obstacle in your path? And maybe let me add to that, what benefits would you say did it have to launch during a bear market?
+
+### [32:49](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=1969) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 39 · original label: 2 · evidence eligible: yes
+
+Well, maybe it will be too philosophic. But the projects which are launched in the bear market, they launch with some purpose. And it's good because in the bull market, the only purpose is issue the token, create the value of the tokens, and exit with the tokens. I don't like me personally, I'm very conservative about tokens selling. So as you see, EverStake hasn't any tokens and probably will not have for a long time. I don't see why it needed. Our purpose was to make blockchain space faster. And we were driven by the engineer of curiosity. And bear market is the time for the builders. So the more builders will come to build, it will be better for the ecosystem. So yeah, bear market helped this. It's just focus. It's all about the mentality. It's like, what is your goal and what is your purpose?
+
+### [33:49](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2029) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 40 · original label: 1 · evidence eligible: no
+
+OK, so it helped you definitely with being more focused and not being distracted with all the different opportunities there are in a bull market.
+
+### [33:58](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2038) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 41 · original label: 2 · evidence eligible: yes
+
+Exactly.
+
+### [33:59](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2039) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 42 · original label: 1 · evidence eligible: no
+
+OK. Max is saying, first of all, I am staking my assets with EverStake. Thank you for your service. What new assets can I buy to stake with EverStake next? I think that's the way he wants to frame the question. Is Aptos under that? SUI? What are the next assets that you will be able to stake with EverStake?
+
+### [34:29](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2069) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 43 · original label: 2 · evidence eligible: yes
+
+Well, I will separate the two quick questions. First, don't buy assets just to stake. Make it due diligence. Because sometimes if you see some assets have a numerous APY for the stake, like 10% or something, you should be worried about this, something wrong. There should be a reason or source of this extra helicopter money. There is no helicopter money. Staking is not about the rewards, yeah. Staking is about the money. You delegate your rights to mine the block or produce the block to some of the stakers, which technically are miners. And you will receive they will charge you a portion of this network. So at least network issue the tokens just to be alive. They don't issue tokens to play some pump and dump, whatever incentive. So if you see that network issue the tokens to attract more customers just as the higher APYs, run, don't buy it. And other stuff, like if you can calculate some of the assets which bring you like 7% annually, but at the same time, these assets could drop like 95%. If you will buy Solana for the 300 or the 200 just for the staking for the 7%, now you will be like 95% at the lose. So buying assets, investing in the assets, it should be some purpose. You need to believe in this asset. You need to believe in this blockchain. And you need to understand why this asset will grow. Not about the staking. So I strongly don't recommend you to buy assets just to stake.
+
+### [36:14](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2174) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 44 · original label: 1 · evidence eligible: no
+
+Make.
+
+### [36:15](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2175) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 45 · original label: 2 · evidence eligible: yes
+
+Yeah, make your own due diligence. Second part of the question, what are the next blockchains we are going to launch? EverStake is already kind of a bigger organization. And we have a few segments because we group blockchain by segments. For example, Cosmos segments, Layer 1 segments, then the bridges, the PCs, and other stuff. And we have dedicated R&D team which make research on the new blockchain and make the experiments. So we don't count or we don't hunt about the profit on the early beginning because it's impossible to predict the profitability. But we make the bets, yeah. We make the experiments. So there are a dozen of the new blockchains which currently in the R&D phase and will appear soon. So technically, we began to validate in the test net with the very, very early stages. If something will make sense and is not scam, EverStake will be obviously validated there.
+
+### [37:20](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2240) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 46 · original label: 1 · evidence eligible: no
+
+Super interesting and very actionable advice, I would say. This is close to a mental model that we at Staking Awards also have internally. If you look at staking from a journey perspective, actually, the first step is research before you make an investment. And only after that comes the actual staking part. And also from the conversations with other validators and I will be very interested to hear your opinion on that is actually the whole game of staking is being long a crypto asset, which with all the risks involved there,right? Yes, you do get staking rewards. In a way, this is even just a compensation from the networks themselves to be kept running. They are paying for infrastructure there for the staking providers. And in fact, most of the time, there is more dilution because the staking networks, they inflate their tokens in order to be able to pay out staking rewards. So those that do not stake, they get punished from inflation. Those that do stake, they don't get punished. Because outside of Ethereum, there are little networks that make enough revenue, let's say, from transaction fees and other fees other than just inflationary rewards that they are sharing with their customers or with their stakers. So it's definitely absolutely on point when you say, don't buy an asset just in order to stake because in fact, you are still making a long-only investment in a crypto token. So this needs to involve all the due diligence there. Yeah, thank you for that. It's great to see that you always have the recurring themes with the staking journey, all the steps that people need to go through. And yeah, I definitely also made the mistake at least once to buy a token to stake it and then getting wrecked later on just by a decline in price of the underlying. So all the staking
+
+### [39:38](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2378) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 47 · original label: 1 · evidence eligible: no
+
+rewards then are gone. But going to the next question of Max Tol was, when can he start using Extra Node?
+
+### [39:53](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2393) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 48 · original label: 2 · evidence eligible: yes
+
+Technically, you can startright now. So we just published we already published our open source balancer. If you know Docker, just you can literally one comment in the comment line. And you will deploy Docker container, which starts the proxy, which will fetch the list of the proxies. And you will be already available to query all these hundreds or dozens of the first best RPC endpoints. But unfortunately, people are lazy. And it's not enough still. They're like, hey, guys, but we are lazy to host it. Can you host it for us? So we try to incentive people to deploy its own infrastructure to play and learn. But people want to do the work for us. So yes, we will deploy some publicly available free node hosted on our side. But it will be experimental. Don't use it in the full production mode. Full production mode needs to lean on your infrastructure and then on something else, not opposite.
+
+### [41:01](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2461) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 49 · original label: 1 · evidence eligible: no
+
+Is there some documentation that you could, at this point, direct people to read up on this?
+
+### [41:06](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2466) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 50 · original label: 2 · evidence eligible: yes
+
+Yeah, we're working. We're working on this documentation. But one more time, it's just a few people, a few people part-time with all time trying to make the social experience. We'll see. So sorry for being slow. But we don't raise any money. It's more about the engineer and curiosity and spirit about this experiment. So if this experiment will fly and take off, we will invest more energy and put more dedicated resource to make it happen. Butright now, as we can, as we do.
+
+### [41:41](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2501) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 51 · original label: 1 · evidence eligible: no
+
+Now that you mentioned raising money, what does the company structure of EverStake look like? What can you share on that?
+
+### [41:50](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2510) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 52 · original label: 2 · evidence eligible: yes
+
+It's kind of transparent. All the people who was from the beginning is currently the shareholders of EverStake. We did not raise any external capital. And we have a few suggestions. But they were mostly from the exchanges. And we reject this type of offers because we believe exchanges is fully acquired stable data with a hard network. We've self-funded. We're profitable. We're sustainable. We're full operation. And we try to keep being independent as long as possible. Yeah, we'll probably raise some more money in the near future. But we'll not go into issue the token for the EverStake. So it will be more traditional infrastructure company which generate the profit and would like to attract the capital only from the professional and open-minded people, not open-minded, the share-minded people from this industry.
+
+### [43:01](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2581) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 53 · original label: 1 · evidence eligible: no
+
+So what would you say then about running a validator business being actually long crypto and long the underlying assets? So in a bear market, not only the funds on the balance sheets, like the tokens on the balance sheet, they decrease in value. Also, the value of the tokens that you can sell in the market to pay for your running expenses,right? How do you manage that? For example, do you engage in hedging? Let's take a step back. Because what you could do is you run a validator business, you earn staking rewards, and then you hedge away the underlying price risk. And then you have a cash flow business,right? But for this, you need hedging. Are you engaging in hedging? And how do you manage this pricing risk?
+
+### [43:53](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2633) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 54 · original label: 2 · evidence eligible: yes
+
+Well, it's tough. It's tough because if you have a few assets, you technically could develop some strategy with the hedging. But if you have like 70 or something blockchains and half of them illiquid, so there is not much room for the hedging. You need to believe them, yeah. But in any case, if we select the project to enter, we consciously see like, hey, this is the venture for the next one, three, five years. So if we don't see EverStake or this project for the one, three, or five years, we just don't participate. So when the select is long run, then this project could become the next Solana whatever. You should understand that with the Solana, we were working for the one year with zero rewards. We have some incentive in the test net, whatever. But the token was still illiquid. So we have the internal purpose to work in this. And of course, you need to have the proper risk management and financial management inside your company. You need to have the reserve. You need to plan your burn rate. But it's nothing about the crypto. It's just about the managing the business. Imagine that you have the, for example, tourist company business. You're selling the tours, whatever. There are some summer tours. There are winter tours. COVID happened. If you will not manage your treasury and your finance, and you will not have the reserve or any financial instruments, you will fail. So what's the difference with the web3? It's the same people with the same salary, the same infrastructure. Hire the CFO, hire somebody who is able to plan your finance.
+
+### [45:35](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2735) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 55 · original label: 1 · evidence eligible: no
+
+So on LinkedIn, it says you have 71 employees. And on Staking Awards, due to the verified provider due diligence that we did on EverStake, it's about 125 people working at EverStake. That's quite some salary,right? How did you manage to I don't know. Did you sell during the peak and acquired a big treasury that you can pay people now from? Or how do you run your ongoing expenses, especially on the salary side?
+
+### [46:12](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2772) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 56 · original label: 2 · evidence eligible: yes
+
+We have reserve. So from every profit that we'll have, we put at least 10% to have the reserve fund. So we're accumulating, accumulating, accumulating. Yeah, this year hit us hardly. We've put a lot of our reserves to support our marble end with the resistance in the war. But I say we have the positive balance sheet. We don't sell here nothing. And many of the partners, partners in the blockchain, each of the blockchains that we're related to, we know the partners. And sometimes we not only work with the three, we invest. So we understand that for some blockchains, we also have the investment entity, EverStake Capital, which gives them money for the projects, not the take. And that's why we have a good relationship with many of them because they know we invest, we keep this token for a long time. And we're starting to liquidate these assets only if we will not harm the network. Sometimes it harms us, for example, with the Terra. So we're accumulating Terra with our strategy. But at the same time, it went to zero. So yeah, sometimes it's dangerous for our finance. But we respect our customers. We respect our partners. And we make responsible decisions. And we try to balance between being responsible partners and being cash positive. But it's tough because it's hard to predict.
+
+### [47:37](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2857) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 57 · original label: 1 · evidence eligible: no
+
+Got it. And the second thought I had when seeing that you have quite some substantial team there acquired already is, what are you searching forright now in terms of new employees? And what would you suggest somebody that wants to break into the industry? Because I can imagine that a lot of people in the audience, they are looking at staking as an opportunity to advance their careers. So what are you searching for? And what would you suggest for people that want to make the transition?
+
+### [48:12](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2892) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 58 · original label: 2 · evidence eligible: yes
+
+Yeah, you just need to find the warehouse you will be using there. So the majority of our employees, the best employees that we have, they come to us with less professional knowledge and experience, but the great spirit and great incentive to be in the market. So they found their own reason or purpose to be in this market already. So they, for example, in the Cardano, Solana, Tezos, they were inside this community for a long time. I don't know why. Each of them have some reasons to do this. But then they joined EverStake because they see that the united our force together with EverStake will be beneficial for them and will be beneficial for EverStake. So we make just one plus one, not two, but three. And why those people work in EverStake? Because they were bringing some value to the community. And then EverStake noted this value and invited them to be our employee, not opposite.
+
+### [49:20](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2960) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 59 · original label: 1 · evidence eligible: no
+
+Interesting. So it's like get some exposure first, put yourself out there. And then as you build relationships in the industry, you are increasing your chances that somebody will want to work with you and will reach out to you. Would you say that's correct?
+
+### [49:36](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2976) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 60 · original label: 2 · evidence eligible: yes
+
+Yeah, be useful. And people will invite you.
+
+### [49:40](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=2980) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 61 · original label: 1 · evidence eligible: no
+
+I have two more community questions coming. And I'm going to mash them together from Marina Petersen and Ignacio Swing. It's both on Extra Node. So there's a lot of demand or interest from the audience in Extra Node. Marina is asking, what will the Extra Node roadmap look like in 2023? And Ignacio, this is why I put them together, is asking whether you think it's theright time for Extra Node to launch despite the bear market. Do you fear it would fail just because of bad market conditions?
+
+### [50:20](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3020) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 62 · original label: 2 · evidence eligible: yes
+
+No, I don't have this fear. And usually, I have a trigger. I remember how I was starting the EverStake in the bear market, in those conditions. And everyone was thinking, you are crazy. Nobody will give you the money. Nobody will invest in EverStake. And you know for the one or two years, exchanges will kill you, will smash you because you will not be able to compete with exchanges. Everything went totally opposite stuff. We become profitable. We become self-funded. We were rejecting the offer from the investors. And we were rejecting the offer from the exchanges. And in many of the blockchains, our staking number and the amount of the stake assets overcome all the exchanges. So do I scare? No, I don't scare. Is it the proper time? Yes, it's the proper time in the bear market because you will be focused on delivering the value of the customer. It will be fair. If in this market, anyone will use you, you will obviously fail. But if you find the people in this type of the market and you will be useful for those people, the success is kind of guaranteed for you. So the best time to start the building isright now. And I have the proof of EverStake that this assumption could beright. The roadmap, the roadmap will be step-by-step validation of each assumption. As I said to you, it's the number of the set assumption and social experience. First, the assumption was correct that, yeah, there is a lot of public available goods, free available nodes inside the network. People just lazy to see it. I dig it. And I gave them this list. Then the next assumption, people are lazy even to use this. Yes, it's correct. That's why we built this type of the balancer and give one-time deploy, a single-light deployment solution to use it. People still lazy, yeah? Yes, then we'll build some
+
+### [52:19](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3139) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 63 · original label: 2 · evidence eligible: yes
+
+hosted solution. But we'll cap it. We'll cap it with some number of the requests because I don't want to become the single point of failure. I have already done this once in the Tezos. We handled 75% of all the traffic in the Tezos. And then we failed. We just wrecked the three-quarters of the application, the traffic. And I become the scapegoat. I don't want to repeat the same mistakes. So we'll try to keep decentralized as much as possible. The next steps in the Extra Node, it will depend how many people will use it. If I will see the substantial growth of the number of requests for the Extra Nodes, I believe it will not be fair to abuse the public infrastructure because people spin up those public nodes for any purposes. And if we'll make some money or whatever exposure using these public goods, it's not fair. So the next steps will be to approach those public nodes, to approach other validators, to approach other partners, and say, hey, guys, there is a demand for this type of the decentralized backup request. Let's, for example, I will take $1,000 from the people who want to use it, who like it, who find the value. And I will take some tips. Charge like 10%. The Rust Advan charge like 10%. Something like we'll start with a 10% to keep in order to make the separation feasible and sustainable. And then we'll share rewards with anyone who wants to join this network, yeah? And we'll see how it works, how the demand from the application and demand from the house, maybe it will be not just the application. Maybe it will be demand from the web2 or I don't know who will use it. I know many people use it, but not exactly who they are. Then all of this paid demand or premium demand, I will try to share more of the participants. And we'll see. But for now, I don't plan to is
+
+### [54:22](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3262) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 64 · original label: 2 · evidence eligible: yes
+
+sue token first. I need to see that people need it. There is a positive economy. And this could be profitable. And only after that, we'll be thinking about putting some smart contracts, some type of the automation of the relationship between the participants. So that's why our roadmap is kind of liquid. And it will depend on what the lesson we learn from the validation of each of the steps that I see in the roadmap of the Extra Node.
+
+### [54:52](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3292) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 65 · original label: 1 · evidence eligible: no
+
+It's like.
+
+### [54:55](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3295) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 66 · original label: 2 · evidence eligible: yes
+
+If we'll see like I have a dream, how I see the Extra Node in the nearest future is the number of the smart contracts, which will keep transparent the financial part of the project, like financial relationship among the parties. And some type of the automation of the routing requests around the network. Sorry, guys. And what I want to achieve is to avoid using DNS or any centralized party routing, domain discovery system. I want to build something like TorrentDit, which everything will be on-chain. All IP addresses will be on-chain. And all the hard bit and all the stuff will be on-chain. So if some domain name provider will hit the domain from the Extra Node, nothing will happen. I want it to be sustainable, resistant, sensor-resistant, engineering, cool, decentralized model, which will be able to handle economical and the technical challenges itself.
+
+### [56:07](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3367) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 67 · original label: 1 · evidence eligible: no
+
+Allright. My last question on the, let's say, dedicated staking topics is on governance. You support more than 70 networks. How do you even properly go about governance there? I mean, all the proposals that need to be read, understood, implications of it, and then you need to make a vote. How do you do this?
+
+### [56:35](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3395) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 68 · original label: 2 · evidence eligible: yes
+
+Well, this is one of the answers why we have so many people. So sometimes the number of the people that we have, they not even all are full-time, yeah? But we need some type of dedication to each specific blockchain. This is another reason that we'll try to hire people inside the blockchain, inside the community, because they feel what is important, what is not. And there is kind of decentralization in our company. I cannot make decisions for the 70 blockchain. I cannot just track everything which is going inside. So that's why we have some type of the segments and dedication, which all blockchain manager, the people usually from the community, who are the part of the community, who understand the community. And they usually make the proposal to discuss inside. So they don't ask me, hey, Sergey, how we need to vote on those proposals. I cannot look, guys. I'm not engaged already in this level of details to make the decision. You, as a part of the community, you make the proposal for us, how you think the EverStake is responsible for the data, need to vote on this and this, and what with consequences. Because sometimes we have the very hard decision. Sometimes we have the high pressure from the other members. It's kind of type of the politics. People try to pressure on us. So it's tough. And the only way to overcome this governance issue is to have the proper people from the community, which will be in charge and the leading by this governance. And staking is a governance itself. So if you ask me what staking means for you, it's about the votes. People will delegate aright to make decisions. And you need to make the proper decision. Because if you will not do it, you will be act against the network. For me, staking is not the reverse. It's all about the governance. So
+
+### [58:30](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3510) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 69 · original label: 2 · evidence eligible: yes
+
+staking is always governance. It's the instrument to make the governance. So it's very important for us. And this is the reason why we're forced to have this number of the good employees with the good dedication.
+
+### [58:44](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3524) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 70 · original label: 1 · evidence eligible: no
+
+Now that we are closing the year 2022, how do you look into 2023? What are your plans and milestones for EverStake, let's say, for the next 12 months?
+
+### [58:58](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3538) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 71 · original label: 2 · evidence eligible: yes
+
+Well, it's quite simple and straightforward. For me, obvious that staking will exist while the blockchain exists. It's like infrastructure. For me,right now, obvious that the RPC will exist while the DApps will exist. That's why we are building Extra Node. And for me now, it's obvious that the liquid staking is overvalued because people are hunting for the high yields. But they ignore the risk. And we continue building some illiquid staking, what I say, but with the high TVL blockchain. So Solana, Ethereum, Cardano, all the stuff, we'll continue to build traditional staking, not the liquid staking. So we have the plan about liquid staking. But for now, participating as the infrastructure provider in this liquid staking will be enough for us. So making long story short, this will be R&D and onboarding more blockchain. Then it will be Ethereum staking, but not liquid staking. And the Extra Node as infrastructure component of the staking. I like this. Enough.
+
+### [1:00:20](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3620) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 72 · original label: 1 · evidence eligible: no
+
+Allright. And now turning more towards questions about you, who shaped you, what books you read, and so on. Tell us about some of your early mentors. Who shaped your career?
+
+### [1:00:36](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3636) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 73 · original label: 2 · evidence eligible: yes
+
+Well, I probably wasn't lucky to have the good mentors. I grew up, I was born in the Soviet Union, in the country there. No one knows nothing about even the internet. I was driven by the curiosity with how it's about information. And I was doing all the old. I made many mistakes. Unfortunately, I have not this mentor who helped me. I waste a lot of time making mistakes and learning and so on. So yeah, I'm this type of the unlucky man.
+
+### [1:01:15](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3675) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 74 · original label: 1 · evidence eligible: no
+
+So it's like life is the best mentor,right?
+
+### [1:01:18](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3678) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 75 · original label: 2 · evidence eligible: yes
+
+Yeah, it's long, expensive. But yeah, it's a good mentor if you are persistent. But in any case, you need to have the purpose. You need to hit the goal. If you don't have the goal, if you don't have the purpose, no one mentor will help.
+
+### [1:01:33](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3693) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 76 · original label: 1 · evidence eligible: no
+
+Let's talk about books. What are some of your favorite books? And what are you readingright now?
+
+### [1:01:39](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3699) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 77 · original label: 2 · evidence eligible: yes
+
+Mostly books that I read was classical books and technical books. I've read a lot of business books, but they, for me, were useless. So we are living in a different environment. Ukraine and the United States and the Europe are really different environments. Something like which work in the United States doesn't work in the Ukraine. But technical books helped me. It was saving my time. And currently, I'm mostly reading Twitter with some high-quality accounts. Sometimes I listen for the blinks. I see the best books, top-rating books, but I don't read them from the beginning. I listen to the content. And if I found it useful, I read it. So I kind of try to optimize my time and be selective with the books as well.
+
+### [1:02:36](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3756) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 78 · original label: 1 · evidence eligible: no
+
+Yeah, I think this is one of the most important things. There's such an information overload that you need to be able to screen your information input even before consuming the information to make the decision whether it's worth it or not. Allright, closing it off here. What's the best way to follow you in EverStake, Sergey?
+
+### [1:02:57](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3777) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 79 · original label: 2 · evidence eligible: yes
+
+There is Twitter. I'm kind of scared about the Twitter. But unfortunately, we have just Twitterright now as the most popular platform.
+
+### [1:03:06](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3786) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 80 · original label: 1 · evidence eligible: no
+
+OK, got it. That's everstake_pool@everstake_pool on Twitter.
+
+### [1:03:14](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3794) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 81 · original label: 2 · evidence eligible: yes
+
+Yeah, go to the EverStake. There is many of it. It's of my account. So you can find or just type EverStake in the Twitter search, and you will see my handle EverStake and so on.
+
+### [1:03:28](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3808) — Marian Walter · Host, Staking Mondays podcast · interviewer
+
+Turn 82 · original label: 1 · evidence eligible: no
+
+Allright. Thank you, Sergey, for being so generous with your time. We have been speaking with Sergey Vasylchuk, the CEO of EverStake. If you enjoyed this conversation, be sure to check out any of the previous episodes on Spotify and YouTube. And subscribe to our channel for all future episodes. We love your comments, feedback, and suggestions. You can write us at mondays@stakingrewards.com. Sign up to our state-of-stake newsletter at newsletter.stakingrewards.com. And follow me on Twitter. That's@Rokifehu, R-O-K-I-F-E-H-U, and our team at Staking Rewards. I'm Marian Walter. You've been listening to the Staking Mondays here on Staking Rewards. For Sergey and the audience, thanks for tuning in.
+
+### [1:04:14](https://www.youtube.com/watch?v=oCNlUE6UWu8&t=3854) — Sergey Vasylchuk · CEO of Everstake · employee
+
+Turn 83 · original label: 2 · evidence eligible: yes
+
+Thanks, guys.
+

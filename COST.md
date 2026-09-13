@@ -2,22 +2,21 @@
 
 Scope: this TypeScript rebuild, from provider probes through collection, indexing, YouTube, diagnostic questions and final evaluations. Prior Claude/Codex totals are historical and are not added to these runs. Subscription agent effort, existing server rental and bandwidth are not provider-token charges.
 
-**Known usage-priced total: $4.616122; 22 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).
+**Known usage-priced / provider-reported total: $4.396942; 7 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).
 
 | Operation | Calls | Input tokens | Output tokens | Known cost | Unknown cost calls |
 |---|---:|---:|---:|---:|---:|
 | provider-probe | 2 | 28 | 206 | $0.000793 | 0 |
-| youtube-transcription | 6 | 0 | 0 | $0.000000 | 6 |
-| youtube-speaker-review | 6 | 51992 | 7488 | $0.067074 | 0 |
+| youtube-transcription | 18 | 350513 | 229237 | $1.328459 | 0 |
+| youtube-speaker-review | 30 | 325901 | 112382 | $0.672300 | 0 |
 | index | 127 | 2134172 | 0 | $0.042683 | 5 |
-| query-embedding | 564 | 17246 | 0 | $0.000345 | 6 |
-| answer | 359 | 3018938 | 274831 | $3.301966 | 4 |
-| claim-verification | 132 | 1402984 | 27340 | $0.489245 | 0 |
-| baseline | 72 | 281021 | 91751 | $0.554832 | 1 |
-| currentness-review | 34 | 43090 | 9551 | $0.068134 | 0 |
-| scope-review | 31 | 46124 | 15055 | $0.091049 | 0 |
+| query-embedding | 162 | 3855 | 0 | $0.000077 | 0 |
+| answer | 208 | 1764461 | 161538 | $1.930548 | 1 |
+| claim-verification | 59 | 444218 | 12644 | $0.164875 | 0 |
+| baseline | 32 | 124901 | 40952 | $0.247246 | 1 |
+| currentness-review | 4 | 5771 | 1502 | $0.009961 | 0 |
 
-Each attempt is written before the external request. Successful, retried, timed-out and invalid-content calls retain their usage. Native provider usage supplies tokens; a dated price table in `config/models.yaml` converts usage to cost. Cached-input and thinking tokens are handled without counting them twice. Parent receipts aggregate descendant calls once. HTTP failures without usage remain unknown rather than being silently priced at zero, and so do attempts cancelled by a stopped request: the provider may still bill the interrupted call.
+Each attempt is written before the external request. Successful, retried, timed-out and invalid-content calls retain their usage. Soniox costs are reconciled against matching provider usage logs when available; its input token count includes audio and text, with the separate counts retained in the YouTube ledger. For model calls, native provider usage supplies tokens; a dated price table in `config/models.yaml` converts usage to cost. Cached-input and thinking tokens are handled without counting them twice. Parent receipts aggregate descendant calls once. HTTP failures without usage remain unknown rather than being silently priced at zero, and so do attempts cancelled by a stopped request: the provider may still bill the interrupted call.
 
 ## Index and one query
 
@@ -39,6 +38,6 @@ Query model context and tool steps remain capped, so LLM input cost is not assum
 
 ## YouTube
 
-6 videos totaling 9,868 seconds (2.741 hours) were submitted for transcription. Gemini has 6 measured speaker-review attempts, known cost $0.067074. 6 transcription charges remain unknown. The recorded transcription forecast totals **$0.274111**, using duration / 3,600 × the configured $0.10/hour assumption, not a measured invoice. 4 transcripts are active in the corpus; uncertain attributions remain quarantined. The full inventory and outstanding work are in [Costs/YouTube](Costs/YouTube/README.md).
+18 videos totaling 42,038 seconds (11.677 hours) were submitted for transcription. Gemini has 30 measured speaker-review attempts, known cost $0.672300. 0 transcription charges remain unknown. Soniox provider-reported known cost is **$1.328459**; matching uses the recorded operation and transcription IDs. The recorded transcription forecast totals **$1.167722**, using duration / 3,600 × the configured $0.10/hour assumption, not a measured invoice. 4 transcripts are active in the corpus; newly transcribed videos await speaker/content review and previously uncertain attributions remain quarantined. The full inventory and outstanding work are in [Costs/YouTube](Costs/YouTube/README.md).
 
 Reserving a conservative amount before a call limits further work; it is not a guarantee of an external provider's final bill. Public demo calls have a per-run limit and a process-session ceiling. Restarting the process starts a new session budget.

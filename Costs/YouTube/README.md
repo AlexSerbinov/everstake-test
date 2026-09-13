@@ -1,9 +1,27 @@
 # YouTube cost ledger
 
-`ledger.json` is generated from `data/youtube.sqlite` by `npx tsx scripts/youtube.ts export`. Provider calls are recorded before submission. Gemini token costs use provider-reported usage and the dated price table. Soniox responses did not expose billed amounts, so those rows keep `cost_usd: null`; their duration forecasts remain in `metadata.reservationUsd` for budget enforcement.
+`ledger.json` is exported from the shared runtime database. Each external attempt is recorded before submission. Gemini costs use provider-reported tokens and the dated price table. Soniox costs are reconciled from its usage-log API, matching both our operation ID and the provider transcription ID. Native audio/text token breakdowns remain in row metadata. Forecasts remain separate.
 
-The initial three-video pilot contained 1,607 seconds of audio. The manually reviewed follow-up selected three dated interviews, bringing the bounded selection to 9,868 seconds (2.741 hours). Six Soniox jobs and six one-pass Gemini reviews completed. Four reviews produced sanitized documents. Two remained quarantined: one invalid role-only attribution and one review with inconsistent/unsupported attribution. Neither paid Gemini call was retried.
+## Initial transcription work — 2026-09-13
 
-Gemini reported 51,992 input tokens, 7,488 output tokens, and $0.067074 measured cost. Soniox actual cost remains unknown; its duration-based forecast/reservation is $0.27411111. Known cost plus the Soniox reservation is $0.34118511, below the $3 ceiling. This is not presented as $0.34118511 of actual spend because Soniox did not return billing data.
+| Batch | Videos | Audio seconds | Actual Soniox USD |
+|---|---:|---:|---:|
+| Initial pilot and follow-up | 6 | 9,868 | $0.291013 |
+| Selected interviews and panels | 12 | 32,170 | $1.037446 |
+| Total | 18 | 42,038 | $1.328459 |
 
-The importer found 186 distinct videos across the 128-row legacy manifest and the 97-row live official-channel list. Initial screening yielded 77 accepted, 72 requiring review, and 37 excluded. Metadata review promoted one named COO interview, producing 78 accepted and 71 requiring review. Six accepted videos were processed, four entered the document export, two were quarantined, and 72 accepted videos remain unprocessed.
+The six earlier Gemini speaker reviews cost $0.067074 (51,992 input and 7,488 output tokens). Total measured YouTube processing cost is **$1.395533**, with no unknown charges among these 24 calls. No Gemini call was made for the new 12-video batch. Its duration forecast was $0.893611; actual token-based billing was $1.037446. See [per-video costs](batch-2026-09-13.md) and [machine-readable detail](batch-2026-09-13.json).
+
+Four reviewed video documents are active in the corpus. Two earlier reviews remain quarantined for invalid or unsupported attribution. The 12 new timed transcripts are saved but await speaker/content review; they are not active answer sources. Anonymous speaker labels are not verified names or roles. No paid review was retried.
+
+## Discovery and reuse
+
+The inventory contains 186 distinct videos from the legacy manifest and official channel. Inventory acceptance means a candidate is relevant for processing, not that its transcript is verified. Current screening counts are in `inventory-summary.json`; the selected batch is in `artifacts/youtube/selected-batch-2026-09-13.json`. Future updates reuse completed jobs and their cached provider responses by video ID/audio hash rather than submitting again.
+
+Readable transcripts are in `artifacts/youtube/transcripts/`; raw responses and job state remain under `data/youtube/`. [Topic-aware retrieval design](../../docs/YOUTUBE_KNOWLEDGE.md) explains the proposed next stage. Navigation notes will be search aids linked to original dialogue, not independent evidence.
+
+[Soniox usage logs](https://soniox.com/docs/guides/usage-logs) provide the actual per-request amounts. The approximate hourly [pricing](https://soniox.com/pricing) is used only for planning.
+
+## Named-speaker review update
+
+[Gemini 3.8 Flash review of all 18 transcripts](speaker-review-2026-09-13.md) added $0.605226 across 24 calls, including six paid failed-output attempts followed by successful retries. Cumulative transcription/review total: **$2.000759**, with no unknown YouTube charges. The earlier pilot figures above are historical. Six recordings now have eligible attributed testimony; all eighteen have readable review exports. Ten need further review and two reviewed recordings lack eligible named company testimony. Activation embeddings are metered separately under `youtube-index`.

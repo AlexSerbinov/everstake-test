@@ -1,0 +1,136 @@
+# Holding Tight or Letting Go: The Self-Custody Revolution Gets Complicated
+
+Source: https://www.youtube.com/watch?v=bhKbkZwk7cw
+
+Uploaded: 2025-07-30
+
+Status: transcribed, not reviewed. Speaker labels come from Soniox and do not identify people. Questions, corrections and factual claims remain unclassified. This transcript is not an accepted knowledge-base source yet.
+
+## [0:02](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=2) — Speaker 1
+
+Welcome back to the WireX Podcast. I'm Yena Adams. Today we're asking: is self-custody still the gold standard, or has it gotten too complicated? Joining me is Alina Telenova from EverStake, to explore the shifting lines between control, trust, and convenience in crypto. Welcome, Alina.
+
+## [0:21](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=21) — Speaker 2
+
+Hey, hey—welcome everyone. Hello everyone, it's great to be with you today. I hope that you and your listeners will find something valuable while listening to the podcast today.
+
+## [0:34](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=34) — Speaker 1
+
+Ah, thank you so much for being here. Perhaps we could start with your personal background, you know, your journey. Please do let us know.
+
+## [0:42](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=42) — Speaker 2
+
+Yeah, thanks. Thanks, Liana. So, I've been working in the crypto infrastructure space for several years, since 2020, focusing specifically on staking, validator operations, and non-custodial systems. At EverStake, my work revolves, you know, like around helping users from individuals to institutions assess secure, decentralized yield opportunities without compromising the control of their assets. And it's been a long story, since the very first day until now, and a lot has changed, and even more, actually, I expect, to change in the upcoming years. At EverStake, we've been in this space since 2018, and we've seen a lot of progress since then. We managed to grow into one of the biggest providers worldwide, and now more than 6.5 billion of assets are delegated with EverStake validators. So I think that—let's dive, deep dive into the self-custody.
+
+## [1:50](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=110) — Speaker 1
+
+Yeah, thanks for that. So, you know, is self-custody really practical for everyday users, or are we just pretending it is?
+
+## [1:57](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=117) — Speaker 2
+
+Yeah, it's—it's becoming far more practical as the tools improve. For example, active self-custody wallets jumped 47, like about 47%, in 2024, which shows the genuine interest from the users for self-custody. And self-custody is absolutely the goal, but today it's not as practical as we'd like to think for most everyday users. For those of us deep in Web3, tools like wallets and decentralized applications feel like intuitive, and we understand them perfectly. But from the outside, many of these platforms still—they still appear intimidating and polished, sometimes, or even—or even scammy, some of them. We know that, we're everyone in crypto know that. But what's the simple for us often feels like a high-stakes maze to the average person. And that said, there's been real progress. So, like, 5 years ago, just topping up your wallet or staking required multiple apps, different actions, complex instructions, and maybe sometimes even luck. And today, many of those steps can be done, like, inside a single wallet with a few taps. That shows that we're moving in theright direction. Still, we have work to do, but if we want to onboard the next billion of users—I know it's kind of like a cliché phrase, and everyone wants to onboard the next billion of users, but it's—it's the thing where we're moving. And self-custody needs to feel, you know, like as seamless as setting up a mobile bank account, not like joining a hacker forum. And until then, simplicity will remain a barrier. But we are moving towards having self-custody for everyday users.
+
+## [4:03](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=243) — Speaker 1
+
+Yeah. I mean, like, I feel like we have come a long way, but, you know, yeah, to onboard like 1 billion users—with still a long way more to go,right? Do you—you know, do people really want control over their assets, or just someone they trust to manage it for them, you think?
+
+## [4:22](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=262) — Speaker 2
+
+You know, both attitudes exist. Surveys show that security is a big deal here. Like, about 37% of crypto users say security concerns are the top barrier. And nearly about, like, 20% report problems retrieving funds from exchanges. And that suggests a strong desire for self-control. And on the other hand, some users price convenience and will trust a well-known custodian. In practice, casual users often opt for, you know, like, easy services, while experienced users and institutions demand custody, especially institutions and TradFi entities. Non-custodial staking lets even institutional investors earn yield without surrendering control. And most people, they don't necessarily want full control. They want security and peace of mind. And for that reason, many still prefer to hand over responsibility to trusted third parties. And especially with the recent influx of TradFi institutions exploring crypto, especially this year and previous year, custody is acting as their entry point. These entities, these firms, they don't have the internal expertise, time, or infrastructure to manage private keys or maintain wallets. They just want something that feels similar, like they're current custodians, like from Web2. But—but let's not—let's not forget that blockchain was actually kind of like born, if I can say like that, I don't know, like created as a system where you can be your own bank. That doesn't mean everyone must do it. What matters is that the option exists. You want full control and no—no counterparty risk? Okay, you've got it. You prefer a shared model with institutional oversight? That's possible too, as long as you're aware of the risks and trade-offs. The other question is when someone is mentioning that there's self-custody, you're in full control of your assets.
+
+## [6:45](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=405) — Speaker 2
+
+But that's not the case. It's a bit different topic to discuss, but this flexibility is the strength of decentralized systems. They let you choose the balance between autonomy and convenience that actually fits your risk tolerance.
+
+## [7:03](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=423) — Speaker 1
+
+Yeah, I've been hearing that a lot, about how, you know, people just don't have the resources and the expertise,right, to, you know, to handle it themselves. So they would rather have someone they trust to manage all of the wallets and, you know, everything for them,right? But, you know, at what point does making things easier start to weaken self—real self-custody?
+
+## [7:29](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=449) — Speaker 2
+
+Convenience can quietly kill sovereignty, so to say. The moment easy-to-use features start reintroducing trust assumptions, we're no longer in full control. For example, like, take seed phrase recovery. It feels like a safety net, but if a platform can help you recover your wallet, it actually means they're storing your recovery data somewhere, which directly undermines the whole idea of self-custody. And we have to—we have to remember, as I said earlier, that we're still evolving, we're still developing. We're pretty early for the crypto space, for the blockchain as a technology, and not every sleek new feature is a step forward. In fact, some can be backdoors in disguise. And in crypto, ownership means that no one—not a bank, not a platform—has access to your funds. If a wallet service disappears, you should still be able to recover your assets with your seed on any other app, any other wallet. It becomes a problem whenever the user no longer solely holds the keys. True self-custody means only you can move your coins. And if a wallet or service holds a backup key or can unilaterally sign transactions, you're seeded custody. So in practice, usability features like social recovery or MPC wallets, they must be designed so that you still retain final signing authority. But once a third party can act on your funds, like on your behalf, without your explicit permission, it's—it's no longer real self-custody.
+
+## [9:22](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=562) — Speaker 1
+
+Yeah, that's a really good point. And, you know, I always say this,right? Like, we're still building the plane while flying it. So we are still early, you know, and there's a lot more time to, you know, really evolve from this,right? But, you know, can we fully trust platforms that say they're non-custodial, or is it just good marketing?
+
+## [9:44](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=584) — Speaker 2
+
+You know, non-custodial is starting to feel like a buzzword, and—
+
+## [9:49](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=589) — Speaker 1
+
+Right?
+
+## [9:51](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=591) — Speaker 2
+
+Kind of like a dangerous—I don't know, because I mentioned but not all platforms that advertise self-custody deliver on it. So some abstract away key responsibilities from the user, but still maintain access to sensitive data, like seed phrases or transaction permissions. And you kind of, like, need to go beyond the tagline and understand how the platform actually handles private keys and metadata. For example, at EverStake, we never have access to users' funds or seed phrases. And we've had—me personally, I've had, like, tons of real cases where clients, after being scammed by, like, some phishing links or exposing private info, they begged us to freeze their assets or help them move the assets somewhere safe. But we couldn't. And that's a feature, not a flaw. We can track the movement of assets, but we cannot interfere here. That's what, like, real self-custody means here. If you have some kind of support or a manager who can somehow freeze your assets and retrieve them from the scammer, for example, that means that something is happening there. And this level of responsibility, it's—it's not for everyone, and it can feel uncomfortable, but it also ensures that your assets are truly yours. No middleman, no lock-in, no manager to reverse a transaction. It's ultimate control and also ultimate responsibility.
+
+## [11:39](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=699) — Speaker 1
+
+Yeah, you know, that's a really good point. You know, but if centralized platforms offer higher returns,right, why would someone pick a non-custodial option?
+
+## [11:50](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=710) — Speaker 2
+
+Higher—higher yields from, for example, like, let's—let's take centralized platforms, centralized exchanges, or anything. They often come with hidden risks. It could be opaque lending or reliance on the central entity's solvency. For example, the FTX collapse, it showed us how quickly guaranteed, like, guaranteed returns can evaporate. Non-custodial staking offers a fundamentally different model. You're earning protocol-native rewards by contributing to network security, not through some—some structure, some speculative schemes, or anything. At EverStake, for example, our validators, they operate with, like, 99% uptime, meaning that our users receive reliable staking rewards without giving up control. So non-custodial yields might be lower on paper, but they are transparent, they are sustainable, and they don't demand on the survival of a single company. You always need to be aware and remember about the possible risk of exposure when using, like, centralized exchanges, for example. We all remember a recent Bybit exploit. And at Bybit, it's a well-established exchange. They managed to recover from the biggest—actually biggest in history—hack of 1.4 billion or something, with the help of, like, their partners and proper risk management. However, not every exchange can afford such a safety net, which is why self-custody remains critical for safeguarding funds. And, like, I personally, I don't hold, like, large amounts of assets in my exchange accounts. Only the amount, you know, like, I need that are enough to cover, I don't know, like, what I'm—whatever I'm doing at the exchanges. And everything else is stored in different self-custody ways.
+
+## [14:00](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=840) — Speaker 1
+
+Right. I mean, I'd love to unpack the rewards a little bit more. How can people actually earn rewards without giving away their crypto? And what's the—what's the catch?
+
+## [14:12](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=852) — Speaker 2
+
+No catch here. But so through the non-custodial staking—oh my God, I don't know, we need to count how many times I will say non-custodial and self-custody, but it's our theme today. But anyway, so through the non-custodial staking, users can delegate their tokens to validators like EverStake and earn yield while retaining ownership. Your tokens, they stay in your wallet. You're just signaling some kind of support for a validator to participate in block production. Better to say that you're delegating your voting power of the assets, not the actual assets. The catch here is that you're still kind of, like, exposed to validator performance. So if a validator is offline or penalized, your rewards might drop, or you may not earn future rewards for the period when the validator is off. That's why choosing a reputable validator with a strong infrastructure and security audits, it actually matters. But critically, but crucially, that your assets are never handed over. It's like—it's like voting in a decentralized network and getting rewarded for your contribution to its stability. Basically, a validator receives your voting power, and it increases the chances to produce the block, verify the transaction or the block. And for these actions, protocols, they reward validators, as these actions, they actually make the network function and process the workload. If a validator just stops doing this, you won't be able to send your Ethereum to your friend or anywhere else. And as validators are rewarded for these actions by the protocol, all the rewards are going to the delegators, and they're just paying a small fee for this, like, rewards for the utilization of validator or, like, EverStake's infrastructure. And rewards are different for different networks, and it could start from,
+
+## [16:29](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=989) — Speaker 2
+
+you know, like, a few percents, like 2, 3, to possible 16. And the difference is due to the tokenomics. It's not because, like, you know, like, validators are doing something here, but it's the tokenomics of the protocol. You can track what will be the inflation, what will be the reward next month. You can project it without even any other third party for this. And it depends on how they structure the issuance, gas payments, and inflation models.
+
+## [17:04](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1024) — Speaker 1
+
+Yeah, so I was just wondering, you know, like, as you were speaking, like, to flip the table,right? You know, what's the biggest thing regulators don't understand about non-custodial services?
+
+## [17:17](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1037) — Speaker 2
+
+You know, regulators often struggle to distinguish between custody and facilitation. In non-custodial staking, providers like EverStake never touch the user funds. I mentioned that. But—and we don't hold private keys, we don't move assets, we can't access user balances, but regulatory frameworks still kind of, like, tend to lump all staking into the same bucket, assuming that every provider is a custodian and every vendor is a custodian. So as we are people are delegating their assets, so maybe you're costing the assets. But that's not the case here, and that's a mistake here. We've engaged in constructive dialogue with the United States regulators to clarify these distinctions. And with a thoughtful policy, it's possible to support non-custodial innovation while protecting users. And the goal should be transparency and resilience, not forcing decentralized tools to kind of, like, mimic centralized structure. As if we will build a Web3 analog of Web2 tools, at some point, you know, we will get to the realization that we have the same problem in Web3, which was the reason we opted for blockchain and Web2 rather than Web2 and TradFi. So we need to, you know, kind of, like, be aware of it and balance it.
+
+## [18:50](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1130) — Speaker 1
+
+Yeah, I totally agree with you that, you know, we have to be very aware and balance things out,right? And, you know, what do you think is more dangerous: bad design in self-custody tools or people blindly trusting custodians?
+
+## [19:06](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1146) — Speaker 2
+
+Both are dangerous. So, like, it's not like, something is more, but both are dangerous. But blind trust in custodians has historically led to far more catastrophic losses. So, like, the track record is pretty clear, like the Celsius, the FTX. I won't mention Bybit here because they did pretty good work on the risk side, but the list goes on and on. And bad design in wallets can cause user-level loss, but custodial failures, they wipe out billions. Like, for example, it was 118 exchange hacks in the past decade, and they have cost users about, like, 11 billion of US dollars. And FTX alone misused, like, about 10 billion in client funds. So each of those incidents, they hit many people at once. And that said, poor custody UX remains a big hurdle. And if users can manage wallets safely, they either make mistakes or revert to custodians. And we need to keep pushing for wallets and interfaces that are not only secure but, you know, intuitive. So, like, everyday user can understand it also. True self-custody should be—should feel safe and natural, not like, you know, kind of like solving a puzzle, trying to understand what's going on here, completing the hackathon or something. And we need to, you know, like, build education and better defaults to get there.
+
+## [20:48](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1248) — Speaker 1
+
+Yeah, I think, you know, you hit the nail on the head with education. I think we need a lot more education for people to understand these tools and, you know, the ecosystem as well,right, how it works. You know, in five years, will self-custody be the norm, or do you think it's just still for crypto pros?
+
+## [21:09](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1269) — Speaker 2
+
+In five years, self-custody, or maybe some hybrid forms of it, will be far more common, I think. But it won't be universal, I think, like, in five years, comparing five years before that. So it will be more common, but not that universal. It won't replace custodial services entirely, especially forultra-casual users, but it will become the default expectation for both individual and institutional participants. So, like, already about 28% of US of United States adults, they own crypto. And we're seeing increasing demand for user-controlled financial tools that offer ownership without complexity. And wallets are also kind of, like, evolving rapidly. Features like biometric backups and social recovery are helping to reduce the fear of key management. And as a result, many everyday users will hold keys via user-friendly apps without even realizing what they are doing and that they are doing it. And institutions, on their side, are pushing hard for non-custodial staking and smart delegation models that preserve control while ensuring compliance. So compliance here is very important. And I would say that, you know, like, audits and the compliance processes and the amount of, you know, like, audit firmsright now that we have in Web3. So everyone should be audited, and you should pay attention to this when you're, like, having your operations within the wallet or any kind of platform. So we also internally, at some point, when we just started, we're like, what compliance? We're Web3 nerds. We're Web3 enthusiasts. What compliance? What we're doing here? No, we're just the best, and let's work together. But a couple of years ago, we shifted there because we understood that the, you know, like, industry is evolving and growing, and we're going more towards compliance. And we also
+
+## [23:31](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1411) — Speaker 2
+
+haveright now the SOC compliances and everything in place. So that is important at this stage of our, like, at this stage of the industry, users need to pay attention to this. But the future, it's kind of like, it isn't binary. It's not, like, custodial versus self-custodial. It's about flexible custody layers that meet users where they are. Some will want full sovereignty. Others will want shared control or kind of, like, a compliant delegation. And what matters here is that the infrastructure is catching up. Wallets will be more intuitive, safer, and integrated into fintech and consumer platforms. And ultimately, self-custody or its secure derivatives will become the standard, like, financial plumbing of crypto, not just a niche for pros, but a core part of how assets are managed at every level. And this is why I just love crypto, because you have the option. You want this? You get this. You want to do your own way? You want to be your own bank? You got it. You can do this. It could be a bit more complicated at this stage, but in five years, I think it won't be—it will be a no-brainer here.
+
+## [24:54](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1494) — Speaker 1
+
+Yeah, in five years, many things can happen. And, you know, it's an exciting time to be alive,right?
+
+## [25:00](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1500) — Speaker 2
+
+Yeah.
+
+## [25:01](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1501) — Speaker 1
+
+Alina, thanks so much for joining us and for sharing your perspective. It's been a real eye-opener.
+
+## [25:07](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1507) — Speaker 2
+
+Yeah, thank you. Thank you for having me today. It was a real pleasure to talk and discuss such an important matter with you. And in case any of your listeners have, like, any questions, feel free to visit our everstake.one website and shoot us a message. Maybe book a call with me. I will be happy to answer and help. Thanks, everyone.
+
+## [25:27](https://www.youtube.com/watch?v=bhKbkZwk7cw&t=1527) — Speaker 1
+
+Thank you. And there you go, to our listeners. What do you stand, holding tight or letting go? Hit subscribe, and we'll catch you next time on the Wired Podcast.
+

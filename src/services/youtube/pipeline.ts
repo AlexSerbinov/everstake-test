@@ -1,3 +1,5 @@
+import { sanitizeDocument } from "../evidence/sanitize-document.js";
+import { isEvidenceEligible } from "./evidence-turns.js";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import {
@@ -305,7 +307,8 @@ export function buildDocument(
   const speakers = new Map(
     review.speakers.map((speaker) => [speaker.label, speaker]),
   );
-  const lines = turns.map((turn) => {
+  const lines = turns.flatMap((turn, index) => {
+    if (!isEvidenceEligible(turn, index, review)) return [];
     const reviewed = turn.speaker === null ? null : speakers.get(turn.speaker);
     const identity =
       reviewed?.name ??
@@ -314,9 +317,15 @@ export function buildDocument(
       ? `, ${reviewed.roleAtRecording}`
       : "";
     const time = formatTimestamp(turn.startMs) ?? "time unknown";
-    return `[${time}] ${identity}${role}: ${turn.text}`;
+    const safeText = sanitizeDocument(turn.text).text;
+    if (!safeText) return [];
+    return [
+      `[${time}] ${identity}${role} (company participant; testimony at recording): ${safeText}`,
+    ];
   });
   const text = lines.join("\n");
+  if (!text.trim())
+    throw new Error("No eligible company testimony after speaker review");
   const contentHash = createHash("sha256").update(text).digest("hex");
   const recordedAt =
     typeof candidate.metadata?.recordingDate === "string" &&
@@ -328,7 +337,8 @@ export function buildDocument(
     (speaker) =>
       speaker.name &&
       speaker.roleAtRecording &&
-      speaker.evidenceTurnIndexes.length > 0 &&
+      (speaker.evidenceTurnIndexes.length > 0 ||
+        (speaker.introductionEvidence?.length ?? 0) > 0) &&
       (speaker.participantType === "employee" ||
         config.screening.companyTerms.some((term) =>
           speaker

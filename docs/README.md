@@ -2,6 +2,7 @@
 
 Read the [assignment](TEST_ASSIGNMENT_EN.md), [source CSV](corpus_sources.csv), then the root [README](../README.md).
 
+- [YouTube](youtube/README.md): named speakers, eligible evidence, readable transcripts and costs.
 - [Corpus](CORPUS.md): collection, dates, duplicates and coverage gaps.
 - [MCP comparison](MCP_COMPARISON.md): pinned source inspection and fair trade-offs.
 - [Reference audit](evaluation-reference-audit.md): why the evaluation gold is supported.

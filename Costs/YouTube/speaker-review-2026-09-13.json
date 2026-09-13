@@ -1,0 +1,717 @@
+{
+  "date": "2026-09-13",
+  "model": "gemini-3.8-flash",
+  "videos": 18,
+  "calls": 24,
+  "knownCostUsd": 0.605226,
+  "unknownCalls": 0,
+  "attempts": [
+    {
+      "videoId": "s8bIGg0jRws",
+      "runId": "2c828eef-145b-4f64-b2d0-843d31f2d9d2",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 9296,
+      "outputTokens": 4996,
+      "costUsd": 0.025707,
+      "runStatus": "failed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 193,
+        "thinkingTokens": 4803,
+        "raw": {
+          "promptTokenCount": 9296,
+          "candidatesTokenCount": 193,
+          "totalTokenCount": 14292,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 9296
+            }
+          ],
+          "thoughtsTokenCount": 4803,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "x9imatfODNWCxN8P5a2DsAs"
+    },
+    {
+      "videoId": "lBR08h4vqPY",
+      "runId": "31c72362-9668-4b98-853a-c9708fef7280",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 8814,
+      "outputTokens": 4996,
+      "costUsd": 0.0253455,
+      "runStatus": "failed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 193,
+        "thinkingTokens": 4803,
+        "raw": {
+          "promptTokenCount": 8814,
+          "candidatesTokenCount": 193,
+          "totalTokenCount": 13810,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 8814
+            }
+          ],
+          "thoughtsTokenCount": 4803,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "1timapzhJZLtxs0PrpDj4Ao"
+    },
+    {
+      "videoId": "d8EtzF2qhMM",
+      "runId": "6ba35dc8-e3f7-4e90-b0b5-86971d45ff62",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 7954,
+      "outputTokens": 3210,
+      "costUsd": 0.018003,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 409,
+        "thinkingTokens": 2801,
+        "raw": {
+          "promptTokenCount": 7954,
+          "candidatesTokenCount": 409,
+          "totalTokenCount": 11164,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 7954
+            }
+          ],
+          "thoughtsTokenCount": 2801,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "5Nimas7JI8Kb28oPmqLWsAI"
+    },
+    {
+      "videoId": "5USz_Z1vR4o",
+      "runId": "8614e481-9132-4752-988d-b18d72052d86",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 10249,
+      "outputTokens": 3458,
+      "costUsd": 0.02065425,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 787,
+        "thinkingTokens": 2671,
+        "raw": {
+          "promptTokenCount": 10249,
+          "candidatesTokenCount": 787,
+          "totalTokenCount": 13707,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 10249
+            }
+          ],
+          "thoughtsTokenCount": 2671,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "7timapWBJ6yu28oP4b6y-Ao"
+    },
+    {
+      "videoId": "qv39wVUaWrs",
+      "runId": "8c562331-7687-499e-9f46-6cb6dd27d000",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 8520,
+      "outputTokens": 4283,
+      "costUsd": 0.02245125,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 366,
+        "thinkingTokens": 3917,
+        "raw": {
+          "promptTokenCount": 8520,
+          "candidatesTokenCount": 366,
+          "totalTokenCount": 12803,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 8520
+            }
+          ],
+          "thoughtsTokenCount": 3917,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "-Nimapf_E-XQ28oPmciz8AM"
+    },
+    {
+      "videoId": "bhKbkZwk7cw",
+      "runId": "bd40720f-2d1d-4ca1-ad6f-9eb48a9f21f9",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 6314,
+      "outputTokens": 2922,
+      "costUsd": 0.015693,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 376,
+        "thinkingTokens": 2546,
+        "raw": {
+          "promptTokenCount": 6314,
+          "candidatesTokenCount": 376,
+          "totalTokenCount": 9236,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 6314
+            }
+          ],
+          "thoughtsTokenCount": 2546,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "BNmmatDcJv6s28oPlsnkkQg"
+    },
+    {
+      "videoId": "-uo63ka1zoo",
+      "runId": "6727f163-fd4a-4b56-8409-a3469a2b861e",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 30013,
+      "outputTokens": 4996,
+      "costUsd": 0.04124475,
+      "runStatus": "failed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 200,
+        "thinkingTokens": 4796,
+        "raw": {
+          "promptTokenCount": 30013,
+          "candidatesTokenCount": 200,
+          "totalTokenCount": 35009,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 30013
+            }
+          ],
+          "thoughtsTokenCount": 4796,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "EtmmavLOL9W7vdIPkL2JoQQ"
+    },
+    {
+      "videoId": "PyLJVoCAnRI",
+      "runId": "c6614df5-a1f3-423c-95fa-1332d532154f",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 6757,
+      "outputTokens": 2821,
+      "costUsd": 0.0156465,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 375,
+        "thinkingTokens": 2446,
+        "raw": {
+          "promptTokenCount": 6757,
+          "candidatesTokenCount": 375,
+          "totalTokenCount": 9578,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 6757
+            }
+          ],
+          "thoughtsTokenCount": 2446,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "INmmaqiuKpXuxs0Pi9mpsQM"
+    },
+    {
+      "videoId": "OljzR6-BDX8",
+      "runId": "9d626514-ce79-4726-9e19-c84aeeb580cb",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 46963,
+      "outputTokens": 4996,
+      "costUsd": 0.05395725,
+      "runStatus": "failed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 545,
+        "thinkingTokens": 4451,
+        "raw": {
+          "promptTokenCount": 46963,
+          "candidatesTokenCount": 545,
+          "totalTokenCount": 51959,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 46963
+            }
+          ],
+          "thoughtsTokenCount": 4451,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "KNmmar_nOayu28oP3b6y-Ao"
+    },
+    {
+      "videoId": "oCNlUE6UWu8",
+      "runId": "fdc8125e-feea-4ce1-9ee0-45f848e5ef2f",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 14810,
+      "outputTokens": 4996,
+      "costUsd": 0.0298425,
+      "runStatus": "failed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 195,
+        "thinkingTokens": 4801,
+        "raw": {
+          "promptTokenCount": 14810,
+          "candidatesTokenCount": 195,
+          "totalTokenCount": 19806,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 14810
+            }
+          ],
+          "thoughtsTokenCount": 4801,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "N9mmat_6Cv2HxN8PuefciA8"
+    },
+    {
+      "videoId": "AuvVhkLHVpE",
+      "runId": "7e878e2a-e48e-458a-b838-909da4431c61",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 28971,
+      "outputTokens": 3924,
+      "costUsd": 0.03644325,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 671,
+        "thinkingTokens": 3253,
+        "raw": {
+          "promptTokenCount": 28971,
+          "candidatesTokenCount": 671,
+          "totalTokenCount": 32895,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 28971
+            }
+          ],
+          "thoughtsTokenCount": 3253,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "RdmmauL0K52lvdIPjof32Qs"
+    },
+    {
+      "videoId": "GZ5NsQDP_Bc",
+      "runId": "d8536dfd-a604-4191-a1d8-6f368f8d51c3",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 10163,
+      "outputTokens": 4996,
+      "costUsd": 0.02635725,
+      "runStatus": "failed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 196,
+        "thinkingTokens": 4800,
+        "raw": {
+          "promptTokenCount": 10163,
+          "candidatesTokenCount": 196,
+          "totalTokenCount": 15159,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 10163
+            }
+          ],
+          "thoughtsTokenCount": 4800,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "UdmmaqTyIKKhxN8PncGZyAg"
+    },
+    {
+      "videoId": "CDmKMHaTtSQ",
+      "runId": "f37cbe80-62df-4fed-9d04-a9dae529355c",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 9782,
+      "outputTokens": 1766,
+      "costUsd": 0.013959,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 442,
+        "thinkingTokens": 1324,
+        "raw": {
+          "promptTokenCount": 9782,
+          "candidatesTokenCount": 442,
+          "totalTokenCount": 11548,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 9782
+            }
+          ],
+          "thoughtsTokenCount": 1324,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "X9mmauChM4eVvdIPurXvoAk"
+    },
+    {
+      "videoId": "DFSEQ3OGoL8",
+      "runId": "aa66cccc-a777-452e-8c04-9aae2e048065",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 4157,
+      "outputTokens": 2856,
+      "costUsd": 0.01382775,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 363,
+        "thinkingTokens": 2493,
+        "raw": {
+          "promptTokenCount": 4157,
+          "candidatesTokenCount": 363,
+          "totalTokenCount": 7013,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 4157
+            }
+          ],
+          "thoughtsTokenCount": 2493,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "Zdmmao7-JKia28oP-ubOoAs"
+    },
+    {
+      "videoId": "V0WcDdiJAeg",
+      "runId": "117acaa3-994d-4252-ab64-e58fec98a46c",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 6010,
+      "outputTokens": 3195,
+      "costUsd": 0.01648875,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 565,
+        "thinkingTokens": 2630,
+        "raw": {
+          "promptTokenCount": 6010,
+          "candidatesTokenCount": 565,
+          "totalTokenCount": 9205,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 6010
+            }
+          ],
+          "thoughtsTokenCount": 2630,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "btmmar-sBs6NxN8P2oGAiQw"
+    },
+    {
+      "videoId": "Wz8KVaO2gWk",
+      "runId": "403dfab1-03af-4817-b863-07c812fbb599",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 977,
+      "outputTokens": 694,
+      "costUsd": 0.00333525,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 153,
+        "thinkingTokens": 541,
+        "raw": {
+          "promptTokenCount": 977,
+          "candidatesTokenCount": 153,
+          "totalTokenCount": 1671,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 977
+            }
+          ],
+          "thoughtsTokenCount": 541,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "d9mmauCOEsSGxN8P44rGgQs"
+    },
+    {
+      "videoId": "beakNs8F3pQ",
+      "runId": "d710af50-554b-4a55-ba12-ab93854cebba",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 12586,
+      "outputTokens": 3199,
+      "costUsd": 0.02143575,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 341,
+        "thinkingTokens": 2858,
+        "raw": {
+          "promptTokenCount": 12586,
+          "candidatesTokenCount": 341,
+          "totalTokenCount": 15785,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 12586
+            }
+          ],
+          "thoughtsTokenCount": 2858,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "e9mmapGtE5bT28oPm6-32AI"
+    },
+    {
+      "videoId": "rIFtUSKa-fQ",
+      "runId": "adb0ff18-f148-424e-8cb3-be2ccfd161a4",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 17400,
+      "outputTokens": 4917,
+      "costUsd": 0.03148875,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 737,
+        "thinkingTokens": 4180,
+        "raw": {
+          "promptTokenCount": 17400,
+          "candidatesTokenCount": 737,
+          "totalTokenCount": 22317,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 17400
+            }
+          ],
+          "thoughtsTokenCount": 4180,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "hNmmasuVNrepvdIP34K0yQU"
+    },
+    {
+      "videoId": "s8bIGg0jRws",
+      "runId": "c4d6995a-707a-4d02-a9fe-ad753a5f64e2",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 5217,
+      "outputTokens": 5388,
+      "costUsd": 0.024423675,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 4079,
+        "visibleOutputTokens": 500,
+        "thinkingTokens": 4888,
+        "raw": {
+          "promptTokenCount": 9296,
+          "candidatesTokenCount": 500,
+          "totalTokenCount": 14684,
+          "cachedContentTokenCount": 4079,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 9296
+            }
+          ],
+          "cacheTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 4079
+            }
+          ],
+          "thoughtsTokenCount": 4888,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "ndmmapOiL5mZ3boPoOT5qAg"
+    },
+    {
+      "videoId": "lBR08h4vqPY",
+      "runId": "5b91a524-8540-4837-bf9f-8578908917c5",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 4736,
+      "outputTokens": 5978,
+      "costUsd": 0.02627535,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 4078,
+        "visibleOutputTokens": 1325,
+        "thinkingTokens": 4653,
+        "raw": {
+          "promptTokenCount": 8814,
+          "candidatesTokenCount": 1325,
+          "totalTokenCount": 14792,
+          "cachedContentTokenCount": 4078,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 8814
+            }
+          ],
+          "cacheTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 4078
+            }
+          ],
+          "thoughtsTokenCount": 4653,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "rdmmavCAJ-KT3boP-pKs0AU"
+    },
+    {
+      "videoId": "-uo63ka1zoo",
+      "runId": "dff7df5f-5163-40ba-8284-5aabb19ca03e",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 5468,
+      "outputTokens": 9964,
+      "costUsd": 0.043306875,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 24545,
+        "visibleOutputTokens": 1464,
+        "thinkingTokens": 8500,
+        "raw": {
+          "promptTokenCount": 30013,
+          "candidatesTokenCount": 1464,
+          "totalTokenCount": 39977,
+          "cachedContentTokenCount": 24545,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 30013
+            }
+          ],
+          "cacheTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 24545
+            }
+          ],
+          "thoughtsTokenCount": 8500,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "vdmmapqGGvOnkdUP6JGdwAM"
+    },
+    {
+      "videoId": "OljzR6-BDX8",
+      "runId": "fba89c5e-bedf-4cd6-86c9-6f4aea071431",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 6036,
+      "outputTokens": 6161,
+      "costUsd": 0.030700275000000003,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 40927,
+        "visibleOutputTokens": 1617,
+        "thinkingTokens": 4544,
+        "raw": {
+          "promptTokenCount": 46963,
+          "candidatesTokenCount": 1617,
+          "totalTokenCount": 53124,
+          "cachedContentTokenCount": 40927,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 46963
+            }
+          ],
+          "cacheTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 40927
+            }
+          ],
+          "thoughtsTokenCount": 4544,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "19mmarSIDpye3boPz9_kiQU"
+    },
+    {
+      "videoId": "oCNlUE6UWu8",
+      "runId": "0ebc6f3e-244b-4426-a236-813ffe00f4c2",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 2553,
+      "outputTokens": 3985,
+      "costUsd": 0.017777775000000003,
+      "runStatus": "completed",
+      "usage": {
+        "cachedInputTokens": 12257,
+        "visibleOutputTokens": 524,
+        "thinkingTokens": 3461,
+        "raw": {
+          "promptTokenCount": 14810,
+          "candidatesTokenCount": 524,
+          "totalTokenCount": 18795,
+          "cachedContentTokenCount": 12257,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 14810
+            }
+          ],
+          "cacheTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 12257
+            }
+          ],
+          "thoughtsTokenCount": 3461,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "6NmmauO_Auyc3boPrpewgAs"
+    },
+    {
+      "videoId": "GZ5NsQDP_Bc",
+      "runId": "188ca614-7d79-4ed0-930d-54f04926ce0b",
+      "model": "gemini-3.8-flash",
+      "inputTokens": 10163,
+      "outputTokens": 6197,
+      "costUsd": 0.030861,
+      "runStatus": "incomplete",
+      "usage": {
+        "cachedInputTokens": 0,
+        "visibleOutputTokens": 502,
+        "thinkingTokens": 5695,
+        "raw": {
+          "promptTokenCount": 10163,
+          "candidatesTokenCount": 502,
+          "totalTokenCount": 16360,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 10163
+            }
+          ],
+          "thoughtsTokenCount": 5695,
+          "serviceTier": "standard"
+        }
+      },
+      "providerRequestId": "8tmmauqAH5eS3boPiM-KgAU"
+    }
+  ]
+}

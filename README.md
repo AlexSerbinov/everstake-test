@@ -74,6 +74,8 @@ npm run cli -- eval baseline          # same 20, initial retrieval only
 npm run cli -- costs
 npx tsx scripts/youtube.ts discover
 npx tsx scripts/youtube.ts inventory
+npx tsx scripts/youtube.ts transcribe --db=data/youtube-batch.sqlite --ids=REVIEWED_VIDEO_ID
+npx tsx scripts/youtube.ts reconcile-costs --db=data/youtube-batch.sqlite
 npx tsx scripts/youtube.ts process --ids=REVIEWED_VIDEO_ID
 npx tsx scripts/publish-evaluation.ts grades.json   # independent verdicts → EVAL.md
 npx tsx scripts/publish-costs.ts                    # ledger → COST.md
@@ -103,3 +105,5 @@ The evaluation runner first saves **pending** verdicts. A successful HTTP respon
 The earlier Claude and Codex prototypes remain in Git history before this branch's retirement commit. They are not dependencies of this implementation. Their local uncommitted work was not included or discarded. New commits preserve real timestamps and the worktree integration history.
 
 Deployment uses `scripts/deploy.sh` and the independent container/port 4318 on the personal server. Existing prototype demos are outside this deployment's scope. Source authority and model-based support checks can still be wrong; the report and evaluation describe observed failures rather than promising perfect factuality.
+
+Video transcripts can be saved before named-speaker review. They remain unreviewed acquisition artifacts until accepted. The proposed source-linked topic-note layer for history and positioning is described in [docs/YOUTUBE_KNOWLEDGE.md](docs/YOUTUBE_KNOWLEDGE.md); it is not yet a second retrieval index.
