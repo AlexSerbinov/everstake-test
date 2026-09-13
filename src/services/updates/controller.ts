@@ -25,6 +25,11 @@ export interface UpdateJob {
   result?: unknown;
   error?: string;
 }
+export interface UpdateBatch {
+  id: string;
+  jobIds: string[];
+  createdAt: string;
+}
 export interface UpdateRequest {
   sourceId?: string;
   due?: boolean;
@@ -75,6 +80,7 @@ export function createUpdateController(
   function enqueue(
     request: UpdateRequest = {},
     trigger: "manual" | "schedule" = "manual",
+    excludedSources: ReadonlySet<string> = new Set(),
   ) {
     const settings = readUpdateSettings(db, sources());
     if (request.sourceId && !sources().some((s) => s.id === request.sourceId))
@@ -83,6 +89,7 @@ export function createUpdateController(
       .filter(
         (s) =>
           settings.sources[s.id].enabled &&
+          !excludedSources.has(s.id) &&
           (!request.sourceId || s.id === request.sourceId),
       )
       .filter(
@@ -131,6 +138,51 @@ export function createUpdateController(
       db.exec("ROLLBACK");
       throw error;
     }
+  }
+  const latestBatch = (): UpdateBatch | null =>
+    JSON.parse(
+      getSetting(db, "update_latest_batch", "null"),
+    ) as UpdateBatch | null;
+  function startBatch(request: UpdateRequest = {}): UpdateBatch {
+    recover();
+    const latest = latestBatch();
+    const existing = jobs();
+    const active =
+      latest &&
+      existing.some(
+        (job) =>
+          latest.jobIds.includes(job.id) &&
+          ["queued", "running"].includes(job.status),
+      );
+    // Extend a partial pass, but never restart an existing member on a full-pass click.
+    // Explicit source retries can still replace that source's failed member below.
+    const coveredSources = new Set(
+      active && !request.sourceId
+        ? existing
+            .filter((job) => latest.jobIds.includes(job.id))
+            .map((job) => job.sourceId)
+        : [],
+    );
+    const accepted = enqueue(request, "manual", coveredSources);
+    const batch: UpdateBatch = active
+      ? latest
+      : {
+          id: randomUUID(),
+          jobIds: [],
+          createdAt: timestamp(),
+        };
+    for (const job of accepted) {
+      batch.jobIds = batch.jobIds.filter(
+        (id) =>
+          !existing.some(
+            (previous) =>
+              previous.id === id && previous.sourceId === job.sourceId,
+          ),
+      );
+      batch.jobIds.push(job.id);
+    }
+    setSetting(db, "update_latest_batch", JSON.stringify(batch));
+    return batch;
   }
   async function tick() {
     if (working || options.available?.() === false) return;
@@ -235,18 +287,25 @@ export function createUpdateController(
   }
   return {
     enqueue,
+    startBatch,
     tick,
     status() {
       recover();
       const settings = readUpdateSettings(db, sources());
+      const batch = latestBatch();
+      const history = jobs();
       return {
         settings,
+        latestBatch: batch,
+        batchJobs: (batch?.jobIds ?? []).flatMap((id) =>
+          history.filter((job) => job.id === id),
+        ),
         sources: sources().map((s) => ({
           ...s,
           lastCheckedAt: getSetting(db, `source_checked:${s.id}`) || null,
           nextCheckAt: nextSourceCheck(db, s.id, settings),
         })),
-        jobs: jobs().reverse().slice(0, 100),
+        jobs: history.reverse().slice(0, 100),
         corpusVersion: getSetting(db, "corpus_version", "unbuilt"),
         operatorConfigured: Boolean(process.env.ADMIN_TOKEN),
       };

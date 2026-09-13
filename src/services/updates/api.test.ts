@@ -4,7 +4,7 @@ import { createApi } from "../../api.js";
 import { openDatabase } from "../../storage/database.js";
 import { createUpdateController } from "./controller.js";
 
-test("update routes require authorization for writes, persist settings and enqueue without paid work", async () => {
+test("token-free update routes persist valid settings and enqueue without immediate paid work", async () => {
   const db = openDatabase(":memory:");
   const priorToken = process.env.ADMIN_TOKEN;
   process.env.ADMIN_TOKEN = "fixture-operator";
@@ -47,12 +47,12 @@ test("update routes require authorization for writes, persist settings and enque
     assert.equal((await api.request("/api/updates")).status, 200);
     assert.equal(
       (await request("/api/updates/run", "POST", {}, false)).status,
-      401,
+      202,
     );
     const settings = updates.status().settings;
     assert.equal(
       (await request("/api/updates/settings", "PUT", settings, false)).status,
-      401,
+      200,
     );
     settings.sources.site.intervalHours = 6;
     assert.equal(
@@ -88,5 +88,49 @@ test("update routes require authorization for writes, persist settings and enque
     db.close();
     if (priorToken === undefined) delete process.env.ADMIN_TOKEN;
     else process.env.ADMIN_TOKEN = priorToken;
+  }
+});
+
+test("public update actions reject cross-origin and form writes before any work", async () => {
+  const db = openDatabase(":memory:");
+  let calls = 0;
+  const api = createApi({
+    db,
+    ask: async () => {
+      throw new Error("Unexpected");
+    },
+    costs: () => ({}),
+    refresh: async () => {
+      calls++;
+    },
+  });
+  try {
+    for (const headers of [
+      { "Content-Type": "application/json", Origin: "https://other.example" },
+      { "Content-Type": "application/json", Origin: "null" },
+      { "Content-Type": "application/json", "Sec-Fetch-Site": "cross-site" },
+    ] as Array<Record<string, string>>) {
+      const response = await api.request("http://localhost/api/updates/run", {
+        method: "POST",
+        headers,
+        body: "{}",
+      });
+      assert.equal(response.status, 403);
+    }
+    const form = await api.request("/api/updates/run", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: "{}",
+    });
+    assert.equal(form.status, 415);
+    assert.equal(calls, 0);
+    const privateRefresh = await api.request("/api/refresh", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+    assert.equal(privateRefresh.status, 401);
+  } finally {
+    db.close();
   }
 });

@@ -22,34 +22,66 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
   message.setAttribute("role", "status");
   const overview = el("div", "metrics");
   const controls = el("div", "update-controls");
+  const progress = el("div", "update-progress");
   const history = el("div", "update-history");
-  node.append(header, message, overview, controls, history);
+  const hero = el("div", "update-hero");
+  const heroCopy = el("div");
+  heroCopy.append(
+    el("span", "eyebrow", "FRESH EVIDENCE, SAME TRUST"),
+    el("h2", "", "Bring your knowledge up to date"),
+    el(
+      "p",
+      "",
+      "Check every enabled source, discover new videos, and publish verified evidence. Your existing knowledge stays safe.",
+    ),
+  );
+  const runButton = button(
+    "Update knowledge base",
+    () => {
+      // Follow the action displayed when clicked, even if the server pass just finished.
+      if (viewingActiveBatch) {
+        progress.scrollIntoView({ block: "start", behavior: "smooth" });
+        void load(false).catch((error) => {
+          if (!disposed) message.textContent = (error as Error).message;
+        });
+        return;
+      }
+      void mutate("/api/updates/run", "POST", {});
+    },
+    "button primary update-start",
+  );
+  runButton.disabled = true;
+  hero.append(heroCopy, runButton);
+  node.append(header, hero, message, progress, overview, controls, history);
   const abort = new AbortController();
   let timer: ReturnType<typeof setTimeout> | undefined;
   let disposed = false;
   let settings: UpdateSettings;
   let data: Status;
-  let token = "";
+
+  let viewingActiveBatch = false;
   let mutating = false;
   let displayedJobs = "";
-  const buttons: HTMLButtonElement[] = [];
+  const buttons: HTMLButtonElement[] = [runButton];
   const sourceTimes = new Map<string, HTMLElement>();
   const date = (value: string | null) =>
     value ? new Date(value).toLocaleString() : "Not checked yet";
   const lockButtons = () =>
     buttons.forEach((b) => {
-      b.disabled = !token || mutating;
+      b.disabled = mutating;
     });
   async function mutate(path: string, method: string, body: unknown) {
+    if (mutating) return;
     mutating = true;
     lockButtons();
-    message.textContent = "Saving…";
+    message.textContent = path.endsWith("settings")
+      ? "Saving settings…"
+      : "Starting your update…";
     try {
       const response = await fetch(path, {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
         signal: abort.signal,
@@ -61,7 +93,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
         ? "Settings saved. Automatic updates run while the application is running."
         : result.jobs.length
           ? "Update queued. You can leave this page; the worker continues."
-          : "No sources are due.";
+          : "No enabled sources matched this request. Check advanced settings.";
       await load(false);
     } catch (error) {
       if (!disposed) message.textContent = (error as Error).message;
@@ -112,28 +144,8 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
   }
   function buildControls() {
     settings = structuredClone(data.settings);
-    const access = el("div", "update-panel");
-    const accessLabel = el("label", "update-field", "Operator token");
-    const input = el("input");
-    input.type = "password";
-    input.autocomplete = "off";
-    input.placeholder = "Enter your operator token";
-    input.addEventListener("input", () => {
-      token = input.value.trim();
-      lockButtons();
-    });
-    accessLabel.append(input);
-    access.append(
-      el("h2", "", "Update settings"),
-      accessLabel,
-      el(
-        "p",
-        "muted",
-        data.operatorConfigured
-          ? "A token is required to save settings or start work. It stays in this page’s memory."
-          : "Operator access is not configured. Set ADMIN_TOKEN on the server to enable changes.",
-      ),
-    );
+    const access = el("details", "update-panel update-advanced");
+    access.append(el("summary", "", "Advanced settings"));
     access.append(
       checkbox("Enable automatic updates", settings.automatic, (value) => {
         settings.automatic = value;
@@ -236,10 +248,12 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
       ),
       sources,
     );
-    controls.replaceChildren(access, schedules);
+    access.append(schedules);
+    controls.replaceChildren(access);
     lockButtons();
   }
   function renderStatus() {
+    renderProgress();
     overview.replaceChildren(
       metric("Automatic", data.settings.automatic ? "On" : "Off"),
       metric(
@@ -257,7 +271,15 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
       if (line)
         line.textContent = `Last checked: ${date(source.lastCheckedAt)}. ${!data.settings.automatic || !data.settings.sources[source.id].enabled ? "Automatic checks paused." : `Next eligible: ${source.nextCheckAt ? date(source.nextCheckAt) : "Now"}.`}`;
     }
-    const jobSignature = JSON.stringify(data.jobs);
+    const jobSignature = JSON.stringify({
+      jobs: data.jobs,
+      enabledSources: Object.fromEntries(
+        Object.entries(data.settings.sources).map(([id, source]) => [
+          id,
+          source.enabled,
+        ]),
+      ),
+    });
     if (jobSignature === displayedJobs) return;
     displayedJobs = jobSignature;
     const openJobs = new Set(
@@ -299,7 +321,91 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
       );
       card.append(details);
     }
+    if (["failed", "interrupted"].includes(job.status)) {
+      const retry = button(
+        "Retry this source",
+        () =>
+          void mutate("/api/updates/run", "POST", { sourceId: job.sourceId }),
+      );
+      retry.disabled = !data.settings.sources[job.sourceId]?.enabled;
+      card.append(retry);
+    }
     return card;
+  }
+  function renderProgress() {
+    const jobs = data.batchJobs;
+    const completed = jobs.filter((job) => job.status === "completed").length;
+    const failed = jobs.filter((job) =>
+      ["failed", "interrupted"].includes(job.status),
+    ).length;
+    const queued = jobs.filter((job) => job.status === "queued").length;
+    const running = jobs.find((job) => job.status === "running");
+    const active = Boolean(running || queued);
+    viewingActiveBatch = active;
+    runButton.textContent = active
+      ? "View ongoing update"
+      : "Update knowledge base";
+    const heading = !jobs.length
+      ? "Ready for a fresh pass"
+      : active
+        ? "Updating your knowledge base"
+        : failed
+          ? "Update finished with issues"
+          : "Knowledge base updated";
+    const description = !jobs.length
+      ? `${data.sources.filter((source) => data.settings.sources[source.id].enabled).length} enabled sources. Start an update to see real progress here.`
+      : running
+        ? `${data.sources.find((source) => source.id === running.sourceId)?.label ?? running.sourceId}: ${running.phase}`
+        : queued
+          ? "Queued. The worker starts when the current question or update finishes."
+          : failed
+            ? `${completed} sources completed; ${failed} need attention. Retry failed sources below.`
+            : "All sources in this pass completed. Recorded results are available below.";
+    const title = el("div", "update-progress-title");
+    title.append(
+      el("h2", "", heading),
+      el(
+        "span",
+        "badge",
+        jobs.length
+          ? `${completed + failed} / ${jobs.length} finished`
+          : "Ready",
+      ),
+    );
+    const phase = el("p", "update-current-phase", description);
+    phase.setAttribute("role", "status");
+    const bar = el("progress", "update-progress-bar");
+    bar.max = Math.max(jobs.length, 1);
+    bar.value = completed + failed;
+    bar.setAttribute(
+      "aria-label",
+      "Sources finished, including failed sources",
+    );
+    const counts = el("div", "update-counts");
+    for (const [label, count] of [
+      ["Completed", completed],
+      ["Running", running ? 1 : 0],
+      ["Queued", queued],
+      ["Failed", failed],
+    ] as const) {
+      counts.append(metric(label, String(count)));
+    }
+    const queue = el("div", "update-pass-sources");
+    for (const job of jobs) {
+      const row = el("div", `update-pass-source ${job.status}`);
+      row.append(
+        el("span", "update-status-dot"),
+        el(
+          "strong",
+          "",
+          data.sources.find((source) => source.id === job.sourceId)?.label ??
+            job.sourceId,
+        ),
+        el("span", "", job.status === "running" ? job.phase : job.status),
+      );
+      queue.append(row);
+    }
+    progress.replaceChildren(title, phase, bar, counts, queue);
   }
   async function load(initial: boolean) {
     data = await getJson<Status>("/api/updates", abort.signal);
@@ -307,7 +413,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
     if (initial) {
       buildControls();
       message.textContent =
-        "Saved settings apply to both manual and automatic updates. Existing evidence is retained.";
+        "Updates continue in the background. You can leave this page and return to check progress.";
     }
     renderStatus();
   }
@@ -330,7 +436,6 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
     node,
     destroy() {
       disposed = true;
-      token = "";
       abort.abort();
       if (timer) clearTimeout(timer);
     },

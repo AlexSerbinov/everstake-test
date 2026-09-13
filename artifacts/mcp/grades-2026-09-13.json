@@ -1,0 +1,127 @@
+[
+  {
+    "runId": "mcp-8bcd1ef1",
+    "rows": [
+      {
+        "id": "E01",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "Safe MCP-grounded abstention: the captured company profile names no CEO. However, the frozen positive reference establishes Sergii Vasylchuk as the current CEO and distinguishes the historical Kinitsky appointment. The required answer is missing; this is a coverage failure, not an invented fact."
+      },
+      {
+        "id": "E02",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "The answer repeats the real MCP company-profile figure of 130+, so that number is not invented. It nevertheless fails the frozen reference: it does not distinguish the historical 130+ footprint from 30+/35+ active-network statements, disclose the scope conflict, or provide an observation/as-of date. Source-supported repetition is not sufficient factual accuracy for this question."
+      },
+      {
+        "id": "E03",
+        "verdict": "pass",
+        "inventedFacts": false,
+        "explanation": "Correctly states the founding year, 2018, and cites the captured company profile, which explicitly supplies FOUNDED: 2018. The requested historical year is supported and matches the frozen reference."
+      },
+      {
+        "id": "E04",
+        "verdict": "pass",
+        "inventedFacts": false,
+        "explanation": "The substantive certification/compliance distinction matches the reference: SOC 2 Type II and ISO/IEC 27001:2022 are labeled certified, while NIST CSF, ITGC, GDPR and CCPA/CRPA are labeled compliant. Prescient Security and the additional AICPA/93-controls descriptions are present in the cited MCP security profile, not model inventions. It omits the separate DORA assessment and observation date, but does not call DORA a certification or invent a new compliance status."
+      },
+      {
+        "id": "E05",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "Correctly recognizes that current MCP descriptions cannot establish a two-year trajectory. It does not supply the historical baseline, dated 2025 institutional shift or 2026 positioning established by the frozen positive reference. Safe abstention, but the synthesis task remains unanswered."
+      },
+      {
+        "id": "E06",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "Accurately says the captured Ethereum chain description only offers a small minimum without the relevant amounts or effective date. It does not answer the frozen reference requirements: 0.01 ETH for new stakes from June 2026, residual 0.1 text, and 32 ETH as the pooled validator activation threshold. No missing number is fabricated."
+      },
+      {
+        "id": "E07",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "Safely abstains because the MCP capture lacks the Instant Stake lifecycle. The reference requires explaining matching an existing exit and distinguishing transaction confirmation from activation/reward accrual; neither is answered. No activation deadline or reward fact is invented."
+      },
+      {
+        "id": "E08",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "Safely abstains from unsupported Pectra details. The requested 64 × 32 = 2,048 ETH consolidation and the distinction between the new maximum and unchanged minimum are missing. This is an answer-coverage failure, not an invented cap or minimum."
+      },
+      {
+        "id": "E09",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "The missing CFO guide is correctly identified, but the positive reference supports a required distinction between withdrawal control and validator-signing/slashing risk. The answer does not establish that principal immunity cannot be concluded. It invents neither an incident nor a contractual entitlement."
+      },
+      {
+        "id": "E10",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "The cited MCP security profile really mentions Ackee and the ETH2 Batch Deposit Contract. The answer correctly limits that evidence, but fails to distinguish the institutional batch-deposit review from the retail Ethereum Staking Protocol review or answer the cross-coverage question. No audit scope is fabricated."
+      },
+      {
+        "id": "E11",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "The MCP products output does not give Core/Prime VaaS prices, so abstention avoids fabricated rates. It nevertheless does not supply the reference calculation of $1,595 monthly and $19,140 over twelve months or the commercial-scope distinction. Missing evidence causes a coverage failure."
+      },
+      {
+        "id": "E12",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "The answer correctly limits the MCP capture to its listed SWQOS/ShredStream offerings and contact routing. It does not provide the four-product onboarding/authentication distinctions established by the frozen reference. It does not manufacture credentials, provisioning timelines or universal access."
+      },
+      {
+        "id": "E13",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "The capture does not provide the Direct Shreds p50 measurement, and the answer avoids inventing latency or an SLA. However, it does not answer the required scope question: an in-region median cannot establish every-message delivery within 3ms for a distant client. Safe abstention still fails this positive task."
+      },
+      {
+        "id": "E14",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "The response correctly confines the 0.0005 SOL tip to the MCP pay-as-you-go RPC description and does not transfer it to QUIC. It nevertheless omits the transport-key/transaction-signer distinction and the conflicting tip rules in the frozen SWQOS API reference. The real MCP tip figure is not an invented fact, even though it differs from the web-corpus rule."
+      },
+      {
+        "id": "E15",
+        "verdict": "fail",
+        "inventedFacts": false,
+        "explanation": "No product matrix is reconciled. The abstention also overstates absence: the MCP products output does mention Solana blockspace and lists NYC among SWQOS locations, although it does not establish the requested four-product Singapore/New York matrix or six-versus-seven-region conflict. This is incomplete and inaccurate evidence characterization; no new rollout date, availability guarantee or fabricated product matrix is asserted."
+      },
+      {
+        "id": "E16",
+        "verdict": "pass",
+        "inventedFacts": false,
+        "explanation": "Correctly refuses to name a current insurer, policy limit, beneficiary or whole-principal guarantee absent from MCP evidence. Its supporting statement about zero material slashing and non-custodial operation is explicitly present in the cited profiles. It does not infer that no insurance can exist."
+      },
+      {
+        "id": "E17",
+        "verdict": "pass",
+        "inventedFacts": false,
+        "explanation": "Correctly states that the supplied documents do not establish contractual compensation after a 72-hour VaaS delay. It invents no refund, credits or zero-entitlement conclusion, matching the negative reference."
+      },
+      {
+        "id": "E18",
+        "verdict": "pass",
+        "inventedFacts": false,
+        "explanation": "Correctly refuses an exact all-in monthly bill because the London/Dublin add-ons, total tips and commitment are missing. The $1,300/month, 50 TPS QUIC and listed locations are explicitly attributed to the captured MCP products output and are present there; they are not invented or represented as the missing current customer quote. This differs from the web reference evidence but preserves its required refusal of an unsupported all-in amount."
+      },
+      {
+        "id": "E19",
+        "verdict": "pass",
+        "inventedFacts": false,
+        "explanation": "Correctly abstains from an exact network-wide pending-transaction share because the captured sources supply neither the Relayer percentage nor a valid denominator. It derives no percentage from region or validator counts, matching the negative reference."
+      },
+      {
+        "id": "E20",
+        "verdict": "pass",
+        "inventedFacts": false,
+        "explanation": "Correctly refuses to provide an exact UTC arrival time when the captured sources lack the withdrawal guide, terms and live queue information needed to derive one. It promises no immediate or fixed-time withdrawal, matching the negative reference."
+      }
+    ]
+  }
+]

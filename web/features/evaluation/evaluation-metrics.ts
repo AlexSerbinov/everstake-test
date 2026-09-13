@@ -17,7 +17,7 @@ export function evaluationMetrics(run: EvaluationRun) {
         row.answer.status === "error",
     ).length,
     accuracy:
-      run.summary.accuracy === null
+      run.summary.accuracy === null || assessed !== planned
         ? assessed
           ? "Incomplete"
           : "Not assessed"

@@ -160,3 +160,191 @@ test("pausing automatic updates defers scheduled work but a manual click promote
     db.close();
   }
 });
+
+test("batch persists across reload and repeated full-pass requests do not rerun finished sources", async () => {
+  const db = openDatabase(":memory:");
+  const called: string[] = [];
+  const make = () =>
+    createUpdateController(
+      db,
+      async (id, _settings, progress) => {
+        progress("Checking sources");
+        called.push(id);
+        return { added: 2, measuredUsd: 0 };
+      },
+      { sources },
+    );
+  try {
+    const control = make();
+    const batch = control.startBatch();
+    assert.equal(batch.jobIds.length, 2);
+    await control.tick();
+    const reloaded = make();
+    assert.deepEqual(reloaded.status().latestBatch, batch);
+    assert.deepEqual(reloaded.startBatch(), batch);
+    assert.equal(reloaded.status().jobs.length, 2);
+    assert.equal(
+      reloaded.status().batchJobs.filter((job) => job.status === "completed")
+        .length,
+      1,
+    );
+    await reloaded.tick();
+    assert.equal(called.length, 2);
+    assert.equal(
+      reloaded.status().batchJobs.filter((job) => job.status === "completed")
+        .length,
+      2,
+    );
+    assert.notEqual(reloaded.startBatch().id, batch.id);
+  } finally {
+    db.close();
+  }
+});
+
+test("partial failure stays visible and source retry preserves the active batch", async () => {
+  const db = openDatabase(":memory:");
+  let fail = true;
+  const control = createUpdateController(
+    db,
+    async (id) => {
+      if (id === "site" && fail) throw new Error("Source unavailable");
+      return { added: 1 };
+    },
+    { sources },
+  );
+  try {
+    const batch = control.startBatch();
+    await control.tick();
+    assert.equal(
+      control.status().batchJobs.filter((job) => job.status === "failed")
+        .length,
+      1,
+    );
+    assert.equal(
+      control.status().batchJobs.filter((job) => job.status === "queued")
+        .length,
+      1,
+    );
+    fail = false;
+    const retry = control.startBatch({ sourceId: "site" });
+    assert.equal(retry.id, batch.id);
+    assert.equal(retry.jobIds.length, 2);
+    assert.equal(
+      control.status().jobs.filter((job) => job.status === "failed").length,
+      1,
+    );
+    await control.tick();
+    await control.tick();
+    assert.equal(
+      control.status().batchJobs.filter((job) => job.status === "completed")
+        .length,
+      2,
+    );
+  } finally {
+    db.close();
+  }
+});
+
+test("full-pass batch reuses scheduled source jobs and no enabled sources yields an empty pass", () => {
+  const db = openDatabase(":memory:");
+  const control = createUpdateController(db, async () => ({}), { sources });
+  try {
+    const job = control.enqueue({ sourceId: "site" }, "schedule")[0];
+    assert.ok(control.startBatch().jobIds.includes(job.id));
+    assert.equal(
+      control.status().batchJobs.find((entry) => entry.id === job.id)?.trigger,
+      "manual",
+    );
+    const settings = readUpdateSettings(db, sources());
+    for (const source of Object.values(settings.sources))
+      source.enabled = false;
+    control.configure(settings);
+    assert.throws(() => control.startBatch({ sourceId: "site" }), /disabled/);
+  } finally {
+    db.close();
+  }
+  const emptyDb = openDatabase(":memory:");
+  try {
+    const empty = createUpdateController(emptyDb, async () => ({}), {
+      sources,
+    });
+    const settings = readUpdateSettings(emptyDb, sources());
+    for (const source of Object.values(settings.sources))
+      source.enabled = false;
+    empty.configure(settings);
+    assert.deepEqual(empty.startBatch().jobIds, []);
+  } finally {
+    emptyDb.close();
+  }
+});
+
+test("full pass extends an active source-only batch instead of silently omitting enabled sources", async () => {
+  const db = openDatabase(":memory:");
+  const called: string[] = [];
+  const control = createUpdateController(
+    db,
+    async (id) => {
+      called.push(id);
+    },
+    { sources },
+  );
+  try {
+    const partial = control.startBatch({ sourceId: "site" });
+    assert.equal(partial.jobIds.length, 1);
+    const full = control.startBatch();
+    assert.equal(full.id, partial.id);
+    assert.equal(full.jobIds.length, 2);
+    assert.ok(full.jobIds.includes(partial.jobIds[0]));
+    assert.deepEqual(
+      new Set(control.status().batchJobs.map((job) => job.sourceId)),
+      new Set(["site", "youtube"]),
+    );
+    await control.tick();
+    const repeated = control.startBatch();
+    assert.deepEqual(repeated, full);
+    assert.equal(control.status().jobs.length, 2);
+    await control.tick();
+    assert.deepEqual(called, ["site", "youtube"]);
+  } finally {
+    db.close();
+  }
+});
+
+test("full pass adds not-due sources to an active due-only batch without repeating completed members", async () => {
+  const db = openDatabase(":memory:");
+  const now = Date.parse("2026-09-13T12:00:00Z");
+  const extraSources = () => [
+    ...sources(),
+    { id: "third", label: "Third", kind: "website", intervalHours: 24 },
+  ];
+  const control = createUpdateController(db, async () => ({}), {
+    sources: extraSources,
+    now: () => now,
+  });
+  try {
+    setSetting(db, "source_checked:youtube", new Date(now).toISOString());
+    const partial = control.startBatch({ due: true });
+    assert.equal(partial.jobIds.length, 2);
+    await control.tick();
+    const full = control.startBatch();
+    assert.equal(full.id, partial.id);
+    assert.equal(full.jobIds.length, 3);
+    assert.equal(control.status().jobs.length, 3);
+    assert.equal(
+      control.status().batchJobs.filter((job) => job.status === "completed")
+        .length,
+      1,
+    );
+    assert.ok(
+      control
+        .status()
+        .batchJobs.some(
+          (job) => job.sourceId === "youtube" && job.status === "queued",
+        ),
+    );
+    assert.deepEqual(control.startBatch(), full);
+    assert.equal(control.status().jobs.length, 3);
+  } finally {
+    db.close();
+  }
+});

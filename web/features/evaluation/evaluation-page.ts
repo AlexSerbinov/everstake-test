@@ -1,3 +1,9 @@
+import { methodComparison } from "./method-comparison.js";
+import {
+  groupMetrics,
+  selectResults,
+  type QuestionGroup,
+} from "./evaluation-groups.js";
 import {
   badge,
   button,
@@ -37,14 +43,14 @@ export function filterRows(rows: ResultRow[], verdict: string): ResultRow[] {
     : rows.filter((row) => row.verdict === verdict);
 }
 export function evaluationPage(): HTMLElement {
-  const page = el("section", "explore-page");
+  const page = el("section", "explore-page evaluation-page");
   page.append(
-    el("p", "eyebrow", "QUALITY, MADE VISIBLE"),
-    el("h1", "", "Every answer is a test."),
+    el("p", "eyebrow", "MEASURED QUALITY"),
+    el("h1", "", "Put every answer to the test."),
     el(
       "p",
       "lede",
-      "Explore saved evaluations: the questions, expected answers, actual results, and what went wrong. Opening this page does not run a new evaluation.",
+      "Real questions. Saved answers. See what passed, what failed, and the evidence behind each result.",
     ),
   );
   const content = el("div");
@@ -59,124 +65,232 @@ export function evaluationPage(): HTMLElement {
         content.replaceChildren(
           empty(
             "No saved evaluation yet",
-            "Results will appear here after the operator runs and assesses the question set. No accuracy claim is available yet.",
+            "Accuracy will appear after the question set is run and assessed.",
           ),
         );
         return;
       }
-      const controls = el("div", "view-controls");
-      const runLabel = el("label", "", "Saved run");
+      const controls = el("div", "eval-run-controls");
+      const label = el("label", "eyebrow", "Saved evaluation");
       const select = el("select");
       select.id = "evaluation-run";
-      runLabel.htmlFor = select.id;
+      label.htmlFor = select.id;
       for (const run of runs) {
         const option = el(
           "option",
           "",
-          `${date(run.createdAt)} · ${run.mode} · ${run.status}`,
+          `${date(run.createdAt)} · ${run.mode} · ${run.status} · ${run.id.slice(-8)}`,
         );
         option.value = run.id;
         select.append(option);
       }
       select.value = defaultEvaluationRun(runs)!.id;
-      const filterLabel = el("label", "", "Show results");
+      controls.append(
+        label,
+        select,
+        el(
+          "span",
+          "muted small",
+          "Viewing saved results does not start a new run.",
+        ),
+      );
+      const overview = el("div");
+      const groups = el("div", "eval-groups");
+      const resultControls = el("div", "eval-result-controls");
+      const count = el("p", "", "Question results");
+      count.setAttribute("aria-live", "polite");
+      const filterLabel = el("label", "", "Result");
       const filter = el("select");
       filter.id = "evaluation-filter";
       filterLabel.htmlFor = filter.id;
-      controls.append(runLabel, select, filterLabel, filter);
-      const overview = el("div");
+      for (const [value, text] of [
+        ["all", "All results"],
+        ["passed", "Passed"],
+        ["failed", "Failed"],
+        ["ungraded", "Not graded"],
+        ["error", "Request errors"],
+      ]) {
+        const option = el("option", "", text);
+        option.value = value;
+        filter.append(option);
+      }
+      resultControls.append(count, filterLabel, filter);
       const list = el("div", "evaluation-list");
-      content.replaceChildren(controls, overview, list);
-      function render(resetFilter = false) {
+      let activeGroup: QuestionGroup = "all";
+      const comparison = methodComparison(runs, (runId, questionIndex) => {
+        select.value = runId;
+        activeGroup = "all";
+        filter.value = "all";
+        render();
+        if (questionIndex !== undefined) {
+          const card = list.children[questionIndex] as
+            HTMLDetailsElement | undefined;
+          if (card) {
+            card.open = true;
+            const summary = card.querySelector("summary");
+            summary?.focus({ preventScroll: true });
+            card.scrollIntoView({ block: "start", behavior: "instant" });
+          }
+        } else controls.scrollIntoView({ block: "start", behavior: "instant" });
+      });
+      content.replaceChildren(
+        comparison,
+        controls,
+        overview,
+        groups,
+        el(
+          "p",
+          "eval-subset-note",
+          "Simple and hard describe difficulty. Negative cases are a subset of those questions: the correct response is to say the corpus has no reliable answer.",
+        ),
+        resultControls,
+        list,
+      );
+      function render() {
         const run = runs.find((item) => item.id === select.value)!;
         const summary = run.summary;
         const progress = evaluationMetrics(run);
-        if (resetFilter) {
-          filter.replaceChildren();
-          for (const value of [
-            "all",
-            ...new Set(run.rows.map((row) => row.verdict || "ungraded")),
-          ]) {
-            const option = el(
-              "option",
-              "",
-              value === "all" ? "All results" : value.replaceAll("_", " "),
-            );
-            option.value = value;
-            filter.append(option);
-          }
-        }
-        const stats = el("div", "metrics");
-        stats.append(
-          metric(
-            "Strict accuracy",
-            progress.accuracy,
-            `${summary.passed} passed / ${progress.planned} planned`,
+        const hero = el("div", "eval-score-panel");
+        const score = el("div", "eval-score");
+        score.append(
+          el("p", "eyebrow", "Overall accuracy"),
+          el(
+            "strong",
+            progress.assessmentComplete ? "" : "eval-score-status",
+            progress.accuracy.replace(".0%", "%"),
           ),
+          el(
+            "p",
+            "",
+            `${summary.passed} passed out of ${progress.planned} planned questions`,
+          ),
+        );
+        const outcomes = el("div", "eval-outcomes");
+        outcomes.append(
           metric(
-            "Assessed",
+            "Passed",
+            String(summary.passed),
+            "Correct answers + correct abstentions",
+          ),
+          metric("Failed", String(summary.failed), "Includes partial answers"),
+          metric(
+            "Checked",
             `${summary.assessed} / ${progress.planned}`,
-            `${summary.failed} failed · ${progress.awaitingAssessment} awaiting assessment · ${progress.notRun} not run`,
+            "Grading progress, not the pass rate",
           ),
+        );
+        const bar = el("div", "eval-segments");
+        bar.setAttribute("role", "img");
+        bar.setAttribute(
+          "aria-label",
+          `${summary.passed} passed, ${summary.failed} failed, ${Math.max(0, progress.planned - summary.assessed)} not graded out of ${progress.planned} planned`,
+        );
+        for (let i = 0; i < progress.planned; i++)
+          bar.append(
+            el(
+              "span",
+              i < summary.passed
+                ? "passed"
+                : i < summary.passed + summary.failed
+                  ? "failed"
+                  : "pending",
+            ),
+          );
+        const breakdown = el("div", "eval-score-breakdown");
+        breakdown.append(
+          outcomes,
+          bar,
+          el(
+            "p",
+            "small muted",
+            `${summary.passed} passed · ${summary.failed} failed · ${progress.awaitingAssessment} awaiting grading · ${progress.notRun} not run`,
+          ),
+        );
+        hero.append(score, breakdown);
+        const extras = el("div", "eval-support-stats");
+        extras.append(
           metric(
             "Answers with invented facts",
             summary.inventedFacts === null
               ? "Not established"
               : String(summary.inventedFacts),
-            `Among ${summary.assessed} assessed questions`,
+            `Among ${summary.assessed} checked questions${progress.assessmentComplete ? "" : " · incomplete assessment"}`,
           ),
           metric(
-            "Known run cost",
+            "Known evaluation cost",
             money(summary.knownCostUsd),
             summary.unknownCalls
               ? `${summary.unknownCalls} costs unconfirmed`
               : "Recorded usage",
           ),
-        );
-        const version = el(
-          "p",
-          "muted small",
-          `Run ${run.id} · Collection ${run.corpusVersion} · ${run.mode}`,
-        );
-        const state = badge(
-          run.status === "completed" && !progress.assessmentComplete
-            ? "Answers saved · assessment incomplete"
-            : run.status,
-          run.status === "completed" && progress.assessmentComplete
-            ? ""
-            : "warning",
+          metric(
+            "Request errors",
+            String(progress.errors),
+            "Provider errors are not abstentions",
+          ),
         );
         overview.replaceChildren(
-          stats,
-          version,
-          state,
+          hero,
+          extras,
           el(
             "p",
-            "muted small",
-            `${progress.completed} requests recorded · ${progress.errors} request errors · ${progress.notRun} planned questions have no saved answer in this run.`,
-          ),
-          el(
-            "p",
-            "muted small",
-            "Partial answers do not count as strict successes. Filters below do not change the overall results. An incomplete assessment cannot establish zero invented facts.",
+            "eval-run-meta small muted",
+            `${run.mode} · ${run.status} · Run ${run.id} · Collection ${run.corpusVersion}`,
           ),
         );
-        list.replaceChildren();
-        const rows = filterRows(run.rows, filter.value);
-        rows.forEach((row) =>
-          list.append(questionResultCard(row, run.rows.indexOf(row), run.id)),
+        groups.replaceChildren();
+        for (const [group, title, description] of [
+          ["all", "All questions", "The full saved question set"],
+          ["simple", "Simple", "Direct facts and lookups"],
+          ["hard", "Hard", "Conflicts, calculations and synthesis"],
+          ["negative", "Negative cases", "Questions the corpus cannot answer"],
+        ] as const) {
+          const stats = groupMetrics(run.rows, group);
+          const item = button(
+            "",
+            () => {
+              activeGroup = group;
+              render();
+            },
+            `eval-group ${group === activeGroup ? "active" : ""}`,
+          );
+          item.setAttribute("aria-pressed", String(group === activeGroup));
+          item.append(
+            el("span", "eval-group-title", title),
+            el("strong", "", String(stats.total)),
+            el(
+              "span",
+              "small",
+              stats.accuracy === null
+                ? `${stats.checked} / ${stats.total} checked · accuracy pending`
+                : `${stats.passed} / ${stats.total} passed · ${(stats.accuracy * 100).toFixed(0)}%`,
+            ),
+            el("span", "muted small", description),
+          );
+          groups.append(item);
+        }
+        const rows = selectResults(run.rows, activeGroup, filter.value);
+        count.textContent = `Question results · ${rows.length} shown of ${run.rows.length} saved`;
+        list.replaceChildren(
+          ...rows.map((row) =>
+            questionResultCard(row, run.rows.indexOf(row), run.id),
+          ),
         );
         if (!rows.length)
           list.append(
             empty(
               "No results in this filter",
-              "Choose another verdict to see saved answers.",
+              "Choose another group or result to see saved answers.",
             ),
           );
       }
-      select.addEventListener("change", () => render(true));
-      filter.addEventListener("change", () => render());
-      render(true);
+      select.addEventListener("change", () => {
+        activeGroup = "all";
+        filter.value = "all";
+        render();
+      });
+      filter.addEventListener("change", render);
+      render();
     } catch (error) {
       content.replaceChildren(
         empty("Evaluations unavailable", (error as Error).message),

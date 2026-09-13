@@ -66,3 +66,18 @@ The plain-RAG baseline receives six initial passages and one answer turn, with t
 | E20 | pass | pass | Negative question; the system abstained and did not promise an exact UTC delivery time. |
 
 Earlier complete agent runs on the same corpus are retained as measured iterations, alongside incomplete diagnostic runs: `agent-2b8e50ab` 15/20 (75%, 1 unsupported-fact case); `agent-37174f55` 14/20 (70%, 2 unsupported-fact cases); `agent-b0993aac` 16/20 (80%, 1 unsupported-fact case). No answers are stitched into any run. Model-based support verification is fallible; deterministic citation and arithmetic checks do not prove semantic truth.
+
+## Separate actual MCP-context run — 13 September 2026
+
+`mcp-8bcd1ef1` completed the same twenty questions with Gemini `gemini-3.8-flash` using nine captured generic official MCP read-tool responses. **Two independent rubric/source reviews: 7/20 (35%), 13 failures, 0 invented-fact cases.** The original responses are preserved separately from grading; the published summary is calculated from explicit per-question grades, not from HTTP success.
+
+| Cases | First independent verdict | Reason |
+|---|---|---|
+| E03, E04 | Pass | Supported founding year and certification/compliance distinctions. |
+| E16–E20 | Pass | All five negative cases refuse unsupported guarantees, exact bills or live values. |
+| E02 | Fail | The genuine MCP 130+ figure lacks the frozen reference's active/lifetime scope and conflict handling; not an invented number. |
+| E01, E05–E15 | Fail | Required positive answers are missing; safe abstention does not satisfy positive coverage. E15 also overstates absence of regional information. |
+
+Three responses were `answered`; seventeen were `no_reliable_answer`; no provider error was substituted for an abstention. Generation cost: **$0.23630625**, twenty calls, no unknown charges. These results do not overwrite any previous agent/baseline rows or claim a fresh agent run. MCP is a tool server; this evaluates a single-turn captured-context client, not live autonomous tool selection. Its evidence and verification budget differ from the corpus agent's. The selected questions are not held out.
+
+[Original twenty answers and receipts](artifacts/evaluation/mcp-2026-09-13.json) · [Independent grading for every row](artifacts/mcp/grades-2026-09-13.json) · [Captured evidence](artifacts/mcp/evidence-2026-09-13.json) · [Methodology and limits](docs/MCP_COMPARISON.md).

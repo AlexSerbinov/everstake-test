@@ -7,6 +7,7 @@ const labels: Record<string, string> = {
   build: "Source collection",
   refresh: "Source update",
   evaluation: "Evaluation",
+  "mcp-evaluation": "MCP comparison",
   youtube_transcription: "Video transcription",
 };
 export function activityLabel(kind: string): string {

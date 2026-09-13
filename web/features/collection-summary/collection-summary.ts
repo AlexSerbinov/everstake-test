@@ -80,7 +80,7 @@ export function collectionSummary(): HTMLElement {
           "small muted",
           data.settings.automatic
             ? "Automatic checks are enabled. Each source follows its saved schedule."
-            : "Automatic checks are off. An operator can refresh the collection in Updates.",
+            : "Automatic checks are off. Start a refresh from Updates.",
         ),
       );
     })
