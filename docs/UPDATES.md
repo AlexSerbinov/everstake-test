@@ -27,3 +27,7 @@ New artifacts live in ignored `data/updates/`, with registry/review/document sta
 - `POST /api/updates/run`: `{ "sourceId": "youtube" }`, `{ "due": true }` or `{}`; returns `{ jobs, batch }` with HTTP 202; `batch` carries `id`, `jobIds` and `createdAt`.
 
 Browser actions use same-origin JSON requests; protected internal APIs retain their authentication. No operator credential is embedded in the browser. Unknown/disabled sources and invalid intervals are rejected. The original CLI refresh commands remain available for web sources; `refresh-due` uses saved per-source schedules. The browser displays the latest 30 historical jobs and all sources in the current pass, and cleans up polling on navigation. Controller tests use isolated databases and fake providers to cover persistent batches, deduplication after partial completion, failures and retries without API spending. Fresh YouTube discovery and paid processing were not run against the serving corpus for this change.
+
+## Hosted verification, 13 September 2026
+
+The public JSON action and browser progress were exercised on the hosted service. Blockspace completed in 34.1 seconds with three unchanged documents and no new provider calls; 938 other documents remained active. Two other attempted sources failed incomplete collection and preserved the serving version. The full thirty-source pass and new paid YouTube processing were not executed as this verification. Final runtime commit: `2ad6d9cb2114013c600c7754acc3bbc7b9c6664c`.

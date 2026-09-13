@@ -1,0 +1,167 @@
+{
+  "checkedAt": "2026-09-13T19:08:34.168Z",
+  "base": "https://everstate-knowledge-base.89-167-19-222.sslip.io",
+  "health": {
+    "status": "ok",
+    "application": "Everstate Knowledge Base",
+    "codeVersion": "2ad6d9cb2114013c600c7754acc3bbc7b9c6664c",
+    "configHash": "b1cf91c882bf8a282211671e01e5b3dcc0761559e4419fcc4afc8121b2689e28",
+    "corpusVersion": "corpus-231c8c9b17fd"
+  },
+  "corpus": {
+    "total": 941,
+    "pageSize": 100,
+    "returned": 100
+  },
+  "costs": {
+    "total": 5.175148275000001,
+    "query": {
+      "runs": 69,
+      "measuredRuns": 62,
+      "excludedRuns": 7,
+      "meanUsd": 0.03797961951612905,
+      "minUsd": 0.008076479999999999,
+      "maxUsd": 0.08921234999999997
+    },
+    "update": {
+      "runs": 4,
+      "measuredRuns": 2,
+      "excludedRuns": 2,
+      "meanUsd": 0,
+      "minUsd": 0,
+      "maxUsd": 0,
+      "knownCostUsd": 0
+    },
+    "providers": [
+      {
+        "provider": "soniox",
+        "calls": 18,
+        "knownCostUsd": 1.328459,
+        "inputTokens": 350513,
+        "outputTokens": 229237,
+        "unknownCalls": 0,
+        "pendingCalls": 0,
+        "unpricedFinalCalls": 0,
+        "errorCalls": 0,
+        "models": [
+          {
+            "model": "stt-async-v5",
+            "calls": 18,
+            "knownCostUsd": 1.328459,
+            "inputTokens": 350513,
+            "outputTokens": 229237,
+            "unknownCalls": 0,
+            "pendingCalls": 0,
+            "unpricedFinalCalls": 0,
+            "errorCalls": 0
+          }
+        ]
+      },
+      {
+        "provider": "gemini",
+        "calls": 443,
+        "knownCostUsd": 3.8031900750000003,
+        "inputTokens": 3620938,
+        "outputTokens": 369545,
+        "unknownCalls": 3,
+        "pendingCalls": 0,
+        "unpricedFinalCalls": 3,
+        "errorCalls": 3,
+        "models": [
+          {
+            "model": "gemini-3.8-flash",
+            "calls": 370,
+            "knownCostUsd": 3.571659375,
+            "inputTokens": 2985194,
+            "outputTokens": 353222,
+            "unknownCalls": 3,
+            "pendingCalls": 0,
+            "unpricedFinalCalls": 3,
+            "errorCalls": 3
+          },
+          {
+            "model": "gemini-3.5-flash-lite",
+            "calls": 73,
+            "knownCostUsd": 0.2315307,
+            "inputTokens": 635744,
+            "outputTokens": 16323,
+            "unknownCalls": 0,
+            "pendingCalls": 0,
+            "unpricedFinalCalls": 0,
+            "errorCalls": 0
+          }
+        ]
+      },
+      {
+        "provider": "openai",
+        "calls": 356,
+        "knownCostUsd": 0.0434992000000001,
+        "inputTokens": 2174960,
+        "outputTokens": 0,
+        "unknownCalls": 5,
+        "pendingCalls": 0,
+        "unpricedFinalCalls": 5,
+        "errorCalls": 5,
+        "models": [
+          {
+            "model": "text-embedding-3-small",
+            "calls": 356,
+            "knownCostUsd": 0.0434992000000001,
+            "inputTokens": 2174960,
+            "outputTokens": 0,
+            "unknownCalls": 5,
+            "pendingCalls": 0,
+            "unpricedFinalCalls": 5,
+            "errorCalls": 5
+          }
+        ]
+      }
+    ],
+    "rawPromptLeak": false
+  },
+  "latestUpdate": {
+    "batch": {
+      "id": "eb92fd8c-905d-4780-a381-009825de94cd",
+      "jobIds": [
+        "567e73ad-4775-46d8-afee-13483ab01fc7"
+      ],
+      "createdAt": "2026-09-13T19:03:25.656Z"
+    },
+    "jobs": [
+      {
+        "id": "567e73ad-4775-46d8-afee-13483ab01fc7",
+        "sourceId": "blockspace-everstake-com",
+        "trigger": "manual",
+        "status": "completed",
+        "phase": "done",
+        "createdAt": "2026-09-13T19:03:25.654Z",
+        "updatedAt": "2026-09-13T19:04:00.759Z",
+        "result": {
+          "corpusVersion": "corpus-231c8c9b17fd",
+          "jobId": "795ba600-4b8a-46cf-8e22-30ed0009fdf4",
+          "counts": {
+            "added": 0,
+            "changed": 0,
+            "unchanged": 3,
+            "retained": 938,
+            "excluded": 0,
+            "pending": 0
+          },
+          "receipt": {
+            "runId": "e5666201-db69-4658-8fb0-c8db6ab07969",
+            "calls": 0,
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "knownCostUsd": 0,
+            "unknownCalls": 0,
+            "elapsedMs": 34088,
+            "startedAt": "2026-09-13T19:03:26.665Z",
+            "finishedAt": "2026-09-13T19:04:00.753Z",
+            "status": "completed",
+            "attempts": []
+          }
+        }
+      }
+    ]
+  }
+}

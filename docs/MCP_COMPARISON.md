@@ -31,6 +31,6 @@ To perform a new paid run, use a new output path so the prior measurement is ret
 npx tsx scripts/evaluate-mcp.ts --evidence artifacts/mcp/evidence-2026-09-13.json --out artifacts/evaluation/mcp-new-run.json --db data/knowledge.sqlite
 ```
 
-New answers require independent grading; successful API responses are not automatically passes. This measurement does not establish that the redesigned interface has been deployed or validated on the live host.
+New answers require independent grading; successful API responses are not automatically passes. The redesigned interface was subsequently deployed and verified on the live host; see [hosted validation](review-logs/2026-09-13-product-pages.md).
 
 The 7/20 result measures the frozen content rubric. Some otherwise passing responses omit an explicit observation date; this score is not a claim that every assignment answer-format requirement passed. Independent coding-agent review is not human-certified ground truth.

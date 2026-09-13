@@ -34,3 +34,11 @@ Publication detected a shared-host build race: a separate frontend change entere
 Latest local verification: typecheck and all 177 tests passed after the dense-table/provider-cost refinement. Browser recheck at 1440px and 390px confirmed 100 rows at 44px, contained horizontal table scrolling, model/provider cards, and explicit empty-average states.
 
 A real token-free source update completed on the host: job `567e73ad-4775-46d8-afee-13483ab01fc7`, Blockspace website, 34.1 seconds, three unchanged documents, 938 retained, no provider calls or charges, activated `corpus-231c8c9b17fd`. Earlier security and company-site refreshes failed incomplete collection and retained the old corpus; those failures remain visible. This is not a claim of a successful all-source/full-YouTube refresh.
+
+## Final hosted verification
+
+Published runtime: `2ad6d9cb2114013c600c7754acc3bbc7b9c6664c`, including the independently published source-instruction hardening changes. All 186 tests passed locally and inside the immutable Linux image. [GitHub CI](https://github.com/AlexSerbinov/everstake-test/actions/runs/34776664346) passed. The image was built from the exact Git archive; `.env` and the live database were preserved. Reimporting the MCP ledger inserted zero additional rows.
+
+HTTPS browser verification confirmed 100 document rows, six columns and 44px row height; Soniox/Gemini/OpenAI panels; the real query average ($0.03798 across 62 fully priced completed queries at capture); update-run mean (two completed unchanged checks, $0 API usage, not a forecast for the next full pass); and 95%/55%/35% saved evaluation comparison. A fresh founding-year question returned 2018 with a dated cited source and a $0.01133 receipt. The header brand then restored an empty homepage. Desktop/mobile layouts passed without page overflow. Browsers and the isolated local fixture were closed.
+
+[Live screenshots and captured API verification](../../artifacts/demo/product-pages/) document the final state. Failed source checks remain visible; a working update workflow does not guarantee every external source is reachable.
