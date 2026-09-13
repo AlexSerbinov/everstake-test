@@ -50,6 +50,9 @@ export function screenVideo(
   const participation = containsAny(text, policy.participationTerms);
 
   if (lookalike) return { ...candidate, decision: 'excluded', reason: `Metadata matches configured look-alike term "${lookalike}"; name similarity is not company identity.` };
+  if (candidate.durationSeconds === null || !Number.isFinite(candidate.durationSeconds) || candidate.durationSeconds <= 0) {
+    return { ...candidate, decision: 'needs_review', reason: 'Duration is unknown or invalid; paid processing requires a fresh positive duration.' };
+  }
   if (candidate.durationSeconds !== null && candidate.durationSeconds < policy.minimumDurationSeconds) {
     return { ...candidate, decision: 'needs_review', reason: `Duration is ${candidate.durationSeconds}s, below the ${policy.minimumDurationSeconds}s screening floor; inspect before paid transcription.` };
   }

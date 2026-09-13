@@ -8,6 +8,11 @@ screening:
   lookalikeTerms: [everrise, everstake solution fintech]
   minimumDurationSeconds: 30
 pilotVideoIds: [DFSEQ3OGoL8, V0WcDdiJAeg, Wz8KVaO2gWk]
+reviewedBatches:
+  historicalInterviews20260913:
+    ids: [CDmKMHaTtSQ, beakNs8F3pQ, rIFtUSKa-fQ]
+    maximumCombinedDurationSecondsIncludingPilot: 10800
+    reason: Clear named Everstake executive participation across 2021, 2023 and 2025; staking, regulation, Ukraine aid and validator operations provide higher historical value than tutorials.
 paths:
   inventory: artifacts/youtube/inventory.json
   documents: artifacts/youtube/accepted-documents.json

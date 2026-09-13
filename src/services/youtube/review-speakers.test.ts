@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { ModelClient } from '../../contracts.js';
-import { reviewSpeakers } from './review-speakers.js';
+import { conservativeReview, reviewSpeakers } from './review-speakers.js';
 import type { Turn } from './turns.js';
 
 const turns: Turn[] = [
@@ -9,7 +9,7 @@ const turns: Turn[] = [
   { speaker: '2', startMs: 1_100, endMs: 2_000, text: 'Welcome to the interview.' },
 ];
 
-test('speaker identity evidence must come from a turn with the same diarization label', async () => {
+test('speaker identity evidence from another label is downgraded without a retry', async () => {
   let calls = 0;
   const model: ModelClient = {
     async generate() {
@@ -26,7 +26,10 @@ test('speaker identity evidence must come from a turn with the same diarization 
       };
     },
   };
-  await assert.rejects(reviewSpeakers(model, 'run-1', turns, {}), /another label/);
+  const result = await reviewSpeakers(model, 'run-1', turns, {});
+  assert.equal(result.status, 'needs_review');
+  assert.equal(result.speakers[0]?.name, null);
+  assert.deepEqual(result.speakers[0]?.evidenceTurnIndexes, []);
   assert.equal(calls, 1);
 });
 
@@ -50,4 +53,14 @@ test('speaker review uses one model pass and retains unknown identity', async ()
   const result = await reviewSpeakers(model, 'run-2', turns, {});
   assert.equal(result.speakers[1]?.name, null);
   assert.equal(calls, 1);
+});
+
+test('unsupported role without an identified person is downgraded without retry', () => {
+  const result = conservativeReview({
+    status: 'reviewed', suspiciousIntervals: [], limitations: [],
+    speakers: [{ label: '1', name: null, roleAtRecording: 'Host', participantType: 'interviewer', evidenceTurnIndexes: [0], reason: 'sounds like host' }],
+  }, turns);
+  assert.equal(result.status, 'needs_review');
+  assert.equal(result.speakers[0]?.roleAtRecording, null);
+  assert.equal(result.speakers[0]?.participantType, 'interviewer');
 });

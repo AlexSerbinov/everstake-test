@@ -190,13 +190,22 @@ export function buildDocument(candidate: VideoCandidate, turns: Turn[], review: 
   const recordedAt = typeof candidate.metadata?.recordingDate === 'string' && candidate.metadata.recordingDate
     ? candidate.metadata.recordingDate
     : null;
+  const config = readYouTubeConfig();
+  const verifiedCompanySpeakers = review.speakers.filter(speaker =>
+    speaker.name && speaker.roleAtRecording && speaker.evidenceTurnIndexes.length > 0
+    && (speaker.participantType === 'employee'
+      || config.screening.companyTerms.some(term => speaker.roleAtRecording!.toLocaleLowerCase('en').includes(term.toLocaleLowerCase('en')))),
+  );
+  const officialPublisher = candidate.channelId === config.officialChannel.id;
+  const interviewAuthority = !officialPublisher && review.status === 'reviewed' && verifiedCompanySpeakers.length > 0;
+  const primarySpeaker = verifiedCompanySpeakers.length === 1 ? verifiedCompanySpeakers[0] : null;
   return {
     id: `youtube:${candidate.id}:${contentHash.slice(0, 16)}`,
     url: candidate.url,
     canonicalUrl: candidate.url,
     title: candidate.title,
     publisher: candidate.channel || 'YouTube',
-    authority: candidate.channelId === readYouTubeConfig().officialChannel.id ? 1 : 3,
+    authority: officialPublisher ? 1 : interviewAuthority ? 2 : 3,
     kind: 'youtube',
     text,
     contentHash,
@@ -211,10 +220,18 @@ export function buildDocument(candidate: VideoCandidate, turns: Turn[], review: 
     metadata: {
       sourceId: 'youtube-inventory',
       videoId: candidate.id,
+      ...(primarySpeaker ? {
+        speaker: primarySpeaker.label,
+        speakerName: primarySpeaker.name,
+        roleAtRecording: primarySpeaker.roleAtRecording,
+      } : {}),
+      speakerStatus: officialPublisher
+        ? (primarySpeaker ? 'verified_company_participant' : 'official_publisher_speaker_unidentified')
+        : interviewAuthority ? 'verified_company_participant_in_third_party_interview' : 'unverified',
       reviewStatus: review.status,
       recordedAt,
       refreshStatus: 'transcribed',
-      freshnessNote: 'publishedAt is the YouTube upload date; recording date is retained only when separately present in provider metadata.',
+      freshnessNote: `${candidate.publishedAt ? 'publishedAt is the YouTube upload date' : 'upload date is unknown'}; recording date is retained only when separately present. ${interviewAuthority ? 'Tier 2 applies to the named Everstake participant’s statements; interviewer questions are context, not first-party factual evidence.' : ''}`.trim(),
     },
   };
 }
