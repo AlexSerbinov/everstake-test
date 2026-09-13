@@ -12,7 +12,7 @@ This branch continues the published main history at `3d85f20`. The existing Clau
 6. Remove the old prototype folders from the active tree once the new implementation covers the required behavior; retain historical commits.
 7. Publish measured results and concise submission documents, then integrate the complete development history without squash.
 
-Commits describe actual completed changes with real timestamps. An accumulated snapshot does not prove hours worked. Model calls, deployment and evaluation are not implied by this document. The current change only introduces the transition documentation.
+Commits describe actual completed changes with real timestamps. An accumulated snapshot does not prove hours worked. Model calls, deployment and evaluation are not implied by this document. The transition is implemented incrementally on dev. The prototype folders were retired from the active tree after their replacements passed integration checks; their commits and the original local checkout remain intact.
 
 ## Hosting target
 

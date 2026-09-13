@@ -1,3 +1,0 @@
-Legacy single-pass prompt retained for reproducibility of the first attempt. The deployed agent now loads
-`prompts/agent-system.txt` and `agents/tools.json` directly, so reviewer-visible policy and production
-behavior cannot drift.

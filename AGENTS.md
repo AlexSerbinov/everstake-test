@@ -4,7 +4,7 @@ This is the single project guide for agents and contributors. We are building Ol
 
 ## Start here
 
-Read the relevant assignment sections, `docs/REBUILD.md`, and the assigned execution package before changing code. Build one small, readable TypeScript application with SQLite and clear feature modules. No RAG frameworks or unnecessary service infrastructure. The current `claude-work/` and `codex-work/` folders are reference prototypes; their results are not measurements of the new implementation.
+Read the relevant assignment sections, `docs/REBUILD.md`, and the assigned execution package before changing code. Build one small, readable TypeScript application with SQLite and clear feature modules. No RAG frameworks or unnecessary service infrastructure. The earlier `claude-work/` and `codex-work/` prototypes are retained in Git history; their results are not measurements of this implementation. The active runtime is `src/` and `web/`.
 
 ## Source of truth: the assignment
 
