@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import type { EvidencePassage } from "../../contracts.js";
 import {
   ABSOLUTE_WORDING,
+  exceptionQuery,
   gatherCounterevidence,
   isNewerCandidate,
 } from "./counterevidence.js";
@@ -126,4 +127,12 @@ test("plain claims run only the subject search", async () => {
   );
   assert.equal(calls, 1);
   assert.deepEqual(result!.exceptions, []);
+});
+test("the exception query names the subject next to the absolute term, not the whole claim", () => {
+  const query = exceptionQuery(
+    "According to documentation on the page checked on 2026-09-13, the tip is not optional, and the submitted transaction must include a tip-transfer instruction.",
+  );
+  assert.match(query, /tip/);
+  assert.match(query, /optional exception except unless/);
+  assert.doesNotMatch(query, /documentation|checked|2026/);
 });

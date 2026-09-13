@@ -10,9 +10,43 @@ import type { Claim, EvidencePassage } from "../../contracts.js";
  * decided by the support review, which receives them alongside the cited evidence.
  */
 export const ABSOLUTE_WORDING =
-  /\b(always|never|every|all|any|must|mandatory|required|guaranteed?|only|cannot|unconditional(?:ly)?|no exceptions?|without exception|in all cases)\b/i;
+  /\b(always|never|every|all|any|must|mandatory|compulsory|obligatory|required|guaranteed?|only|cannot|unconditional(?:ly)?|not optional|non-optional|no exceptions?|without exception|in all cases|in every case|regardless)\b/i;
 const EXCEPTION_TERMS =
   "optional exception except unless alternative without free waived not required can also";
+
+const STOPWORDS = new Set(
+  "the and for with that this from into over under than then also are was were has have had not non its his her their our your they them been being page checked according documentation".split(
+    " ",
+  ),
+);
+
+/**
+ * The exception query is built around the absolute term itself: the few content words next to
+ * it name the subject (the tip, the key, the region), and the exception vocabulary asks for
+ * the passages that limit it. Searching the whole claim would return the pages that repeat
+ * the rule rather than the ones that qualify it.
+ */
+export function exceptionQuery(text: string): string {
+  const match = ABSOLUTE_WORDING.exec(text);
+  const at = match?.index ?? 0;
+  const window = text.slice(
+    Math.max(0, at - 80),
+    at + (match?.[0].length ?? 0) + 80,
+  );
+  const words = [
+    ...new Set(
+      (window.match(/[\p{L}\p{N}-]{3,}/gu) ?? [])
+        .map((w) => w.toLowerCase())
+        .filter(
+          (w) =>
+            !STOPWORDS.has(w) &&
+            !ABSOLUTE_WORDING.test(w) &&
+            !/^\d{4}-\d{2}/.test(w),
+        ),
+    ),
+  ].slice(0, 8);
+  return `${words.join(" ")} ${EXCEPTION_TERMS}`;
+}
 
 export interface ClaimCounterevidence {
   claimIndex: number;
@@ -60,7 +94,7 @@ export async function gatherCounterevidence(
         .filter((s): s is EvidencePassage => !!s);
       const subject = await search(claim.text, 10);
       const exceptions = ABSOLUTE_WORDING.test(claim.text)
-        ? await search(`${claim.text} ${EXCEPTION_TERMS}`, 10)
+        ? await search(exceptionQuery(claim.text), 12)
         : [];
       const newer = subject
         .filter((s) => isNewerCandidate(claim, cited, s))
