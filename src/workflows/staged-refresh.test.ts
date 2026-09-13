@@ -75,9 +75,16 @@ test("staged activation replaces text and vectors together while retaining run l
     db.prepare(
       "INSERT INTO runs(id,kind,started_at,status) VALUES('paid','test','now','completed')",
     ).run();
+    const baseline = inspectCorpusState(db);
     const expected = inspectCorpusState(stage);
     stage.close();
-    activateStagedCorpus(db, directory + "/stage.sqlite", lease, expected);
+    activateStagedCorpus(
+      db,
+      directory + "/stage.sqlite",
+      lease,
+      baseline,
+      expected,
+    );
     assert.equal(activeId(db), "new");
     assert.equal(db.prepare("SELECT count(*) n FROM runs").get()!.n, 1);
   } finally {
@@ -249,6 +256,65 @@ test("resume refuses an incomplete stage without activating it", async () => {
   }
 });
 
+test("resume refuses to replace a serving corpus changed by a newer refresh", async () => {
+  mkdirSync(resolve("data/staging"), { recursive: true });
+  const directory = mkdtempSync(resolve("data/staging/stage-test-"));
+  const db = openDatabase(":memory:");
+  buildIndex(db, [document("baseline")], { version: "live-v1" });
+  const baseline = inspectCorpusState(db);
+  const id = randomUUID();
+  const stagePath = resolve(directory, `${id}.sqlite`);
+  const stage = openDatabase(stagePath);
+  buildIndex(stage, [document("stale-target")], { version: "target-v2" });
+  addFixtureEmbeddings(stage);
+  const target = inspectCorpusState(stage);
+  stage.close();
+  const job: RefreshJob = {
+    id,
+    status: "failed",
+    phase: "activation",
+    sourceIds: [source.id],
+    stagePath,
+    baseline,
+    target,
+    startedAt: "2026-09-13T12:00:00Z",
+    updatedAt: "2026-09-13T12:00:00Z",
+  };
+  setSetting(db, `refresh_job:${id}`, JSON.stringify(job));
+  writeFileSync(
+    resolve("data/staging", `${id}.json`),
+    JSON.stringify({
+      crawls: [],
+      failures: [],
+      retainedSourceIds: [],
+      index: null,
+    }),
+  );
+  buildIndex(db, [document("new-live")], { version: "live-v2" });
+  try {
+    await assert.rejects(
+      stagedRefresh(
+        db,
+        [source],
+        {
+          embed: async () => {
+            throw new Error("All staged chunks should already be embedded");
+          },
+        },
+        "resume-run",
+        { resumeJobId: id },
+      ),
+      /Serving corpus changed since staging began/,
+    );
+    assert.equal(activeId(db), "new-live");
+    assert.equal(getSetting(db, "corpus_version"), "live-v2");
+  } finally {
+    db.close();
+    rmSync(directory, { recursive: true, force: true });
+    rmSync(resolve("data/staging", `${id}.json`), { force: true });
+  }
+});
+
 test("a stale lease cannot overwrite its successor or activate a corpus", () => {
   const directory = mkdtempSync(resolve("data/stage-test-"));
   const db = openDatabase(":memory:");
@@ -256,6 +322,7 @@ test("a stale lease cannot overwrite its successor or activate a corpus", () => 
   buildIndex(db, [document("old")], { version: "live-v1" });
   buildIndex(stage, [document("new")], { version: "target-v2" });
   addFixtureEmbeddings(stage);
+  const baseline = inspectCorpusState(db);
   const expected = inspectCorpusState(stage);
   stage.close();
   const now = Date.now();
@@ -271,6 +338,7 @@ test("a stale lease cannot overwrite its successor or activate a corpus", () => 
           db,
           directory + "/stage.sqlite",
           stale,
+          baseline,
           expected,
           "text-embedding-3-small",
           now + 3,
@@ -282,6 +350,7 @@ test("a stale lease cannot overwrite its successor or activate a corpus", () => 
       db,
       directory + "/stage.sqlite",
       successor,
+      baseline,
       expected,
       "text-embedding-3-small",
       now + 3,

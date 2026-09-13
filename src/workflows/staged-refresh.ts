@@ -196,6 +196,17 @@ function assertCorpusState(actual: CorpusState, expected: CorpusState): void {
     );
 }
 
+function assertLiveBaseline(actual: CorpusState, expected: CorpusState): void {
+  if (
+    actual.version !== expected.version ||
+    actual.activeDocuments !== expected.activeDocuments ||
+    actual.activeChunks !== expected.activeChunks
+  )
+    throw new Error(
+      `Serving corpus changed since staging began: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`,
+    );
+}
+
 function assertEmbeddingCoverage(
   db: Database,
   schema: "main" | "incoming",
@@ -253,6 +264,7 @@ export function activateStagedCorpus(
   db: Database,
   stagePath: string,
   lease: RefreshLease,
+  baseline: CorpusState,
   expected: CorpusState,
   model = embeddingModel,
   now = Date.now(),
@@ -264,6 +276,7 @@ export function activateStagedCorpus(
     db.exec("BEGIN IMMEDIATE");
     try {
       assertLeaseOwner(db, lease, now);
+      assertLiveBaseline(corpusState(db), baseline);
       assertDatabaseIntegrity(db, "incoming");
       assertCorpusState(corpusState(db, "incoming"), expected);
       assertEmbeddingCoverage(db, "incoming", model);
@@ -440,7 +453,14 @@ export async function stagedRefresh(
     save();
     staged.close();
     staged = undefined;
-    activateStagedCorpus(db, job.stagePath, lease, job.target, index.model);
+    activateStagedCorpus(
+      db,
+      job.stagePath,
+      lease,
+      job.baseline,
+      job.target,
+      index.model,
+    );
     const failed = new Set(
       report?.failures.map((failure) => failure.sourceId) ?? [],
     );
