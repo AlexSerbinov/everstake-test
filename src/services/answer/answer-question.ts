@@ -16,12 +16,14 @@ const actionSchema=z.discriminatedUnion('action',[
  z.object({action:z.literal('calculate'),operation:z.enum(['add','subtract','multiply','divide']),operands:z.array(z.number()).min(2).max(10),citations:z.array(z.string()).min(1)}),
  z.object({action:z.literal('answer'),status:z.enum(['answered','partial','no_reliable_answer']),claims:z.array(claimSchema).max(15),reason:z.string().optional()})
 ]);
-export interface AnswerDependencies { db: Database; model: ModelClient; receipt:(runId:string)=>Receipt; finish:(runId:string,status:string)=>void; }
+export interface AnswerDependencies { db: Database; model: ModelClient; search?:(query:string,limit?:number)=>Promise<EvidencePassage[]>; receipt:(runId:string)=>Receipt; finish:(runId:string,status:string)=>void; }
 export async function answerQuestion(deps: AnswerDependencies, question: string, runId: string, emit: Emit=()=>{}, mode:'agent'|'baseline'='agent'): Promise<AnswerResult> {
  const {db,model}=deps;
+ const search=deps.search??(async(query:string,limit=12)=>searchCorpus(db,query,limit));
  const send=(type:Parameters<Emit>[0]['type'],label:string,data?:unknown)=>emit({runId,type,label,data,at:new Date().toISOString()});
  const definition=parse(readFileSync('agents/researcher.yaml','utf8')) as {prompt:string;skills:string[];maxSteps:number};
  const system=[readFileSync(definition.prompt,'utf8'),...definition.skills.map(p=>readFileSync(p,'utf8'))].join('\n\n');
+ let answeredAction=false;
  const registry=new Map<string,EvidencePassage>();
  const messages:ModelMessage[]=[{role:'user',text:question}];
  let result:AnswerResult={runId,status:'no_reliable_answer',question,text:'No reliable answer was found in the available evidence.',asOf:null,claims:[],sources:[],checks:[],trust:null,receipt:deps.receipt(runId),corpusVersion:getSetting(db,'corpus_version','unbuilt')};
@@ -32,7 +34,7 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
  };
  try {
   send('step','Searching the crawled corpus');
-  const initial=searchCorpus(db,question,mode==='baseline'?6:12); register(initial);
+  const initial=await search(question,mode==='baseline'?6:12); register(initial);
   messages.push({role:'user',text:JSON.stringify({untrustedEvidence:initial})});
   const steps=mode==='baseline'?1:Math.min(definition.maxSteps,8);
   for(let step=0;step<steps;step++) {
@@ -44,6 +46,7 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
    try { action=actionSchema.parse(JSON.parse(response.text.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,''))); }
    catch { messages.push({role:'user',text:'Invalid action schema. Return one valid JSON action; this consumes a research step.'}); continue; }
    if(action.action==='answer') {
+    answeredAction=true;
     if(action.status==='no_reliable_answer') { result.checks=[{rule:'abstention',status:'passed',reason:'No factual claims emitted'}]; break; }
     const checks=verifyAnswer(action.claims,registry,question);
     if(!action.claims.length) checks.push({rule:'nonempty',status:'failed',reason:'Answer has no claims'});
@@ -60,7 +63,7 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
    }
    if(mode==='baseline') break;
    if(action.action==='search') {
-    send('step',`Search: ${action.query}`); const sources=searchCorpus(db,action.query); register(sources);
+    send('step',`Search: ${action.query}`); const sources=await search(action.query); register(sources);
     messages.push({role:'user',text:JSON.stringify({untrustedEvidence:sources})});
    } else if(action.action==='read') {
     if(![...registry.values()].some(s=>s.documentId===action.documentId)) {messages.push({role:'user',text:'Read requires a document ID returned by search.'});continue;}
@@ -76,6 +79,7 @@ export async function answerQuestion(deps: AnswerDependencies, question: string,
     register([evidence]);messages.push({role:'user',text:JSON.stringify({calculation:evidence})});
    }
   }
+  if(!answeredAction) throw new Error('Research exhausted its step limit without a valid final answer');
  } catch(error) {
   result={...result,status:'error',text:'The request could not complete. Check provider availability or the configured budget.',error:error instanceof Error?error.message:'Unknown provider error',trust:null};
   send('error','Request failed',{message:result.error});

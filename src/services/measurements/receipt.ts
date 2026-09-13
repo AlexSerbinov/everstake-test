@@ -15,7 +15,7 @@ export function buildReceipt(db: Database, runId: string): ReceiptDetail {
   const runIds = descendantRunIds(db, runId);
   const placeholders = runIds.map(() => '?').join(',');
   const rows = db.prepare(
-    `SELECT * FROM api_calls WHERE run_id IN (${placeholders}) ORDER BY started_at, id`,
+    `SELECT * FROM api_calls WHERE run_id IN (${placeholders}) ORDER BY started_at, rowid`,
   ).all(...runIds) as unknown as CallRow[];
   const attempts = rows.map(toAttemptView);
   return {
@@ -34,7 +34,7 @@ export function buildReceipt(db: Database, runId: string): ReceiptDetail {
 }
 
 export function costOverview(db: Database): CostOverview {
-  const rows = db.prepare('SELECT * FROM api_calls ORDER BY started_at, id').all() as unknown as CallRow[];
+  const rows = db.prepare('SELECT * FROM api_calls ORDER BY started_at, rowid').all() as unknown as CallRow[];
   return {
     calls: rows.length,
     inputTokens: sumKnown(rows, 'input_tokens'),
