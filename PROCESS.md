@@ -1,13 +1,57 @@
-# Part B: weekly reporting automation
+[Укр](PROCESS.uk.md) | [Eng Version](PROCESS.md)
 
-This is the concise submission for Part B. The [full proposal, Ukrainian first and English below](PART_B_DAILY_LOG_AUTOMATION.md), preserves my practical examples and reasoning. The department integrations described here are a proposal, not implemented features of this repository.
+# Part B: how I would automate reporting
 
-I have built a similar workflow for my developer team. At the end of the day, a skill compares timestamped voice-to-text records of requested work with business-oriented changelogs written by coding agents. I review the report in Telegram, and time is logged in Jira. I spend about five minutes on that daily process. A notetaker and Google Calendar are possible additions that I have not connected to this skill yet. Other departments will need different sources and more manual additions.
+## How it works for me
 
-For the assignment's weekly department report, I would first connect agreed Slack channels, tracker records and meeting information. A calendar provides scheduled call duration; the person confirms actual time before logging it. A notetaker could add topics and recorded duration if its API exposes them. Accounting or sales teams may need their accounting system or CRM. A second option is an employee's local screenshot tracker and local analysis agent, with only the report sent to the company. I prefer system connections; screenshots raise privacy concerns and still miss work between captures or away from the computer. Missing records never mean no work was done.
+I have already built this kind of system at my company for our developer team. At the end of the working day, I run a skill that puts the report together. Since developers do most tasks through Claude Code or Codex, and our team mostly dictates them through a voice-to-text app, that was the best source for us.
 
-Keep weekly submission. Data can be collected in the background, with one private draft sent on Friday at 18:30. The model groups repeated descriptions, retains source links and writes the outcomes. The employee checks it and fills gaps; the department head reviews the combined report before publication. This removes manual searching and rewriting. By prior agreement, a bot could forward the available draft at 19:30 if that person's report for the week has not already been submitted in the agreed channel. Sensitive or disputed items wait for confirmation. If the submission check fails, alert the owner rather than risk duplicate delivery. Human review also preserves the context a bland summary can lose, such as why winning a difficult client mattered.
+The app converts speech to text and saves timestamped records on the computer. Those records show which tasks I asked for during the day. After a task, Claude Code and Codex also write a changelog entry explaining what they did and when, in terms of the business task. The skill matches these records and builds a report from them. I have not connected a notetaker to this skill yet, but it could be connected to pull in information from calls as well. Or at least Google Calendar could be connected to see how much time was scheduled for each call. I have not got around to that part yet.
 
-During a one-month pilot in one department, measure three things: total human preparation and review time per weekly report, targeting under 20 minutes against the assignment's hour; the share of sampled claims supported by sources, targeting 70–80% in the draft; and coverage of important outcomes and blockers against the head's checked list, targeting 95%. These are proposed targets, not measured results. Unsupported draft claims need correction during review.
+Once the report is ready, it goes to a Telegram bot, where I confirm it. Time is also logged automatically in Jira. In the morning, I have a list of tasks for the day, and time is logged against them. If I did something outside that list, the system either creates a new task or logs the time against a suitable broader task, with a description in the worklog. So by the end of the day, my time is logged automatically, and I spend about five minutes on the process.
 
-A plausible report with missing Slack data is a likely failure. Before drafting, code checks source access, date coverage and expected records. Missing sources or unusually low counts trigger an alert before the deadline, a retry and a hold on automatic sending until checked. Scheduling, permissions, arithmetic, submission checks and delivery belong in ordinary code because they require predictable rules. The agent compares descriptions and writes; people resolve gaps and decide what can be shared.
+That makes it easier for developers. Other departments will have their own sources and probably need more manual additions. But there is still plenty we can automate.
+
+## Where to get information for other departments
+
+I see two approaches. The first is to connect to work systems. I would start there. If someone uses Slack and Google Meet, collect the agreed Slack channels and check the call schedule in Google Calendar. If a meeting is scheduled from 13:00 to 13:45, those 45 minutes can be the basis for a worklog. That is the scheduled time, so the person confirms that the call actually lasted that long before it is logged.
+
+A more advanced option is to connect to the notetaker through its API. I saw that you have one. It could provide what was discussed and how long the call lasted, based on the recording timestamps. We need to check which data it exposes.
+
+Take the accounting department. An accountant might use their own CRM or accounting system, which could be difficult to connect to for reporting. I would still try with Claude Code: with an existing API and access, it might well take about 20 minutes to set up. But it depends on the particular system. Each department will have its own set of reporting sources.
+
+The second approach is a local tracker. Even though it is local, I still do not like this option. The tracker takes screenshots every minute or five minutes. The employee’s local agent processes them on their computer and tries to work out what they were doing. The company receives only the report, not the screenshots themselves. Since screenshots can contain personal information, this collection needs to be agreed with the person.
+
+This still does not give the full picture: work happens between screenshots and away from the computer too. But it helps when someone works in Excel or another system that is difficult to connect to. Screenshots can help reconstruct the activity roughly; the time still needs to be checked with the person.
+
+I think combining the two methods would give the best coverage. But employees may have privacy concerns, and we need to discuss those in advance.
+
+But we need to understand this: if the accountant works in a system we have not connected to, no records does not mean no work. That brings us to the next question.
+
+## Fully autonomous or partly manual?
+
+We can run a system that collects data on its own, but mistakes and awkward situations are possible. We do not always want those passed on. Someone might chat at work about digging their garden, and that ends up in the report.
+
+I would not run this fully autonomously without review. I would still leave the decision to a person. But we can encourage people to submit their reports on time.
+
+## How to encourage people to submit reports
+
+If the department submits reports once a week, we keep that schedule. The system can collect data in the background during the week and send the person one draft before the submission deadline. The department head reviews the final department report before publication.
+
+We can set up a loop: a task that runs automatically at a set time. For example, on Friday at 18:30, the system collects the week’s data and sends the person a private draft in Slack or Telegram. They read it, make a few edits and send it. The important thing is that it starts by itself: there is already a draft to check, instead of having to recall the whole week from scratch. That takes a lot of the effort away.
+
+If people still do not submit reports, we could agree in advance to use something like a Slack bot: on the reporting day, the draft arrives at 18:30, and at 19:30 the system sends the report to the manager as it is. First, it checks whether the person has already submitted that week's report in the agreed channel. If they have, nothing is sent again. If the check fails, notify someone about the failure rather than sending blindly.
+
+The system should separate business tasks from personal conversations and remove the bits about digging potatoes. But the model can make mistakes too, so sensitive or disputed items still need a person's confirmation.
+
+## How to tell whether it helps
+
+I would try this in one department for a month and measure three things: total human time spent on the weekly report, including review and edits; the share of supported claims; and the share of important work included. Initial targets would be under 20 minutes instead of an hour, 70–80% supported claims in a sample, and 95% of outcomes and blockers from a list checked by the department head. These are targets to test, not results we already have.
+
+## Downsides
+
+AI systems often produce “soulless” reports. For example, someone finally solves a difficult task, or a salesperson closes a challenging client after lengthy negotiations. The report just says: “Held talks with client X and agreed to work together.” Technically correct, but it loses why the result matters and how much effort went into it. If we want more than time logs and need a meaningful account of the work done, I would still let a person control the content. I have revised this process many times at my company. The system now generates reports automatically, but I still check them because there are sometimes inconsistencies.
+
+## What could break, and where an agent is not needed
+
+For example, Slack access fails, but the report looks complete. Before generation, code checks access, the reporting dates and expected records. If a source is unavailable or there is unusually little data, the system notifies the owner before the deadline, retries collection and blocks automatic sending until the issue is checked. Scheduling, permissions, counts, checking for an already submitted report and delivery are handled by ordinary code: these need clear rules. The agent matches records and writes clearly. A person fills in what the system cannot see and decides what can be sent.

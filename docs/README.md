@@ -2,7 +2,7 @@
 
 Read the [assignment](TEST_ASSIGNMENT_EN.md), [source CSV](corpus_sources.csv), then the root [README](../README.md) or its [Ukrainian version](../README.uk.md).
 
-- [Part B — Daily Log Automation](../PART_B_DAILY_LOG_AUTOMATION.md): final proposal in Ukrainian and English; [concise submission](../PROCESS.md).
+- Part B — Daily Log Automation: [Укр](../PROCESS.uk.md) | [Eng Version](../PROCESS.md).
 - [Operator guide](OPERATIONS.md): refresh, video processing and evaluation commands.
 - [System diagrams](images/README.md): eight visual explanations in English and Ukrainian, with editable sources.
 - [YouTube](youtube/README.md): named speakers, eligible evidence, readable transcripts and costs.

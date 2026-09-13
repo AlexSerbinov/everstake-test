@@ -8,7 +8,7 @@
 
 **Demo here — Knowledge Base:** https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask
 
-**Part B — Process automation:** [here](PART_B_DAILY_LOG_AUTOMATION.md#english-version)
+**Part B — Process automation:** [here](PROCESS.md)
 
 **From a question about Everstake to an answer you can check.**
 
@@ -153,9 +153,9 @@ Open **http://localhost:4318**. Data persists in `data/knowledge.sqlite`. Indexi
 
 My experience automating developer reports, and how I would adapt it to weekly department reporting: work-system connections, an optional local tracker, human review and a scheduled draft. The proposal covers privacy, pilot metrics and failures.
 
-**[Read Part B — Daily Log Automation](PART_B_DAILY_LOG_AUTOMATION.md#english-version)** · [One-page submission](PROCESS.md)
+**Part B — Daily Log Automation:** [Укр](PROCESS.uk.md) | [Eng Version](PROCESS.md)
 
-The full document contains Ukrainian first, then English. These are proposed reporting integrations, separate from the Part A application.
+The full proposal is available in separate Ukrainian and English files. These are proposed reporting integrations, separate from the Part A application.
 
 ![Weekly reporting: collect records, prepare a draft, review and submit](docs/images/reporting-flow-en.png)
 
