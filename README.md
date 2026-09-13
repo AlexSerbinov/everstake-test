@@ -75,6 +75,9 @@ npm run cli -- costs
 npx tsx scripts/youtube.ts discover
 npx tsx scripts/youtube.ts inventory
 npx tsx scripts/youtube.ts process --ids=REVIEWED_VIDEO_ID
+npx tsx scripts/publish-evaluation.ts grades.json   # independent verdicts → EVAL.md
+npx tsx scripts/publish-costs.ts                    # ledger → COST.md
+npx tsx scripts/import-evaluations.ts               # graded runs → this host's Evaluation screen
 ```
 
 New pages on a configured site are discovered by the crawler. A new domain needs an entry in `config/sources.yaml`: URL, publisher, authority, inclusion reason and discovery limits. A new format needs an extraction adapter and a fixture test. Refresh builds a staging database and activates text/vectors/version together only after success; its durable job can resume after failure. Only one refresh worker should run. The demo serializes paid questions and refresh requests.
