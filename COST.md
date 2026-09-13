@@ -1,5 +1,7 @@
 # Measured API costs
 
+Latest review-format repair: **$0.157492** including one diagnostic replay and the **$0.106771** two-question recheck. Both questions passed; zero unknown-cost calls. The broader general-quality investigation and this repair together cost **$3.464813**. These are stage totals, not a replacement for the historical project totals below.
+
 Scope: this TypeScript rebuild, from provider probes through collection, indexing, YouTube, diagnostic questions and final evaluations. Prior Claude/Codex totals are historical and are not added to these runs. Subscription agent effort, existing server rental and bandwidth are not provider-token charges.
 
 **Previously published ledger snapshot: $4.462078 known usage-priced / provider-reported; 7 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](Costs/measured-ledger.json).

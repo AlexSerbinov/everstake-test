@@ -79,5 +79,7 @@
     "5720422b-f650-4455-8ba9-c4a1e8ed3743"
   ],
   "knownTotalUsd": 3.3073203,
-  "unknownCalls": 0
+  "unknownCalls": 0,
+  "reviewFormatRepairUsd": 0.15749232,
+  "knownTotalIncludingRepairUsd": 3.46481262
 }
