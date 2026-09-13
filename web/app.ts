@@ -1,6 +1,8 @@
+import { collectionSummary } from "./features/collection-summary/collection-summary.js";
 import { updatesPage } from "./features/updates/updates-page.js";
 import type { AnswerResult, RunEvent } from "../src/contracts.js";
-import { el } from "./shared/dom.js";
+import { button, el, getJson } from "./shared/dom.js";
+import { answerText } from "./features/answer-export/answer-export.js";
 import { questionForm } from "./features/question/question-form.js";
 import { SearchTimeline } from "./features/live-search/search-timeline.js";
 import { answerView } from "./features/answer/answer-view.js";
@@ -45,14 +47,21 @@ async function ask(question: string) {
   status.textContent = "Your question has been sent.";
   const scope = run.scope;
   const heading = el("div", "question-heading");
+  const toolbar = el("div", "answer-toolbar");
+  toolbar.append(button("← New question", newQuestion, "button secondary"));
+  const exportActions = el("div", "answer-actions");
+  toolbar.append(exportActions);
   heading.append(el("p", "eyebrow", "YOUR QUESTION"), el("h2", "", question));
+  const copyNotice = el("p", "small muted export-notice");
+  copyNotice.setAttribute("role", "status");
+  toolbar.append(copyNotice);
   const result = el("div", "answer-slot");
   timeline = new SearchTimeline(scope);
   const currentTimeline = timeline;
   // The answer is rendered above the research log: readers see the result first and open
   // the log only when they want to audit how it was found.
-  output.replaceChildren(heading, result, currentTimeline.node);
-  heading.scrollIntoView({ behavior: "instant", block: "start" });
+  output.replaceChildren(toolbar, heading, result, currentTimeline.node);
+  toolbar.scrollIntoView({ behavior: "instant", block: "start" });
   let receivedAnswer = false;
   let failed = false;
   const handle = (event: RunEvent) => {
@@ -62,11 +71,40 @@ async function ask(question: string) {
       receivedAnswer = true;
       failed = answer.status === "error";
       result.replaceChildren(answerView(answer, scope));
+      exportActions.replaceChildren(
+        button("Copy answer", () => {
+          void Promise.resolve()
+            .then(() =>
+              navigator.clipboard.writeText(answerText(question, answer)),
+            )
+            .then(() => {
+              status.textContent = "Answer and sources copied.";
+              copyNotice.textContent = "Answer and sources copied.";
+            })
+            .catch(() => {
+              copyNotice.textContent =
+                "Clipboard unavailable. Use Download evidence to save this answer.";
+            });
+        }),
+        button("Download evidence ↓", () => {
+          const payload = { ...answer, question };
+          const url = URL.createObjectURL(
+            new Blob([JSON.stringify(payload, null, 2)], {
+              type: "application/json",
+            }),
+          );
+          const download = document.createElement("a");
+          download.href = url;
+          download.download = "everstake-answer-evidence.json";
+          download.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }),
+      );
       status.textContent = failed
         ? "The request failed."
         : "Your answer is ready.";
       currentTimeline.finish(failed ? "Request failed" : "Research complete");
-      heading.scrollIntoView({ behavior: "instant", block: "start" });
+      toolbar.scrollIntoView({ behavior: "instant", block: "start" });
     } else if (event.type === "error") {
       failed = true;
       currentTimeline.finish("Request failed");
@@ -107,7 +145,7 @@ async function ask(question: string) {
         throw new Error(
           "The request ended without an answer. Please try again.",
         );
-      if (!receivedAnswer) currentTimeline.finish("Research complete");
+      if (!receivedAnswer) currentTimeline.finish("Request failed");
     }
   } catch (error) {
     if (!run.current()) return;
@@ -119,7 +157,54 @@ async function ask(question: string) {
   }
 }
 let disposePage: (() => void) | undefined;
+let focusQuestionAfterNavigation = false;
+function newQuestion() {
+  state.cancel();
+  timeline?.finish("Stopped");
+  form.setBusy(false);
+  form.reset();
+  output.replaceChildren();
+  status.textContent = "Ready for a new question.";
+  focusQuestionAfterNavigation = true;
+  if (location.hash !== "#ask") location.hash = "ask";
+  else navigate();
+}
+
+const menu = document.querySelector<HTMLButtonElement>(".menu-toggle")!;
+const sidebar = document.getElementById("sidebar")!;
+function closeMenu() {
+  sidebar.classList.remove("is-open");
+  menu.setAttribute("aria-expanded", "false");
+  menu.setAttribute("aria-label", "Open navigation");
+}
+menu.addEventListener("click", () => {
+  const expanded = menu.getAttribute("aria-expanded") !== "true";
+  sidebar.classList.toggle("is-open", expanded);
+  menu.setAttribute("aria-expanded", String(expanded));
+  menu.setAttribute(
+    "aria-label",
+    expanded ? "Close navigation" : "Open navigation",
+  );
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && menu.getAttribute("aria-expanded") === "true") {
+    closeMenu();
+    menu.focus();
+  }
+});
+document
+  .querySelectorAll<HTMLAnchorElement>("[data-new-question]")
+  .forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      newQuestion();
+    });
+  });
+sidebar
+  .querySelectorAll("a")
+  .forEach((link) => link.addEventListener("click", () => closeMenu()));
 function navigate() {
+  closeMenu();
   disposePage?.();
   disposePage = undefined;
   const route = location.hash.slice(1) || "ask";
@@ -128,6 +213,9 @@ function navigate() {
   )
     ? route
     : "ask";
+  document.querySelector(".knowledge-rail")?.remove();
+  if (selected === "ask")
+    document.querySelector(".app-shell")!.append(collectionSummary());
   document
     .querySelectorAll<HTMLAnchorElement>("[data-page]")
     .forEach((link) => {
@@ -149,6 +237,10 @@ function navigate() {
             : questionPage,
   );
   window.scrollTo({ top: 0, behavior: "instant" });
+  if (selected === "ask" && focusQuestionAfterNavigation) {
+    focusQuestionAfterNavigation = false;
+    form.focus();
+  }
   document.title = `${selected === "ask" ? "Ask" : selected[0].toUpperCase() + selected.slice(1)} · Everstake Knowledge`;
 }
 // The accessibility skip target is a document anchor, not an application route.
@@ -167,3 +259,15 @@ window.addEventListener("pagehide", () => {
   timeline?.finish("Stopped");
 });
 navigate();
+
+void getJson<{ total: number; version: string }>("/api/corpus")
+  .then((collection) => {
+    document.getElementById("corpus-count")!.textContent =
+      collection.total.toLocaleString();
+    document.getElementById("collection-summary")!.textContent =
+      `${collection.total.toLocaleString()} documents · ${collection.version}`;
+  })
+  .catch(() => {
+    document.getElementById("collection-summary")!.textContent =
+      "Collection status unavailable. Open Corpus to try again.";
+  });

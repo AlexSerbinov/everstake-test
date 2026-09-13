@@ -1,5 +1,6 @@
 import type { EvaluationQuestion } from "../../../src/contracts.js";
 import { badge, button, el, getJson } from "../../shared/dom.js";
+
 export function questionForm(
   ask: (question: string) => void,
   cancel: () => void,
@@ -7,12 +8,12 @@ export function questionForm(
   const node = el("section", "question-area");
   const intro = el("div", "intro");
   intro.append(
-    el("p", "eyebrow", "EVERSTAKE · KNOWLEDGE ASSISTANT"),
-    el("h1", "", "Good answers start\nwith good sources."),
+    el("p", "eyebrow", "ASK THE KNOWLEDGE BASE"),
+    el("h1", "", "Answers you can\ncheck line by line."),
     el(
       "p",
       "lede",
-      "Explore Everstake’s public knowledge. Follow the research, check the dates, and read the evidence behind each answer.",
+      "Explore Everstake through dated public sources. Follow the research, inspect the evidence and see the measured cost of each answer.",
     ),
   );
   const form = el("form", "question-form");
@@ -21,101 +22,153 @@ export function questionForm(
   const input = el("textarea");
   input.id = "question";
   input.name = "question";
-  input.rows = 2;
+  input.rows = 3;
   input.maxLength = 2000;
   input.minLength = 2;
   input.required = true;
-  input.placeholder = "What would you like to know about Everstake?";
+  input.placeholder = "Ask about Everstake products, networks, security…";
   const bottom = el("div", "form-bottom");
   const hint = el(
     "span",
     "small muted",
-    "Public sources. Visible dates. Honest limits.",
+    "Public sources only · visible dates · honest limits",
   );
   const actions = el("div", "form-actions");
   const stop = button("Stop", cancel);
   stop.hidden = true;
-  const submit = el("button", "button primary", "Ask a question ↗");
+  const submit = el("button", "button primary");
   submit.type = "submit";
+  const submitLabel = el("span", "", "Ask a question");
+  const arrow = el("span", "button-icon", "→");
+  arrow.setAttribute("aria-hidden", "true");
+  submit.append(submitLabel, arrow);
   actions.append(stop, submit);
   bottom.append(hint, actions);
   form.append(label, input, bottom);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const value = input.value.trim();
-    if (value) ask(value);
+    if (value.length >= 2) ask(value);
+    else {
+      input.setCustomValidity("Enter at least two non-space characters.");
+      input.reportValidity();
+    }
   });
+  input.addEventListener("input", () => input.setCustomValidity(""));
   input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey))
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
       form.requestSubmit();
+    }
   });
   node.append(intro, form);
+
   const examples = el("div", "question-examples");
-  examples.append(el("p", "eyebrow", "A FEW PLACES TO START"));
+  const exampleHeading = el("div", "section-heading");
+  const counts = el("span", "small muted");
+  exampleHeading.append(el("p", "eyebrow", "TRY A HARD ONE"), counts);
   const options = el("div", "example-list");
-  for (const example of [
-    "Who is the CEO of Everstake?",
-    "How has Everstake’s positioning changed over time?",
-    "What can public sources tell us about staking risks?",
-  ])
-    options.append(
-      button(
-        example,
-        () => {
-          input.value = example;
-          input.focus();
-        },
-        "example-question",
-      ),
-    );
-  examples.append(options);
+  examples.append(exampleHeading, options);
   node.append(examples);
   const library = el("div", "question-library");
+  library.id = "question-library";
+  library.hidden = true;
   const toggle = button(
-    "Explore the evaluation questions →",
+    "Explore all evaluation questions →",
     () => {
       library.hidden = !library.hidden;
-      if (!library.hidden && !library.childElementCount) void loadLibrary();
+      toggle.setAttribute("aria-expanded", String(!library.hidden));
+      toggle.textContent = library.hidden
+        ? "Explore all evaluation questions →"
+        : "Hide evaluation questions ↑";
     },
     "text-button",
   );
-  library.hidden = true;
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-controls", library.id);
+  toggle.hidden = true;
   node.append(toggle, library);
-  async function loadLibrary() {
-    try {
-      const { questions } = await getJson<{ questions: EvaluationQuestion[] }>(
-        "/api/questions",
+
+  function choose(question: string) {
+    input.value = question;
+    input.setCustomValidity("");
+    input.focus();
+  }
+  function showExamples(
+    questions: Array<{ question: string; difficulty: string }>,
+  ) {
+    options.replaceChildren();
+    for (const question of questions) {
+      const option = button(
+        "",
+        () => choose(question.question),
+        "example-question",
       );
+      option.append(
+        el("span", "example-tag", question.difficulty.replaceAll("_", " ")),
+        el("span", "example-text", question.question),
+      );
+      options.append(option);
+    }
+  }
+  showExamples([
+    { question: "Who is the CEO of Everstake?", difficulty: "Factual lookup" },
+    {
+      question: "How has Everstake’s positioning changed over time?",
+      difficulty: "Synthesis",
+    },
+  ]);
+  void getJson<{ questions: EvaluationQuestion[] }>("/api/questions")
+    .then(({ questions }) => {
+      if (!questions.length) return;
+      const featured = [
+        ...questions
+          .filter((q) => !q.negative && q.difficulty === "basic")
+          .slice(0, 2),
+        ...questions
+          .filter((q) => !q.negative && q.difficulty === "hard")
+          .slice(0, 3),
+        ...questions.filter((q) => q.negative).slice(0, 1),
+      ];
+      showExamples(
+        featured.map((q) => ({
+          question: q.question,
+          difficulty: q.negative ? "Beyond the corpus" : q.category,
+        })),
+      );
+      counts.textContent = `${questions.length} reference questions · ${questions.filter((q) => q.negative).length} negative cases`;
       for (const question of questions) {
         const row = el("article", "question-option");
         row.append(
           badge(question.difficulty),
           button(
             question.question,
-            () => {
-              input.value = question.question;
-              input.focus();
-            },
+            () => choose(question.question),
             "text-button",
           ),
           el("p", "muted small", question.whyHard),
         );
         library.append(row);
       }
-      if (!questions.length)
-        library.append(
-          el("p", "muted", "No evaluation questions have been published yet."),
-        );
-    } catch (error) {
-      library.append(el("p", "error-text", (error as Error).message));
-    }
-  }
+      toggle.hidden = false;
+    })
+    .catch(() => {
+      counts.textContent = "Example questions";
+    });
   return {
     node,
     setBusy(busy: boolean) {
       stop.hidden = !busy;
-      submit.textContent = busy ? "Ask a new question ↗" : "Ask a question ↗";
+      submitLabel.textContent = busy ? "Ask a new question" : "Ask a question";
       if (busy) node.classList.add("has-run");
+    },
+    reset() {
+      node.classList.remove("has-run");
+      input.value = "";
+      input.setCustomValidity("");
+      library.hidden = true;
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.textContent = "Explore all evaluation questions →";
     },
     focus() {
       input.focus();

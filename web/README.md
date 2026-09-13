@@ -17,3 +17,9 @@ Public text and URLs are untrusted. Do not insert corpus content with innerHTML.
 - An isolated local fixture server was exercised with `agent-browser` at 1440 × 1100 and 390 × 844. The fixture covered a successful answer, repeated evidence, two passages from one page, an unknown publication date, a long source URL, source text containing an HTML injection, a provider error with receipt, mixed/unassessed evaluation rows, and unknown costs.
 - Browser checks confirmed no horizontal overflow on the four views, citation click/Enter focus on the exact passage, preserved original URL anchors, no execution of source HTML, no success panels after provider failure, and replacement/cancellation of active questions.
 - These are interface and transport checks using synthetic data. They do not measure model correctness or production proxy streaming.
+
+## Design system
+
+The interface follows the owner's Claude Design Everstake reference: mint surfaces, forest-green accents, square borders, Manrope headings, DM Sans body text, desktop sidebar and a compact mobile menu. The external preview runtime and its unrelated dark-theme bundle are not dependencies.
+
+All five routes retain their real API behavior. Homepage statistics distinguish current documents, saved evaluation accuracy and all-time measured costs. Answer actions copy the displayed dated claims with source references or download the returned evidence as JSON; they do not create a public permalink. Unknown fact dates, unconfirmed charges and provider errors remain explicit. Responsive and fixture verification is recorded in [the redesign review](../docs/review-logs/2026-09-13-ui-redesign.md).
