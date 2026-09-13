@@ -8,7 +8,7 @@ Built by Oleksandr Serbinov for the **AI Automation & Agentic Systems Lead role 
 
 **English** · [Українська](README.uk.md) · [Open the demo](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Assignment](docs/TEST_ASSIGNMENT_EN.md) · [Evaluation](EVAL.md)
 
-[![Current demo: the question form and suggested questions](docs/images/demo-ask.png)](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask)
+[![Current demo: the question form and suggested questions](artifacts/demo/redesign/ask-desktop.png)](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask)
 
 *The demo is linked above. Interface captured on 13 September 2026; its design may change.*
 

@@ -48,3 +48,30 @@ Raw reviewer output:
 > General closure: focus fix correct after mount, SSE error status correct, rail scopes/fallbacks clear; no logic blockers. Static Layout QA found one small concrete accessibility layering bug: .skip-link z-index:20 equals later sticky .site-header z-index:20, so focused skip link paints underneath header. Set .skip-link z-index:30 (or header lower) to retain visible Skip to content. Rest responsive grids/min-width/overflow/menu geometry clean.
 
 Fix: the skip link now uses z-index 30 above header 20. Browser focus verification returned top=8 and `elementFromPoint` resolved the skip link, confirming it is visible. All confirmed findings are fixed. Download evidence was also exercised: the downloaded JSON parsed successfully and retained the original question and three source passages.
+
+Final independent conclusion:
+
+> **General + Layout QA: 100/100 within the reviewed scope. No remaining P0–P2 findings.**
+>
+> Closed findings:
+> - New-question focus now occurs after the Ask route mounts.
+> - SSE failure retains “Request failed” after stream completion.
+> - Desktop menu specificity correctly hides the mobile toggle.
+> - Mobile menu remains reachable during deep scrolling through fixed, scrollable viewport positioning.
+> - Skip link now uses `z-index: 30`; independently verified focused link at `top: 8px` paints above the header.
+>
+> Reviewed the complete stylesheet, final `web/app.ts`, answer/export modules and collection statistics rail. Responsive grid collapse, long-content wrapping, source anchors, reduced-motion rules, safe exports and separate corpus/evaluation/cost scopes show no blocking issues.
+>
+> Read-only review; independent browser session closed. Test result of 149 passing checks is coordinator-provided; not rerun during this final review.
+
+## Hosted verification
+
+Deployed runtime: `27a13ad5e01f568dd1c97e8351a18900373c3f9b`. Deployment used a Git archive of the committed tree; server assets matched local SHA-256 hashes. Existing server credentials and persistent data were retained. Both earlier demos remained up.
+
+The Docker image passed **149/149 tests on Linux**, and GitHub Actions run `34774059121` succeeded. All configured model IDs returned HTTP 200 from their provider model endpoints before the paid smoke request. Initial health requests retried connection resets during startup; final HTTPS health reported the exact runtime commit and `corpus-664b2e73d71f`. The container subsequently reported healthy.
+
+A real Ukrainian question about Everstake's founding year completed successfully: run `e936b1ed-33f8-4607-884b-211b58558ef7`, 2018 answer, one cited page, two dated claims, 8 model calls, 33,761 input / 895 output tokens, **$0.02232707 known usage cost**, no unknown calls, 28,589ms backend elapsed / 28.7s browser time. Real SSE research events and exact citation focus were verified. This is one smoke test, not a new evaluation run or a guarantee about all answers.
+
+Hosted Corpus displayed 941 documents with 50 on the first page. Evaluation retained the saved 19/20 and zero assessed invented-fact cases for its older frozen corpus. Costs displayed recorded totals and seven unconfirmed charges. Updates showed automatic execution off and no queued/running jobs; live update settings were not changed during UI QA. All five hosted routes were checked, with no mobile horizontal overflow or browser runtime errors.
+
+Actual hosted screenshots and downloaded evidence are in [artifacts/demo/redesign](../../artifacts/demo/redesign/). Fixture-only screenshots remain in session scratch and are not presented as hosted evidence. Worker branches were integrated into dev and their temporary worktrees removed; the main checkout was not altered.
