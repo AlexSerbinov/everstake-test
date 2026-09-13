@@ -94,6 +94,9 @@ function finaliseSanitation(
       removedInstructionRules: [
         ...new Set(sanitized.removed.map((r) => r.rule)),
       ],
+      // The audit trail: what was cut and by which rule. Stored on the snapshot so a reviewer
+      // can list it from the database; never in `visibleMetadata`, so it never reaches the model.
+      removedInstructions: sanitized.removed.slice(0, 50),
     },
   };
 }

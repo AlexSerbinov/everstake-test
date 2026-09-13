@@ -91,6 +91,12 @@ function extractHtml(response: SafeFetchResult): {
   $(
     'script:not([type="application/ld+json"]),style,noscript,template,svg,nav,footer,form,[aria-hidden="true"],.cookie,.cookies,.newsletter,.advertisement',
   ).remove();
+  // Text a visitor cannot see is a classic carrier for planted directives. Inline styles and
+  // the common screen-reader-only classes are removed; a stylesheet rule cannot be resolved
+  // here, so hidden text declared only in external CSS still reaches the sanitizer.
+  $(
+    '[hidden],.sr-only,.visually-hidden,.screen-reader-text,.screen-reader-only,[style*="display:none"],[style*="display: none"],[style*="visibility:hidden"],[style*="visibility: hidden"],[style*="font-size:0"],[style*="font-size: 0"],[style*="opacity:0"],[style*="opacity: 0"]',
+  ).remove();
   const jsonDates = structuredDates(
     $('script[type="application/ld+json"]')
       .map((_, node) => $(node).text())

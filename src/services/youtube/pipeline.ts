@@ -308,6 +308,7 @@ export function buildDocument(
   const speakers = new Map(
     review.speakers.map((speaker) => [speaker.label, speaker]),
   );
+  const removedInstructions: { text: string; rule: string }[] = [];
   const lines = turns.flatMap((turn, index) => {
     if (!isEvidenceEligible(turn, index, review)) return [];
     const reviewed = turn.speaker === null ? null : speakers.get(turn.speaker);
@@ -318,7 +319,9 @@ export function buildDocument(
       ? `, ${reviewed.roleAtRecording}`
       : "";
     const time = formatTimestamp(turn.startMs) ?? "time unknown";
-    const safeText = sanitizeDocument(turn.text).text;
+    const sanitized = sanitizeDocument(turn.text);
+    removedInstructions.push(...sanitized.removed);
+    const safeText = sanitized.text;
     if (!safeText) return [];
     return [
       `[${time}] ${identity}${role} (company participant; testimony at recording): ${safeText}`,
@@ -375,6 +378,11 @@ export function buildDocument(
     metadata: {
       sourceId: "youtube-inventory",
       videoId: candidate.id,
+      removedInstructionCount: removedInstructions.length,
+      removedInstructionRules: [
+        ...new Set(removedInstructions.map((r) => r.rule)),
+      ],
+      removedInstructions: removedInstructions.slice(0, 50),
       ...(primarySpeaker
         ? {
             speaker: primarySpeaker.label,
