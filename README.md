@@ -1,5 +1,9 @@
 # Everstate Knowledge Base
 
+**Demo here — Knowledge Base:** https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask
+
+**Part B — Process automation:** [here](PART_B_DAILY_LOG_AUTOMATION.md#english-version)
+
 **From a question about Everstake to an answer you can check.**
 
 The assistant finds information in collected public sources, compares it, and returns an answer with dates and links. When the evidence is insufficient, it should say so.
@@ -125,9 +129,17 @@ Open **http://localhost:4318**. Data persists in `data/knowledge.sqlite`. Indexi
 
 **Compared with Everstake MCP.** An actual twenty-question run using captured official MCP tool responses received **7/20 (35%) confirmed by two independent rubric/source reviews**, versus the earlier corpus-agent result of 19/20. Its generation cost was **$0.23630625**. This measures a single-turn MCP-context baseline, not autonomous tool use or general superiority: MCP remains useful for live operational data and calculations. [Methodology, answers and limitations →](docs/MCP_COMPARISON.md)
 
-**Redesigning weekly reporting.** A separate one-page proposal has code collect tracker, Slack and meeting records, a model draft a source-linked report, and a department head review and approve it. It covers pilot metrics, detection of incomplete data and deliberate limits on automation. It is a process design, not implemented integrations. [PROCESS.md →](PROCESS.md)
+## Part B: reporting automation
 
-![Proposed process: code collects and validates, a model drafts, a person approves](docs/images/08-reporting.png)
+My experience automating developer reports, and how I would adapt it to weekly department reporting: work-system connections, an optional local tracker, human review and a scheduled draft. The proposal covers privacy, pilot metrics and failures.
+
+**[Read Part B — Daily Log Automation](PART_B_DAILY_LOG_AUTOMATION.md#english-version)** · [One-page submission](PROCESS.md)
+
+The full document contains Ukrainian first, then English. These are proposed reporting integrations, separate from the Part A application.
+
+![Weekly reporting: collect records, prepare a draft, review and submit](docs/images/reporting-flow-en.png)
+
+## Implementation and limitations
 
 **Code that can be explained.** Collection, search, answers and spending live in [small modules](src/services/). [Agents](agents/), [skills](skills/) and [prompts](prompts/) are actual files. Git history retains real timestamps; [effort](docs/TIME.md) is accounted for separately from API spending.
 
