@@ -25,7 +25,8 @@ function normalizedWords(text: string): string[] {
     .filter(Boolean);
 }
 
-function shingles(text: string, width = 5): Set<string> {
+// Compare runs of five words to detect reused wording without requiring identical formatting.
+function wordWindows(text: string, width = 5): Set<string> {
   const words = normalizedWords(text);
   if (words.length <= width) return new Set([words.join(" ")]);
   return new Set(
@@ -35,10 +36,11 @@ function shingles(text: string, width = 5): Set<string> {
   );
 }
 
-function jaccard(left: Set<string>, right: Set<string>): number {
+function wordWindowSimilarity(left: Set<string>, right: Set<string>): number {
   if (left.size === 0 && right.size === 0) return 1;
   let intersection = 0;
   for (const value of left) if (right.has(value)) intersection += 1;
+  // Jaccard similarity: shared word windows divided by all distinct windows in either page.
   return intersection / (left.size + right.size - intersection);
 }
 
@@ -49,7 +51,7 @@ function numberSignature(text: string): string {
     .join("|");
 }
 
-function representative(documents: DocumentSnapshot[]): DocumentSnapshot {
+function chooseRepresentative(documents: DocumentSnapshot[]): DocumentSnapshot {
   return [...documents].sort((left, right) => {
     if (left.authority !== right.authority)
       return left.authority - right.authority;
@@ -91,6 +93,7 @@ export function deduplicateDocuments(
     };
   }
   const documents = [...byId.values()];
+  // Joining groups makes copy relationships transitive: A matches B, and B matches C.
   const parent = documents.map((_, index) => index);
   const find = (index: number): number =>
     parent[index] === index ? index : (parent[index] = find(parent[index]!));
@@ -99,7 +102,9 @@ export function deduplicateDocuments(
     const b = find(right);
     if (a !== b) parent[b] = a;
   };
-  const cachedShingles = documents.map((document) => shingles(document.text));
+  const cachedWordWindows = documents.map((document) =>
+    wordWindows(document.text),
+  );
   for (let left = 0; left < documents.length; left += 1) {
     for (let right = left + 1; right < documents.length; right += 1) {
       const a = documents[left]!;
@@ -109,8 +114,12 @@ export function deduplicateDocuments(
         union(left, right);
         continue;
       }
+      // A changed number can be a changed fact, even when the surrounding prose is identical.
       if (numberSignature(a.text) !== numberSignature(b.text)) continue;
-      const similarity = jaccard(cachedShingles[left]!, cachedShingles[right]!);
+      const similarity = wordWindowSimilarity(
+        cachedWordWindows[left]!,
+        cachedWordWindows[right]!,
+      );
       if (similarity >= nearThreshold) union(left, right);
     }
   }
@@ -123,14 +132,19 @@ export function deduplicateDocuments(
   for (const indexes of members.values()) {
     if (indexes.length < 2) continue;
     const grouped = indexes.map((index) => documents[index]!);
-    const chosen = representative(grouped);
+    const chosen = chooseRepresentative(grouped);
     const exact = grouped.every(
       (document) => document.contentHash === grouped[0]!.contentHash,
     );
     const pairSimilarities = indexes.flatMap((left, position) =>
       indexes
         .slice(position + 1)
-        .map((right) => jaccard(cachedShingles[left]!, cachedShingles[right]!)),
+        .map((right) =>
+          wordWindowSimilarity(
+            cachedWordWindows[left]!,
+            cachedWordWindows[right]!,
+          ),
+        ),
     );
     const similarity = exact ? 1 : Math.min(...pairSimilarities);
     const id = createHash("sha256")

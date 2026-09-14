@@ -31,7 +31,7 @@ Thirty-five accepted URL results collapsed into an existing stable document iden
 | GitHub | 4 | Bounded Markdown documents from the configured Everstake repository seeds |
 | **Total** | **935** | **29 configured groups, 20 with accepted material** |
 
-The crawler starts only from operator-configured roots and seed URLs in [`config/sources.yaml`](../config/sources.yaml). It expands through sitemaps and same-origin links when enabled. The crawl found 9,391 occurrences of external links, representing 3,581 unique URLs, but recorded them as candidates rather than silently expanding the trust boundary. Adding one requires an explicit source entry, authority tier, reason, and crawl policy.
+The crawler starts only from operator-configured roots and seed URLs in [`assistant/config/sources.yaml`](../assistant/config/sources.yaml). It expands through sitemaps and same-origin links when enabled. The crawl found 9,391 occurrences of external links, representing 3,581 unique URLs, but recorded them as candidates rather than silently expanding the trust boundary. Adding one requires an explicit source entry, authority tier, reason, and crawl policy.
 
 These 935 documents are the web-only measurement. The four accepted video transcripts were added in the final integration described below; the frozen corpus therefore has 939 documents.
 
@@ -55,7 +55,7 @@ Stable document IDs combine canonical URL and sanitized content hash, so a chang
 
 Exact copies contribute chunks only through their selected representative. Near duplicates remain searchable because small textual changes may carry changed facts, while retrieval limits repeated passages from one duplicate group. Representatives are selected by source authority, then page date, then URL. Duplicate frequency therefore does not become evidence of truth, and original snapshots remain inspectable.
 
-Before hashing, chunking, or indexing, the sanitizer removed 7 sentences addressed to AI systems from 6 active documents and retained only removal counts and matched rule names in audit metadata. Those fields are excluded from answer-visible metadata. This is a rule-based English-language control: it covers the tested imperative patterns but may require new rules for other languages or novel phrasing.
+Before hashing, chunking, or indexing, the sanitizer removed 7 sentences addressed to AI systems from 6 active documents and retained only removal counts and matched rule names in audit metadata. Those fields are excluded from answer-visible metadata. This is a rule-based English-language control: it covers the tested imperative patterns but may require new rules for other languages or novel phrasing. This sentence describes the frozen run above; the [current sanitizer](../src/services/evidence/sanitize-document.ts) also contains Ukrainian, Russian, German and Spanish patterns. Their presence does not establish measured coverage of every attack or language.
 
 ## Known limits
 

@@ -500,3 +500,91 @@ test("malformed exception reviews retry once instead of silently approving the c
     "failed",
   );
 });
+
+test("a duplicate claim assessment retries the same request and keeps the valid review order", async () => {
+  const passage = source("history", "The first site opened before the second.");
+  const requests: Parameters<ModelClient["generate"]>[0][] = [];
+  const checks = await verifyClaims(
+    {
+      generate: async (request) => {
+        requests.push(request);
+        return {
+          text: JSON.stringify({
+            questionMode: "synthesis",
+            answerScope: { supported: false, reason: "Incomplete timeline" },
+            checks: (requests.length === 1 ? [0, 0] : [1, 0]).map(
+              (claimIndex) => ({
+                claimIndex,
+                supported: true,
+                reason: `Supported claim ${claimIndex}`,
+              }),
+            ),
+          }),
+          model: "fixture",
+          inputTokens: 1,
+          outputTokens: 1,
+        };
+      },
+    },
+    "run",
+    [
+      {
+        text: "The first site opened.",
+        citations: [passage.id],
+        asOf: "2026-01-01",
+      },
+      {
+        text: "The second site opened later.",
+        citations: [passage.id],
+        asOf: "2026-01-01",
+      },
+    ],
+    new Map([[passage.id, passage]]),
+    "How did the network develop?",
+  );
+  assert.equal(requests.length, 2);
+  assert.deepEqual(requests[1], requests[0]);
+  assert.deepEqual(
+    checks.map((check) => check.rule),
+    [
+      "claim-2:support",
+      "claim-2:currentness",
+      "claim-1:support",
+      "claim-1:currentness",
+      "answer-scope",
+      "synthesis-evidence",
+    ],
+  );
+  assert.equal(checks.at(-1)?.status, "failed");
+  assert.equal(checks.at(-2)?.reason, "Incomplete timeline");
+});
+
+test("two incomplete reviews fail as a provider error without focused calls", async () => {
+  let attempts = 0;
+  await assert.rejects(
+    verifyClaims(
+      {
+        generate: async (request) => {
+          attempts++;
+          assert.equal(request.stage, "claim-verification");
+          return {
+            text: JSON.stringify({
+              questionMode: "factual",
+              answerScope: { supported: true, reason: "Looks correct" },
+              checks: [],
+            }),
+            model: "fixture",
+            inputTokens: 1,
+            outputTokens: 1,
+          };
+        },
+      },
+      "run",
+      [{ text: "A site exists.", citations: ["site"], asOf: "2026-01-01" }],
+      new Map([["site", source("site", "A site exists.")]]),
+      "Does a site exist?",
+    ),
+    /Verifier did not assess every claim exactly once/,
+  );
+  assert.equal(attempts, 2);
+});

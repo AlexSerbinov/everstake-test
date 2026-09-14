@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import selection from "../../../config/evaluation-submission.json" with { type: "json" };
+import selection from "../../../assistant/config/evaluation-submission.json" with { type: "json" };
 import { publicEvaluations } from "./current-evaluation.js";
 import { averageQuality } from "./average-quality.js";
 import type { EvaluationRun } from "./evaluation-page.js";
@@ -15,7 +15,7 @@ test("submission docs and UI agree with explicitly selected measured answers", (
   assert.equal(current.summary.failed, 4);
   assert.equal(current.summary.inventedFacts, 1);
   assert.equal(averageQuality(current), 92.75);
-  for (const file of ["README.md", "README.uk.md", "REPORT.md", "REPORT.uk.md", "EVAL.md", "docs/DEFENCE.md", "docs/MCP_COMPARISON.md"]) {
+  for (const file of ["README.md", "submission_ukr/README.md", "REPORT.md", "submission_ukr/REPORT.md", "EVAL.md", "submission_ukr/EVAL.md", "docs/DEFENCE.md", "docs/MCP_COMPARISON.md"]) {
     const text = readFileSync(file,"utf8").split("<!-- submission-summary:start -->")[1]?.split("<!-- submission-summary:end -->")[0];
     assert.ok(text?.includes(`${current.summary.passed}/20`), file);
     assert.ok(text?.replaceAll(",", ".").includes(`${averageQuality(current)}/100`), file);

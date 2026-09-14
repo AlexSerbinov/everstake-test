@@ -17,8 +17,8 @@ Drawing = style.Drawing
 def agent():
     d = Drawing('folder-agent', 'What makes the researcher an agent?',
                 'Configuration supplies guidance. TypeScript runs the loop and checks its actions.', 980)
-    d.paper(65, 250, 390, 155, 'agents/researcher.yaml', ['Prompt and skill paths', 'Research / repair limits'], style.YELLOW)
-    d.paper(65, 465, 390, 155, 'prompts/ + skills/', ['How to research', 'How to compare evidence'])
+    d.paper(65, 250, 390, 155, 'assistant/agents/researcher.yaml', ['Prompt and skill paths', 'Research / repair limits'], style.YELLOW)
+    d.paper(65, 465, 390, 155, 'assistant/prompts/ + assistant/skills/', ['How to research', 'How to compare evidence'])
     d.box(590, 285, 430, 195, 'Research loop', ['Loads the configured text', 'Asks the model for an action', 'Stops at configured limits'], style.PURPLE)
     d.box(1120, 285, 405, 195, 'Actions in code', ['Search collected passages', 'Read evidence / calculate', 'Submit an answer'], style.GREEN)
     d.box(650, 650, 630, 150, 'Answer checks', ['Check citations and support; repair if possible', 'Return an answer or an abstention'], style.GREEN)

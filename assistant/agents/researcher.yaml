@@ -1,0 +1,14 @@
+name: corpus-researcher
+prompt: assistant/prompts/answer.md
+skills:
+  - assistant/skills/evidence.md
+# Research turns before submitting the final draft (1–8).
+maxSteps: 6
+# Extra turns to repair a draft rejected by evidence checks (0–2; default 1 if omitted).
+maxRepairSteps: 2
+# Inventory of actions implemented in TypeScript; this list does not load plugins.
+tools:
+  - search
+  - read
+  - calculate
+  - answer

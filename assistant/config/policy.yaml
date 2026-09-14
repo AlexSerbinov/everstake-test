@@ -1,0 +1,14 @@
+# Answer evidence and generation limits. Research turns belong to ../agents/researcher.yaml.
+maxEvidence: 14
+maxOutputTokens: 4000
+answerThinkingLevel: low
+# Conservative spending reservations stop a run before its next provider request.
+maxRunCostUsd: 0.30
+# Shared ceiling for calls made by this server process, not the lifetime database total.
+maxSessionCostUsd: 8
+# Heuristic points must sum to 100; the result is not a probability of truth.
+trust:
+  authority: 30
+  temporal: 20
+  grounding: 30
+  agreement: 20

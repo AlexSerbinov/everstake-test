@@ -67,9 +67,11 @@ export function evaluationPage(): HTMLElement {
   async function load() {
     content.replaceChildren(el("p", "muted", "Завантажуємо результати…"));
     try {
+      // Read stored answers and verdicts only. Opening this page never reruns evaluation.
       const { runs: savedRuns } = await getJson<{ runs: EvaluationRun[] }>(
         "/api/evaluations",
       );
+      // Published run IDs define the comparison; an updated view may combine saved rechecks.
       const runs = publicEvaluations(savedRuns);
       if (!runs.length) {
         content.replaceChildren(
@@ -240,6 +242,7 @@ export function evaluationPage(): HTMLElement {
               ),
             );
         }
+        // Filtering affects table visibility only, never the full-run metrics or failure counts.
         const rows = filterRows(run.rows, filter.value);
         list.append(evaluationTable(rows, run.id));
         if (!rows.length)

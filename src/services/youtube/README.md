@@ -2,6 +2,24 @@
 
 `screen-videos.ts` separates publisher identity from name similarity. `transcribe-video.ts` uploads accepted audio to Soniox, persists provider and client-reference IDs before polling, reconciles ambiguous submissions, resumes the same job, and preserves timed speaker turns. `review-speakers.ts` performs identity, role-at-recording and contextual label review in one metered Gemini call. A text review cannot prove acoustic identity; suspicious intervals remain visible for review. Raw provider responses stay in ignored runtime storage and model conclusions never overwrite them.
 
+## Follow one video through the code
+
+| Step | Start reading here | What it decides or saves |
+| --- | --- | --- |
+| Discover and screen | `pipeline.ts: importInventory`, `screen-videos.ts` | Merge discovery records and apply the current inclusion policy, even to previously accepted videos. |
+| Download | `pipeline.ts: downloadAcceptedAudio` | Reuse cached audio for accepted videos; use a temporary cookie copy if authentication is configured. |
+| Transcribe or resume | `transcribe-video.ts: transcribeVideo` | Check audio/model identity, resume an existing provider job, and preserve the raw transcript. |
+| Review speakers | `review-speakers.ts`, `review-cache.ts` | Attach evidenced identities and roles; cache results by input, model and prompt. |
+| Select testimony | `evidence-turns.ts: isEvidenceEligible` | Exclude unreviewed, suspicious and non-employee turns from factual evidence. |
+| Build a document | `pipeline.ts: buildDocument` | Format eligible testimony, strip AI instructions, and attach dates and authority. |
+| Activate | `activate-reviewed.ts` | Index eligible testimony and record the additional embedding usage. |
+
+Three IDs in transcription serve different purposes: the **video ID** locates the saved local job; the **client reference** lets us find a submission after a lost response; the **transcription ID** resumes polling that same Soniox job. Audio hash and model must also match before reuse. A timeout means we stopped waiting, not that the paid job vanished. A completed cached transcript can have its turn formatting rebuilt locally without buying another transcription.
+
+Speaker eligibility and document authority answer different questions. Eligibility decides which words can become evidence. Authority describes their source. An official channel does not make every voice in its video an employee. The upload date is also not assumed to be the recording date.
+
+## Operator commands and cost evidence
+
 Run `npx tsx scripts/youtube.ts inventory` to merge and re-screen the legacy 128-row manifest and the fresh official-channel list. Run `pilot` for the configured three-video sample, or `process --ids=id1,id2` for an explicit accepted subset. There is deliberately no process-all command. Runtime credentials are `SONIOX_API_KEY`, `GEMINI_API_KEY`, and optionally `YT_PROXY`, `YT_COOKIES_FILE`, `YT_JS_RUNTIMES`, and `YT_DLP_BIN`.
 
 `rebuild-documents` recreates sanitized snapshots from completed jobs and persisted reviews without provider calls. Third-party interviews become authority tier 2 only when a reviewed, named speaker has an evidenced Everstake role. Metadata explicitly limits that tier to the participant's statements; interviewer questions remain context. Official-channel sources retain tier 1 even when the narrator is unidentified.

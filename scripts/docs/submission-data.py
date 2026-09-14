@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
-selection = json.loads((ROOT/'config/evaluation-submission.json').read_text())
+selection = json.loads((ROOT/'assistant/config/evaluation-submission.json').read_text())
 def load(name): return json.loads((ROOT/'artifacts/evaluation'/name).read_text())
 base=load(selection['baseArtifact']); rechecks=[load(n) for n in selection['recheckArtifacts']]; mcp=load(selection['comparatorArtifact'])
 assert base['id']==selection['baseRun'] and base['corpusVersion']==selection['corpusVersion']

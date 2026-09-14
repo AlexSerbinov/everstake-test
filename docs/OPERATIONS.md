@@ -23,7 +23,7 @@ npm run cli -- refresh-resume JOB_ID
 
 Use the job ID from the refresh output. Run one refresh worker against a serving database. A failed staging job leaves the active version intact; resume reuses compatible staged work. A fresh crawl can produce different facts and counts from the committed evaluation snapshot. The current code also has an operator-enabled scheduler, disabled by default; see [Updates](UPDATES.md). Do not infer the hosted configuration from local code.
 
-To admit a new domain, edit [sources.yaml](../config/sources.yaml), including publisher, authority, reason and limits, then refresh that source ID. An unsupported format needs an extraction adapter with a fixture. Source content cannot grant itself more authority.
+To admit a new domain, edit [sources.yaml](../assistant/config/sources.yaml), including publisher, authority, reason and limits, then refresh that source ID. An unsupported format needs an extraction adapter with a fixture. Source content cannot grant itself more authority.
 
 ## Video discovery and processing
 
@@ -56,7 +56,7 @@ npx tsx scripts/publish-costs.ts
 npx tsx scripts/import-evaluations.ts
 ```
 
-`grades.json` must contain actual reviewed verdicts in the publisher's expected format; inspect [publish-evaluation.ts](../scripts/publish-evaluation.ts) before preparing it. Publishing rewrites the generated EVAL/COST documents. Importing evaluations writes saved results into the selected host's database for its Evaluation screen; it does not rerun questions.
+`grades.json` must contain actual reviewed verdicts in the publisher's expected format; inspect [publish-evaluation.ts](../scripts/publish-evaluation.ts) before preparing it. Publishing rewrites the generated EVAL/COST documents. Reconcile the selected run and measurement scope first; update `submission_ukr/COST.md` alongside `COST.md`, and `submission_ukr/EVAL.md` alongside `EVAL.md`, since the publishers do not translate them. Importing evaluations writes saved results into the selected host's database for its Evaluation screen; it does not rerun questions.
 
 Do not mix a later collection ledger with the frozen evaluation's corpus count. Unknown charges stay unknown, and 50× extrapolation remains a forecast with explicit arithmetic.
 

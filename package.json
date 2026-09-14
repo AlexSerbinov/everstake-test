@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.13"
+    "node": ">=22.16"
   },
   "scripts": {
     "start": "tsx src/main.ts",
@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test --test-concurrency=1 \"src/**/*.test.ts\" \"web/**/*.test.ts\"",
     "build:web": "esbuild web/app.ts --bundle --outfile=public/app.js --format=esm",
-    "check": "npm run typecheck && npm test"
+    "check": "npm run typecheck && npm test && npm run check:repository",
+    "check:repository": "tsx scripts/check-repository.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.1",

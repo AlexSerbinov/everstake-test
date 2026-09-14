@@ -69,6 +69,7 @@ export function costOverview(): HTMLElement {
   async function load() {
     content.replaceChildren(el("p", "muted", "Loading recorded costs…"));
     try {
+      // This GET reads saved usage. Rendering the dashboard never calls a paid provider.
       const data = await getJson<CostDashboard>("/api/costs");
       const stats = el("div", "cost-stats");
       stats.append(
@@ -100,57 +101,7 @@ export function costOverview(): HTMLElement {
       const sampleNote = el("p", "cost-sample-note");
       sampleNote.textContent =
         "Averages describe recorded successful runs, not a quote for the next request. Failed or unpriced runs are excluded from averages, but their known charges remain in total spending. One update run can check one source or several; a full Updates pass can contain many runs.";
-      const providers = el("div", "cost-provider-grid");
-      const providerNames: Record<string, { name: string; purpose: string }> = {
-        soniox: { name: "Soniox", purpose: "Video transcription" },
-        gemini: { name: "Gemini", purpose: "Answers, extraction & reviews" },
-        openai: { name: "OpenAI", purpose: "Search & index embeddings" },
-      };
-      for (const provider of data.byProvider) {
-        const description = providerNames[provider.provider] ?? {
-          name: provider.provider,
-          purpose: "Other recorded provider activity",
-        };
-        const box = panel(description.name);
-        box.classList.add("cost-provider-card");
-        const headline = el("div", "cost-provider-total");
-        headline.append(
-          el("span", "", `${description.purpose} · known cost`),
-          el(
-            "strong",
-            "",
-            provider.calls ? money(provider.knownCostUsd) : "No activity",
-          ),
-        );
-        box.append(headline);
-        for (const model of provider.models) {
-          const modelRow = el("div", "cost-provider-model");
-          const modelHeading = el("div", "cost-model-heading");
-          modelHeading.append(
-            el("strong", "", model.model),
-            el("strong", "", money(model.knownCostUsd)),
-          );
-          modelRow.append(
-            modelHeading,
-            el(
-              "p",
-              "cost-note",
-              provider.provider === "soniox"
-                ? `${model.calls} transcription attempts · ${model.unknownCalls} unpriced`
-                : `${model.calls} calls · ${model.inputTokens.toLocaleString()} in / ${model.outputTokens.toLocaleString()} out tokens`,
-            ),
-          );
-          box.append(modelRow);
-        }
-        box.append(
-          el(
-            "p",
-            "cost-provider-state",
-            `${provider.pendingCalls} pending · ${provider.unpricedFinalCalls} finished unpriced · ${provider.errorCalls} failed/cancelled`,
-          ),
-        );
-        providers.append(box);
-      }
+      const providers = providerBreakdown(data.byProvider);
       const ribbon = el("div", "cost-ribbon");
       ribbon.append(
         el(
@@ -224,59 +175,7 @@ export function costOverview(): HTMLElement {
       );
       stages.append(bars(data.byStage, (value) => value.replaceAll("_", " ")));
       trends.append(daily, stages);
-      const forecast = el("div", "cost-forecast");
-      const scenario = el("table", "cost-forecast-table");
-      const head = el("tr");
-      for (const title of ["", "Now", "", "At 50×"])
-        head.append(el("th", "", title));
-      scenario.append(head);
-      const perQuestion = data.query.meanUsd;
-      for (const [label, now, factor, projected] of [
-        [
-          "Documents in the corpus",
-          data.forecast.documents.toLocaleString(),
-          "× 50",
-          data.forecast.projectedDocuments.toLocaleString(),
-        ],
-        [
-          "Tokens to build the index",
-          data.forecast.inputTokens.toLocaleString(),
-          "× 50",
-          data.forecast.projectedInputTokens.toLocaleString(),
-        ],
-        [
-          "Cost to build the index",
-          money(data.forecast.knownIndexCostUsd),
-          "× 50",
-          money(data.forecast.projectedIndexCostUsd),
-        ],
-        [
-          "Cost of one question",
-          perQuestion === null ? "No sample yet" : money(perQuestion),
-          "× 1",
-          perQuestion === null ? "No sample yet" : money(perQuestion),
-        ],
-      ]) {
-        const row = el("tr");
-        row.append(
-          el("td", "", label),
-          el("td", "", now),
-          el("td", "cost-forecast-factor", factor),
-          el("td", "", projected),
-        );
-        scenario.append(row);
-      }
-      const scroll = el("div", "cost-forecast-scroll");
-      scroll.append(scenario);
-      forecast.append(
-        el("strong", "", "What a 50× larger corpus would cost"),
-        scroll,
-        el(
-          "p",
-          "cost-note",
-          `The index grows with the corpus, so it is multiplied by 50. A question does not: each answer reads a capped number of passages and tool steps, so its cost stays about the same. This is a forecast from recorded runs, not a charge; ${data.forecast.unknownCalls} unconfirmed index calls are excluded.`,
-        ),
-      );
+      const forecast = corpusForecast(data);
       const breakdown = details(
         "Where the money went, day by day & 50× scenario",
         forecast,
@@ -340,6 +239,7 @@ function renderLedger(content: HTMLElement, data: CostDashboard) {
   const subtotal = el("p", "cost-note");
   const rows = el("div", "cost-ledger");
   content.append(controls, subtotal, rows);
+  // Filters operate on the fetched snapshot; root receipts already include child calls.
   function render() {
     const query = search.value.toLowerCase().trim();
     const selected = data.runs.filter(
@@ -401,6 +301,7 @@ function renderLedger(content: HTMLElement, data: CostDashboard) {
         amount,
       );
       const body = el("div", "cost-ledger-body");
+      // Build the detailed receipt only when opened; no additional request is needed.
       row.addEventListener("toggle", () => {
         if (!row.open || body.childElementCount) return;
         body.append(costReceipt(run.receipt, "Operation receipt"));
@@ -428,4 +329,120 @@ function renderLedger(content: HTMLElement, data: CostDashboard) {
   kind.addEventListener("change", render);
   state.addEventListener("change", render);
   render();
+}
+
+/** Render provider/model totals already aggregated by the server ledger. */
+function providerBreakdown(
+  providersData: CostDashboard["byProvider"],
+): HTMLElement {
+  const providers = el("div", "cost-provider-grid");
+  const providerNames: Record<string, { name: string; purpose: string }> = {
+    soniox: { name: "Soniox", purpose: "Video transcription" },
+    gemini: { name: "Gemini", purpose: "Answers, extraction & reviews" },
+    openai: { name: "OpenAI", purpose: "Search & index embeddings" },
+  };
+  for (const provider of providersData) {
+    const description = providerNames[provider.provider] ?? {
+      name: provider.provider,
+      purpose: "Other recorded provider activity",
+    };
+    const box = panel(description.name);
+    box.classList.add("cost-provider-card");
+    const headline = el("div", "cost-provider-total");
+    headline.append(
+      el("span", "", `${description.purpose} · known cost`),
+      el(
+        "strong",
+        "",
+        provider.calls ? money(provider.knownCostUsd) : "No activity",
+      ),
+    );
+    box.append(headline);
+    for (const model of provider.models) {
+      const modelRow = el("div", "cost-provider-model");
+      const modelHeading = el("div", "cost-model-heading");
+      modelHeading.append(
+        el("strong", "", model.model),
+        el("strong", "", money(model.knownCostUsd)),
+      );
+      modelRow.append(
+        modelHeading,
+        el(
+          "p",
+          "cost-note",
+          provider.provider === "soniox"
+            ? `${model.calls} transcription attempts · ${model.unknownCalls} unpriced`
+            : `${model.calls} calls · ${model.inputTokens.toLocaleString()} in / ${model.outputTokens.toLocaleString()} out tokens`,
+        ),
+      );
+      box.append(modelRow);
+    }
+    box.append(
+      el(
+        "p",
+        "cost-provider-state",
+        `${provider.pendingCalls} pending · ${provider.unpricedFinalCalls} finished unpriced · ${provider.errorCalls} failed/cancelled`,
+      ),
+    );
+    providers.append(box);
+  }
+  return providers;
+}
+
+/** The 50× scenario is a projection; it must stay separate from measured charges. */
+function corpusForecast(data: CostDashboard): HTMLElement {
+  const forecast = el("div", "cost-forecast");
+  const scenario = el("table", "cost-forecast-table");
+  const head = el("tr");
+  for (const title of ["", "Now", "", "At 50×"])
+    head.append(el("th", "", title));
+  scenario.append(head);
+  const perQuestion = data.query.meanUsd;
+  for (const [label, now, factor, projected] of [
+    [
+      "Documents in the corpus",
+      data.forecast.documents.toLocaleString(),
+      "× 50",
+      data.forecast.projectedDocuments.toLocaleString(),
+    ],
+    [
+      "Tokens to build the index",
+      data.forecast.inputTokens.toLocaleString(),
+      "× 50",
+      data.forecast.projectedInputTokens.toLocaleString(),
+    ],
+    [
+      "Cost to build the index",
+      money(data.forecast.knownIndexCostUsd),
+      "× 50",
+      money(data.forecast.projectedIndexCostUsd),
+    ],
+    [
+      "Cost of one question",
+      perQuestion === null ? "No sample yet" : money(perQuestion),
+      "× 1",
+      perQuestion === null ? "No sample yet" : money(perQuestion),
+    ],
+  ]) {
+    const row = el("tr");
+    row.append(
+      el("td", "", label),
+      el("td", "", now),
+      el("td", "cost-forecast-factor", factor),
+      el("td", "", projected),
+    );
+    scenario.append(row);
+  }
+  const scroll = el("div", "cost-forecast-scroll");
+  scroll.append(scenario);
+  forecast.append(
+    el("strong", "", "What a 50× larger corpus would cost"),
+    scroll,
+    el(
+      "p",
+      "cost-note",
+      `The index grows with the corpus, so it is multiplied by 50. A question does not: each answer reads a capped number of passages and tool steps, so its cost stays about the same. This is a forecast from recorded runs, not a charge; ${data.forecast.unknownCalls} unconfirmed index calls are excluded.`,
+    ),
+  );
+  return forecast;
 }

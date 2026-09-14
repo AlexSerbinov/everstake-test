@@ -3,8 +3,8 @@ import type {
   EvaluationQuestion,
 } from "../../../src/contracts.js";
 import { badge, details, el, link } from "../../shared/dom.js";
-import { answerView } from "../answer/answer-view.js";
-import { citationSegments } from "../answer-sources/citation-navigation.js";
+import { answerView } from "../ask/answer-view.js";
+import { citationSegments } from "../ask/citation-navigation.js";
 import { resultState } from "./evaluation-groups.js";
 export interface ResultRow {
   question: EvaluationQuestion | string;

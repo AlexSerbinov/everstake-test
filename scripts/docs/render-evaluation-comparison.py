@@ -34,7 +34,7 @@ for lang in ['en','uk']:
     text(im,55,565,t('18 answers retained + 2 rechecked. Original full run: 14/20. Not a new full run.','18 відповідей збережено + 2 перевірено повторно. Початковий прогін: 14/20.'),27)
     text(im,55,615,t('Our answers: 4 failures, including 1 unsupported-fact case. Green: passed; pink: failed.','Це не новий повний прогін. 4 невдачі, зокрема 1 непідтверджене твердження.'),27)
     text(im,55,665,t('MCP: captured tool data only, one answer turn, no corpus or reference answers.','MCP: лише збережені дані інструментів, одна спроба, без нашого корпусу й еталонів.'),27)
-    text(im,55,730,t('Post-hoc rubric review, not a blind benchmark. Source: config/evaluation-submission.json','Оцінка за критеріями, не сліпий тест. Джерело: config/evaluation-submission.json'),25)
+    text(im,55,730,t('Post-hoc rubric review, not a blind benchmark. Source: assistant/config/evaluation-submission.json','Оцінка за критеріями, не сліпий тест. Джерело: assistant/config/evaluation-submission.json'),25)
     name='06-evaluation'+('-uk' if lang=='uk' else '')+'.png'
     cv2.imwrite(str(OUT/name),im)
 im=canvas(830)

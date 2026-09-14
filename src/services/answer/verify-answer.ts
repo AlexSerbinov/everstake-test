@@ -19,6 +19,7 @@ export function numbers(text: string): string[] {
     .filter(Number.isFinite)
     .map(String);
 }
+/** Local checks only: citation membership, number grounding, and date provenance. */
 export function verifyAnswer(
   claims: Claim[],
   registry: Map<string, EvidencePassage>,

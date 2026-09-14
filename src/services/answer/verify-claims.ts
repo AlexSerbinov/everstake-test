@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { z } from "zod";
+import { loadModelsConfig } from "../../providers/provider-config.js";
 import type {
   Claim,
   CheckResult,
@@ -19,6 +20,11 @@ const schema = z.object({
     }),
   ),
 });
+type ClaimReview = z.infer<typeof schema>;
+type CurrentnessReview = { superseded: boolean; reason: string };
+type ScopeReview = { unqualified: boolean; reason: string };
+
+/** Paid semantic review: support, currentness, exceptions, and whole-answer scope. */
 export async function verifyClaims(
   model: ModelClient,
   runId: string,
@@ -29,12 +35,65 @@ export async function verifyClaims(
   counterevidence: ClaimCounterevidence[] = [],
 ): Promise<CheckResult[]> {
   const extra = new Map(counterevidence.map((c) => [c.claimIndex, c]));
+  const result = await reviewEveryClaim(
+    model,
+    runId,
+    claims,
+    registry,
+    question,
+    signal,
+    extra,
+  );
+  const { focused, scoped } = await reviewNewerEvidenceAndExceptions(
+    model,
+    runId,
+    claims,
+    question,
+    signal,
+    extra,
+    result.checks,
+  );
+  const checks = formatClaimChecks(result.checks, extra, focused, scoped);
+  // Individually correct claims can still imply an unsupported relationship or miss the
+  // question. Review the whole answer against cited and other retrieved passages, but
+  // only after the cheaper checks pass. A failed draft already needs repair.
+  const scopeReview =
+    result.answerScope.supported && !checks.some((c) => c.status === "failed")
+      ? await reviewAnswerScope(
+          model,
+          runId,
+          signal,
+          question,
+          claims,
+          registry,
+          counterevidence,
+        )
+      : result.answerScope;
+  checks.push({
+    rule: "answer-scope",
+    status: scopeReview.supported ? "passed" : "failed",
+    reason: scopeReview.reason,
+  });
+  if (result.questionMode === "synthesis")
+    checks.push(checkSynthesisEvidence(claims, registry));
+  return checks;
+}
+
+async function reviewEveryClaim(
+  model: ModelClient,
+  runId: string,
+  claims: Claim[],
+  registry: Map<string, EvidencePassage>,
+  question: string,
+  signal: AbortSignal | undefined,
+  extra: Map<number, ClaimCounterevidence>,
+): Promise<ClaimReview> {
   const request = {
     runId,
     signal,
     stage: "claim-verification",
-    model: "gemini-3.5-flash-lite",
-    system: readFileSync("prompts/verify-claims.md", "utf8"),
+    model: loadModelsConfig().extraction,
+    system: readFileSync("assistant/prompts/verify-claims.md", "utf8"),
     messages: [
       {
         role: "user" as const,
@@ -76,12 +135,24 @@ export async function verifyClaims(
   }
   if (!result)
     throw new Error("Verifier did not assess every claim exactly once");
+  return result;
+}
+
+async function reviewNewerEvidenceAndExceptions(
+  model: ModelClient,
+  runId: string,
+  claims: Claim[],
+  question: string,
+  signal: AbortSignal | undefined,
+  extra: Map<number, ClaimCounterevidence>,
+  reviews: ClaimReview["checks"],
+) {
   // The small reviewer sees every claim and passage at once and can miss a changed role or
   // count buried in a long page. A claim that has newer evidence gets one focused comparison
   // by the stronger answer model; either reviewer can mark it superseded.
-  const focused = new Map<number, { superseded: boolean; reason: string }>();
-  const scoped = new Map<number, { unqualified: boolean; reason: string }>();
-  for (const check of result.checks) {
+  const focused = new Map<number, CurrentnessReview>();
+  const scoped = new Map<number, ScopeReview>();
+  for (const check of reviews) {
     const claim = claims[check.claimIndex]!;
     const newer = extra.get(check.claimIndex)?.newer ?? [];
     if (newer.length && !check.supersededByNewer)
@@ -96,7 +167,17 @@ export async function verifyClaims(
         await reviewScope(model, runId, signal, question, claim, exceptions),
       );
   }
-  const checks: CheckResult[] = result.checks.flatMap((c) => {
+  return { focused, scoped };
+}
+
+// Keep the reviewer's claim order and diagnostic wording: these checks also guide repairs.
+function formatClaimChecks(
+  reviews: ClaimReview["checks"],
+  extra: Map<number, ClaimCounterevidence>,
+  focused: Map<number, CurrentnessReview>,
+  scoped: Map<number, ScopeReview>,
+): CheckResult[] {
+  return reviews.flatMap((c) => {
     const newer = extra.get(c.claimIndex)?.newer ?? [];
     const dates = newer.map((s) => evidenceDate(s)).join(", ");
     const strong = focused.get(c.claimIndex);
@@ -142,44 +223,28 @@ export async function verifyClaims(
       },
     ] satisfies CheckResult[];
   });
-  // A broad lightweight review can approve each quantity while missing the relationship
-  // implied by their juxtaposition. Compare multi-value answers as a whole, with only
-  // their cited passages, using the answer model (the same pattern as currentness review).
-  const scopeReview =
-    result.answerScope.supported && !checks.some((c) => c.status === "failed")
-      ? await reviewAnswerScope(
-          model,
-          runId,
-          signal,
-          question,
-          claims,
-          registry,
-          counterevidence,
-        )
-      : result.answerScope;
-  checks.push({
-    rule: "answer-scope",
-    status: scopeReview.supported ? "passed" : "failed",
-    reason: scopeReview.reason,
-  });
-  if (result.questionMode === "synthesis") {
-    const cited = claims.flatMap((c) =>
-      c.citations.map((id) => registry.get(id)!),
-    );
-    const groups = new Set(cited.map((s) => s.duplicateGroup));
-    const dates = new Set(
-      cited.map((s) =>
-        (s.publishedAt ?? s.updatedAt ?? s.fetchedAt).slice(0, 10),
-      ),
-    );
-    checks.push({
-      rule: "synthesis-evidence",
-      status: groups.size >= 2 && dates.size >= 2 ? "passed" : "failed",
-      reason:
-        "Historical synthesis requires multiple independent sources and distinct dated observations.",
-    });
-  }
-  return checks;
+}
+
+function checkSynthesisEvidence(
+  claims: Claim[],
+  registry: Map<string, EvidencePassage>,
+): CheckResult {
+  // Repeated copies of one source must not count as independent historical observations.
+  const cited = claims.flatMap((c) =>
+    c.citations.map((id) => registry.get(id)!),
+  );
+  const groups = new Set(cited.map((s) => s.duplicateGroup));
+  const dates = new Set(
+    cited.map((s) =>
+      (s.publishedAt ?? s.updatedAt ?? s.fetchedAt).slice(0, 10),
+    ),
+  );
+  return {
+    rule: "synthesis-evidence",
+    status: groups.size >= 2 && dates.size >= 2 ? "passed" : "failed",
+    reason:
+      "Historical synthesis requires multiple independent sources and distinct dated observations.",
+  };
 }
 
 async function reviewedJson<T extends z.ZodType>(
@@ -192,7 +257,7 @@ async function reviewedJson<T extends z.ZodType>(
     system:
       request.system +
       "\n\n" +
-      readFileSync("prompts/review-format.md", "utf8") +
+      readFileSync("assistant/prompts/review-format.md", "utf8") +
       "\n" +
       JSON.stringify(z.toJSONSchema(schema)),
   };
@@ -206,7 +271,7 @@ async function reviewedJson<T extends z.ZodType>(
               ...request.messages,
               {
                 role: "user",
-                text: readFileSync("prompts/review-retry.md", "utf8"),
+                text: readFileSync("assistant/prompts/review-retry.md", "utf8"),
               },
             ],
           },
@@ -243,7 +308,7 @@ async function reviewAnswerScope(
       runId,
       signal,
       stage: "answer-scope-review",
-      system: readFileSync("prompts/answer-scope.md", "utf8"),
+      system: readFileSync("assistant/prompts/answer-scope.md", "utf8"),
       thinkingLevel: "medium",
       messages: [
         {
@@ -302,7 +367,7 @@ async function reviewCurrentness(
       runId,
       signal,
       stage: "currentness-review",
-      system: readFileSync("prompts/currentness.md", "utf8"),
+      system: readFileSync("assistant/prompts/currentness.md", "utf8"),
       messages: [
         {
           role: "user",
@@ -341,7 +406,7 @@ async function reviewScope(
       runId,
       signal,
       stage: "scope-review",
-      system: readFileSync("prompts/scope.md", "utf8"),
+      system: readFileSync("assistant/prompts/scope.md", "utf8"),
       messages: [
         {
           role: "user",

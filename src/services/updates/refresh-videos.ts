@@ -80,26 +80,28 @@ export async function refreshVideos(
     const d = JSON.parse(String(row.snapshot));
     if (d.metadata?.videoId) known.add(d.metadata.videoId);
   }
-  const read = (id: string): VideoUpdate | null =>
+  const readVideo = (id: string): VideoUpdate | null =>
     JSON.parse(getSetting(db, `update_video:${id}`, "null"));
-  const save = (v: VideoUpdate) =>
+  const saveVideo = (v: VideoUpdate) =>
     setSetting(db, `update_video:${v.candidate.id}`, JSON.stringify(v));
   progress("Discovering new video IDs");
   const discovered = await (dependencies.discover ?? discoverUpdateVideos)();
   let skipped = 0;
   for (const candidate of discovered) {
-    if (read(candidate.id)) continue;
+    if (readVideo(candidate.id)) continue;
     if (known.has(candidate.id)) {
       skipped++;
       continue;
     }
-    save({ candidate, status: "pending" });
+    saveVideo({ candidate, status: "pending" });
   }
   const videos = () =>
     db
       .prepare("SELECT value FROM settings WHERE key LIKE 'update_video:%'")
       .all()
       .map((r) => JSON.parse(String(r.value)) as VideoUpdate);
+  // Save each result separately. A later failure can retry the pending video
+  // without repeating completed transcription or speaker review.
   let processed = 0;
   for (const state of videos()
     .filter((v) => v.status === "pending")
@@ -113,7 +115,7 @@ export async function refreshVideos(
       state.status =
         candidate.decision === "excluded" ? "excluded" : "needs_review";
       state.reason = candidate.reason;
-      save(state);
+      saveVideo(state);
       continue;
     }
     progress(`Transcribing and reviewing ${candidate.id}`);
@@ -123,11 +125,12 @@ export async function refreshVideos(
     state.status = document ? "ready" : "needs_review";
     if (document) state.document = document;
     else state.reason = "No eligible company testimony after speaker review";
-    save(state);
+    saveVideo(state);
     processed++;
   }
   const all = videos();
   return {
+    // Ready videos stay available if corpus activation failed on a previous pass.
     documents: all.flatMap((v) => (v.document ? [v.document] : [])),
     discovered: discovered.length,
     skipped,
@@ -147,46 +150,11 @@ export async function refreshVideos(
     const cached = row
       ? (JSON.parse(String(row.data)) as TranscriptionJob)
       : null;
-    const meter: TranscriptionMeter = {
-      start(metadata) {
-        return beginApiAttempt(
-          db,
-          {
-            runId,
-            stage: "youtube-transcription",
-            provider: "soniox",
-            model: String(metadata.model),
-            attempt: 1,
-            operationId: String(metadata.operationId),
-            reservationUsd: Number(metadata.forecastCostUsd ?? 0),
-            metadata,
-          },
-          {
-            runUsd: config.limits.totalBudgetUsd,
-            sessionUsd: readConfig<{ maxSessionCostUsd: number }>("policy")
-              .maxSessionCostUsd,
-            sessionStartedAt: getSetting(
-              db,
-              "update_video_budget_start",
-              new Date().toISOString(),
-            ),
-          },
-        );
-      },
-      finish(id, status, metadata) {
-        const started = db
-          .prepare("SELECT started_at FROM api_calls WHERE id=?")
-          .get(id);
-        finishApiAttempt(db, id, {
-          status,
-          elapsedMs: started
-            ? Date.now() - Date.parse(String(started.started_at))
-            : 0,
-          actualCostUsd: null,
-          metadata,
-        });
-      },
-    };
+    const meter = createTranscriptionMeter(
+      db,
+      runId,
+      config.limits.totalBudgetUsd,
+    );
     // Completed STT is read directly: no download, upload or model-change retranscription.
     const job =
       cached?.status === "completed"
@@ -217,9 +185,58 @@ export async function refreshVideos(
     validateReview(review, turns);
     state.review = review;
     state.reviewHash = hash;
-    save(state);
+    saveVideo(state);
     if (!turns.some((turn, i) => isEvidenceEligible(turn, i, review)))
       return null;
     return buildDocument(candidate, turns, review);
   }
+}
+
+// Keep billing separate from video selection. Soniox forecasts reserve budget but
+// are never recorded as measured spending: provider billing is still unknown here.
+function createTranscriptionMeter(
+  db: Database,
+  runId: string,
+  totalBudgetUsd: number,
+): TranscriptionMeter {
+  return {
+    start(metadata) {
+      return beginApiAttempt(
+        db,
+        {
+          runId,
+          stage: "youtube-transcription",
+          provider: "soniox",
+          model: String(metadata.model),
+          attempt: 1,
+          operationId: String(metadata.operationId),
+          reservationUsd: Number(metadata.forecastCostUsd ?? 0),
+          metadata,
+        },
+        {
+          runUsd: totalBudgetUsd,
+          sessionUsd: readConfig<{ maxSessionCostUsd: number }>("policy")
+            .maxSessionCostUsd,
+          sessionStartedAt: getSetting(
+            db,
+            "update_video_budget_start",
+            new Date().toISOString(),
+          ),
+        },
+      );
+    },
+    finish(id, status, metadata) {
+      const started = db
+        .prepare("SELECT started_at FROM api_calls WHERE id=?")
+        .get(id);
+      finishApiAttempt(db, id, {
+        status,
+        elapsedMs: started
+          ? Date.now() - Date.parse(String(started.started_at))
+          : 0,
+        actualCostUsd: null,
+        metadata,
+      });
+    },
+  };
 }

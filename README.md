@@ -1,5 +1,7 @@
 # Everstate Knowledge Base
 
+> **УКРАЇНСЬКА ВЕРСІЯ: [README](submission_ukr/README.md) · [УСЯ УКРАЇНСЬКА ДОКУМЕНТАЦІЯ](submission_ukr/README.md)**
+
 <!-- submission-summary:start -->
 **16/20 (challenging questions), average rubric score 92.75/100.**
 
@@ -16,7 +18,9 @@ The assistant finds information in collected public sources, compares it, and re
 
 Built by Oleksandr Serbinov for the **AI Automation & Agentic Systems Lead role at Everstake**.
 
-**English** · [Українська](README.uk.md) · [Open the demo](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Assignment](docs/TEST_ASSIGNMENT_EN.md) · [Evaluation](EVAL.md)
+**English** · [Українська](submission_ukr/README.md) · [Open the demo](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Assignment](docs/TEST_ASSIGNMENT_EN.md) · [Evaluation](EVAL.md)
+
+**Browse the repository:** [Folder map](docs/README.md) · [YouTube transcripts](artifacts/youtube/reviewed/README.md) · [Server code](src/services/README.md) · [Review records](docs/review-logs/README.md)
 
 [![Current demo: the question form and suggested questions](artifacts/demo/redesign/ask-desktop.png)](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask)
 
@@ -129,7 +133,7 @@ The current Updates screen starts a full pass over enabled sources without an op
 
 ## Run it locally
 
-Use **Node.js 22.16+**. This is one TypeScript application with SQLite. Gemini generates and reviews answers; OpenAI produces search embeddings. Models and prices are in [configuration](config/models.yaml).
+Use **Node.js 22.16+**. This is one TypeScript application with SQLite. Gemini generates and reviews answers; OpenAI produces search embeddings. Models and prices are in [configuration](assistant/config/models.yaml).
 
 ```sh
 npm ci
@@ -153,7 +157,7 @@ Open **http://localhost:4318**. Data persists in `data/knowledge.sqlite`. Indexi
 
 My experience automating developer reports, and how I would adapt it to weekly department reporting: work-system connections, an optional local tracker, human review and a scheduled draft. The proposal covers privacy, pilot metrics and failures.
 
-**Part B — Daily Log Automation:** [Укр](PROCESS.uk.md) | [Eng Version](PROCESS.md)
+**Part B — Weekly department reporting:** [Укр](submission_ukr/PROCESS.md) | [Eng Version](PROCESS.md)
 
 The full proposal is available in separate Ukrainian and English files. These are proposed reporting integrations, separate from the Part A application.
 
@@ -161,6 +165,6 @@ The full proposal is available in separate Ukrainian and English files. These ar
 
 ## Implementation and limitations
 
-**Code that can be explained.** Collection, search, answers and spending live in [small modules](src/services/). [Agents](agents/), [skills](skills/) and [prompts](prompts/) are actual files. Git history retains real timestamps; [effort](docs/TIME.md) is accounted for separately from API spending.
+**Code that can be explained.** Collection, search, answers and spending live in [small modules](src/services/). [Agents](assistant/agents/), [skills](assistant/skills/) and [prompts](assistant/prompts/) are actual files. Git history retains real timestamps; [effort](docs/TIME.md) is accounted for separately from API spending.
 
 Known limits include incomplete video coverage, no extraction of facts from images, retrieval misses and fallible model reviews. Decisions, deliberate scope cuts and one-month priorities are in [REPORT.md](REPORT.md). There are also [short Ukrainian defence notes](docs/DEFENCE.md).

@@ -1,0 +1,38 @@
+# Provider model IDs. Changing embedding requires rebuilding incompatible corpus vectors.
+answer: gemini-3.8-flash
+extraction: gemini-3.5-flash-lite
+embedding: text-embedding-3-small
+# Date of this price snapshot, not a live quote or provider billing reconciliation.
+pricesAsOf: '2026-09-13'
+providers:
+  gemini:
+    protocol: native
+    baseURL: https://generativelanguage.googleapis.com/v1beta
+    apiKeyEnv: GEMINI_API_KEY
+    timeoutMs: 60000
+    maxAttempts: 3
+  openai:
+    baseURL: https://api.openai.com/v1
+    apiKeyEnv: OPENAI_API_KEY
+    timeoutMs: 60000
+    maxAttempts: 3
+# Budget reservation when usage/price is unknown; never reported as measured spending.
+unknownCallReserveUsd: 0.05
+prices:
+  gemini-3.8-flash:
+    inputPerMillionUsd: 0.75
+    cachedInputPerMillionUsd: 0.075
+    outputPerMillionUsd: 3.75
+    source: https://ai.google.dev/gemini-api/docs/pricing
+    note: Standard paid tier through 2026-12-31; output includes thinking tokens.
+  gemini-3.5-flash-lite:
+    inputPerMillionUsd: 0.30
+    cachedInputPerMillionUsd: 0.03
+    outputPerMillionUsd: 2.50
+    source: https://ai.google.dev/gemini-api/docs/pricing
+    note: Standard paid tier.
+  text-embedding-3-small:
+    inputPerMillionUsd: 0.02
+    outputPerMillionUsd: 0
+    source: https://developers.openai.com/api/docs/models/text-embedding-3-small
+    note: Standard embeddings endpoint.

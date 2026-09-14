@@ -54,7 +54,9 @@ export interface Inventory {
 }
 
 export function readYouTubeConfig(): YouTubeConfig {
-  return parse(readFileSync("config/youtube.yaml", "utf8")) as YouTubeConfig;
+  return parse(
+    readFileSync("assistant/config/youtube.yaml", "utf8"),
+  ) as YouTubeConfig;
 }
 
 export function importInventory(options: {
@@ -66,6 +68,8 @@ export function importInventory(options: {
 }): Inventory {
   const config = readYouTubeConfig();
   const checkedAt = options.checkedAt ?? new Date().toISOString();
+  // Discovery records describe possible sources, not approved evidence. Merge them first,
+  // then apply today's screening policy to every candidate, including prior approvals.
   const merged = new Map<string, Omit<VideoCandidate, "decision" | "reason">>();
   const add = (
     input: Omit<VideoCandidate, "decision" | "reason">,
@@ -122,7 +126,7 @@ export function importInventory(options: {
     });
     if (existsSync(infoPath)) {
       const current = merged.get(id)!;
-      remember(current, infoPath);
+      addMetadataProvenance(current, infoPath);
     }
   }
 
@@ -228,7 +232,7 @@ function candidateFromRecords(
   };
 }
 
-function remember(
+function addMetadataProvenance(
   current: Omit<VideoCandidate, "decision" | "reason">,
   infoPath: string,
 ): void {
@@ -278,6 +282,7 @@ export async function downloadAcceptedAudio(
   const cookieCopy = process.env.YT_COOKIES_FILE
     ? join(outputDirectory, `.cookies-${process.pid}.txt`)
     : null;
+  // yt-dlp may update its cookie file. Use a disposable copy of the owner's file.
   if (cookieCopy) {
     copyFileSync(process.env.YT_COOKIES_FILE!, cookieCopy);
     args.push("--cookies", cookieCopy);
@@ -305,29 +310,7 @@ export function buildDocument(
 ): DocumentSnapshot {
   if (candidate.decision !== "accepted")
     throw new Error(`Cannot emit excluded video ${candidate.id}`);
-  const speakers = new Map(
-    review.speakers.map((speaker) => [speaker.label, speaker]),
-  );
-  const removedInstructions: { text: string; rule: string }[] = [];
-  const lines = turns.flatMap((turn, index) => {
-    if (!isEvidenceEligible(turn, index, review)) return [];
-    const reviewed = turn.speaker === null ? null : speakers.get(turn.speaker);
-    const identity =
-      reviewed?.name ??
-      (turn.speaker === null ? "Unknown speaker" : `Speaker ${turn.speaker}`);
-    const role = reviewed?.roleAtRecording
-      ? `, ${reviewed.roleAtRecording}`
-      : "";
-    const time = formatTimestamp(turn.startMs) ?? "time unknown";
-    const sanitized = sanitizeDocument(turn.text);
-    removedInstructions.push(...sanitized.removed);
-    const safeText = sanitized.text;
-    if (!safeText) return [];
-    return [
-      `[${time}] ${identity}${role} (company participant; testimony at recording): ${safeText}`,
-    ];
-  });
-  const text = lines.join("\n");
+  const { text, removedInstructions } = buildEligibleTestimony(turns, review);
   if (!text.trim())
     throw new Error("No eligible company testimony after speaker review");
   const contentHash = createHash("sha256").update(text).digest("hex");
@@ -337,19 +320,9 @@ export function buildDocument(
       ? candidate.metadata.recordingDate
       : null;
   const config = readYouTubeConfig();
-  const verifiedCompanySpeakers = review.speakers.filter(
-    (speaker) =>
-      speaker.name &&
-      speaker.roleAtRecording &&
-      (speaker.evidenceTurnIndexes.length > 0 ||
-        (speaker.introductionEvidence?.length ?? 0) > 0) &&
-      (speaker.participantType === "employee" ||
-        config.screening.companyTerms.some((term) =>
-          speaker
-            .roleAtRecording!.toLocaleLowerCase("en")
-            .includes(term.toLocaleLowerCase("en")),
-        )),
-  );
+  const verifiedCompanySpeakers = findVerifiedCompanySpeakers(review, config);
+  // Publisher authority and speaker eligibility are separate checks. A trusted
+  // channel does not make an interviewer's words company testimony.
   const officialPublisher = candidate.channelId === config.officialChannel.id;
   const interviewAuthority =
     !officialPublisher &&
@@ -404,6 +377,57 @@ export function buildDocument(
         `${candidate.publishedAt ? "publishedAt is the YouTube upload date" : "upload date is unknown"}; recording date is retained only when separately present. ${interviewAuthority ? "Tier 2 applies to the named Everstake participant’s statements; interviewer questions are context, not first-party factual evidence." : ""}`.trim(),
     },
   };
+}
+
+/** Keep only reviewed company testimony, then remove instructions before indexing. */
+function buildEligibleTestimony(
+  turns: Turn[],
+  review: SpeakerReview,
+): { text: string; removedInstructions: { text: string; rule: string }[] } {
+  const speakers = new Map(
+    review.speakers.map((speaker) => [speaker.label, speaker]),
+  );
+  const removedInstructions: { text: string; rule: string }[] = [];
+  const lines = turns.flatMap((turn, index) => {
+    if (!isEvidenceEligible(turn, index, review)) return [];
+    const reviewed = turn.speaker === null ? null : speakers.get(turn.speaker);
+    const identity =
+      reviewed?.name ??
+      (turn.speaker === null ? "Unknown speaker" : `Speaker ${turn.speaker}`);
+    const role = reviewed?.roleAtRecording
+      ? `, ${reviewed.roleAtRecording}`
+      : "";
+    const time = formatTimestamp(turn.startMs) ?? "time unknown";
+    const sanitized = sanitizeDocument(turn.text);
+    removedInstructions.push(...sanitized.removed);
+    const safeText = sanitized.text;
+    if (!safeText) return [];
+    return [
+      `[${time}] ${identity}${role} (company participant; testimony at recording): ${safeText}`,
+    ];
+  });
+  const text = lines.join("\n");
+  return { text, removedInstructions };
+}
+
+/** A named participant needs evidence of their role, not just a familiar name. */
+function findVerifiedCompanySpeakers(
+  review: SpeakerReview,
+  config: YouTubeConfig,
+): SpeakerReview["speakers"] {
+  return review.speakers.filter((speaker) => {
+    if (!speaker.name || !speaker.roleAtRecording) return false;
+    const hasIdentityEvidence =
+      speaker.evidenceTurnIndexes.length > 0 ||
+      (speaker.introductionEvidence?.length ?? 0) > 0;
+    const role = speaker.roleAtRecording.toLocaleLowerCase("en");
+    const hasCompanyRole =
+      speaker.participantType === "employee" ||
+      config.screening.companyTerms.some((term) =>
+        role.includes(term.toLocaleLowerCase("en")),
+      );
+    return hasIdentityEvidence && hasCompanyRole;
+  });
 }
 
 function stringValue(value: unknown): string {

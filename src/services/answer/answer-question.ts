@@ -1,8 +1,5 @@
-import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { parse } from "yaml";
-import { readConfig } from "../../config.js";
-import { z } from "zod";
+import { readPolicy, readResearcher } from "../../config.js";
 import type {
   AnswerResult,
   Emit,
@@ -15,54 +12,20 @@ import { getSetting, type Database } from "../../storage/database.js";
 import { readDocument, searchCorpus } from "../search/search-corpus.js";
 import { scoreEvidence } from "../trust/score-evidence.js";
 import {
-  calculate,
-  calculateExpression,
-  scenarioNumbers,
-} from "./calculate.js";
+  createCalculationEvidence,
+  updateEvidenceWindow,
+} from "./research-evidence.js";
+import { parseResearchAction, type ResearchAction } from "./research-action.js";
 import { verifyClaims } from "./verify-claims.js";
 import { gatherCounterevidence } from "./counterevidence.js";
 import { cancelledError } from "../../providers/model-client.js";
-import { numbers, verifyAnswer } from "./verify-answer.js";
+import { verifyAnswer } from "./verify-answer.js";
 import {
   commonEffectiveDate,
   normalizeClaimDate,
   renderDatedClaims,
 } from "./claim-date.js";
 
-const claimSchema = z.object({
-  text: z.string().min(1).max(3000),
-  citations: z.array(z.string()).min(1).max(10),
-  asOf: z.string().nullable(),
-  asOfBasis: z
-    .enum(["effective", "published", "updated", "observed"])
-    .optional(),
-  asOfSource: z.string().optional(),
-  temporalScope: z
-    .enum(["current", "cumulative", "historical", "unspecified"])
-    .optional(),
-});
-const actionSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("search"), query: z.string().min(1).max(1000) }),
-  z.object({
-    action: z.literal("read"),
-    documentId: z.string(),
-    offset: z.number().int().min(0).max(500).default(0),
-    query: z.string().trim().min(1).max(500).optional(),
-  }),
-  z.object({
-    action: z.literal("calculate"),
-    operation: z.enum(["add", "subtract", "multiply", "divide"]).optional(),
-    operands: z.array(z.number()).min(2).max(10).optional(),
-    expression: z.string().max(200).optional(),
-    citations: z.array(z.string()).min(1),
-  }),
-  z.object({
-    action: z.literal("answer"),
-    status: z.enum(["answered", "partial", "no_reliable_answer"]),
-    claims: z.array(claimSchema).max(15),
-    reason: z.string().optional(),
-  }),
-]);
 export interface AnswerDependencies {
   db: Database;
   model: ModelClient;
@@ -91,25 +54,16 @@ export async function answerQuestion(
     label: string,
     data?: unknown,
   ) => emit({ runId, type, label, data, at: new Date().toISOString() });
-  const definition = parse(readFileSync("agents/researcher.yaml", "utf8")) as {
-    prompt: string;
-    skills: string[];
-    maxSteps: number;
-    maxRepairSteps?: number;
-  };
+  const definition = readResearcher();
   const system =
     mode === "baseline"
-      ? readFileSync("prompts/baseline.md", "utf8")
+      ? readFileSync("assistant/prompts/baseline.md", "utf8")
       : [
           readFileSync(definition.prompt, "utf8"),
           ...definition.skills.map((p) => readFileSync(p, "utf8")),
         ].join("\n\n");
   let answeredAction = false;
-  const policy = readConfig<{
-    maxEvidence: number;
-    maxOutputTokens: number;
-    answerThinkingLevel?: "low" | "medium" | "high";
-  }>("policy");
+  const policy = readPolicy();
   const evidenceLimit = Math.max(6, Math.min(policy.maxEvidence, 30));
   const registry = new Map<string, EvidencePassage>();
   const messages: ModelMessage[] = [{ role: "user", text: question }];
@@ -132,20 +86,15 @@ export async function answerQuestion(
       `Found ${fresh} new passages, ${repeated} already seen`,
     keep: string[] = [],
   ) => {
-    const fresh = sources.filter((s) => !registry.has(s.id));
-    const repeated = sources.length - fresh.length;
-    // Passages a draft already cites stay in the window so a repaired draft can keep them.
-    const kept = keep
-      .map((id) => registry.get(id))
-      .filter((s): s is EvidencePassage => !!s);
-    const window = [...kept, ...fresh, ...registry.values()]
-      .filter((s, i, all) => all.findIndex((o) => o.id === s.id) === i)
-      .slice(0, evidenceLimit);
-    registry.clear();
-    for (const source of window) registry.set(source.id, source);
-    send("sources", label(fresh.length, repeated), {
+    const { fresh, repeated } = updateEvidenceWindow(
+      registry,
       sources,
-      newCount: fresh.length,
+      evidenceLimit,
+      keep,
+    );
+    send("sources", label(fresh, repeated), {
+      sources,
+      newCount: fresh,
       repeated,
     });
   };
@@ -157,11 +106,9 @@ export async function answerQuestion(
       role: "user",
       text: JSON.stringify({ untrustedEvidence: initial }),
     });
-    const steps = mode === "baseline" ? 1 : Math.min(definition.maxSteps, 8);
-    const repairSteps =
-      mode === "agent"
-        ? Math.max(0, Math.min(definition.maxRepairSteps ?? 1, 2))
-        : 0;
+    const steps = mode === "baseline" ? 1 : definition.maxSteps;
+    // Extra turns can repair a rejected draft, but cannot call research tools.
+    const repairSteps = mode === "agent" ? definition.maxRepairSteps : 0;
     for (let step = 0; step < steps + repairSteps; step++) {
       throwIfCancelled();
       send(
@@ -207,15 +154,9 @@ export async function answerQuestion(
         signal,
       });
       messages.push({ role: "model", text: response.text });
-      let action: z.infer<typeof actionSchema>;
+      let action: ResearchAction;
       try {
-        action = actionSchema.parse(
-          JSON.parse(
-            response.text
-              .replace(/^```(?:json)?\s*/, "")
-              .replace(/\s*```$/, ""),
-          ),
-        );
+        action = parseResearchAction(response.text);
       } catch {
         messages.push({
           role: "user",
@@ -238,6 +179,7 @@ export async function answerQuestion(
         action.claims = action.claims.map((claim) =>
           normalizeClaimDate(claim, registry),
         );
+        // Cheap deterministic checks gate the paid semantic review.
         const checks = verifyAnswer(action.claims, registry, question);
         if (!action.claims.length)
           checks.push({
@@ -289,8 +231,10 @@ export async function answerQuestion(
             role: "user",
             text: JSON.stringify({
               rejectedDraftChecks: checks,
-              instruction:
-                "Return a concise corrected answer using the available evidence and the failed check reasons. Do not invent citations, numbers, relationships or dates. A newer document does not automatically supersede a different metric. If evidence cannot support the requested conclusion, give a supported partial answer or abstain.",
+              instruction: readFileSync(
+                "assistant/prompts/answer-repair.md",
+                "utf8",
+              ).trim(),
             }),
           });
           continue;
@@ -350,51 +294,14 @@ export async function answerQuestion(
           }),
         });
       } else {
-        const computation = action.expression
-          ? calculateExpression(action.expression)
-          : {
-              value: calculate(action.operation ?? "", action.operands ?? []),
-              operands: action.operands ?? [],
-              steps: [],
-            };
-        const cited = action.citations.map((id) => registry.get(id));
-        const known = new Set([
-          ...scenarioNumbers(question).map(String),
-          ...numbers(
-            cited
-              .filter(Boolean)
-              .map((s) => s!.text)
-              .join(" "),
-          ),
-        ]);
-        if (
-          cited.some((s) => !s) ||
-          computation.operands.some((n) => !known.has(String(n)))
-        ) {
+        const evidence = createCalculationEvidence(action, registry, question);
+        if (!evidence) {
           messages.push({
             role: "user",
             text: "Calculation requires cited sources and operands present in the question or cited evidence.",
           });
           continue;
         }
-        const value = computation.value;
-        const base = cited[0]!;
-        const evidence = {
-          ...base,
-          id: `calc-${randomUUID().slice(0, 8)}`,
-          text: `Calculated scenario: ${action.expression ?? `${action.operation}(${computation.operands.join(", ")})`} = ${value}; steps: ${computation.steps.join("; ")}. Inputs from user scenario and sources: ${action.citations.join(", ")}.\n${cited.map((s) => s!.text).join("\n")}`,
-          reason: "Deterministic source-backed calculation",
-          metadata: {
-            ...base.metadata,
-            calculation: {
-              operation: action.operation,
-              expression: action.expression,
-              operands: computation.operands,
-              result: value,
-              citations: action.citations,
-            },
-          },
-        };
         register([evidence]);
         messages.push({
           role: "user",
@@ -402,6 +309,7 @@ export async function answerQuestion(
         });
       }
     }
+    // An exhausted or failed run is not evidence that the corpus lacks an answer.
     if (!answeredAction)
       throw new Error(
         "Research exhausted its step limit without a valid final answer",

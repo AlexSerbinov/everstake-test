@@ -1,78 +1,82 @@
 # Measured API costs
 
-> **Easier to read on the live site:** [Costs page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#costs) shows the same ledger with provider panels, per-answer receipts and filters. This file is the committed copy for review.
+The Costs section is better presented on the website: I focused primarily on that section. [Open the Costs page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#costs).
 
-## §5.6 at a glance
+> **УКРАЇНСЬКА ВЕРСІЯ: [COST](submission_ukr/COST.md) · [УСЯ УКРАЇНСЬКА ДОКУМЕНТАЦІЯ](submission_ukr/README.md)**
 
-| What is asked | Measured value |
-|---|---|
-| Tokens used to build the index | **2,166,597** input tokens across 130 embedding calls |
-| Actual cost of building the index | **$0.043332** known; 5 failed attempts have no provider price |
-| Cost of one query | **$0.042121** on average: latest agent run `agent-9a157413`, $0.842412 / 20 questions. Baseline (one retrieval, one prompt): $0.012177 |
-| All API spending of this rebuild | **$4.462078** known; 7 calls with unknown cost |
+[Українська версія](submission_ukr/COST.md) · [Live Costs page](https://everstate-knowledge-base.89-167-19-222.sslip.io/#costs)
 
-### 50× larger corpus: arithmetic
+These are saved measurements of the TypeScript implementation, not a quote for a future deployment or a reconciled invoice. The live ledger can contain later activity. Earlier Claude/Codex prototype costs, coding-agent subscriptions, human effort, server rental and bandwidth are outside this API ledger; they are not assumed to cost zero.
 
-| Item | Measured now | Factor | Expected at 50× |
-|---|---:|---:|---:|
-| Documents | 941 | × 50 | 47,050 |
-| Index tokens | 2,166,597 | × 50 | 108,329,850 |
-| Index cost | $0.043332 | × 50 | $2.166597 |
-| One query | $0.042121 | × 1 | $0.042121 |
+## Required measurements (§5.6)
 
-The index scales with the corpus. A query does not: context size and tool steps are capped, so the per-query cost is carried over unchanged and must be remeasured on the larger corpus. Details and limits are in the [extrapolation section](#50-extrapolation--assumptions-not-measured-production-results) below.
+| Measurement | Recorded result | Exact scope |
+|---|---:|---|
+| Index input tokens | **2,166,597** | 130 embedding attempts, including build/repair and transcript additions; five attempts have unknown cost |
+| Index cost | **$0.04333194 known** | Historical ledger snapshot; includes reprocessing, not a clean-build benchmark |
+| One agent query, mean | **$0.052058** | Core-v2 full run `agent-cdf52dda`: $1.04116947 / 20 questions |
+| MCP-context query, mean | **$0.011848** | Core-v2 `mcp-core-v2`: $0.236955 / 20 questions; generation only |
+| Historical ledger total | **$4.46207828 known; 7 unknown calls** | Exported 2026-09-13 17:23:15.976 UTC, 664 calls, corpus `corpus-1a0f3db1d4fd` |
 
-Scope: this TypeScript rebuild, from provider probes through collection, indexing, YouTube, diagnostic questions and final evaluations. Prior Claude/Codex totals are historical and are not added to these runs. Subscription agent effort, existing server rental and bandwidth are not provider-token charges.
+The last row is **a dated snapshot, not all spending through the final code version**. The later core-v2 runs below are separate records. Do not add every saved evaluation subtotal to the ledger: some earlier calls are already included. No deduplicated all-time total covering later activity has been produced for this document.
 
-**Previously published ledger snapshot: $4.462078 known usage-priced / provider-reported; 7 calls have unknown actual cost.** This is not an invoice-reconciled grand total. Unknown values stay null in the ledger and UI; forecasts/reservations are shown separately. [Full measured ledger](costs/measured-ledger.json).
+A later [hosted check](artifacts/demo/product-pages/verification.json), 2026-09-13 19:08:34.168 UTC, records **$5.175148275 known and eight unpriced calls**, with 941 documents in corpus `corpus-231c8c9b17fd`. This is another accounting snapshot, not an addition to $4.46207828, and not a full per-call export for reconstructing all later spending.
 
-| Operation | Calls | Input tokens | Output tokens | Known cost | Unknown cost calls |
+## Where to verify the numbers
+
+[Historical ledger](artifacts/costs/measured-ledger.json) contains `generatedAt`, `corpusVersion`, `overview`, `runs` and individual `calls`. Sum `calls[].cost_usd` once per unique call ID; keep null costs separate. For the index, filter `calls[].stage == "index"` and sum `input_tokens` and known `cost_usd`. Do not add parent receipts to their child calls.
+
+For a saved evaluation, open `summary.knownCostUsd`, `summary.unknownCalls` and `summary.total`; individual `rows[].answer.receipt` records provide the audit trail. Dividing by all twenty planned questions includes failed answers, which also incur costs. It does not divide only by successful answers. See [EVAL.md](EVAL.md) for verdicts and assessment limitations.
+
+| Saved run | Questions | Known USD | Mean USD/question | Unknown calls |
+|---|---:|---:|---:|---:|
+| [Core-v2 full agent run](artifacts/evaluation/agent-cdf52dda.json) | 20 | 1.04116947 | 0.0520584735 | 0 |
+| [Two subsequent rechecks](artifacts/evaluation/agent-82df0052.json) | 2 | 0.10677069 | 0.053385345 | 0 |
+| [Seven additional scenarios](artifacts/evaluation/agent-ef0d0de2.json) | 7 | 0.27800609 | 0.039715156 | 0 |
+| [Core-v2 MCP-context comparator](artifacts/evaluation/mcp-core-v2.json) | 20 | 0.236955 | 0.01184775 | 0 |
+| [Earlier agent run](artifacts/evaluation/agent-9a157413.json) | 20 | 0.84241179 | 0.0421205895 | 0 |
+| [Earlier simple-RAG baseline](artifacts/evaluation/baseline-c656c369.json) | 20 | 0.24354193 | 0.0121770965 | 0 |
+
+Core-v2 agent runs used corpus `corpus-664b2e73d71f`; the earlier agent/simple-RAG pair used `corpus-eae2b2b23116`. The earlier baseline is not a controlled core-v2 comparison. Full core-v2 plus two rechecks cost **$1.04116947 + $0.10677069 = $1.14794016 for 22 attempts**. The current 16/20 summary retains eighteen answers and replaces two; it is not a fresh twenty-question run. External coding-assistant grading was not separately API-metered here.
+
+Other historical runs, partial runs and their original costs remain in [evaluation artifacts](artifacts/evaluation/README.md); they are not erased when a later answer succeeds.
+
+## Historical ledger breakdown
+
+| Operation | Calls | Input tokens | Output tokens | Known USD (rounded) | Unknown calls |
 |---|---:|---:|---:|---:|---:|
-| provider-probe | 2 | 28 | 206 | $0.000793 | 0 |
-| youtube-transcription | 18 | 350513 | 229237 | $1.328459 | 0 |
-| youtube-speaker-review | 30 | 325901 | 112382 | $0.672300 | 0 |
-| index | 130 | 2166597 | 0 | $0.043332 | 5 |
-| query-embedding | 170 | 4102 | 0 | $0.000082 | 0 |
-| answer | 214 | 1816734 | 163569 | $1.977369 | 1 |
-| claim-verification | 60 | 459761 | 12916 | $0.170218 | 0 |
-| baseline | 32 | 124901 | 40952 | $0.247246 | 1 |
-| currentness-review | 7 | 9398 | 2299 | $0.015670 | 0 |
-| scope-review | 1 | 1338 | 1495 | $0.006610 | 0 |
+| provider-probe | 2 | 28 | 206 | 0.000793 | 0 |
+| youtube-transcription | 18 | 350,513 | 229,237 | 1.328459 | 0 |
+| youtube-speaker-review | 30 | 325,901 | 112,382 | 0.672300 | 0 |
+| index | 130 | 2,166,597 | 0 | 0.043332 | 5 |
+| query-embedding | 170 | 4,102 | 0 | 0.000082 | 0 |
+| answer | 214 | 1,816,734 | 163,569 | 1.977369 | 1 |
+| claim-verification | 60 | 459,761 | 12,916 | 0.170218 | 0 |
+| baseline | 32 | 124,901 | 40,952 | 0.247246 | 1 |
+| currentness-review | 7 | 9,398 | 2,299 | 0.015670 | 0 |
+| scope-review | 1 | 1,338 | 1,495 | 0.006610 | 0 |
 
-Each attempt is written before the external request. Successful, retried, timed-out and invalid-content calls retain their usage. Soniox costs are reconciled against matching provider usage logs when available; its input token count includes audio and text, with the separate counts retained in the YouTube ledger. For model calls, native provider usage supplies tokens; a dated price table in `config/models.yaml` converts usage to cost. Cached-input and thinking tokens are handled without counting them twice. Parent receipts aggregate descendant calls once. HTTP failures without usage remain unknown rather than being silently priced at zero, and so do attempts cancelled by a stopped request: the provider may still bill the interrupted call.
+## Accounting method
 
-## Index build and every evaluation run
+The [provider wrapper](src/providers/model-client.ts) records an attempt before making the request. Retries, invalid model content, failures and cancellations remain visible. Native provider usage supplies token counts; the dated [model price configuration](assistant/config/models.yaml) converts usage to USD, and each call retains its price snapshot. Cached-input and thinking tokens must not be counted twice. Changing today's prices does not reprice historical records.
 
-Building and repairing the index consumed **2,166,597 measured input tokens**, costing **$0.043332 known**, with 5 unpriced failed attempts. This includes the initial web build and changed/new transcript chunks; cached embeddings were reused on resume. The final corpus has 941 documents. The temporary embedding rate limit and the resumed run remain visible.
+A missing usage response is **unknown**, even if an interrupted request may have been billed. The [receipt aggregator](src/services/measurements/receipt.ts) includes descendant calls once. A reservation limits further work but is a forecast, not a provider charge or a guarantee of the final bill. Demo budgets have per-run and process-session limits; restart begins a new session budget.
 
-- agent run `agent-2b8e50ab`: $0.703499 known / 20 = **$0.035175 per query on average**; 0 unknown calls. Median latency 20.2s; p95 33.5s.
-- agent run `agent-37174f55`: $0.758165 known / 20 = **$0.037908 per query on average**; 0 unknown calls. Median latency 20.1s; p95 30.6s.
-- baseline run `baseline-895efc77`: $0.166604 known / 20 = **$0.008330 per query on average**; 0 unknown calls. Median latency 6.0s; p95 17.2s.
-- agent run `agent-b0993aac`: $0.686453 known / 20 = **$0.034323 per query on average**; 0 unknown calls. Median latency 13.1s; p95 41.9s.
-- baseline run `baseline-5c467370`: $0.186207 known / 20 = **$0.009310 per query on average**; 0 unknown calls. Median latency 5.8s; p95 13.4s.
-- agent run `agent-9a157413`: $0.842412 known / 20 = **$0.042121 per query on average**; 0 unknown calls. Median latency 20.2s; p95 45.6s.
-- baseline run `baseline-c656c369`: $0.243542 known / 20 = **$0.012177 per query on average**; 0 unknown calls. Median latency 8.5s; p95 19.0s.
+## 50× extrapolation — a forecast
 
-## 50× extrapolation — assumptions, not measured production results
+Use the historical index measurement and its **941-document** corpus scope. This is distinct from later evaluation snapshots. Preserve unrounded arithmetic:
 
-At the same average document/chunk length and embedding price, 941 × 50 = **47050 documents**. Measured build tokens 2166597 × 50 = **108329850 tokens**. Known embedding cost $0.043332 × 50 = **$2.166597**, excluding unresolved charges. This scales the observed build, including its reprocessing overhead; a clean first build can differ.
+| Item | Calculation | Forecast |
+|---|---|---:|
+| Documents | 941 × 50 | 47,050 |
+| Index input tokens | 2,166,597 × 50 | 108,329,850 |
+| Known index cost | 2,166,597 / 1,000,000 × $0.02 × 50 | **$2.166597** |
+| Mean query cost | $1.04116947 / 20 × 1 | **$0.0520584735** |
 
-Query model context and tool steps remain capped, so LLM input cost is not assumed to grow 50× merely because the corpus does. It must be remeasured: harder retrieval may need more calls. The current exact vector scan and JSON vectors will grow substantially in CPU, RAM and latency; an approximate vector index and incremental scheduling would be the first scale changes. No claim is made that this demo sustains 50× data at the same latency.
+Index assumptions: unchanged average chunk length, reprocessing overhead and embedding tariff; unresolved charges excluded. Query context and tool turns are capped, so corpus size alone does not imply 50× generation spend. Carrying the measured query average over is a planning assumption, not a measured scale result: retrieval difficulty, retries and review calls can change it. Exact vector scanning and JSON vectors will increase CPU, RAM and latency; an approximate vector index and incremental scheduling would be early changes. No unchanged-latency claim is made.
 
-## YouTube
+## Video and MCP boundaries
 
-18 videos totaling 42,038 seconds (11.677 hours) were submitted for transcription. Gemini has 30 measured speaker-review attempts, known cost $0.672300. 0 transcription charges remain unknown. Soniox provider-reported known cost is **$1.328459**; matching uses the recorded operation and transcription IDs. The recorded transcription forecast totals **$1.167722**, using duration / 3,600 × the configured $0.10/hour assumption, not a measured invoice. 6 transcripts are active in the corpus; only eligible attributed testimony is active; uncertain attributions and recordings without qualifying testimony remain outside the index. The full inventory and outstanding work are in [costs/YouTube](costs/YouTube/README.md).
+The historical video batch submitted **18 videos, 42,038 seconds (11.677 hours)**. Soniox usage logs establish **$1.328459**; all eighteen transcription costs are known. Thirty Gemini speaker-review attempts cost **$0.672300**. Duration-based transcription forecast **42,038 / 3,600 × $0.10 = $1.167722** is separate from the provider-reported charge. Six transcripts were active in the ledger's corpus; uncertain attribution or no qualifying testimony kept other recordings outside the index. [Video inventory and receipts](artifacts/costs/YouTube/README.md).
 
-Reserving a conservative amount before a call limits further work; it is not a guarantee of an external provider's final bill. Public demo calls have a per-run limit and a process-session ceiling. Restarting the process starts a new session budget.
-
-## Separate MCP-context measurement — 13 September 2026
-
-Run `mcp-8bcd1ef1` made **20 actual Gemini calls** for the same twenty questions using captured official MCP evidence. Recorded usage: **307,160 input tokens**, **1,583 output tokens**, **$0.23630625 known usage-priced cost**, **0 unpriced calls**. Mean per question: **$0.23630625 / 20 = $0.0118153125**.
-
-This is a separate measured addition, not a recomputed all-time total or an adjustment to the historical ledger table above. It covers answer generation, not an invoice-reconciled provider bill, MCP hosting, network/tool-access charges, subscription agent effort or independent review effort. No MCP service-access price was measured; absence of such a measurement does not establish zero operating cost. The successful calculator probe is retained in the capture but was not inserted into unrelated question contexts.
-
-[Provider attempts and usage](artifacts/mcp/measurements-2026-09-13.json) · [Question receipts](artifacts/evaluation/mcp-2026-09-13.json) · [Comparison methodology](docs/MCP_COMPARISON.md).
-
-## MCP-only comparison on core-v2
-
-Twenty questions, same answer model, captured MCP responses only: **$0.236955** in measured usage-priced generation cost, zero unknown-cost calls. Tool capture is reused; hosting and any unmeasured MCP service charges are excluded. [Per-call measurements](artifacts/mcp/core-v2-measurements.json).
+The earlier [MCP measurement](artifacts/mcp/measurements-2026-09-13.json), run `mcp-8bcd1ef1`, recorded 307,160 input and 1,583 output tokens across twenty calls: **$0.23630625**, zero unknown calls, mean **$0.0118153125**. Core-v2's separate measurement is **$0.236955**. These measure answer generation with captured MCP context, excluding MCP hosting and unmeasured service-access charges. Missing service-cost measurements do not mean free operation. See the [comparison method](docs/MCP_COMPARISON.md).

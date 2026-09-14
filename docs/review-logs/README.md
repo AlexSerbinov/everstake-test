@@ -1,5 +1,15 @@
-# Review evidence
+# What was reviewed, and what passed?
 
-Review notes record findings, fixes, and verification from code and browser checks. They explain what was examined and what remained uncertain at that point.
+These are development records, not application logs or model evaluation scores. They retain findings, fixes, test evidence and limits of each review. No application command loads this folder.
 
-These are development records, not application logs. Current limitations and measured results belong in [REPORT.md](../../REPORT.md) and [EVAL.md](../../EVAL.md).
+| Review | What it covers |
+|---|---|
+| [Two preservation passes](2026-09-14-two-safety-passes.md) | Remaining folder explanations, independent cross-checks and byte-level data preservation |
+| [Three further readability cycles](2026-09-14-three-readability-cycles.md) | YouTube browsing, folder structure, code simplification, diagrams and each cycle's independent review |
+| [Second readability pass](2026-09-14-readability-second-pass.md) | Provider, crawler, indexer, video and CLI refactoring |
+| [Initial repository cleanup](2026-09-14-reorganization.md) | Moved configuration/deployment files, Docker and browser checks |
+| [Initial core review](initial-core-review.md) | Earlier implementation review and its recording-time findings |
+
+Read a log as **scope → findings → changes → verification → limits**. A passing unit test protects the scenario it checks; it is not a fresh measurement of model answer quality. Current product limitations belong in [REPORT](../../REPORT.md), measured answers in [EVAL](../../EVAL.md), and API spending in [COST](../../COST.md).
+
+Older records remain here to show the development process required by assignment §8. Their old counts and paths describe that point in time.

@@ -1,4 +1,4 @@
-import submission from "../../../config/evaluation-submission.json" with { type: "json" };
+import submission from "../../../assistant/config/evaluation-submission.json" with { type: "json" };
 import type { EvaluationRun } from "./evaluation-page.js";
 import { defaultEvaluationRun } from "./default-evaluation-run.js";
 

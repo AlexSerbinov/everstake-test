@@ -17,7 +17,7 @@ export interface BuildIndexReport {
   duplicateGroups: DuplicateGroup[];
 }
 
-function defaultVersion(documents: DocumentSnapshot[]): string {
+function deriveCorpusVersion(documents: DocumentSnapshot[]): string {
   const digest = createHash("sha256")
     .update(
       documents
@@ -50,6 +50,7 @@ export function buildIndex(
   const representatives = deduplicated.documents.filter(
     (document) => document.duplicateOf === null,
   );
+  // Exact copies share passages. Similar pages keep their own text so small fact changes survive.
   const indexableDocuments = deduplicated.documents.filter(
     (document) =>
       document.duplicateOf === null ||
@@ -58,7 +59,8 @@ export function buildIndex(
   const chunks = indexableDocuments.flatMap((document) =>
     chunkDocument(document, options),
   );
-  const version = options.version ?? defaultVersion(deduplicated.documents);
+  const version =
+    options.version ?? deriveCorpusVersion(deduplicated.documents);
   const deactivateBySource = options.sourceIds?.length
     ? db.prepare(
         `UPDATE documents SET active=0 WHERE active=1 AND json_extract(snapshot, '$.metadata.sourceId') IN (${options.sourceIds.map(() => "?").join(",")})`,
@@ -79,6 +81,7 @@ export function buildIndex(
     "INSERT INTO chunks(id,document_id,text,ordinal) VALUES(?,?,?,?)",
   );
   const insertFts = db.prepare("INSERT INTO chunks_fts(id,text) VALUES(?,?)");
+  // Publish documents, passages and the version together. A failed write leaves the old corpus active.
   db.exec("BEGIN IMMEDIATE");
   try {
     if (deactivateBySource) deactivateBySource.run(...options.sourceIds!);

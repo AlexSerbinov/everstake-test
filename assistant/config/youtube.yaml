@@ -1,0 +1,30 @@
+# Channel identity is discovery metadata; speaker eligibility is still checked separately.
+officialChannel:
+  handle: https://www.youtube.com/@everstake7336/videos
+  id: UCMKYtasvtCCSyfPj0r6FDcQ
+# Screening selects candidates before paid processing; it does not establish factual support.
+screening:
+  companyTerms: [everstake]
+  topicTerms: [staking, validator, blockchain, ethereum, solana, cosmos, web3, infrastructure, consensus]
+  participationTerms: [interview, podcast, talk, speaker, with everstake, everstake joins, everstake at]
+  lookalikeTerms: [everrise, everstake solution fintech]
+  minimumDurationSeconds: 30
+# Saved pilot/batch choices document the original processing scope.
+pilotVideoIds: [DFSEQ3OGoL8, V0WcDdiJAeg, Wz8KVaO2gWk]
+reviewedBatches:
+  historicalInterviews20260913:
+    ids: [CDmKMHaTtSQ, beakNs8F3pQ, rIFtUSKa-fQ]
+    maximumCombinedDurationSecondsIncludingPilot: 10800
+    reason: Clear named Everstake executive participation across 2021, 2023 and 2025; staking, regulation, Ukraine aid and validator operations provide higher historical value than tutorials.
+# Artifacts are reviewable exports; downloaded audio stays in ignored data/.
+paths:
+  inventory: artifacts/youtube/inventory.json
+  documents: artifacts/youtube/reviewed/documents.json
+  audioDirectory: data/youtube/audio
+# Monetary values are USD. Duration-based Soniox cost is a forecast, not a bill.
+limits:
+  pilotMaximumVideos: 3
+  pilotMaximumDurationSeconds: 3600
+  pilotBudgetUsd: 1
+  totalBudgetUsd: 3
+  sonioxForecastPerHourUsd: 0.10

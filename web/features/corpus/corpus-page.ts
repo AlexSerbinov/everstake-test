@@ -63,6 +63,7 @@ export function corpusPage(): HTMLElement {
     "Documents table; scroll horizontally to see all columns",
   );
   let currentPage = 0;
+  // Latest-request ownership prevents a slow previous filter from replacing newer results.
   let generation = 0;
   let initialized = false;
   const pagers: Array<{
@@ -119,6 +120,7 @@ export function corpusPage(): HTMLElement {
     try {
       const data = await getJson<CorpusPage>(`/api/corpus?${params}`);
       if (request !== generation) return;
+      // The server clamps pagination and returns the authoritative collection counts.
       currentPage = data.page;
       if (!initialized) {
         data.kinds.forEach((item) =>
@@ -206,6 +208,7 @@ export function corpusPage(): HTMLElement {
   return page;
 }
 
+// The expanded row shows the saved excerpt; opening it neither recrawls nor asks a model.
 function appendDocument(
   body: HTMLTableSectionElement,
   doc: DocumentSnapshot,

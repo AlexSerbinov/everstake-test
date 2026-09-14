@@ -53,7 +53,7 @@ export interface SonioxTransport {
 export interface TranscriptionOptions {
   durationSeconds?: number | null;
   transport?: SonioxTransport;
-  sleep?: (laughedMs: number) => Promise<void>;
+  sleep?: (milliseconds: number) => Promise<void>;
   pollIntervalMs?: number;
   pollTimeoutMs?: number;
   artifactDirectory?: string;
@@ -88,6 +88,8 @@ export async function transcribeVideo(
         status: "new",
         startedAt: new Date().toISOString(),
       };
+  // The same video ID may only resume the same audio and model. Otherwise we
+  // could return the wrong transcript or hide the cost of a second paid job.
   if (job.audioHash !== audioHash || job.model !== model) {
     throw new Error(
       "Audio/model changed: retain the prior job and use an explicit new video revision",
@@ -105,30 +107,15 @@ export async function transcribeVideo(
     );
   };
   if (job.status === "completed") {
-    const transcriptPath = join(
-      artifactDirectory,
-      `${videoId}.transcript.json`,
-    );
-    if (
-      job.providerMetadata?.turnNormalizerVersion !== 2 &&
-      existsSync(transcriptPath)
-    ) {
-      const transcript = JSON.parse(
-        readFileSync(transcriptPath, "utf8"),
-      ) as Record<string, unknown>;
-      job.turns = groupTurns(transcript.tokens);
-      job.providerMetadata = {
-        ...job.providerMetadata,
-        turnNormalizerVersion: 2,
-      };
-      persist();
-    }
+    if (refreshSavedTurns(job, artifactDirectory)) persist();
     return job;
   }
   if (job.status === "failed")
     throw new Error(
       "Prior Soniox job failed; inspect it before creating a paid retry",
     );
+  // A lost HTTP response does not prove submission failed. Look up the saved
+  // client reference before allowing anything that could charge for another job.
   if (job.status === "submission_unknown") {
     const operationId =
       typeof job.providerMetadata?.operationId === "string"
@@ -180,6 +167,8 @@ export async function transcribeVideo(
           ? null
           : (options.durationSeconds / 3_600) * 0.1,
     });
+    // Save the reference before the request: a crash can happen after Soniox
+    // accepts it but before we receive its transcription ID.
     job.status = "submission_unknown";
     job.providerMetadata = { ...job.providerMetadata, attemptId, operationId };
     persist();
@@ -224,6 +213,8 @@ export async function transcribeVideo(
         JSON.stringify(transcript, null, 2),
       );
       persist();
+      // Duration supports a forecast, not a bill. Leave actual cost unknown
+      // until provider usage or billing reconciliation supplies it.
       meter.finish(attemptId, "completed", {
         videoId,
         transcriptionId: job.transcriptionId,
@@ -257,11 +248,39 @@ export async function transcribeVideo(
     }
     await sleep(options.pollIntervalMs ?? 5_000);
   }
+  // Stop waiting locally without treating the provider job as canceled or free.
   job.status = "poll_timeout";
   persist();
   throw new Error(
     "Soniox polling timed out; rerun resumes the existing paid job",
   );
+}
+
+/** Rebuild old turn formatting from saved provider tokens without another API call. */
+function refreshSavedTurns(
+  job: TranscriptionJob,
+  artifactDirectory: string,
+): boolean {
+  const transcriptPath = join(
+    artifactDirectory,
+    `${job.videoId}.transcript.json`,
+  );
+  if (
+    job.providerMetadata?.turnNormalizerVersion === 2 ||
+    !existsSync(transcriptPath)
+  )
+    return false;
+
+  const transcript = JSON.parse(readFileSync(transcriptPath, "utf8")) as Record<
+    string,
+    unknown
+  >;
+  job.turns = groupTurns(transcript.tokens);
+  job.providerMetadata = {
+    ...job.providerMetadata,
+    turnNormalizerVersion: 2,
+  };
+  return true;
 }
 
 export function createSonioxTransport(

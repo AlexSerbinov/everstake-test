@@ -84,7 +84,7 @@ export async function reviewSpeakers(
   const response = await model.generate({
     runId,
     stage: "youtube-speaker-review",
-    system: readFileSync("prompts/speaker-review.md", "utf8"),
+    system: readFileSync("assistant/prompts/speaker-review.md", "utf8"),
     messages: [
       {
         role: "user",

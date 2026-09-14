@@ -56,6 +56,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
   const abort = new AbortController();
   let timer: ReturnType<typeof setTimeout> | undefined;
   let disposed = false;
+  // settings is the editable draft; data is the latest saved server status.
   let settings: UpdateSettings;
   let data: Status;
 
@@ -70,6 +71,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
     buttons.forEach((b) => {
       b.disabled = mutating;
     });
+  // Only explicit mutations save preferences or queue work that may incur provider costs.
   async function mutate(path: string, method: string, body: unknown) {
     if (mutating) return;
     mutating = true;
@@ -143,6 +145,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
     return row;
   }
   function buildControls() {
+    // Clone once on mount: background polling must not overwrite unsaved form edits.
     settings = structuredClone(data.settings);
     const access = el("details", "update-panel update-advanced");
     access.append(el("summary", "", "Advanced settings"));
@@ -280,6 +283,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
         ]),
       ),
     });
+    // Avoid rebuilding an unchanged history, and preserve expanded receipts when it changes.
     if (jobSignature === displayedJobs) return;
     displayedJobs = jobSignature;
     const openJobs = new Set(
@@ -417,6 +421,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
     }
     renderStatus();
   }
+  // Schedule after completion so a slow status request does not overlap the next poll.
   async function poll() {
     try {
       await load(false);
@@ -434,6 +439,7 @@ export function updatesPage(): { node: HTMLElement; destroy: () => void } {
     });
   return {
     node,
+    // This stops browser observation only; queued jobs belong to the server worker.
     destroy() {
       disposed = true;
       abort.abort();

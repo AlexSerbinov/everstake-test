@@ -18,9 +18,9 @@ export function searchCorpus(
     .join(" OR ");
   const rows = db
     .prepare(
-      `SELECT c.id,c.document_id,c.text,bm25(chunks_fts) AS rank,d.snapshot
- FROM chunks_fts JOIN chunks c ON c.id=chunks_fts.id JOIN documents d ON d.id=c.document_id
- WHERE chunks_fts MATCH ? AND d.active=1 ORDER BY rank LIMIT 100`,
+      `SELECT c.id,c.document_id,c.text,bm25(chunks_fts) AS rank,document.snapshot
+ FROM chunks_fts JOIN chunks c ON c.id=chunks_fts.id JOIN documents document ON document.id=c.document_id
+ WHERE chunks_fts MATCH ? AND document.active=1 ORDER BY rank LIMIT 100`,
     )
     .all(expression) as unknown as {
     id: string;
@@ -50,15 +50,15 @@ export function searchCorpus(
   return results;
 }
 export function passage(
-  d: DocumentSnapshot,
+  document: DocumentSnapshot,
   id: string,
   text: string,
   score = 0,
   reason = "Requested document section",
 ): EvidencePassage {
-  const metadata = visibleMetadata(d.metadata);
-  let url = d.url;
-  if (d.kind === "youtube") {
+  const metadata = visibleMetadata(document.metadata);
+  let url = document.url;
+  if (document.kind === "youtube") {
     const stamp = text.match(/\[(?:(\d+):)?(\d{1,2}):(\d{2})\]/);
     if (stamp) {
       const seconds =
@@ -71,21 +71,22 @@ export function passage(
   }
   return {
     id,
-    documentId: d.id,
+    documentId: document.id,
     url,
-    title: safeTitle(d),
+    title: safeTitle(document),
     text,
-    authority: d.authority,
-    publisher: d.publisher,
-    publishedAt: d.publishedAt,
-    updatedAt: d.updatedAt,
-    fetchedAt: d.fetchedAt,
-    duplicateGroup: d.duplicateOf ?? d.id,
+    authority: document.authority,
+    publisher: document.publisher,
+    publishedAt: document.publishedAt,
+    updatedAt: document.updatedAt,
+    fetchedAt: document.fetchedAt,
+    duplicateGroup: document.duplicateOf ?? document.id,
     score,
     reason,
     metadata,
   };
 }
+/** Return four indexed, sanitized passages; offset paginates either all chunks or query matches. */
 export function readDocument(
   db: Database,
   documentId: string,
@@ -96,7 +97,7 @@ export function readDocument(
     .prepare("SELECT snapshot FROM documents WHERE id=? AND active=1")
     .get(documentId) as { snapshot: string } | undefined;
   if (!row) return [];
-  const d = JSON.parse(row.snapshot) as DocumentSnapshot;
+  const document = JSON.parse(row.snapshot) as DocumentSnapshot;
   const chunks = db
     .prepare(
       "SELECT id,text,ordinal FROM chunks WHERE document_id=? ORDER BY ordinal",
@@ -126,9 +127,9 @@ export function readDocument(
     : chunks;
   const start = Math.max(0, Math.min(offset, 500));
   return ranked.slice(start, start + 4).map((c) => ({
-    ...passage(d, c.id, c.text),
+    ...passage(document, c.id, c.text),
     metadata: {
-      ...visibleMetadata(d.metadata),
+      ...visibleMetadata(document.metadata),
       chunkOrdinal: c.ordinal,
       documentChunks: chunks.length,
       matchingChunks: ranked.length,
@@ -143,11 +144,13 @@ function sanitizeField(value: string): string {
 }
 
 /** Preserve the deployed title and metadata sanitization when reading more chunks. */
-export function safeTitle(d: Pick<DocumentSnapshot, "title" | "url">): string {
-  const title = sanitizeField(d.title);
+export function safeTitle(
+  document: Pick<DocumentSnapshot, "title" | "url">,
+): string {
+  const title = sanitizeField(document.title);
   if (title) return title;
   try {
-    return new URL(d.url).hostname;
+    return new URL(document.url).hostname;
   } catch {
     return "Untitled source";
   }
