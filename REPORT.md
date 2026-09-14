@@ -1,12 +1,14 @@
 # Everstate Knowledge Base — decisions and results
 
+> **УКРАЇНСЬКА ВЕРСІЯ: [REPORT](submission_ukr/REPORT.md) · [УСЯ УКРАЇНСЬКА ДОКУМЕНТАЦІЯ](submission_ukr/README.md)**
+
 <!-- submission-summary:start -->
 **16/20 (challenging questions), average rubric score 92.75/100.**
 
 18 answers retained and 2 rechecked; not a new full run. Partial credit contributes to the average; 16/20 is the full-pass count. Post-hoc coding-assistant review, not a blind benchmark or probability of correctness.
 <!-- submission-summary:end -->
 
-**English** · [Українська](REPORT.uk.md) · [Try the demo](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Setup and walkthrough](README.md)
+**English** · [Українська](submission_ukr/REPORT.md) · [Try the demo](https://everstate-knowledge-base.89-167-19-222.sslip.io/#ask) · [Setup and walkthrough](README.md)
 
 A company’s latest page, an old announcement, and ten copies of that announcement can all disagree. I built a knowledge assistant that shows which evidence supports an answer, what date it describes, and when the available material is insufficient.
 
@@ -14,7 +16,7 @@ This report explains the choices and their measured consequences. **Updated agai
 
 ## 1. Small enough to explain and change
 
-One TypeScript application serves the browser, runs research and collection, and stores documents and measurements in SQLite. Gemini handles generation and review; OpenAI supplies embeddings. The actual [agent](agents/README.md), [prompts](prompts/README.md), and [evidence guidance](skills/README.md) are editable files.
+One TypeScript application serves the browser, runs research and collection, and stores documents and measurements in SQLite. Gemini handles generation and review; OpenAI supplies embeddings. The actual [agent](assistant/agents/README.md), [prompts](assistant/prompts/README.md), and [evidence guidance](assistant/skills/README.md) are editable files.
 
 ![Where code, models, and people are responsible](docs/images/report-boundaries.png)
 
@@ -30,9 +32,9 @@ The browser streams real research events and presents cited excerpts beside the 
 
 The supplied URLs expand through configured links and sitemaps. Crawling respects robots policy, restricts destinations to public addresses, and records exclusions. Blocked sites are coverage gaps, not bypass targets.
 
-**The original evaluation snapshot contains 939 documents: 935 web pages and four video transcripts.** It has 927 content groups and 7,694 passages. Exact copies share indexed text; near-duplicate variants stay searchable because a small wording change can change the fact. Repeated copies do not gain extra authority. [Frozen manifest](artifacts/corpus/frozen-manifest.json) · [Collection decisions](docs/CORPUS.md).
+**The original evaluation snapshot contains 939 documents: 935 web pages and four video transcripts.** It has 927 content groups and 7,694 passages. The recorded duplicate audit found **6 groups containing 18 documents: 12 additional copies (7 exact and 5 near-duplicates)**. Exact copies share indexed text; near-duplicate variants stay searchable because a small wording change can change the fact. Repeated copies do not gain extra authority. [Frozen manifest](artifacts/corpus/frozen-manifest.json) · [Collection decisions](docs/CORPUS.md).
 
-The later saved hosted check contains **941 documents**. Video processing had expanded to **18 transcriptions, with six eligible attributed recordings active**. Uncertain speaker attribution remains outside the index. Later evaluation uses `corpus-664b2e73d71f`; the original snapshot remains historical evidence. [Video processing evidence](costs/YouTube/README.md) · [Hosted snapshot](artifacts/demo/product-pages/verification.json).
+The later saved hosted check contains **941 documents**. Video processing had expanded to **18 transcriptions, with six eligible attributed recordings active**. Uncertain speaker attribution remains outside the index. Later evaluation uses `corpus-664b2e73d71f`; the original snapshot remains historical evidence. [Video processing evidence](artifacts/costs/YouTube/README.md) · [Hosted snapshot](artifacts/demo/product-pages/verification.json).
 
 Publication, modification, observation, and a claim’s effective date remain distinct. “35+ active networks” and “130+ networks supported over time” cannot establish a decline. Later fixes expose per-claim dates and check relationships between claims. [Diagnostic evidence](docs/research/network-scope-and-dates/README.md).
 
@@ -57,9 +59,9 @@ Everstake’s MCP supplies direct operational data; this assistant adds historic
 
 ## 5. Spending, with the snapshots kept separate
 
-The saved hosted check at **19:08 UTC, 13 September** reports **$5.175148 known cost and eight unpriced calls**. The earlier exported ledger reports $4.462078 and seven unpriced calls. These are successive accounting snapshots, not amounts to add together. Known costs use provider-reported charges or recorded usage and dated prices; unknowns remain unknown. [Hosted record](artifacts/demo/product-pages/verification.json) · [Ledger](costs/measured-ledger.json).
+The saved hosted check at **19:08 UTC, 13 September** reports **$5.175148 known cost and eight unpriced calls**. The earlier exported ledger reports $4.462078 and seven unpriced calls. These are successive accounting snapshots, not amounts to add together. Known costs use provider-reported charges or recorded usage and dated prices; unknowns remain unknown. [Hosted record](artifacts/demo/product-pages/verification.json) · [Ledger](artifacts/costs/measured-ledger.json).
 
-The measured index build used **2,166,597 tokens**. At the recorded embedding rate, its 50× projection is `2,166,597 × 50 = 108,329,850 tokens`, costing **$2.166597**, excluding unpriced attempts. This forecasts embedding spending, not unchanged performance: vector scanning needs a different index and fresh measurements at that scale. Subscription effort and server rental are outside these API totals. [Cost method and breakdown](COST.md).
+Historical indexing, including the build, repairs and transcript additions, used **2,166,597 tokens**; this is not a clean-build benchmark. At the recorded embedding rate, its 50× projection is `2,166,597 × 50 = 108,329,850 tokens`, costing **$2.166597**, excluding unpriced attempts. This forecasts embedding spending, not unchanged performance: vector scanning needs a different index and fresh measurements at that scale. Subscription effort and server rental are outside these API totals. [Cost method and breakdown](COST.md).
 
 ## 6. What is running, and what I deliberately left out
 

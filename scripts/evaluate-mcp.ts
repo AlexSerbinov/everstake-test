@@ -138,7 +138,7 @@ export async function evaluateMcp(
     maxOutputTokens: number;
     answerThinkingLevel: "low" | "medium" | "high";
   }>("policy");
-  const system = readFileSync("prompts/mcp-answer.md", "utf8");
+  const system = readFileSync("assistant/prompts/mcp-answer.md", "utf8");
   const db = openDatabase(args.dbPath);
   const model = injectedClient ?? createModelClient(db);
   const corpusVersion = `everstake-mcp@${evidence.input.provenance.commit.slice(0, 7)}`;

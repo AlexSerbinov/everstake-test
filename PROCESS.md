@@ -1,4 +1,4 @@
-[Укр](PROCESS.uk.md) | [Eng Version](PROCESS.md)
+[Укр](submission_ukr/PROCESS.md) | [Eng Version](PROCESS.md)
 
 # Part B: how I would automate reporting
 

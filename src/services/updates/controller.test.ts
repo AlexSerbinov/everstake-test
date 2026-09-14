@@ -348,3 +348,38 @@ test("full pass adds not-due sources to an active due-only batch without repeati
     db.close();
   }
 });
+
+test("a lost worker lease fails progress without releasing another worker's lease", async () => {
+  const db = openDatabase(":memory:");
+  const replacementLease = JSON.stringify({
+    token: "replacement",
+    expires: Date.now() + 180_000,
+  });
+  const control = createUpdateController(
+    db,
+    async (_id, _settings, progress) => {
+      setSetting(db, "update_worker", replacementLease);
+      progress("Collected source content");
+    },
+    { sources },
+  );
+  try {
+    control.enqueue({ sourceId: "site" });
+    await control.tick();
+    const job = control.status().jobs[0];
+    assert.equal(job.status, "failed");
+    assert.match(job.error ?? "", /lease was lost/);
+    assert.equal(
+      db.prepare("SELECT value FROM settings WHERE key='update_worker'").get()
+        ?.value,
+      replacementLease,
+    );
+    assert.equal(
+      control.status().sources.find((source) => source.id === "site")
+        ?.lastCheckedAt,
+      null,
+    );
+  } finally {
+    db.close();
+  }
+});

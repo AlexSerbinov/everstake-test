@@ -1,13 +1,13 @@
 import { findingsPage } from "./features/findings/findings-page.js";
-import { collectionSummary } from "./features/collection-summary/collection-summary.js";
+import { collectionSummary } from "./features/corpus/collection-summary.js";
 import { updatesPage } from "./features/updates/updates-page.js";
 import type { AnswerResult, RunEvent } from "../src/contracts.js";
 import { button, el, getJson } from "./shared/dom.js";
-import { answerText } from "./features/answer-export/answer-export.js";
-import { questionForm } from "./features/question/question-form.js";
-import { SearchTimeline } from "./features/live-search/search-timeline.js";
-import { answerView } from "./features/answer/answer-view.js";
-import { requestError } from "./features/request-error/request-error.js";
+import { answerText } from "./features/ask/answer-export.js";
+import { questionForm } from "./features/ask/question-form.js";
+import { SearchTimeline } from "./features/ask/search-timeline.js";
+import { answerView } from "./features/ask/answer-view.js";
+import { requestError } from "./features/ask/request-error.js";
 import { corpusPage } from "./features/corpus/corpus-page.js";
 import { costOverview } from "./features/costs/cost-overview.js";
 import { evaluationPage } from "./features/evaluation/evaluation-page.js";
@@ -15,6 +15,7 @@ import { readRunStream } from "./transport/read-run-stream.js";
 import { RunState } from "./run-state.js";
 
 const root = document.getElementById("app")!;
+// One run owns the visible answer. RunState aborts its predecessor and invalidates callbacks.
 const state = new RunState();
 let timeline: SearchTimeline | undefined;
 const questionPage = el("section", "question-page");
@@ -58,6 +59,7 @@ async function ask(question: string) {
   toolbar.append(copyNotice);
   const result = el("div", "answer-slot");
   timeline = new SearchTimeline(scope);
+  // Capture this run's log: the shared timeline variable can point to a later question.
   const currentTimeline = timeline;
   // The answer is rendered above the research log: readers see the result first and open
   // the log only when they want to audit how it was found.
@@ -66,6 +68,7 @@ async function ask(question: string) {
   let receivedAnswer = false;
   let failed = false;
   const handle = (event: RunEvent) => {
+    // Aborting a request cannot retract events already queued in the browser.
     if (!run.current()) return;
     if (event.type === "answer") {
       const answer = event.data as AnswerResult;
@@ -154,6 +157,7 @@ async function ask(question: string) {
     result.replaceChildren(requestError((error as Error).message));
     status.textContent = "The request failed.";
   } finally {
+    // A late completion must not unlock the form owned by a newer request.
     if (run.current()) form.setBusy(false);
   }
 }
@@ -204,6 +208,8 @@ document
 sidebar
   .querySelectorAll("a")
   .forEach((link) => link.addEventListener("click", () => closeMenu()));
+// The question node persists between routes. Only the Updates view owns polling cleanup;
+// navigation does not cancel an answer, while Stop, New question, and pagehide do.
 function navigate() {
   closeMenu();
   disposePage?.();

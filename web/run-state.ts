@@ -12,6 +12,7 @@ export class RunState {
       current: () => generation === this.generation,
     };
   }
+  // Generation changes as well as aborting: already-resolved work may still invoke callbacks.
   cancel() {
     this.controller?.abort();
     this.generation++;

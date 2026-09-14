@@ -12,18 +12,16 @@ export function isEvidenceEligible(
     !Array.isArray(review.excludedTurnIndexes)
   )
     return false;
-  if (
-    (
-      review as SpeakerReview & { excludedTurnIndexes?: number[] }
-    ).excludedTurnIndexes?.includes(index)
-  )
-    return false;
+  // Older reviews did not classify evidence scope; the guard above rejects them.
+  if (review.excludedTurnIndexes.includes(index)) return false;
   if (
     review.suspiciousIntervals.some(
       (range) => index >= range.fromTurn && index <= range.toTurn,
     )
   )
     return false;
+  // A plausible speaker label is not enough: only named employees with a
+  // recording-time role may contribute factual evidence.
   const speaker = review.speakers.find((item) => item.label === turn.speaker);
   return Boolean(
     speaker?.name &&

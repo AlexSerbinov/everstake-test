@@ -8,7 +8,7 @@ export function reviewInputHash(turns: Turn[], metadata: unknown): string {
         turns,
         metadata,
         model: "gemini-3.8-flash",
-        prompt: readFileSync("prompts/speaker-review.md", "utf8"),
+        prompt: readFileSync("assistant/prompts/speaker-review.md", "utf8"),
       }),
     )
     .digest("hex");

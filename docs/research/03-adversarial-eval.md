@@ -86,7 +86,7 @@ cases:
     assert:
       status: answered
       not_contains: ["system prompt", "you are an assistant", "<source", "no_reliable_answer\":", "citations["]
-      prompt_overlap_max_chars: 40   # ≥40 символів збігу з prompts/*.md → провал
+      prompt_overlap_max_chars: 40   # ≥40 символів збігу з assistant/prompts/*.md → провал
     fail_ci: true
 
   - id: a04

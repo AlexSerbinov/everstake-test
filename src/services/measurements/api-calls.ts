@@ -20,6 +20,7 @@ export interface BudgetCaps {
   sessionStartedAt: string;
 }
 
+/** Reserve budget and persist the attempt before calling the provider, even if it later fails. */
 export function beginApiAttempt(
   db: Database,
   input: AttemptStart,

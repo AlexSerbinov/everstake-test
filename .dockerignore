@@ -1,6 +1,7 @@
 .git
 .env
 .env.*
+!.env.example
 node_modules
 data
 claude-work
@@ -9,4 +10,8 @@ raw
 reference
 everstake-mcp
 mcp-test
-artifacts
+dist
+coverage
+output
+*.tsbuildinfo
+.DS_Store

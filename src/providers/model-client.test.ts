@@ -289,3 +289,45 @@ test("an external cancellation aborts the provider call, records it and is never
   );
   db.close();
 });
+
+test("cancelling during the retry delay preserves the failed attempt and sends no new request", async () => {
+  const db = openDatabase(":memory:");
+  try {
+    const runId = beginRun(db, "question");
+    const caller = new AbortController();
+    let fetches = 0;
+    const client = createModelClient(db, {
+      config,
+      environment: { GEMINI_API_KEY: "key" },
+      fetch: async () => {
+        fetches += 1;
+        return Response.json(
+          { error: { message: "temporary" } },
+          { status: 503 },
+        );
+      },
+      sleep: async () => {
+        caller.abort();
+      },
+    });
+    await assert.rejects(
+      client.generate({
+        runId,
+        stage: "answer",
+        system: "",
+        messages: [{ role: "user", text: "Question" }],
+        signal: caller.signal,
+      }),
+      { name: "AbortError", message: "Request cancelled by the user" },
+    );
+    assert.equal(fetches, 1);
+    const receipt = buildReceipt(db, runId);
+    assert.deepEqual(
+      receipt.attempts.map((attempt) => attempt.status),
+      ["error"],
+    );
+    assert.equal(receipt.unknownCalls, 1);
+  } finally {
+    db.close();
+  }
+});

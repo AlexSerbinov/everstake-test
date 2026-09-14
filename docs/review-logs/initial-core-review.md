@@ -42,7 +42,7 @@ Several high findings were being fixed during the review. They remain in this re
 
 ### H4. The configured cost cap could be overshot because every request reserved a fixed $0.05
 
-- **Location:** `src/providers/model-client.ts:225-238`; `src/services/measurements/api-calls.ts:20-50, 102-129`; `config/models.yaml:17`; `config/policy.yaml:4-5`.
+- **Location:** `src/providers/model-client.ts:225-238`; `src/services/measurements/api-calls.ts:20-50, 102-129`; `assistant/config/models.yaml:17`; `assistant/config/policy.yaml:4-5`.
 - **Impact:** enforcement happened only before a call, using `$0.05`, regardless of prompt size, `maxOutputTokens`, model price, or retry. The actual charge written later could exceed the `$0.30` run cap or `$8` session cap. `maxEvidence: 14` in policy was also not enforced by the answer loop, so accumulated evidence/messages could enlarge later prompts.
 - **Reproduction executed:** with a `$0.30` cap, `beginApiAttempt(... reservationUsd: 0.05)` succeeded and `finishApiAttempt(... actualCostUsd: 0.50)` persisted a completed `$0.50` attempt.
 - **Minimal fix:** calculate a conservative request-specific reservation from bounded input bytes/tokens plus maximum output at the selected model price, and reject before dispatch when that upper bound does not fit. Enforce the evidence/message bound. After actual usage, mark the budget exhausted so no retry/follow-up call runs; report unavoidable single-call variance explicitly rather than claiming a hard cap.

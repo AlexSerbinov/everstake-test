@@ -1,6 +1,6 @@
 import { badge, details, el } from "../../shared/dom.js";
 import type { ResultRow } from "./question-result-card.js";
-import { answerView } from "../answer/answer-view.js";
+import { answerView } from "../ask/answer-view.js";
 
 /** A rubric score is recorded separately; never infer it from a binary verdict. */
 export function qualityPercent(row: ResultRow): number | null {

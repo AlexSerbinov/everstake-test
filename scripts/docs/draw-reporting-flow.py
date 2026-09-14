@@ -18,10 +18,10 @@ COPY = {
   'sources': [('Jira', 'Час, задачі, зміни'), ('Дзвінки', 'Нотатки, рішення'), ('Slack / Telegram', 'Робочі канали'), ('CRM / пошта', 'Для свого відділу'), ('VoiceInk', 'За згодою людини')],
   'collect': ('18:30 · Збираємо', 'Код перевіряє доступи,', 'дати й повноту даних'),
   'draft': ('Агент пише', 'Зводить повтори, додає', 'результати й посилання'),
-  'review': ('Людина читає', 'Править чернетку', 'й відправляє'),
+  'review': ('Керівник перевіряє', 'Править чернетку', 'й затверджує'),
   'fail': ('Даних бракує?', 'Сповіщення + повтор збору.', 'Автовідправлення зупинено.'),
-  'auto': ('19:30 · Можна автоматично', 'Лише за попередньою згодою.', 'Чутливе й спірне чекає людини.'),
-  'week': ('У п’ятницю · Звіт відділу', 'Керівник звіряє головне й затверджує публікацію.'),
+  'auto': ('Немає затвердження?', 'Нагадування відповідальному.', 'Чернетка не публікується.'),
+  'week': ('У п’ятницю · Звіт відділу', 'Код публікує лише затверджений керівником звіт.'),
   'foot': 'Код збирає та перевіряє. Агент допомагає написати. Людина вирішує, що надсилати.'
  },
  'en': {
@@ -29,10 +29,10 @@ COPY = {
   'sources': [('Jira', 'Time, tasks, changes'), ('Meetings', 'Notes, agreements'), ('Slack / Telegram', 'Work channels'), ('CRM / email', 'Department sources'), ('VoiceInk', 'With consent')],
   'collect': ('18:30 · Collect', 'Code checks access,', 'dates and missing inputs'),
   'draft': ('Agent drafts', 'Groups repeated work,', 'adds outcomes and links'),
-  'review': ('Person reviews', 'Edits the draft', 'and sends it'),
+  'review': ('Head reviews', 'Edits the draft', 'and approves it'),
   'fail': ('Missing inputs?', 'Notify the owner and retry.', 'Automatic delivery is blocked.'),
-  'auto': ('19:30 · Optional auto-send', 'Only with prior agreement.', 'Sensitive or disputed items wait.'),
-  'week': ('Friday · Department report', 'The head checks the main points and approves publication.'),
+  'auto': ('Approval missing?', 'Remind the report owner.', 'The draft stays private.'),
+  'week': ('Friday · Department report', 'Code publishes only the report approved by the head.'),
   'foot': 'Code collects and checks. The agent helps write. A person decides what to share.'
  }
 }
@@ -66,14 +66,12 @@ def draw(lang):
  line((260,535),(260,599),color=(106,148,197),arrow=True)
  box(50,602,420,150,c['fail'],fill=(232,242,255),border=(154,184,215))
  line((1240,535),(1240,599),arrow=True)
- text(1258,554,'Якщо не надіслано' if lang=='uk' else 'If not sent',17)
+ text(1258,554,'Ще не схвалено' if lang=='uk' else 'Not approved',17)
  line((1120,535),(1120,569))
  line((1120,569),(745,569))
  line((745,569),(745,809),arrow=True)
- text(555,586,'Надіслано людиною' if lang=='uk' else 'Sent by the person',19)
+ text(515,586,'Керівник затвердив' if lang=='uk' else 'Approved by the head',19)
  box(1030,602,420,150,c['auto'],fill=(241,248,234))
- line((1240,752),(1240,875))
- line((1240,875),(1107,875),arrow=True)
  box(385,813,720,124,c['week'],fill=(243,239,229),border=(179,164,134))
  text(50,989,c['foot'],23)
  # OpenCV draws every box and connector. Pillow adds Cyrillic glyphs.

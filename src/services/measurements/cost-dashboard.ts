@@ -51,118 +51,40 @@ export function costDashboard(db: Database) {
   const calls = db
     .prepare("SELECT * FROM api_calls ORDER BY started_at")
     .all() as unknown as CallRow[];
-  const runMap = new Map(runs.map((run) => [run.id, run]));
-  const meta = new Map(runs.map((run) => [run.id, metadata(run.metadata)]));
-  // Every ledger row belongs to exactly one root, even if legacy metadata contains a cycle.
-  function rootId(id: string): string {
-    const seen = new Set<string>();
-    while (!seen.has(id)) {
-      seen.add(id);
-      const parent = meta.get(id)?.parentRunId;
-      if (typeof parent !== "string" || !runMap.has(parent)) return id;
-      id = parent;
-    }
-    return [...seen].sort()[0];
-  }
-  const roots = new Map(runs.map((run) => [run.id, rootId(run.id)]));
-  function group(key: (call: CallRow) => string) {
-    const groups = new Map<string, CallRow[]>();
-    for (const call of calls) {
-      const label = key(call);
-      const list = groups.get(label) ?? [];
-      list.push(call);
-      groups.set(label, list);
-    }
-    return [...groups].map(([label, rows]) => ({ label, ...summarize(rows) }));
-  }
-  const byPurpose = group(
+  const runsById = new Map(runs.map((run) => [run.id, run]));
+  const parents = new Map(
+    runs.map((run) => [run.id, metadata(run.metadata).parentRunId]),
+  );
+  const roots = new Map(
+    runs.map((run) => [run.id, findRoot(run.id, parents, runsById)]),
+  );
+  const rootRuns = runs.filter((run) => roots.get(run.id) === run.id);
+  const rootCalls = groupCalls(
+    calls,
+    (call) => roots.get(call.run_id) ?? call.run_id,
+  );
+  // A verification call belongs to its nearest question, even within an evaluation.
+  const queryCalls = groupCalls(calls, (call) =>
+    findQuestion(call.run_id, parents, runsById),
+  );
+  const queryRuns = runs.filter(isQuestion);
+  // Website and video refreshes share this kind. Nested refreshes count only once.
+  const updateRuns = rootRuns.filter((run) => run.kind === "refresh");
+  const byPurpose = summarizeGroups(
+    calls,
     (call) =>
-      runMap.get(roots.get(call.run_id) ?? call.run_id)?.kind ?? "unassigned",
+      runsById.get(roots.get(call.run_id) ?? call.run_id)?.kind ?? "unassigned",
   ).sort((a, b) => b.knownCostUsd - a.knownCostUsd);
-  const byStage = group((call) => call.stage).sort(
+  const byStage = summarizeGroups(calls, (call) => call.stage).sort(
     (a, b) => b.knownCostUsd - a.knownCostUsd,
   );
-  const daily = group((call) => call.started_at.slice(0, 10)).sort((a, b) =>
-    a.label.localeCompare(b.label),
-  );
-  const queryRuns = runs.filter((run) =>
-    ["query", "question"].includes(run.kind),
-  );
-  const queryCalls = new Map<string, CallRow[]>();
-  for (const call of calls) {
-    let id = call.run_id;
-    const seen = new Set<string>();
-    while (!seen.has(id)) {
-      seen.add(id);
-      if (["query", "question"].includes(runMap.get(id)?.kind ?? "")) {
-        const list = queryCalls.get(id) ?? [];
-        list.push(call);
-        queryCalls.set(id, list);
-        break;
-      }
-      const parent = meta.get(id)?.parentRunId;
-      if (typeof parent !== "string") break;
-      id = parent;
-    }
-  }
-  const queries = queryRuns.map((run) => ({
-    run,
-    receipt: summarize(queryCalls.get(run.id) ?? []),
-  }));
-  const complete = queries.filter(
-    ({ run, receipt }) =>
-      run.status === "completed" && receipt.unknownCalls === 0,
-  );
-  const queryCosts = complete.map(({ receipt }) => receipt.knownCostUsd);
-  const rootRuns = runs.filter((run) => roots.get(run.id) === run.id);
-  const rootCalls = new Map<string, CallRow[]>();
-  for (const call of calls) {
-    const root = roots.get(call.run_id) ?? call.run_id;
-    const rows = rootCalls.get(root) ?? [];
-    rows.push(call);
-    rootCalls.set(root, rows);
-  }
-  // Both website and incremental YouTube updates are recorded as refresh roots.
-  // A root can represent one source or a CLI multi-source refresh, not a UI batch.
-  const updateRuns = rootRuns.filter((run) => run.kind === "refresh");
-  const measuredUpdates = updateRuns
-    .map((run) => ({ run, receipt: summarize(rootCalls.get(run.id) ?? []) }))
-    .filter(
-      ({ run, receipt }) =>
-        run.status === "completed" && receipt.unknownCalls === 0,
-    );
-  const updateCosts = measuredUpdates.map(
-    ({ receipt }) => receipt.knownCostUsd,
-  );
-  const providerIds = [
-    "soniox",
-    "gemini",
-    "openai",
-    ...new Set(
-      calls
-        .map((call) => call.provider)
-        .filter(
-          (provider) => !["soniox", "gemini", "openai"].includes(provider),
-        ),
-    ),
-  ];
-  const byProvider = providerIds.map((provider) => {
-    const rows = calls.filter((call) => call.provider === provider);
-    return {
-      provider,
-      ...summarize(rows),
-      models: [...new Set(rows.map((row) => row.model))]
-        .map((model) => ({
-          model,
-          ...summarize(rows.filter((row) => row.model === model)),
-        }))
-        .sort((a, b) => b.knownCostUsd - a.knownCostUsd),
-    };
-  });
+  const daily = summarizeGroups(calls, (call) =>
+    call.started_at.slice(0, 10),
+  ).sort((a, b) => a.label.localeCompare(b.label));
   const index = summarize(
     calls.filter((call) => {
-      const kind = runMap.get(call.run_id)?.kind;
-      const rootKind = runMap.get(roots.get(call.run_id) ?? "")?.kind;
+      const kind = runsById.get(call.run_id)?.kind;
+      const rootKind = runsById.get(roots.get(call.run_id) ?? "")?.kind;
       return (
         kind === "index" ||
         rootKind === "index" ||
@@ -181,33 +103,16 @@ export function costDashboard(db: Database) {
     ...overview,
     ...summarize(calls),
     byPurpose,
-    byProvider,
+    byProvider: summarizeProviders(calls),
     update: {
-      runs: updateRuns.length,
-      measuredRuns: measuredUpdates.length,
-      excludedRuns: updateRuns.length - measuredUpdates.length,
-      meanUsd: updateCosts.length
-        ? updateCosts.reduce((sum, value) => sum + value, 0) /
-          updateCosts.length
-        : null,
-      minUsd: updateCosts.length ? Math.min(...updateCosts) : null,
-      maxUsd: updateCosts.length ? Math.max(...updateCosts) : null,
+      ...summarizeCompletedRuns(updateRuns, rootCalls),
       knownCostUsd: summarize(
         updateRuns.flatMap((run) => rootCalls.get(run.id) ?? []),
       ).knownCostUsd,
     },
     byStage,
     daily,
-    query: {
-      runs: queries.length,
-      measuredRuns: complete.length,
-      excludedRuns: queries.length - complete.length,
-      meanUsd: queryCosts.length
-        ? queryCosts.reduce((a, b) => a + b, 0) / queryCosts.length
-        : null,
-      minUsd: queryCosts.length ? Math.min(...queryCosts) : null,
-      maxUsd: queryCosts.length ? Math.max(...queryCosts) : null,
-    },
+    query: summarizeCompletedRuns(queryRuns, queryCalls),
     index,
     forecast: {
       factor: 50,
@@ -241,4 +146,116 @@ export function costDashboard(db: Database) {
     })),
   };
 }
+// Keep call order inside each group: even the order of decimal additions stays unchanged.
+function groupCalls(
+  calls: CallRow[],
+  key: (call: CallRow) => string | undefined,
+) {
+  const groups = new Map<string, CallRow[]>();
+  for (const call of calls) {
+    const label = key(call);
+    if (label === undefined) continue;
+    const rows = groups.get(label) ?? [];
+    rows.push(call);
+    groups.set(label, rows);
+  }
+  return groups;
+}
+
+function summarizeGroups(calls: CallRow[], key: (call: CallRow) => string) {
+  return [...groupCalls(calls, key)].map(([label, rows]) => ({
+    label,
+    ...summarize(rows),
+  }));
+}
+
+function isQuestion(run: RunRow) {
+  return run.kind === "query" || run.kind === "question";
+}
+
+function findRoot(
+  id: string,
+  parents: Map<string, unknown>,
+  runs: Map<string, RunRow>,
+): string {
+  const seen = new Set<string>();
+  while (!seen.has(id)) {
+    seen.add(id);
+    const parent = parents.get(id);
+    if (typeof parent !== "string" || !runs.has(parent)) return id;
+    id = parent;
+  }
+  // Old imports may contain parent cycles. Preserve their deterministic fallback.
+  return [...seen].sort()[0];
+}
+
+function findQuestion(
+  id: string,
+  parents: Map<string, unknown>,
+  runs: Map<string, RunRow>,
+): string | undefined {
+  const seen = new Set<string>();
+  while (!seen.has(id)) {
+    seen.add(id);
+    const run = runs.get(id);
+    if (run && isQuestion(run)) return id;
+    const parent = parents.get(id);
+    if (typeof parent !== "string") return undefined;
+    id = parent;
+  }
+  return undefined;
+}
+
+function summarizeCompletedRuns(
+  runs: RunRow[],
+  callsByRun: Map<string, CallRow[]>,
+) {
+  const costs = runs
+    .map((run) => ({ run, receipt: summarize(callsByRun.get(run.id) ?? []) }))
+    // A failed run or missing price is not a trustworthy cost-per-run sample.
+    .filter(
+      ({ run, receipt }) =>
+        run.status === "completed" && receipt.unknownCalls === 0,
+    )
+    .map(({ receipt }) => receipt.knownCostUsd);
+  return {
+    runs: runs.length,
+    measuredRuns: costs.length,
+    excludedRuns: runs.length - costs.length,
+    meanUsd: costs.length
+      ? costs.reduce((sum, cost) => sum + cost, 0) / costs.length
+      : null,
+    minUsd: costs.length ? Math.min(...costs) : null,
+    maxUsd: costs.length ? Math.max(...costs) : null,
+  };
+}
+
+function summarizeProviders(calls: CallRow[]) {
+  const providerIds = [
+    "soniox",
+    "gemini",
+    "openai",
+    ...new Set(
+      calls
+        .map((call) => call.provider)
+        .filter(
+          (provider) => !["soniox", "gemini", "openai"].includes(provider),
+        ),
+    ),
+  ];
+  return providerIds.map((provider) => {
+    const rows = calls.filter((call) => call.provider === provider);
+    return {
+      provider,
+      ...summarize(rows),
+      models: [...new Set(rows.map((row) => row.model))]
+        .map((model) => ({
+          model,
+          ...summarize(rows.filter((row) => row.model === model)),
+        }))
+        .sort((a, b) => b.knownCostUsd - a.knownCostUsd),
+    };
+  });
+}
+
 export type CostDashboard = ReturnType<typeof costDashboard>;

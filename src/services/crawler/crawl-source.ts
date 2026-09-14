@@ -72,9 +72,10 @@ function errorReason(error: unknown): { reason: string; detail: string } {
   return { reason: code ?? "fetch_or_extract_failure", detail: message };
 }
 
-function finaliseSanitation(
+function sanitizeSnapshot(
   document: ReturnType<typeof extractDocument>,
 ): DocumentSnapshot {
+  // IDs and duplicate detection must describe the safe text, not removed instructions.
   const sanitized = sanitizeDocument(document.text);
   const contentHash = createHash("sha256").update(sanitized.text).digest("hex");
   const id = createHash("sha256")
@@ -101,7 +102,7 @@ function finaliseSanitation(
   };
 }
 
-function record(
+function recordCrawlEvent(
   db: Database,
   url: string,
   status: CrawlStatus,
@@ -167,7 +168,7 @@ export async function crawlSource(
     },
   };
   const emit = (url: string, status: CrawlStatus, reason: string): void => {
-    record(db, url, status, reason);
+    recordCrawlEvent(db, url, status, reason);
     options.onProgress?.({
       sourceId: source.id,
       url,
@@ -177,7 +178,7 @@ export async function crawlSource(
       queued: queue.length,
     });
   };
-  const permitted = (value: string): boolean => {
+  const isUrlInScope = (value: string): boolean => {
     const url = new URL(value);
     return (
       ["http:", "https:"].includes(url.protocol) &&
@@ -187,7 +188,7 @@ export async function crawlSource(
     );
   };
   for (const url of seeds) {
-    if (permitted(url)) {
+    if (isUrlInScope(url)) {
       queued.add(url);
       queue.push({ url, depth: 0, discoveredFrom: "seed" });
     } else {
@@ -205,7 +206,7 @@ export async function crawlSource(
     } catch {
       return;
     }
-    if (!permitted(normalized)) {
+    if (!isUrlInScope(normalized)) {
       if (!allowedHosts.has(new URL(normalized).hostname.toLowerCase()))
         candidates.push({ url: normalized, discoveredFrom });
       else exclusions.push({ url: normalized, reason: "path_excluded" });
@@ -232,6 +233,7 @@ export async function crawlSource(
       });
   }
 
+  // Fetch a bounded batch, then accept results and discover the next links in queue order.
   while (queue.length && documents.length < maxPages && bytes < maxTotalBytes) {
     const room = Math.min(concurrency, maxPages - documents.length);
     const batch = queue
@@ -261,7 +263,7 @@ export async function crawlSource(
                 reason: "insufficient_content",
               } as CrawlExclusion,
             };
-          return { item, extracted, document: finaliseSanitation(extracted) };
+          return { item, extracted, document: sanitizeSnapshot(extracted) };
         } catch (error) {
           const failure = errorReason(error);
           return {

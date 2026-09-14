@@ -1,3 +1,4 @@
+/** Insert all supplied copy as text, including model output and crawled source excerpts. */
 export function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   className = "",
@@ -18,6 +19,7 @@ export function button(
   node.addEventListener("click", action);
   return node;
 }
+/** Source URLs may navigate to HTTP(S) pages, never execute javascript: or data: payloads. */
 export function safeUrl(value: string): string | null {
   try {
     const url = new URL(value);
@@ -51,6 +53,7 @@ export function empty(title: string, message: string): HTMLElement {
   box.append(el("h3", "", title), el("p", "muted", message));
   return box;
 }
+/** Read an internal API response; T documents the contract, it is not runtime validation. */
 export async function getJson<T>(
   path: string,
   signal?: AbortSignal,

@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
+import { z } from "zod";
 import type {
   PriceEntry,
   PriceSnapshot,
@@ -23,8 +24,45 @@ export interface ModelsConfig {
   prices: Record<string, PriceEntry>;
 }
 
+const httpUrl = z.url().refine((url) => /^https?:\/\//.test(url));
+const providerSchema = z
+  .object({
+    protocol: z.enum(["native", "openai-compatible", "auto"]).optional(),
+    baseURL: httpUrl,
+    apiKeyEnv: z.string().regex(/^[A-Z][A-Z0-9_]*$/),
+    timeoutMs: z.number().int().positive(),
+    maxAttempts: z.number().int().positive(),
+  })
+  .strict();
+const priceSchema = z
+  .object({
+    inputPerMillionUsd: z.number().nonnegative(),
+    cachedInputPerMillionUsd: z.number().nonnegative().optional(),
+    outputPerMillionUsd: z.number().nonnegative(),
+    source: httpUrl,
+    note: z.string().optional(),
+  })
+  .strict();
+
+export const modelsSchema = z
+  .object({
+    answer: z.string().min(1),
+    extraction: z.string().min(1),
+    embedding: z.string().min(1),
+    pricesAsOf: z.iso.date(),
+    providers: z
+      .object({ gemini: providerSchema, openai: providerSchema })
+      .strict(),
+    unknownCallReserveUsd: z.number().positive(),
+    // A newly selected model may lack a price; accounting must then report unknown cost.
+    prices: z.record(z.string().min(1), priceSchema),
+  })
+  .strict();
+
 export function loadModelsConfig(): ModelsConfig {
-  return parse(readFileSync("config/models.yaml", "utf8")) as ModelsConfig;
+  return modelsSchema.parse(
+    parse(readFileSync("assistant/config/models.yaml", "utf8")),
+  );
 }
 
 export function priceFor(

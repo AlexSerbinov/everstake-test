@@ -61,7 +61,7 @@ try {
     );
   const cell = (value: string) =>
     value.replaceAll("|", "\\|").replaceAll("\n", "<br>");
-  let markdown = `# Measured evaluation\n\nTwenty fixed questions: five basic and fifteen hard, including five negative cases. References were audited against the frozen corpus; the runtime never reads them.\n\nCorpus: \`${agent.corpusVersion}\`. Agent run: \`${agent.id}\`; baseline: \`${baseline.id}\`. Full responses, cited passages and receipts are in [artifacts/evaluation](artifacts/evaluation/).\n\n| Mode | Passed | Failed | Accuracy | Cases with invented facts | Known cost | Unknown calls |\n|---|---:|---:|---:|---:|---:|---:|\n`;
+  let markdown = `# Measured evaluation\n\n> **[UKRAINIAN VERSION](submission_ukr/EVAL.md) · [LIVE EVALUATION PAGE](https://everstate-knowledge-base.89-167-19-222.sslip.io/#evaluation)**\n\nTwenty fixed questions: five basic and fifteen hard, including five negative cases. References were audited against the frozen corpus; the runtime never reads them.\n\nCorpus: \`${agent.corpusVersion}\`. Agent run: \`${agent.id}\`; baseline: \`${baseline.id}\`. Full responses, cited passages and receipts are in [artifacts/evaluation](artifacts/evaluation/).\n\n| Mode | Passed | Failed | Accuracy | Cases with invented facts | Known cost | Unknown calls |\n|---|---:|---:|---:|---:|---:|---:|\n`;
   for (const run of [agent, baseline])
     markdown += `| ${run.mode} | ${run.summary.passed}/20 | ${run.summary.failed} | ${((run.summary.accuracy ?? 0) * 100).toFixed(0)}% | ${run.summary.inventedFacts} | $${run.summary.knownCostUsd.toFixed(6)} | ${run.summary.unknownCalls} |\n`;
   markdown +=

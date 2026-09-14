@@ -159,7 +159,7 @@ function isPublicIp(address: string): boolean {
   return true;
 }
 
-async function approvedAddress(
+async function resolvePublicAddress(
   url: URL,
   resolveHost: ResolveHost,
 ): Promise<{ address: string; family: 4 | 6 }> {
@@ -188,7 +188,11 @@ async function approvedAddress(
 }
 
 const defaultTransport: FetchTransport = async (url, options) => {
-  const { address, family } = await approvedAddress(url, defaultResolveHost);
+  // Connect to the checked IP itself. A second DNS lookup could point at a private host.
+  const { address, family } = await resolvePublicAddress(
+    url,
+    defaultResolveHost,
+  );
   return new Promise((resolve, reject) => {
     const request = (url.protocol === "https:" ? httpsRequest : httpRequest)(
       {
@@ -226,6 +230,7 @@ const defaultTransport: FetchTransport = async (url, options) => {
                 : [[key, Array.isArray(value) ? value.join(", ") : value]],
             ),
           );
+          // Cap decoded bytes too: a small compressed response can expand far beyond the limit.
           let body = Buffer.concat(chunks);
           try {
             const encoding = headers["content-encoding"]?.toLowerCase();
@@ -281,11 +286,12 @@ async function wait(ms: number): Promise<void> {
   if (ms > 0) await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitForHost(
+async function waitForRequestSlot(
   origin: string,
   minDelayMs: number,
   state: RateLimitState,
 ): Promise<void> {
+  // Queue request starts per origin; downloads may overlap once the delay has passed.
   const previous = state.tails.get(origin) ?? Promise.resolve();
   let release = (): void => {};
   const gate = new Promise<void>((resolve) => {
@@ -305,27 +311,17 @@ async function waitForHost(
 
 async function requestWithRetries(
   url: URL,
-  options: Required<
-    Pick<
-      SafeFetchOptions,
-      | "timeoutMs"
-      | "maxBytes"
-      | "retries"
-      | "retryDelayMs"
-      | "userAgent"
-      | "minDelayMs"
-    >
-  > & {
-    transport: FetchTransport;
-    resolveHost: ResolveHost;
-    rateLimitState: RateLimitState;
-  },
+  options: ResolvedFetchOptions,
 ): Promise<FetchResponse> {
-  await approvedAddress(url, options.resolveHost);
+  await resolvePublicAddress(url, options.resolveHost);
   let lastError: unknown;
   for (let attempt = 0; attempt <= options.retries; attempt += 1) {
     try {
-      await waitForHost(url.origin, options.minDelayMs, options.rateLimitState);
+      await waitForRequestSlot(
+        url.origin,
+        options.minDelayMs,
+        options.rateLimitState,
+      );
       const response = await options.transport(url, {
         timeoutMs: options.timeoutMs,
         maxBytes: options.maxBytes,
@@ -363,23 +359,7 @@ async function requestWithRetries(
 
 async function loadRobots(
   origin: string,
-  options: Required<
-    Pick<
-      SafeFetchOptions,
-      | "timeoutMs"
-      | "maxBytes"
-      | "retries"
-      | "retryDelayMs"
-      | "maxRedirects"
-      | "userAgent"
-      | "minDelayMs"
-    >
-  > & {
-    transport: FetchTransport;
-    resolveHost: ResolveHost;
-    robotsCache: Map<string, RobotsResult>;
-    rateLimitState: RateLimitState;
-  },
+  options: ResolvedFetchOptions,
 ): Promise<RobotsResult> {
   const cached = options.robotsCache.get(origin);
   if (cached) return cached;
@@ -400,6 +380,7 @@ async function loadRobots(
       current = next;
       continue;
     }
+    // A missing file permits crawling. Other failures must not silently grant permission.
     if (response.status === 404 || response.status === 410) {
       const result = {
         allowed: () => true,
@@ -436,6 +417,8 @@ export async function discoverRobotsSitemaps(
   return (await loadRobots(new URL(url).origin, normalized)).sitemaps;
 }
 
+type ResolvedFetchOptions = ReturnType<typeof withDefaults>;
+
 function withDefaults(options: SafeFetchOptions) {
   return {
     timeoutMs: options.timeoutMs ?? 10_000,
@@ -464,6 +447,7 @@ export async function safeFetch(
   let current = initial;
   const redirectChain: string[] = [];
   for (let redirects = 0; redirects <= config.maxRedirects; redirects += 1) {
+    // A redirect can lead to a disallowed path, so check every destination before fetching.
     const robots = await loadRobots(current.origin, config);
     if (!robots.allowed(current.href, config.userAgent))
       throw new CrawlFetchError(

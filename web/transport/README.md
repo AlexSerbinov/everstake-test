@@ -1,5 +1,9 @@
-# Server-event transport
+# Transport: turn streamed HTTP bytes into run events
 
-This module reads streamed server events and hands them to the interface. Its tests cover parsing so progress and results can be received reliably.
+Start with [read-run-stream.ts](read-run-stream.ts). `readRunStream()` receives the response to `POST /api/ask` from [app.ts](../app.ts), decodes Server-Sent Events (SSE), and delivers each event to the active question's callback.
 
-It carries events from real runs. Research logic and answer validation stay on the server in [src](../../src/README.md).
+It handles partial UTF-8 characters and event frames across network chunks, ignores repeated event IDs, and rejects events from a different run. An `error` event may be followed by a receipt, so reading continues until `done`. A connection that ends without `done` or an error is reported as interrupted. Cancellation releases the stream reader.
+
+[read-run-stream.test.ts](read-run-stream.test.ts) exercises framing, duplicate events, errors, and cleanup using synthetic streams. It does not need the browser or a provider request.
+
+This folder transports progress and results. [The server](../../src/README.md) runs research and validates the answer; [Ask](../features/ask/README.md) renders what the server returns.

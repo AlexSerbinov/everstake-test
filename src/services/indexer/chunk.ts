@@ -35,7 +35,7 @@ function splitLongBlock(block: string, maxChars: number): string[] {
   return output;
 }
 
-function tail(text: string, maxChars: number): string {
+function trailingContext(text: string, maxChars: number): string {
   if (maxChars <= 0) return "";
   const value = text.slice(-maxChars);
   const boundary = value.search(/[.!?]\s|\n/);
@@ -92,7 +92,7 @@ export function chunkDocument(
       continue;
     }
     texts.push(current);
-    const overlap = tail(current, overlapChars);
+    const overlap = trailingContext(current, overlapChars);
     current =
       overlap && overlap.length + 2 + block.length <= maxChars
         ? `${overlap}\n\n${block}`

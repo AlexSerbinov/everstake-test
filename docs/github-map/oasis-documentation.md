@@ -13,7 +13,7 @@ topics: []
 Two how-to guides for running nodes on the Oasis Network: a mainnet validator node and an Emerald ParaTime node.
 
 ## What it does technically
-- Pure documentation with a `config/` directory (sample config files, not deeply inspected) and an `Images/` directory for screenshots.
+- Pure documentation with a `assistant/config/` directory (sample config files, not deeply inspected) and an `Images/` directory for screenshots.
 - No scripts or automation, just markdown instructions referencing `docs.oasis.dev` and the Oasis explorer.
 
 ## Facts about Everstake it reveals

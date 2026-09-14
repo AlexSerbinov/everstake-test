@@ -1,5 +1,7 @@
 # Перевірка складних відповідей
 
+> This is a saved investigation. [Previous evaluation report](EVAL-previous.md), [runtime snapshots](runtime-snapshots.json) and [diagnostic costs](task-costs.json) preserve its evidence. Use the root [EVAL.md](../../../EVAL.md) for the published result; the original investigation text follows.
+
 Працюємо над загальними правилами пошуку й перевірки, без готових відповідей на окремі питання в коді.
 
 ## Що було не так

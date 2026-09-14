@@ -1,5 +1,7 @@
 # Network scope and claim-date audit — 2026-09-13
 
+> This is the saved 13 September investigation. Its references to local work, test counts and deployment status describe that session. Open [diagnostics.json](diagnostics.json) for recorded attempts, or the [current report](../../../REPORT.md) for the delivered implementation. The original audit follows.
+
 ## What the sources establish
 
 The user's screenshot asked how many blockchains Everstake supports specifically for staking. The answer gave 35+ active networks, 130+ historically, and an 80–85 range from other sources. The main count was not fabricated: the cited official article explicitly distinguishes active operations from lifetime coverage. The problematic inference is reading those two metrics as a decline from a previous simultaneous count, or as two disjoint populations operating in different current modes.

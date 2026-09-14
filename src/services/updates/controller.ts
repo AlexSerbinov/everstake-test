@@ -67,6 +67,7 @@ export function createUpdateController(
       token: string;
       expires: number;
     } | null;
+  // A crashed worker must not leave the UI claiming that its job is still running.
   function recover() {
     if ((lease()?.expires ?? 0) > now()) return;
     for (const job of jobs().filter((j) => j.status === "running")) {
@@ -92,12 +93,7 @@ export function createUpdateController(
           !excludedSources.has(s.id) &&
           (!request.sourceId || s.id === request.sourceId),
       )
-      .filter(
-        (s) =>
-          !request.due ||
-          !nextSourceCheck(db, s.id, settings) ||
-          Date.parse(nextSourceCheck(db, s.id, settings)!) <= now(),
-      )
+      .filter((s) => !request.due || isSourceDue(s.id, settings))
       .sort(
         (a, b) =>
           settings.sources[b.id].priority - settings.sources[a.id].priority,
@@ -184,22 +180,86 @@ export function createUpdateController(
     setSetting(db, "update_latest_batch", JSON.stringify(batch));
     return batch;
   }
+  function isSourceDue(sourceId: string, settings: UpdateSettings): boolean {
+    const nextCheck = nextSourceCheck(db, sourceId, settings);
+    return !nextCheck || Date.parse(nextCheck) <= now();
+  }
+
+  function canRunJob(job: UpdateJob, settings: UpdateSettings): boolean {
+    return (
+      job.status === "queued" &&
+      (settings.automatic || job.trigger === "manual")
+    );
+  }
+
+  function acquireWorkerLease(token: string): boolean {
+    // SQLite locks this read-and-write together: another process cannot claim the same queue.
+    db.exec("BEGIN IMMEDIATE");
+    try {
+      if ((lease()?.expires ?? 0) > now()) {
+        db.exec("COMMIT");
+        return false;
+      }
+      recover();
+      renewWorkerLease(token);
+      db.exec("COMMIT");
+      return true;
+    } catch (error) {
+      db.exec("ROLLBACK");
+      throw error;
+    }
+  }
+
+  function renewWorkerLease(token: string) {
+    setSetting(
+      db,
+      "update_worker",
+      JSON.stringify({ token, expires: now() + 180_000 }),
+    );
+  }
+
+  async function executeJob(
+    job: UpdateJob,
+    settings: UpdateSettings,
+    token: string,
+  ) {
+    job.status = "running";
+    job.phase = "starting";
+    save(job);
+    setSetting(db, `update_attempted:${job.sourceId}`, timestamp());
+    try {
+      if (
+        !settings.sources[job.sourceId]?.enabled ||
+        !sources().some((s) => s.id === job.sourceId)
+      )
+        throw new Error("Source was disabled or removed before execution");
+      job.result = await execute(job.sourceId, settings, (phase) => {
+        if (lease()?.token !== token || (lease()?.expires ?? 0) <= now())
+          throw new Error("Update worker lease was lost");
+        job.phase = phase;
+        save(job);
+      });
+      job.status = "completed";
+      job.phase = "done";
+      setSetting(db, `source_checked:${job.sourceId}`, timestamp());
+    } catch (e) {
+      job.status = "failed";
+      job.phase = "failed";
+      job.error = sanitizeError(e);
+    }
+    save(job);
+  }
+
   async function tick() {
     if (working || options.available?.() === false) return;
     recover();
     const preferences = readUpdateSettings(db, sources());
-    const queued = jobs().some(
-      (j) =>
-        j.status === "queued" &&
-        (preferences.automatic || j.trigger === "manual"),
-    );
+    const queued = jobs().some((job) => canRunJob(job, preferences));
     const due =
       preferences.automatic &&
       sources().some(
         (s) =>
-          preferences.sources[s.id].enabled &&
-          (!nextSourceCheck(db, s.id, preferences) ||
-            Date.parse(nextSourceCheck(db, s.id, preferences)!) <= now()),
+          preferences.sources[s.id].enabled && isSourceDue(s.id, preferences),
       );
     if (!queued && !due) return;
     working = true;
@@ -207,32 +267,11 @@ export function createUpdateController(
     let owned = false;
     let heartbeat: NodeJS.Timeout | undefined;
     try {
-      db.exec("BEGIN IMMEDIATE");
-      try {
-        if ((lease()?.expires ?? 0) > now()) {
-          db.exec("COMMIT");
-          return;
-        }
-        recover();
-        setSetting(
-          db,
-          "update_worker",
-          JSON.stringify({ token, expires: now() + 180_000 }),
-        );
-        owned = true;
-        db.exec("COMMIT");
-      } catch (e) {
-        db.exec("ROLLBACK");
-        throw e;
-      }
+      owned = acquireWorkerLease(token);
+      if (!owned) return;
       heartbeat = setInterval(() => {
         try {
-          if (lease()?.token === token)
-            setSetting(
-              db,
-              "update_worker",
-              JSON.stringify({ token, expires: now() + 180_000 }),
-            );
+          if (lease()?.token === token) renewWorkerLease(token);
         } catch (error) {
           console.error("Update lease renewal failed:", sanitizeError(error));
         }
@@ -241,11 +280,7 @@ export function createUpdateController(
       const settings = readUpdateSettings(db, sources());
       if (settings.automatic) enqueue({ due: true }, "schedule");
       const job = jobs()
-        .filter(
-          (j) =>
-            j.status === "queued" &&
-            (settings.automatic || j.trigger === "manual"),
-        )
+        .filter((job) => canRunJob(job, settings))
         .sort(
           (a, b) =>
             (settings.sources[b.sourceId]?.priority ?? 0) -
@@ -253,31 +288,7 @@ export function createUpdateController(
             a.createdAt.localeCompare(b.createdAt),
         )[0];
       if (!job) return;
-      job.status = "running";
-      job.phase = "starting";
-      save(job);
-      setSetting(db, `update_attempted:${job.sourceId}`, timestamp());
-      try {
-        if (
-          !settings.sources[job.sourceId]?.enabled ||
-          !sources().some((s) => s.id === job.sourceId)
-        )
-          throw new Error("Source was disabled or removed before execution");
-        job.result = await execute(job.sourceId, settings, (phase) => {
-          if (lease()?.token !== token || (lease()?.expires ?? 0) <= now())
-            throw new Error("Update worker lease was lost");
-          job.phase = phase;
-          save(job);
-        });
-        job.status = "completed";
-        job.phase = "done";
-        setSetting(db, `source_checked:${job.sourceId}`, timestamp());
-      } catch (e) {
-        job.status = "failed";
-        job.phase = "failed";
-        job.error = sanitizeError(e);
-      }
-      save(job);
+      await executeJob(job, settings, token);
     } finally {
       if (heartbeat) clearInterval(heartbeat);
       if (owned && lease()?.token === token)

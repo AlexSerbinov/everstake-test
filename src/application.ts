@@ -1,5 +1,6 @@
 import { costDashboard } from "./services/measurements/cost-dashboard.js";
 import { createUpdateController } from "./services/updates/controller.js";
+import type { UpdateSettings } from "./services/updates/settings.js";
 import { refreshVideos } from "./services/updates/refresh-videos.js";
 import { stagedRefresh, dueSources } from "./workflows/staged-refresh.js";
 import { runtimeManifest } from "./runtime-manifest.js";
@@ -19,7 +20,10 @@ import { buildIndex } from "./services/indexer/build-index.js";
 import { readSources } from "./config.js";
 import { getSetting, type Database } from "./storage/database.js";
 import type { Emit } from "./contracts.js";
+/** Connect the same answer, search, accounting, and update services for both HTTP and CLI. */
 export function createApplication(db: Database) {
+  // The in-process guard keeps a question on one corpus. Refresh also uses a database
+  // lease so a separate CLI process cannot publish over another update.
   let activeQuestions = 0;
   let updating = false;
   const model = createModelClient(db);
@@ -112,82 +116,91 @@ export function createApplication(db: Database) {
       updating = false;
     }
   };
-  const updates = createUpdateController(
-    db,
-    async (sourceId, settings, progress) => {
-      if (sourceId !== "youtube") {
-        const result = await refresh(sourceId, { onPhase: progress });
-        if (!("job" in result)) return result;
-        return {
-          corpusVersion: result.corpusVersion,
-          jobId: result.job.id,
-          counts: result.job.counts,
-          receipt: result.receipt,
-        };
-      }
-      if (activeQuestions || updating)
-        throw new Error("Another operation is active");
-      updating = true;
-      const runId = beginRun(db, "refresh", { ...runtimeManifest(), sourceId });
-      try {
-        const videos = await refreshVideos(
+  /** The queue uses one named operation for both manual and scheduled source updates. */
+  async function executeSourceUpdate(
+    sourceId: string,
+    settings: UpdateSettings,
+    progress: (phase: string) => void,
+  ) {
+    if (sourceId !== "youtube") {
+      const result = await refresh(sourceId, { onPhase: progress });
+      if (!("job" in result)) return result;
+      return {
+        corpusVersion: result.corpusVersion,
+        jobId: result.job.id,
+        counts: result.job.counts,
+        receipt: result.receipt,
+      };
+    }
+    if (activeQuestions || updating)
+      throw new Error("Another operation is active");
+    updating = true;
+    const runId = beginRun(db, "refresh", { ...runtimeManifest(), sourceId });
+    try {
+      const videos = await refreshVideos(
+        db,
+        model,
+        runId,
+        settings.youtubeMaximumVideos,
+        progress,
+      );
+      const active = readActiveDocuments(db);
+      const activeDocumentIds = new Set(active.map((document) => document.id));
+      const newVideoDocuments = videos.documents.filter(
+        (document) => !activeDocumentIds.has(document.id),
+      );
+      // Video ingestion shares the website staging/activation boundary.
+      // Reviewed transcripts become evidence only after their vectors are ready.
+      if (newVideoDocuments.length) {
+        await stagedRefresh(
           db,
-          model,
-          runId,
-          settings.youtubeMaximumVideos,
-          progress,
-        );
-        const active = readActiveDocuments(db);
-        const ids = new Set(active.map((d) => d.id));
-        const additions = videos.documents.filter((d) => !ids.has(d.id));
-        if (additions.length) {
-          await stagedRefresh(
-            db,
-            [
-              {
-                id: "youtube",
-                url: "https://www.youtube.com",
-                publisher: "YouTube",
-                kind: "youtube",
-                authority: 3,
-                reason: "Incremental reviewed videos",
-                enabled: true,
-              },
-            ],
-            embeddings,
-            runId,
+          [
             {
-              onPhase: progress,
-              collect: async (stage) => {
-                const index = buildIndex(stage, [
-                  ...readActiveDocuments(stage),
-                  ...additions,
-                ]);
-                return {
-                  crawls: [],
-                  failures: [],
-                  retainedSourceIds: [],
-                  index,
-                };
-              },
+              id: "youtube",
+              url: "https://www.youtube.com",
+              publisher: "YouTube",
+              kind: "youtube",
+              authority: 3,
+              reason: "Incremental reviewed videos",
+              enabled: true,
             },
-          );
-        }
-        finishRun(db, runId, "completed");
-        const { documents, ...counts } = videos;
-        return {
-          counts: { ...counts, added: additions.length },
-          corpusVersion: getSetting(db, "corpus_version"),
-          receipt: buildReceipt(db, runId),
-        };
-      } catch (error) {
-        finishRun(db, runId, "failed");
-        throw error;
-      } finally {
-        updating = false;
+          ],
+          embeddings,
+          runId,
+          {
+            onPhase: progress,
+            collect: async (stage) => {
+              const index = buildIndex(stage, [
+                ...readActiveDocuments(stage),
+                ...newVideoDocuments,
+              ]);
+              return {
+                crawls: [],
+                failures: [],
+                retainedSourceIds: [],
+                index,
+              };
+            },
+          },
+        );
       }
-    },
-    { available: () => activeQuestions === 0 && !updating },
-  );
+      finishRun(db, runId, "completed");
+      const { documents, ...counts } = videos;
+      return {
+        counts: { ...counts, added: newVideoDocuments.length },
+        corpusVersion: getSetting(db, "corpus_version"),
+        receipt: buildReceipt(db, runId),
+      };
+    } catch (error) {
+      finishRun(db, runId, "failed");
+      throw error;
+    } finally {
+      updating = false;
+    }
+  }
+
+  const updates = createUpdateController(db, executeSourceUpdate, {
+    available: () => activeQuestions === 0 && !updating,
+  });
   return { db, ask, costs, refresh, model, embeddings, updates };
 }

@@ -338,3 +338,62 @@ test("missing update samples stay null and unexpected providers remain accounted
     db.close();
   }
 });
+
+test("legacy parent cycles terminate and question calls use the nearest question", () => {
+  const db = openDatabase(":memory:");
+  try {
+    const addRun = (id: string, kind: string, parentRunId: string) =>
+      db
+        .prepare("INSERT INTO runs VALUES(?,?,?,?,?,?)")
+        .run(
+          id,
+          kind,
+          "2026-09-13T10:00:00Z",
+          "2026-09-13T10:01:00Z",
+          "completed",
+          JSON.stringify({ parentRunId }),
+        );
+    addRun("a", "evaluation", "b");
+    addRun("b", "query", "a");
+    addRun("inner", "question", "b");
+    addRun("review", "verification", "inner");
+    for (const [id, runId, cost] of [
+      ["1", "b", 2],
+      ["2", "review", 6],
+    ] as const) {
+      db.prepare("INSERT INTO api_calls VALUES(?,?,?,?,?,?,?,?,?,?,?,?)").run(
+        id,
+        runId,
+        "answer",
+        "test",
+        "fixture",
+        "2026-09-13T10:00:01Z",
+        10,
+        100,
+        5,
+        cost,
+        "completed",
+        "{}",
+      );
+    }
+    const result = costDashboard(db);
+    assert.equal(result.totalRootRuns, 1);
+    assert.equal(result.runs[0].id, "a");
+    assert.equal(result.runs[0].receipt.calls, 2);
+    assert.equal(result.runs[0].receipt.knownCostUsd, 8);
+    assert.deepEqual(
+      result.byPurpose.map(({ label, calls }) => ({ label, calls })),
+      [{ label: "evaluation", calls: 2 }],
+    );
+    assert.deepEqual(result.query, {
+      runs: 2,
+      measuredRuns: 2,
+      excludedRuns: 0,
+      meanUsd: 4,
+      minUsd: 2,
+      maxUsd: 6,
+    });
+  } finally {
+    db.close();
+  }
+});

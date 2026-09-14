@@ -1,24 +1,32 @@
 import type { Database } from "../../storage/database.js";
+import { loadModelsConfig } from "../../providers/provider-config.js";
 import type { EmbeddingClient } from "../../providers/model-client.js";
 import type { DocumentSnapshot, EvidencePassage } from "../../contracts.js";
 import { passage, searchCorpus } from "./search-corpus.js";
+// Batch size bounds each embedding request; rank smoothing keeps top lexical and
+// semantic hits comparable even though their raw scores use different scales.
+const EMBEDDING_BATCH_SIZE = 64;
+const RANK_SMOOTHING = 60;
+
 export function cosine(a: ArrayLike<number>, b: ArrayLike<number>): number {
   if (a.length !== b.length || !a.length) return 0;
   let dot = 0,
-    aa = 0,
-    bb = 0;
+    magnitudeA = 0,
+    magnitudeB = 0;
   for (let i = 0; i < a.length; i++) {
     dot += a[i]! * b[i]!;
-    aa += a[i]! ** 2;
-    bb += b[i]! ** 2;
+    magnitudeA += a[i]! ** 2;
+    magnitudeB += b[i]! ** 2;
   }
-  return aa && bb ? dot / Math.sqrt(aa * bb) : 0;
+  return magnitudeA && magnitudeB
+    ? dot / Math.sqrt(magnitudeA * magnitudeB)
+    : 0;
 }
 export async function embedCorpus(
   db: Database,
   client: EmbeddingClient,
   runId: string,
-  model = "text-embedding-3-small",
+  model = loadModelsConfig().embedding,
 ) {
   const rows = db
     .prepare(
@@ -26,9 +34,10 @@ export async function embedCorpus(
  LEFT JOIN embeddings e ON e.chunk_id=c.id AND e.model=? WHERE d.active=1 AND e.chunk_id IS NULL`,
     )
     .all(model) as { id: string; text: string }[];
+  let dimensions = activeVectors(db, model)[0]?.vector.length;
   let indexed = 0;
-  for (let offset = 0; offset < rows.length; offset += 64) {
-    const batch = rows.slice(offset, offset + 64);
+  for (let offset = 0; offset < rows.length; offset += EMBEDDING_BATCH_SIZE) {
+    const batch = rows.slice(offset, offset + EMBEDDING_BATCH_SIZE);
     const result = await client.embed({
       runId,
       stage: "index",
@@ -37,6 +46,14 @@ export async function embedCorpus(
     });
     if (result.embeddings.length !== batch.length)
       throw new Error("Embedding count does not match batch");
+    if (result.model !== model)
+      throw new Error(
+        `Embedding provider returned ${result.model}; requested ${model}`,
+      );
+    for (const vector of result.embeddings) {
+      validateVector(vector, dimensions);
+      dimensions ??= vector.length;
+    }
     db.exec("BEGIN");
     try {
       for (let i = 0; i < batch.length; i++)
@@ -44,6 +61,7 @@ export async function embedCorpus(
           "INSERT OR REPLACE INTO embeddings(chunk_id,model,vector) VALUES(?,?,?)",
         ).run(batch[i]!.id, result.model, JSON.stringify(result.embeddings[i]));
       db.exec("COMMIT");
+      vectorCache.delete(db);
     } catch (e) {
       db.exec("ROLLBACK");
       throw e;
@@ -84,24 +102,24 @@ export function activeVectors(db: Database, model: string): VectorRow[] {
   const key = `${version}:${model}`;
   const cached = vectorCache.get(db);
   if (cached?.key === key) return cached.rows;
-  const rows = (
-    db
-      .prepare(
-        `SELECT c.id,c.text,e.vector,d.snapshot FROM embeddings e JOIN chunks c ON c.id=e.chunk_id
- JOIN documents d ON d.id=c.document_id WHERE d.active=1 AND e.model=?`,
-      )
-      .all(model) as {
-      id: string;
-      text: string;
-      vector: string;
-      snapshot: string;
-    }[]
-  ).map((r) => ({
-    id: r.id,
-    text: r.text,
-    snapshot: r.snapshot,
-    vector: Float32Array.from(JSON.parse(r.vector) as number[]),
-  }));
+  const stored = db
+    .prepare(
+      `SELECT c.id,c.text,e.vector,d.snapshot FROM embeddings e JOIN chunks c ON c.id=e.chunk_id
+     JOIN documents d ON d.id=c.document_id WHERE d.active=1 AND e.model=?`,
+    )
+    .all(model) as {
+    id: string;
+    text: string;
+    vector: string;
+    snapshot: string;
+  }[];
+  let dimensions: number | undefined;
+  const rows = stored.map((row) => {
+    const vector: unknown = JSON.parse(row.vector);
+    validateVector(vector, dimensions);
+    dimensions ??= vector.length;
+    return { ...row, vector: Float32Array.from(vector) };
+  });
   vectorCache.set(db, { key, rows });
   return rows;
 }
@@ -112,23 +130,45 @@ export async function hybridSearch(
   runId: string,
   query: string,
   limit = 12,
+  model = loadModelsConfig().embedding,
 ): Promise<EvidencePassage[]> {
   const lexical = searchCorpus(db, query, 30);
-  const rows = activeVectors(db, "text-embedding-3-small");
-  if (!rows.length) return lexical.slice(0, limit);
+  const rows = activeVectors(db, model);
+  if (!rows.length) {
+    const otherModel = db
+      .prepare(
+        `SELECT e.model FROM embeddings e JOIN chunks c ON c.id=e.chunk_id
+       JOIN documents d ON d.id=c.document_id WHERE d.active=1 AND e.model<>? LIMIT 1`,
+      )
+      .get(model);
+    if (otherModel)
+      throw new Error(
+        `No active vectors for ${model}; rebuild the index for the configured embedding model`,
+      );
+    // A corpus without any vectors can still answer lexical searches without a paid call.
+    return lexical.slice(0, limit);
+  }
   const embedded = await client.embed({
     runId,
     stage: "query-embedding",
     input: query,
+    model,
   });
+  if (embedded.model !== model)
+    throw new Error(
+      `Embedding provider returned ${embedded.model}; requested ${model}`,
+    );
+  if (embedded.embeddings.length !== 1)
+    throw new Error("Query embedding must return exactly one vector");
   const vector = embedded.embeddings[0]!;
+  validateVector(vector, rows[0]!.vector.length);
   const ranked = rows
     .map((r) => ({ ...r, similarity: cosine(vector, r.vector) }))
     .sort((a, b) => b.similarity - a.similarity)
     .slice(0, 60);
   const merged = new Map<string, { evidence: EvidencePassage; rank: number }>();
   lexical.forEach((e, i) =>
-    merged.set(e.id, { evidence: e, rank: 1 / (60 + i) }),
+    merged.set(e.id, { evidence: e, rank: 1 / (RANK_SMOOTHING + i) }),
   );
   ranked.forEach((r, i) => {
     const existing = merged.get(r.id);
@@ -136,7 +176,7 @@ export async function hybridSearch(
     merged.set(r.id, {
       evidence:
         existing?.evidence ?? passage(document, r.id, r.text, r.similarity),
-      rank: (existing?.rank ?? 0) + 1 / (60 + i),
+      rank: (existing?.rank ?? 0) + 1 / (RANK_SMOOTHING + i),
     });
   });
   return diversify([...merged.values()], limit);
@@ -194,4 +234,28 @@ export function diversify(
     );
   }
   return results;
+}
+
+/** Vectors from different models or dimensions do not share a meaningful coordinate space. */
+function validateVector(
+  value: unknown,
+  dimensions?: number,
+): asserts value is number[] {
+  if (
+    !Array.isArray(value) ||
+    !value.length ||
+    !value.every(
+      (entry) =>
+        typeof entry === "number" &&
+        Number.isFinite(entry) &&
+        Number.isFinite(Math.fround(entry)),
+    )
+  )
+    throw new Error(
+      "Embedding vector must contain finite numbers and cannot be empty",
+    );
+  if (dimensions !== undefined && value.length !== dimensions)
+    throw new Error(
+      `Embedding dimension mismatch: expected ${dimensions}, received ${value.length}; rebuild the index`,
+    );
 }

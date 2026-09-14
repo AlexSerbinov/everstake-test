@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { load } from "cheerio";
+import { load, type CheerioAPI, type Cheerio } from "cheerio";
 import type { Element } from "domhandler";
 import type { DocumentSnapshot, SourceConfig } from "../../contracts.js";
 import type { SafeFetchResult } from "./fetch.js";
@@ -10,7 +10,18 @@ export interface ExtractedDocument extends DocumentSnapshot {
   links: string[];
 }
 
-function hash(value: string | Uint8Array): string {
+interface ExtractedContent {
+  title: string;
+  canonicalUrl: string;
+  text: string;
+  links: string[];
+  publishedAt: string | null;
+  updatedAt: string | null;
+  dateEvidence: string | null;
+  metadata: Record<string, unknown>;
+}
+
+function sha256(value: string | Uint8Array): string {
   return createHash("sha256").update(value).digest("hex");
 }
 
@@ -24,24 +35,24 @@ export function normalizeUrl(value: string): string {
   return url.href;
 }
 
-function validDate(value: unknown): string | null {
+function parseDate(value: unknown): string | null {
   if (typeof value !== "string" || !value.trim()) return null;
   const parsed = new Date(value);
   return Number.isNaN(parsed.valueOf()) ? null : parsed.toISOString();
 }
 
-function firstDate(values: Array<{ value: unknown; evidence: string }>): {
+function firstValidDate(values: Array<{ value: unknown; evidence: string }>): {
   date: string | null;
   evidence: string | null;
 } {
   for (const item of values) {
-    const parsed = validDate(item.value);
+    const parsed = parseDate(item.value);
     if (parsed) return { date: parsed, evidence: item.evidence };
   }
   return { date: null, evidence: null };
 }
 
-function structuredDates(jsonValues: string[]): {
+function readStructuredDates(jsonValues: string[]): {
   published: unknown[];
   updated: unknown[];
 } {
@@ -77,41 +88,11 @@ function cleanLines(text: string): string {
     .trim();
 }
 
-function extractHtml(response: SafeFetchResult): {
-  title: string;
-  canonicalUrl: string;
-  text: string;
-  links: string[];
-  publishedAt: string | null;
-  updatedAt: string | null;
-  dateEvidence: string | null;
-  metadata: Record<string, unknown>;
-} {
-  const $ = load(response.body.toString("utf8"));
-  $(
-    'script:not([type="application/ld+json"]),style,noscript,template,svg,nav,footer,form,[aria-hidden="true"],.cookie,.cookies,.newsletter,.advertisement',
-  ).remove();
-  // Text a visitor cannot see is a classic carrier for planted directives. Inline styles and
-  // the common screen-reader-only classes are removed; a stylesheet rule cannot be resolved
-  // here, so hidden text declared only in external CSS still reaches the sanitizer.
-  $(
-    '[hidden],.sr-only,.visually-hidden,.screen-reader-text,.screen-reader-only,[style*="display:none"],[style*="display: none"],[style*="visibility:hidden"],[style*="visibility: hidden"],[style*="font-size:0"],[style*="font-size: 0"],[style*="opacity:0"],[style*="opacity: 0"]',
-  ).remove();
-  const jsonDates = structuredDates(
-    $('script[type="application/ld+json"]')
-      .map((_, node) => $(node).text())
-      .get(),
-  );
-  $("script").remove();
-  const canonicalHref = $('link[rel="canonical"]').first().attr("href");
-  let canonicalUrl = normalizeUrl(response.url);
-  try {
-    const candidate = new URL(canonicalHref ?? response.url, response.url);
-    if (["http:", "https:"].includes(candidate.protocol))
-      canonicalUrl = normalizeUrl(candidate.href);
-  } catch {
-    /* Keep the fetched URL when page metadata is malformed. */
-  }
+function readPageDates(
+  $: CheerioAPI,
+  jsonDates: ReturnType<typeof readStructuredDates>,
+) {
+  // Prefer explicit article metadata, then structured data. Fetch time is not a page date.
   const publishedCandidates: Array<{ value: unknown; evidence: string }> = [
     {
       value: $('meta[property="article:published_time"]').attr("content"),
@@ -145,28 +126,17 @@ function extractHtml(response: SafeFetchResult): {
       evidence: "jsonld:dateModified",
     })),
   ];
-  const published = firstDate(publishedCandidates);
-  const updated = firstDate(updatedCandidates);
-  const publishedAt = published.date;
-  const updatedAt = updated.date;
-  const dateEvidence = published.evidence ?? updated.evidence;
+  const published = firstValidDate(publishedCandidates);
+  const updated = firstValidDate(updatedCandidates);
+  return { published, updated };
+}
 
-  const root = $("article").first().length
-    ? $("article").first()
-    : $("main").first().length
-      ? $("main").first()
-      : $("body").first();
-  const coverageWarnings: string[] = [];
-  const headingTitle = root.find("h1").first().text();
-  root.find("img").each((_, node) => {
-    const element = $(node);
-    const src = element.attr("src");
-    const alt = element.attr("alt")?.trim();
-    if (src && !alt)
-      coverageWarnings.push(
-        `Image content not extracted: ${new URL(src, response.url).href}`,
-      );
-  });
+function preserveTextStructure(
+  $: CheerioAPI,
+  root: Cheerio<Element>,
+  pageUrl: string,
+): void {
+  // Plain text loses HTML layout. Keep link targets, table columns and section boundaries readable.
   root.find("a[href]").each((_, node) => {
     const element = $(node);
     const label = element.text().trim();
@@ -178,7 +148,7 @@ function extractHtml(response: SafeFetchResult): {
       !href.toLowerCase().startsWith("javascript:")
     ) {
       try {
-        element.text(`${label} (${new URL(href, response.url).href})`);
+        element.text(`${label} (${new URL(href, pageUrl).href})`);
       } catch {
         /* Leave invalid links as visible text. */
       }
@@ -210,6 +180,56 @@ function extractHtml(response: SafeFetchResult): {
     $(node).append("\n");
   });
   root.find("br").replaceWith("\n");
+}
+
+function extractHtml(response: SafeFetchResult): ExtractedContent {
+  const $ = load(response.body.toString("utf8"));
+  $(
+    'script:not([type="application/ld+json"]),style,noscript,template,svg,nav,footer,form,[aria-hidden="true"],.cookie,.cookies,.newsletter,.advertisement',
+  ).remove();
+  // Text a visitor cannot see is a classic carrier for planted directives. Inline styles and
+  // the common screen-reader-only classes are removed; a stylesheet rule cannot be resolved
+  // here, so hidden text declared only in external CSS still reaches the sanitizer.
+  $(
+    '[hidden],.sr-only,.visually-hidden,.screen-reader-text,.screen-reader-only,[style*="display:none"],[style*="display: none"],[style*="visibility:hidden"],[style*="visibility: hidden"],[style*="font-size:0"],[style*="font-size: 0"],[style*="opacity:0"],[style*="opacity: 0"]',
+  ).remove();
+  const jsonDates = readStructuredDates(
+    $('script[type="application/ld+json"]')
+      .map((_, node) => $(node).text())
+      .get(),
+  );
+  $("script").remove();
+  const canonicalHref = $('link[rel="canonical"]').first().attr("href");
+  let canonicalUrl = normalizeUrl(response.url);
+  try {
+    const candidate = new URL(canonicalHref ?? response.url, response.url);
+    if (["http:", "https:"].includes(candidate.protocol))
+      canonicalUrl = normalizeUrl(candidate.href);
+  } catch {
+    /* Keep the fetched URL when page metadata is malformed. */
+  }
+  const { published, updated } = readPageDates($, jsonDates);
+  const publishedAt = published.date;
+  const updatedAt = updated.date;
+  const dateEvidence = published.evidence ?? updated.evidence;
+
+  const root = $("article").first().length
+    ? $("article").first()
+    : $("main").first().length
+      ? $("main").first()
+      : $("body").first();
+  const coverageWarnings: string[] = [];
+  const headingTitle = root.find("h1").first().text();
+  root.find("img").each((_, node) => {
+    const element = $(node);
+    const src = element.attr("src");
+    const alt = element.attr("alt")?.trim();
+    if (src && !alt)
+      coverageWarnings.push(
+        `Image content not extracted: ${new URL(src, response.url).href}`,
+      );
+  });
+  preserveTextStructure($, root, response.url);
   const links = [
     ...new Set(
       root
@@ -254,16 +274,7 @@ function extractHtml(response: SafeFetchResult): {
   };
 }
 
-function extractMarkdown(response: SafeFetchResult): {
-  title: string;
-  canonicalUrl: string;
-  text: string;
-  links: string[];
-  publishedAt: string | null;
-  updatedAt: string | null;
-  dateEvidence: string | null;
-  metadata: Record<string, unknown>;
-} {
+function extractMarkdown(response: SafeFetchResult): ExtractedContent {
   const raw = response.body.toString("utf8").replace(/\r/g, "");
   const frontmatter = raw.match(/^---\n([\s\S]*?)\n---\n/);
   const date = frontmatter?.[1].match(
@@ -272,8 +283,8 @@ function extractMarkdown(response: SafeFetchResult): {
   const updated = frontmatter?.[1].match(
     /^(?:updated|modified|dateModified):\s*["']?([^\n"']+)/im,
   )?.[1];
-  const publishedAt = validDate(date);
-  const updatedAt = validDate(updated);
+  const publishedAt = parseDate(date);
+  const updatedAt = parseDate(updated);
   const text = cleanLines(frontmatter ? raw.slice(frontmatter[0].length) : raw);
   const title =
     text.match(/^#\s+(.+)$/m)?.[1]?.trim() ??
@@ -322,8 +333,9 @@ export function extractDocument(
   const extracted = markdown
     ? extractMarkdown(response)
     : extractHtml(response);
-  const contentHash = hash(extracted.text);
-  const id = hash(`${extracted.canonicalUrl}\n${contentHash}`).slice(0, 32);
+  // This snapshot describes extraction. The crawler sanitizes its text and recomputes these IDs.
+  const contentHash = sha256(extracted.text);
+  const id = sha256(`${extracted.canonicalUrl}\n${contentHash}`).slice(0, 32);
   return {
     id,
     url: normalizeUrl(response.initialUrl),
@@ -351,7 +363,7 @@ export function extractDocument(
       etag: response.headers.etag ?? null,
       lastModified: response.headers["last-modified"] ?? null,
       bytes: response.bytes,
-      rawHash: hash(response.body),
+      rawHash: sha256(response.body),
       extractionVersion: EXTRACTION_VERSION,
     },
     links: extracted.links,
@@ -363,5 +375,6 @@ export function plausibleDate(
   fetchedAt: string,
 ): string | null {
   if (!value) return null;
+  // Allow one day for timezone differences; farther-future metadata cannot date our evidence.
   return Date.parse(value) <= Date.parse(fetchedAt) + 86400000 ? value : null;
 }

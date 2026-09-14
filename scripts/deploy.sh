@@ -6,23 +6,23 @@ server="root@89.167.19.222"
 remote_dir="/opt/everstate-knowledge-base"
 code_version=$(git rev-parse HEAD)
 image="everstate-knowledge-base-knowledge:$code_version"
-if ! git diff --quiet HEAD -- src web public config prompts scripts package.json package-lock.json; then
+if [ -n "$(git status --porcelain -- src web public assistant scripts deploy package.json package-lock.json tsconfig.json .dockerignore)" ]; then
   echo "Commit and verify runtime changes before deployment." >&2
   exit 1
 fi
 ssh "$server" "test -f '$remote_dir/.env'"
 npm run check
-git archive "$code_version" | ssh "$server" "docker build -t '$image' -"
+git archive "$code_version" | ssh "$server" "docker build -f deploy/Dockerfile -t '$image' -"
 ssh "$server" "docker run --rm --cpus=2 '$image' npm run check"
 # Preserve the serving database and credentials; publish only immutable artifacts/config.
-ssh "$server" "mkdir -p '$remote_dir/data' '$remote_dir/artifacts' '$remote_dir/costs'"
-git archive "$code_version" compose.yaml artifacts costs | ssh "$server" "tar -xf - -C '$remote_dir'"
+ssh "$server" "mkdir -p '$remote_dir/data' '$remote_dir/artifacts' '$remote_dir/deploy'"
+git archive "$code_version" deploy/compose.yaml artifacts | ssh "$server" "tar -xf - -C '$remote_dir'"
 if ! ssh "$server" "test -f '$remote_dir/data/knowledge.sqlite'"; then
   snapshot_path="data/deploy-snapshot-$(date +%s).sqlite"
   npx tsx scripts/backup-database.ts "$snapshot_path"
   rsync -az "$snapshot_path" "$server:$remote_dir/data/knowledge.sqlite"
 fi
-ssh "$server" "cd '$remote_dir' && CODE_VERSION='$code_version' docker compose -f compose.yaml -f - up -d --no-build knowledge" <<YAML
+ssh "$server" "cd '$remote_dir' && CODE_VERSION='$code_version' docker compose -f deploy/compose.yaml -f - up -d --no-build knowledge" <<YAML
 services:
   knowledge:
     image: $image

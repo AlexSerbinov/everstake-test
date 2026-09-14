@@ -1,0 +1,25 @@
+# Preserve the existing server's Compose project when this file moves into deploy/.
+name: everstate-knowledge-base
+services:
+  knowledge:
+    # Paths are relative to this file; the build context remains the repository root.
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: everstate-knowledge-base
+    restart: unless-stopped
+    mem_limit: 2g
+    cpus: 2
+    env_file: ../.env
+    environment:
+      CODE_VERSION: ${CODE_VERSION:-unknown}
+    ports:
+      - "127.0.0.1:4318:4318"
+    volumes:
+      - ../data:/app/data
+      - ../artifacts:/app/artifacts
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4318/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

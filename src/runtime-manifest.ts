@@ -5,7 +5,12 @@ import { execFileSync } from "node:child_process";
 /** Records reproducibility inputs without reading credentials or evaluation references. */
 export function runtimeManifest() {
   const digest = createHash("sha256");
-  for (const directory of ["config", "prompts", "agents", "skills"]) {
+  for (const directory of [
+    "assistant/config",
+    "assistant/prompts",
+    "assistant/agents",
+    "assistant/skills",
+  ]) {
     for (const filename of readdirSync(directory, { recursive: true })
       .map(String)
       .sort()) {
@@ -34,17 +39,41 @@ export function runtimeManifest() {
         "src",
         "web",
         "scripts",
-        "config",
-        "prompts",
-        "agents",
-        "skills",
+        "assistant/config",
+        "assistant/prompts",
+        "assistant/agents",
+        "assistant/skills",
         "package.json",
         "package-lock.json",
       ],
       { maxBuffer: 20_000_000 },
     );
-    if (diff.length)
-      dirtyDiffHash = createHash("sha256").update(diff).digest("hex");
+    // A review copy deliberately has no new commits. Git diff omits untracked
+    // helpers, so include their paths and bytes in the same reproducibility hash.
+    const untracked = execFileSync(
+      "git",
+      [
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z",
+        "--",
+        "src",
+        "web",
+        "scripts",
+        "assistant",
+      ],
+      { encoding: "utf8" },
+    )
+      .split("\0")
+      .filter(Boolean)
+      .sort();
+    if (diff.length || untracked.length) {
+      const changes = createHash("sha256").update(diff);
+      for (const path of untracked)
+        changes.update("\0" + path + "\0").update(readFileSync(path));
+      dirtyDiffHash = changes.digest("hex");
+    }
   } catch {}
   return {
     codeVersion,

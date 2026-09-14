@@ -3,11 +3,13 @@ export interface SourceConfig {
   id: string;
   url: string;
   publisher: string;
+  /** 1 = first-party, 2 = established external publisher, 3 = lower-authority context. */
   authority: 1 | 2 | 3;
   kind: "website" | "docs" | "news" | "github" | "youtube";
   reason: string;
   enabled: boolean;
 }
+/** A captured version of a page. Fetch time does not establish when its facts became true. */
 export interface DocumentSnapshot {
   id: string;
   url: string;
@@ -26,6 +28,7 @@ export interface DocumentSnapshot {
   revision: string;
   metadata: Record<string, unknown>;
 }
+/** A bounded excerpt returned by a research tool; its ID is the citation key for this run. */
 export interface EvidencePassage {
   id: string;
   documentId: string;
@@ -42,6 +45,7 @@ export interface EvidencePassage {
   reason: string;
   metadata: Record<string, unknown>;
 }
+/** One factual statement with its own sources and date; an answer can contain several. */
 export interface Claim {
   text: string;
   citations: string[];
@@ -67,6 +71,7 @@ export interface TrustScore {
   }[];
   limitations: string[];
 }
+/** Recorded provider usage, separating known charges from calls with missing billing data. */
 export interface Receipt {
   runId: string;
   calls: number;
@@ -76,6 +81,7 @@ export interface Receipt {
   unknownCalls: number;
   elapsedMs: number;
 }
+/** Server progress sent over SSE; these events describe actions, not hidden model reasoning. */
 export interface RunEvent {
   runId: string;
   type: "step" | "sources" | "verification" | "answer" | "error" | "done";
@@ -84,6 +90,7 @@ export interface RunEvent {
   data?: unknown;
 }
 export type Emit = (event: RunEvent) => void;
+/** Corpus absence is an abstention; provider failures and exhausted limits are errors. */
 export interface AnswerResult {
   runId: string;
   status: "answered" | "partial" | "no_reliable_answer" | "error";
