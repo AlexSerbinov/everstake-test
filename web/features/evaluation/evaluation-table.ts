@@ -1,3 +1,8 @@
+import { assessmentText } from "./assessment-translations.js";
+import {
+  evaluationText,
+  type EvaluationLanguage,
+} from "./evaluation-language.js";
 import { badge, details, el } from "../../shared/dom.js";
 import type { ResultRow } from "./question-result-card.js";
 import { answerView } from "../ask/answer-view.js";
@@ -22,27 +27,42 @@ export function qualityPercent(row: ResultRow): number | null {
   return total;
 }
 
-export function verdictLabel(verdict: string): string {
+export function verdictLabel(
+  verdict: string,
+  language: EvaluationLanguage = "en",
+): string {
+  const t = evaluationText(language);
   if (["pass", "correct", "correct_abstention"].includes(verdict))
-    return "Успішно";
-  if (["fail", "wrong", "false_abstention"].includes(verdict)) return "Невдача";
-  return "Ще не оцінено";
+    return t("Passed", "Успішно");
+  if (["fail", "wrong", "false_abstention"].includes(verdict))
+    return t("Failed", "Невдача");
+  return t("Not assessed yet", "Ще не оцінено");
 }
 export function failedRows(rows: ResultRow[]): ResultRow[] {
-  return rows.filter((row) => verdictLabel(row.verdict) === "Невдача");
+  return rows.filter((row) =>
+    ["fail", "wrong", "false_abstention"].includes(row.verdict),
+  );
 }
-export function evaluationTable(rows: ResultRow[], runId: string): HTMLElement {
+export function evaluationTable(
+  rows: ResultRow[],
+  runId: string,
+  language: EvaluationLanguage = "en",
+): HTMLElement {
+  const t = evaluationText(language);
   const wrapper = el("div", "evaluation-table-wrap");
   wrapper.tabIndex = 0;
   wrapper.setAttribute("role", "region");
-  wrapper.setAttribute("aria-label", "Таблиця оцінювання відповідей");
+  wrapper.setAttribute(
+    "aria-label",
+    t("Answer evaluation table", "Таблиця оцінювання відповідей"),
+  );
   const table = el("table", "evaluation-table");
   const header = el("tr");
   for (const title of [
-    "Питання",
-    "Очікувана відповідь",
-    "Відповідь системи",
-    "Оцінка та пояснення",
+    t("Question", "Питання"),
+    t("Reference answer", "Очікувана відповідь"),
+    t("System answer", "Відповідь системи"),
+    t("Score and explanation", "Оцінка та пояснення"),
   ]) {
     const th = el("th", "", title);
     th.scope = "col";
@@ -62,7 +82,15 @@ export function evaluationTable(rows: ResultRow[], runId: string): HTMLElement {
     q.append(badge(question.id), el("p", "", question.question));
     const reference = el("td");
     reference.append(
-      el("p", "", question.reference || "Еталонну відповідь не збережено."),
+      el(
+        "p",
+        "",
+        question.reference ||
+          t(
+            "No reference answer was saved.",
+            "Еталонну відповідь не збережено.",
+          ),
+      ),
     );
     const actual = el("td");
     const answer =
@@ -78,52 +106,85 @@ export function evaluationTable(rows: ResultRow[], runId: string): HTMLElement {
       );
       actual.append(
         details(
-          "Повна відповідь, джерела й перевірки",
+          t(
+            "Full answer, sources and checks",
+            "Повна відповідь, джерела й перевірки",
+          ),
           typeof row.answer === "string"
             ? el("p", "", row.answer)
             : answerView(row.answer!, `eval-${runId}-${index}`),
         ),
       );
-    } else actual.append(el("p", "muted", "Відповіді немає в цьому прогоні."));
+    } else
+      actual.append(
+        el(
+          "p",
+          "muted",
+          t(
+            "No answer was saved in this run.",
+            "Відповіді немає в цьому прогоні.",
+          ),
+        ),
+      );
     const verdict = el("td");
     const percent = qualityPercent(row);
     verdict.append(
       el(
         "strong",
         "quality-score",
-        percent === null ? "Оцінка у % ще не виставлена" : `${percent}%`,
+        percent === null
+          ? t(
+              "Percentage score not assigned yet",
+              "Оцінка у % ще не виставлена",
+            )
+          : `${percent}%`,
       ),
     );
     if (percent !== null && row.qualityScore) {
       const score = row.qualityScore;
       verdict.append(
         details(
-          "Як оцінено",
+          t("How it was scored", "Як оцінено"),
           el(
             "p",
             "",
-            `Правильність фактів: ${score.correctness}/40. Повнота: ${score.completeness}/30. Опора на джерела: ${score.grounding}/20. Робота з невизначеністю: ${score.uncertainty}/10.`,
+            t(
+              `Factual correctness: ${score.correctness}/40. Completeness: ${score.completeness}/30. Source grounding: ${score.grounding}/20. Handling uncertainty: ${score.uncertainty}/10.`,
+              `Правильність фактів: ${score.correctness}/40. Повнота: ${score.completeness}/30. Опора на джерела: ${score.grounding}/20. Робота з невизначеністю: ${score.uncertainty}/10.`,
+            ),
           ),
-          el("p", "", score.reason),
+          el("p", "", assessmentText(score.reason, language)),
         ),
       );
     }
 
-    const label = verdictLabel(row.verdict);
+    const label = verdictLabel(row.verdict, language);
     verdict.append(
       badge(
         label,
-        label === "Успішно"
+        label === t("Passed", "Успішно")
           ? "success"
-          : label === "Невдача"
+          : label === t("Failed", "Невдача")
             ? "danger"
             : "warning",
       ),
-      el("p", "", row.explanation || "Оцінювання ще не завершене."),
+      el(
+        "p",
+        "",
+        assessmentText(row.explanation ?? "", language) ||
+          t("Assessment is not complete yet.", "Оцінювання ще не завершене."),
+      ),
     );
     if (row.inventedFacts === true)
       verdict.append(
-        el("p", "error-text", "Є непідтверджене фактичне твердження."),
+        el(
+          "p",
+          "error-text",
+          t(
+            "Contains an unsupported factual claim.",
+            "Є непідтверджене фактичне твердження.",
+          ),
+        ),
       );
     tr.append(q, reference, actual, verdict);
     body.append(tr);
@@ -133,18 +194,32 @@ export function evaluationTable(rows: ResultRow[], runId: string): HTMLElement {
   return wrapper;
 }
 
-export function failureBreakdown(rows: ResultRow[]): HTMLElement {
+export function failureBreakdown(
+  rows: ResultRow[],
+  language: EvaluationLanguage = "en",
+): HTMLElement {
+  const t = evaluationText(language);
   const section = el("section", "evaluation-failures");
-  section.append(el("h2", "", "Розбір невдач"));
+  section.append(el("h2", "", t("Failure breakdown", "Розбір невдач")));
   const failures = failedRows(rows);
   if (!failures.length) {
     section.append(
       el(
         "p",
         "muted",
-        rows.some((row) => verdictLabel(row.verdict) === "Ще не оцінено")
-          ? "Оцінювання ще не завершене. Відсутність позначених невдач не означає, що всі відповіді правильні."
-          : "В оцінених відповідях цього прогону невдач не зафіксовано. Це не гарантує правильності інших відповідей.",
+        rows.some(
+          (row) =>
+            verdictLabel(row.verdict, language) ===
+            t("Not assessed yet", "Ще не оцінено"),
+        )
+          ? t(
+              "Assessment is not complete. The absence of marked failures does not mean every answer is correct.",
+              "Оцінювання ще не завершене. Відсутність позначених невдач не означає, що всі відповіді правильні.",
+            )
+          : t(
+              "No failures were recorded among the assessed answers in this run. This does not guarantee other answers are correct.",
+              "В оцінених відповідях цього прогону невдач не зафіксовано. Це не гарантує правильності інших відповідей.",
+            ),
       ),
     );
     return section;
@@ -157,7 +232,12 @@ export function failureBreakdown(rows: ResultRow[]): HTMLElement {
     const entry = el("article", "evaluation-failure");
     entry.append(
       el("h3", "", `${q.id}: ${q.question}`),
-      el("p", "", row.explanation || "Причину ще не описано."),
+      el(
+        "p",
+        "",
+        assessmentText(row.explanation ?? "", language) ||
+          t("No reason has been recorded yet.", "Причину ще не описано."),
+      ),
     );
     if (
       row.answer &&
@@ -168,12 +248,22 @@ export function failureBreakdown(rows: ResultRow[]): HTMLElement {
         el(
           "p",
           "muted small",
-          "Технічна помилка запиту. Не зараховується як правильне «не знаю».",
+          t(
+            "Technical request failure. This does not count as a correct abstention.",
+            "Технічна помилка запиту. Не зараховується як правильне «не знаю».",
+          ),
         ),
       );
     if (row.inventedFacts === true)
       entry.append(
-        el("p", "error-text", "Відповідь містить непідтверджений факт."),
+        el(
+          "p",
+          "error-text",
+          t(
+            "The answer contains an unsupported fact.",
+            "Відповідь містить непідтверджений факт.",
+          ),
+        ),
       );
     section.append(entry);
   }

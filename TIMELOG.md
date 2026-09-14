@@ -2,9 +2,9 @@
 
 > **УКРАЇНСЬКА ВЕРСІЯ: [TIMELOG](submission_ukr/TIMELOG.md) · [УСЯ УКРАЇНСЬКА ДОКУМЕНТАЦІЯ](submission_ukr/README.md) · [PRODUCT DEMO](https://everstate-knowledge-base.89-167-19-222.sslip.io/)**
 
-![Historical effort accounting: Part A, Part B and separate background agent work](docs/images/timelog-en.png)
+![Reported effort: Part A, acceptance preparation, Part B and separate agent work](docs/images/timelog-en.png)
 
-> **Historical record, not a new measurement.** Totals and rounding are retained as originally reported by the author. The diagram shows those same reported totals and adds no new hours. Results in the timeline describe the system at that point; see [EVAL](EVAL.md) for the current evaluation results. The earlier event-based count and its limitations are documented in the [effort accounting method](docs/TIME.md); do not add that count to this retrospective total.
+> **Reported effort, not a stopwatch measurement.** The historical 11–13 September totals and rounding are retained. On 14 September, the author reported another **40 minutes** that morning for preparing the repository and assignment for acceptance. Part A is now **9 h 28 min** (8.8 h + 40 min); including Part B, the total is **10 h 28 min (approximately 10.5 h)**. The inherited 8.8 h is rounded, so these minute totals are arithmetic, not minute-level measurement accuracy. Results in the timeline describe the system at that point; see [EVAL](EVAL.md) for current results. The earlier [event-based estimate](docs/TIME.md) overlaps this retrospective account and must not be added to it.
 
 I tried to stay within eight hours, although I actually spent a little more. Agents did a lot of the work in the background: I would give them a task, and they would work on their own for several hours. I did not count agent runtime as my own time. My weekend was fairly busy, so I worked on the assignment in chunks: I would often brief an agent and return a couple of hours later to check its work.
 
@@ -23,9 +23,11 @@ This document was compiled the same way, from my voice dictations and prompts in
 | Saturday 12.09 | 2.5 h | ~3 h: code readability, costs, freshness, Trust Score |
 | Sunday 13.09 | 4.1 h | ~2 h: new version following the plan |
 | Sunday 13.09, fixes and time accounting (21:00–22:45) | 0.75 h | |
-| **Part A** | **8.8 h** | |
-| Part B (21:00–22:45) | 1.0 h | |
-| **Total** | **9.8 h** | |
+| Part A, historical subtotal (11–13.09) | 8.8 h | |
+| Monday 14.09, morning: acceptance preparation | 40 min | Not measured |
+| **Part A, including preparation** | **9 h 28 min** | |
+| Part B (13.09, 21:00–22:45) | 1.0 h | |
+| **Total, including 14.09** | **10 h 28 min (~10.5 h)** | |
 
 ## Friday, 11.09 · 1.5 h
 
@@ -233,3 +235,11 @@ This document was compiled the same way, from my voice dictations and prompts in
 - *«Намалюй діаграму через OpenCV і вклади в README»* → process diagram
 - *«Сконвертуй у PDF українською»*
 - *«Зберімо з моїх диктовок і промптів таймлайн задач за п'ятницю–неділю: що я просив агентів і що з цього вийшло»* → this time accounting document
+
+## Monday, 14.09 · morning · 40 min · Preparing the assignment for acceptance
+
+User-reported active time: **40 minutes**, added to Part A. Exact start and end times were not supplied; this is a retrospective estimate, not an inferred session interval. The earlier 8.8 hours belong to 11–13 September, not to this morning.
+
+- *«Давай додамо 40 хвилин. Сьогодні вранці ... підготовка репозиторію. Ну, підготовка тестового до прийомки»* → repository and submission preparation recorded as a separate morning entry.
+
+Background agent runtime is not included, and no additional agent duration is asserted for this entry.

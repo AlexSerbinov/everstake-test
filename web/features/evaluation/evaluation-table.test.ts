@@ -18,8 +18,8 @@ test("failure analysis distinguishes failed, pending and correct negative answer
     },
   ];
   assert.deepEqual(failedRows(rows), [rows[0]]);
-  assert.equal(verdictLabel("pending"), "Ще не оцінено");
-  assert.equal(verdictLabel("correct_abstention"), "Успішно");
+  assert.equal(verdictLabel("pending"), "Not assessed yet");
+  assert.equal(verdictLabel("correct_abstention"), "Passed");
   assert.equal(rows.length, 3);
 });
 

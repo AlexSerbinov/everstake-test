@@ -1,9 +1,10 @@
 # Evaluation: read saved answers and their assessments
 
-Start with [evaluation-page.ts](evaluation-page.ts): it fetches `/api/evaluations`, selects a saved view, and renders metrics and question rows. Opening this page does not run evaluation or call a model.
+Start with [evaluation-page.ts](evaluation-page.ts): it fetches `/api/evaluations`, selects a saved view, and renders metrics and question rows. Opening this page does not run evaluation or call a model. English is the default; the English / Українська buttons switch display copy while keeping the selected run and filter. Switching language reuses the loaded results. Saved questions, answers and evidence retain their original wording.
 
 | File | What it explains |
 | --- | --- |
+| [evaluation-language.ts](evaluation-language.ts), [assessment-translations.ts](assessment-translations.ts) | Select English/Ukrainian interface copy and translate known assessment notes by exact original text without editing saved results. |
 | [current-evaluation.ts](current-evaluation.ts) | Select published runs and build a labelled view combining a full run with eligible saved rechecks. Original saved runs are not rewritten. |
 | [default-evaluation-run.ts](default-evaluation-run.ts) | Prefer the newest fully assessed 20-question agent run, then fall back to another full assessment or newest run. Selection never uses the highest score. |
 | [evaluation-metrics.ts](evaluation-metrics.ts) | Keep planned, completed, assessed, and failed-provider counts separate. |
